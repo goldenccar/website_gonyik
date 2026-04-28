@@ -1,0 +1,75 @@
+import { Router } from 'express'
+import { db, saveDb } from '../db'
+import { authMiddleware, AuthRequest } from '../middleware/auth'
+import { upload } from '../middleware/upload'
+
+const router = Router()
+
+router.get('/home', (_req, res) => {
+  res.json({ data: db.home_config })
+})
+
+router.get('/page/:pageKey', (req, res) => {
+  const row = db.page_configs.find((p) => p.page_key === req.params.pageKey)
+  res.json({ data: row || null })
+})
+
+router.get('/navigation', (_req, res) => {
+  res.json({ data: db.navigation.sort((a, b) => a.order_index - b.order_index) })
+})
+
+router.get('/footer', (_req, res) => {
+  res.json({ data: db.footer_config })
+})
+
+router.get('/social', (_req, res) => {
+  res.json({ data: db.social_media })
+})
+
+router.put('/admin/home', authMiddleware, (req: AuthRequest, res) => {
+  db.home_config = { ...db.home_config, ...req.body }
+  saveDb()
+  res.json({ success: true })
+})
+
+router.put('/admin/home/background', authMiddleware, upload.single('file'), (req: AuthRequest, res) => {
+  if (!req.file) { res.status(400).json({ error: 'No file' }); return }
+  const url = `/uploads/${req.file.filename}`
+  db.home_config.hero_background = url
+  saveDb()
+  res.json({ success: true, url })
+})
+
+router.put('/admin/page/:pageKey', authMiddleware, (req: AuthRequest, res) => {
+  const idx = db.page_configs.findIndex((p) => p.page_key === req.params.pageKey)
+  if (idx >= 0) {
+    db.page_configs[idx] = { ...db.page_configs[idx], ...req.body }
+    saveDb()
+  }
+  res.json({ success: true })
+})
+
+router.put('/admin/navigation', authMiddleware, (req: AuthRequest, res) => {
+  db.navigation = req.body.items.map((item: any, i: number) => ({ ...item, order_index: i }))
+  saveDb()
+  res.json({ success: true })
+})
+
+router.put('/admin/footer', authMiddleware, (req: AuthRequest, res) => {
+  db.footer_config = { ...db.footer_config, ...req.body }
+  saveDb()
+  res.json({ success: true })
+})
+
+router.put('/admin/social', authMiddleware, upload.single('qrcode'), (req: AuthRequest, res) => {
+  const { platform, account } = req.body
+  const idx = db.social_media.findIndex((s) => s.platform === platform)
+  const qrcode_url = req.file ? `/uploads/${req.file.filename}` : req.body.qrcode_url
+  if (idx >= 0) {
+    db.social_media[idx] = { ...db.social_media[idx], account, qrcode_url }
+    saveDb()
+  }
+  res.json({ success: true })
+})
+
+export default router
