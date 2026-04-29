@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Outlet } from 'react-router-dom'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import Home from './pages/Home'
@@ -16,6 +16,18 @@ import AdminServiceManager from './admin/ServiceManager'
 import AdminNewsManager from './admin/NewsManager'
 import AdminMediaLibrary from './admin/MediaLibrary'
 
+function PublicLayout() {
+  return (
+    <div className="flex flex-col min-h-[100dvh]">
+      <Header />
+      <main className="flex-1 pt-[60px] flex flex-col">
+        <Outlet />
+      </main>
+      <Footer />
+    </div>
+  )
+}
+
 function App() {
   return (
     <div className="min-h-screen bg-bg">
@@ -32,24 +44,13 @@ function App() {
         <Route path="/admin/media" element={<AdminMediaLibrary />} />
 
         {/* Public routes */}
-        <Route
-          path="*"
-          element={
-            <>
-              <Header />
-              <main className="pt-[60px]">
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/fabrics" element={<FabricDatabase />} />
-                  <Route path="/equipment" element={<EndUseEquipment />} />
-                  <Route path="/fluorine-free" element={<FluorineFreeFuture />} />
-                  <Route path="/services" element={<ServicesSupport />} />
-                </Routes>
-              </main>
-              <Footer />
-            </>
-          }
-        />
+        <Route element={<PublicLayout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/fabrics" element={<FabricDatabase />} />
+          <Route path="/equipment" element={<EndUseEquipment />} />
+          <Route path="/fluorine-free" element={<FluorineFreeFuture />} />
+          <Route path="/services" element={<ServicesSupport />} />
+        </Route>
       </Routes>
     </div>
   )

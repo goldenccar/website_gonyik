@@ -12,7 +12,7 @@ export default function FluorineFreeFuture() {
   }, [])
 
   return (
-    <div className="min-h-[100dvh] bg-darker flex flex-col items-center justify-center text-center px-6">
+    <div className="flex-1 bg-darker flex flex-col items-center justify-center text-center px-6 py-16">
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}

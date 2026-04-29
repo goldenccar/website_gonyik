@@ -45,8 +45,8 @@ export default function Footer() {
 
   return (
     <>
-      <footer className="bg-darker border-t border-white/[0.08]">
-        <div className="max-w-[1440px] mx-auto px-6 lg:px-12 py-10 flex flex-col md:flex-row justify-between items-center gap-6">
+      <footer className="relative bg-darker border-t border-white/[0.08] px-6 lg:px-12">
+        <div className="max-w-[1440px] mx-auto py-5 flex flex-col md:flex-row justify-between items-center gap-4">
           {/* Left */}
           <div className="text-center md:text-left">
             <p className="text-[12px] text-muted">
@@ -61,7 +61,7 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Right: Social */}
+          {/* Right: Social icons */}
           <div className="flex items-center gap-5">
             {/* WeChat */}
             <div className="relative">
@@ -69,6 +69,7 @@ export default function Footer() {
                 className="text-muted hover:text-white transition-colors duration-200"
                 onClick={() => setActiveSocial(activeSocial === 'wechat' ? null : 'wechat')}
                 onMouseEnter={() => setActiveSocial('wechat')}
+                onMouseLeave={() => setActiveSocial(null)}
               >
                 <WechatIcon className="w-[22px] h-[22px]" />
               </button>
@@ -90,6 +91,7 @@ export default function Footer() {
                 className="text-muted hover:text-white transition-colors duration-200"
                 onClick={() => setActiveSocial(activeSocial === 'xiaohongshu' ? null : 'xiaohongshu')}
                 onMouseEnter={() => setActiveSocial('xiaohongshu')}
+                onMouseLeave={() => setActiveSocial(null)}
               >
                 <XiaohongshuIcon className="w-[22px] h-[22px]" />
               </button>
@@ -107,6 +109,7 @@ export default function Footer() {
                 className="text-muted hover:text-white transition-colors duration-200"
                 onClick={() => setActiveSocial(activeSocial === 'douyin' ? null : 'douyin')}
                 onMouseEnter={() => setActiveSocial('douyin')}
+                onMouseLeave={() => setActiveSocial(null)}
               >
                 <DouyinIcon className="w-[22px] h-[22px]" />
               </button>
@@ -119,16 +122,16 @@ export default function Footer() {
             </div>
           </div>
         </div>
-      </footer>
 
-      {/* Hidden admin entry */}
-      <Link
-        to="/admin"
-        className="fixed bottom-12 right-12 z-50 text-[#333333] hover:text-[#666666] transition-colors duration-200"
-        title="Admin"
-      >
-        <Settings size={16} />
-      </Link>
+        {/* Admin gear — absolute bottom-right */}
+        <Link
+          to="/admin"
+          className="absolute bottom-3 right-6 lg:right-12 text-[#333333] hover:text-[#666666] transition-colors duration-200"
+          title="Admin"
+        >
+          <Settings size={14} />
+        </Link>
+      </footer>
     </>
   )
 }

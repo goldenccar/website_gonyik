@@ -42,8 +42,8 @@ export default function FabricDatabase() {
   return (
     <div>
       {/* Hero */}
-      <section className="bg-darker min-h-[35vh] flex flex-col justify-center px-6 lg:px-12 pt-[60px]">
-        <div className="max-w-[1440px] mx-auto w-full py-16">
+      <section className="bg-darker flex flex-col justify-center px-6 lg:px-12 pt-[60px]">
+        <div className="max-w-[1440px] mx-auto w-full py-8">
           <p className="text-label text-accent uppercase mb-4">{pageConfig?.page_tag || 'FABRIC DATABASE'}</p>
           <h1 className="text-h1 text-white mb-4">{pageConfig?.page_title || '面料数据库'}</h1>
           <p className="text-body text-accent max-w-[600px]">
@@ -56,7 +56,7 @@ export default function FabricDatabase() {
       <section className="bg-bg px-6 lg:px-12 py-16">
         <div className="max-w-[1440px] mx-auto">
           <h2 className="text-h4 text-primary mb-8">面料系列</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className={`gap-6 pb-4 ${seriesList.length > 4 ? 'flex overflow-x-auto snap-x snap-mandatory scroll-smooth' : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'}`}>
             {seriesList.map((series, idx) => (
               <motion.div
                 key={series.id}
@@ -64,16 +64,16 @@ export default function FabricDatabase() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: idx * 0.1 }}
-                className={`bg-white p-8 cursor-pointer transition-all duration-300 hover:-translate-y-1 group relative overflow-hidden ${
+                className={`bg-white p-8 cursor-pointer transition-all duration-300 hover:-translate-y-1 group relative overflow-hidden flex flex-col ${
                   selectedSeries === series.slug ? 'ring-2 ring-primary' : ''
-                }`}
+                } ${seriesList.length > 4 ? 'w-[280px] sm:w-[300px] lg:w-[320px] flex-shrink-0 snap-start' : ''}`}
                 onClick={() => setSelectedSeries(selectedSeries === series.slug ? null : series.slug)}
               >
                 <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary scale-y-0 group-hover:scale-y-100 transition-transform duration-300 origin-top" />
-                <h3 className="text-h4 text-primary mb-3">{series.name}</h3>
-                <p className="text-[14px] text-muted leading-relaxed mb-4 line-clamp-2">{series.description}</p>
-                <div className="flex items-center justify-between">
-                  <span className="text-label text-secondary">系列面料</span>
+                <h3 className="text-h4 text-primary mb-2">{series.name} 系列</h3>
+                <p className="text-[14px] text-muted leading-relaxed line-clamp-2 flex-1">{series.description}</p>
+                <div className="flex items-center justify-between mt-auto pt-4">
+                  <span className="text-label text-secondary">查看详情</span>
                   <ArrowRight size={16} className="text-primary group-hover:translate-x-1 transition-transform" />
                 </div>
               </motion.div>
@@ -90,11 +90,11 @@ export default function FabricDatabase() {
                 transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                 className="overflow-hidden mt-8"
               >
-                <div className="bg-white p-8">
-                  <div className="flex items-center justify-between mb-8">
+                <div className="bg-white p-6">
+                  <div className="flex items-center justify-between mb-6">
                     <div>
                       <h3 className="text-h3 text-primary">{seriesDetail.name}</h3>
-                      <p className="text-body text-muted mt-2">{seriesDetail.description}</p>
+                      <p className="text-body text-muted mt-1">{seriesDetail.description}</p>
                     </div>
                     <button
                       onClick={() => setSelectedSeries(null)}
@@ -166,7 +166,7 @@ export default function FabricDatabase() {
                 className="cursor-pointer group"
                 onClick={() => openViewer(report)}
               >
-                <div className="aspect-[3/4] bg-bg mb-4 relative overflow-hidden flex items-center justify-center">
+                <div className="aspect-[3/4] bg-bg mb-4 relative overflow-hidden flex items-center justify-center group-hover:bg-[#E8E8E8] transition-colors">
                   {report.file_type === 'pdf' ? (
                     <div className="flex flex-col items-center gap-3">
                       <FileText size={48} className="text-muted" />
@@ -179,6 +179,9 @@ export default function FabricDatabase() {
                   ) : (
                     <FileText size={48} className="text-muted" />
                   )}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                    <span className="opacity-0 group-hover:opacity-100 text-white text-sm font-medium bg-black/60 px-3 py-1.5 transition-opacity">点击预览</span>
+                  </div>
                 </div>
                 <h4 className="text-[16px] font-bold text-primary mb-1 group-hover:underline">{report.title}</h4>
                 <div className="flex items-center gap-2">

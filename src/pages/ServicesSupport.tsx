@@ -40,8 +40,8 @@ export default function ServicesSupport() {
   return (
     <div>
       {/* Hero */}
-      <section className="bg-darker min-h-[35vh] flex flex-col justify-center px-6 lg:px-12 pt-[60px]">
-        <div className="max-w-[1440px] mx-auto w-full py-16">
+      <section className="bg-darker flex flex-col justify-center px-6 lg:px-12 pt-[60px]">
+        <div className="max-w-[1440px] mx-auto w-full py-8">
           <p className="text-label text-accent uppercase mb-4">{pageConfig?.page_tag || 'SERVICES & SUPPORT'}</p>
           <h1 className="text-h1 text-white mb-4">{pageConfig?.page_title || '服务与支持'}</h1>
           <p className="text-body text-accent max-w-[600px]">

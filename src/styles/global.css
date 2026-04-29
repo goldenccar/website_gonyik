@@ -5,6 +5,7 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    overflow-y: scroll;
   }
   body {
     font-family: 'Inter', 'Alibaba PuHuiTi 2.0', 'PingFang SC', 'Microsoft YaHei', sans-serif;

@@ -24,9 +24,9 @@ export default function Header() {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.5, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-        className="fixed top-0 left-0 right-0 z-50 h-[60px] bg-darker border-b border-white/[0.08]"
+        className="fixed top-0 left-0 right-0 z-50 h-[60px] bg-darker border-b border-white/[0.08] px-6 lg:px-12"
       >
-        <div className="max-w-[1440px] mx-auto h-full flex items-center justify-between px-6 lg:px-12">
+        <div className="max-w-[1440px] mx-auto h-full flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center">
             <svg width="28" height="28" viewBox="0 0 28 28" fill="none" className="mr-2">
