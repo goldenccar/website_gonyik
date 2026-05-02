@@ -18,7 +18,7 @@ function XiaohongshuIcon({ className }: { className?: string }) {
       src="/xiaohongshu-icon.png"
       alt="小红书"
       className={`${className} grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-200`}
-      style={{ width: 20, height: 20, objectFit: 'contain' }}
+      style={{ width: 16, height: 16, objectFit: 'contain' }}
     />
   )
 }
@@ -61,16 +61,16 @@ export default function Footer() {
           </div>
 
           {/* Right: Social icons */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             {/* WeChat */}
             <div className="relative">
               <button
-                className="flex items-center justify-center h-[20px] p-0 bg-transparent border-none text-muted hover:text-accentWarm transition-colors duration-200"
+                className="flex items-center justify-center h-[16px] p-0 bg-transparent border-none text-muted hover:text-accentWarm transition-colors duration-200"
                 onClick={() => setActiveSocial(activeSocial === 'wechat' ? null : 'wechat')}
                 onMouseEnter={() => setActiveSocial('wechat')}
                 onMouseLeave={() => setActiveSocial(null)}
               >
-                <WechatIcon className="w-[20px] h-[20px]" />
+                <WechatIcon className="w-[16px] h-[16px]" />
               </button>
               <div className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 transition-all duration-200 ${activeSocial === 'wechat' ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
                 <div className="bg-white rounded-lg shadow-[0_8px_32px_rgba(0,0,0,0.4)] p-2.5 w-[180px]">
@@ -87,12 +87,12 @@ export default function Footer() {
             {/* Xiaohongshu */}
             <div className="relative">
               <button
-                className="flex items-center justify-center h-[20px] p-0 bg-transparent border-none text-muted hover:text-accentWarm transition-colors duration-200"
+                className="flex items-center justify-center h-[16px] p-0 bg-transparent border-none text-muted hover:text-accentWarm transition-colors duration-200"
                 onClick={() => setActiveSocial(activeSocial === 'xiaohongshu' ? null : 'xiaohongshu')}
                 onMouseEnter={() => setActiveSocial('xiaohongshu')}
                 onMouseLeave={() => setActiveSocial(null)}
               >
-                <XiaohongshuIcon className="w-[20px] h-[20px]" />
+                <XiaohongshuIcon className="w-[16px] h-[16px]" />
               </button>
               <div className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 transition-all duration-200 ${activeSocial === 'xiaohongshu' ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
                 <div className="bg-dark rounded-lg px-3 py-2 whitespace-nowrap">
@@ -105,12 +105,12 @@ export default function Footer() {
             {/* Douyin */}
             <div className="relative">
               <button
-                className="flex items-center justify-center h-[20px] p-0 bg-transparent border-none text-muted hover:text-accentWarm transition-colors duration-200"
+                className="flex items-center justify-center h-[16px] p-0 bg-transparent border-none text-muted hover:text-accentWarm transition-colors duration-200"
                 onClick={() => setActiveSocial(activeSocial === 'douyin' ? null : 'douyin')}
                 onMouseEnter={() => setActiveSocial('douyin')}
                 onMouseLeave={() => setActiveSocial(null)}
               >
-                <DouyinIcon className="w-[20px] h-[20px]" />
+                <DouyinIcon className="w-[16px] h-[16px]" />
               </button>
               <div className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 transition-all duration-200 ${activeSocial === 'douyin' ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
                 <div className="bg-dark rounded-lg px-3 py-2 whitespace-nowrap">
