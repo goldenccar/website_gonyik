@@ -39,7 +39,7 @@ function createDefaultDb(): Database {
       hero_slogan: '以创新材料科技，重塑户外与运动的边界',
       hero_background: null,
       primary_btn_text: '探索无氟科技面料',
-      primary_btn_link: '/fluorine-free',
+      primary_btn_link: '/fabrics',
       secondary_btn_text: '探索终端装备',
       secondary_btn_link: '/equipment',
     },
