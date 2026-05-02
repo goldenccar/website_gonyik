@@ -18,7 +18,7 @@ function XiaohongshuIcon({ className }: { className?: string }) {
       src="/xiaohongshu-icon.png"
       alt="小红书"
       className={`${className} grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-200`}
-      style={{ width: 22, height: 22, objectFit: 'contain' }}
+      style={{ width: 18, height: 18, objectFit: 'contain' }}
     />
   )
 }
@@ -47,24 +47,24 @@ export default function Footer() {
 
   return (
     <>
-      <footer className="relative bg-darker border-t border-white/[0.08] px-6 lg:px-12 pb-8 md:pb-3">
-        <div className="max-w-[1440px] mx-auto py-3 flex flex-col md:flex-row justify-between items-center gap-2">
+      <footer className="relative bg-darker border-t border-white/[0.08] px-6 lg:px-12 pb-6 md:pb-2">
+        <div className="max-w-[1440px] mx-auto py-1.5 flex flex-col md:flex-row justify-between items-center gap-1">
           {/* Left */}
           <div className="text-center md:text-left">
-            <p className="text-[12px] text-muted">
+            <p className="text-[11px] text-muted leading-tight">
               {footer?.copyright || '© 2026 港翼科技 GONYIK 版权所有 [Auto-Deploy v1]'}
             </p>
-            <div className="flex items-center gap-2 mt-1 justify-center md:justify-start">
-              <a href={footer?.privacy_policy_link || '#'} className="text-[12px] text-muted hover:text-accent transition-colors">
+            <div className="flex items-center gap-1.5 mt-0.5 justify-center md:justify-start">
+              <a href={footer?.privacy_policy_link || '#'} className="text-[11px] text-muted hover:text-accent transition-colors">
                 隐私政策
               </a>
-              <span className="text-muted">·</span>
-              <span className="text-[12px] text-muted">{footer?.icp_number || 'ICP备案号（占位）'}</span>
+              <span className="text-muted text-[10px]">·</span>
+              <span className="text-[11px] text-muted">{footer?.icp_number || 'ICP备案号（占位）'}</span>
             </div>
           </div>
 
           {/* Right: Social icons */}
-          <div className="flex items-center gap-5">
+          <div className="flex items-center gap-3">
             {/* WeChat */}
             <div className="relative">
               <button
@@ -73,14 +73,14 @@ export default function Footer() {
                 onMouseEnter={() => setActiveSocial('wechat')}
                 onMouseLeave={() => setActiveSocial(null)}
               >
-                <WechatIcon className="w-[22px] h-[22px]" />
+                <WechatIcon className="w-[18px] h-[18px]" />
               </button>
-              <div className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-3 transition-all duration-200 ${activeSocial === 'wechat' ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
-                <div className="bg-white rounded-lg shadow-[0_8px_32px_rgba(0,0,0,0.4)] p-3 w-[200px]">
+              <div className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 transition-all duration-200 ${activeSocial === 'wechat' ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
+                <div className="bg-white rounded-lg shadow-[0_8px_32px_rgba(0,0,0,0.4)] p-2.5 w-[180px]">
                   {wechat?.qrcode_url ? (
                     <img src={wechat.qrcode_url} alt="WeChat QR" className="w-full h-auto" />
                   ) : (
-                    <p className="text-[12px] text-primary text-center py-4">请关注港翼科技公众号</p>
+                    <p className="text-[11px] text-primary text-center py-3">请关注港翼科技公众号</p>
                   )}
                 </div>
                 <div className="w-2 h-2 bg-white rotate-45 absolute left-1/2 -translate-x-1/2 -bottom-1" />
@@ -95,11 +95,11 @@ export default function Footer() {
                 onMouseEnter={() => setActiveSocial('xiaohongshu')}
                 onMouseLeave={() => setActiveSocial(null)}
               >
-                <XiaohongshuIcon className="w-[22px] h-[22px]" />
+                <XiaohongshuIcon className="w-[18px] h-[18px]" />
               </button>
-              <div className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-3 transition-all duration-200 ${activeSocial === 'xiaohongshu' ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
-                <div className="bg-dark rounded-lg px-4 py-3 whitespace-nowrap">
-                  <p className="text-[13px] text-white">{xiaohongshu?.account || '@港翼科技GONYIK'}</p>
+              <div className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 transition-all duration-200 ${activeSocial === 'xiaohongshu' ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
+                <div className="bg-dark rounded-lg px-3 py-2 whitespace-nowrap">
+                  <p className="text-[12px] text-white">{xiaohongshu?.account || '@港翼科技GONYIK'}</p>
                 </div>
                 <div className="w-2 h-2 bg-dark rotate-45 absolute left-1/2 -translate-x-1/2 -bottom-1" />
               </div>
@@ -113,11 +113,11 @@ export default function Footer() {
                 onMouseEnter={() => setActiveSocial('douyin')}
                 onMouseLeave={() => setActiveSocial(null)}
               >
-                <DouyinIcon className="w-[22px] h-[22px]" />
+                <DouyinIcon className="w-[18px] h-[18px]" />
               </button>
-              <div className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-3 transition-all duration-200 ${activeSocial === 'douyin' ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
-                <div className="bg-dark rounded-lg px-4 py-3 whitespace-nowrap">
-                  <p className="text-[13px] text-white">{douyin?.account || '@港翼科技GONYIK'}</p>
+              <div className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 transition-all duration-200 ${activeSocial === 'douyin' ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
+                <div className="bg-dark rounded-lg px-3 py-2 whitespace-nowrap">
+                  <p className="text-[12px] text-white">{douyin?.account || '@港翼科技GONYIK'}</p>
                 </div>
                 <div className="w-2 h-2 bg-dark rotate-45 absolute left-1/2 -translate-x-1/2 -bottom-1" />
               </div>
