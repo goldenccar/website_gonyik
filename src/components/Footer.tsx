@@ -14,10 +14,12 @@ function WechatIcon({ className }: { className?: string }) {
 
 function XiaohongshuIcon({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 40 40" fill="currentColor" className={className}>
-      <rect x="2" y="2" width="36" height="36" rx="8" fill="none" stroke="currentColor" strokeWidth="2.5" />
-      <text x="20" y="26" textAnchor="middle" fontSize="11" fontWeight="900" fill="currentColor" fontFamily="'PingFang SC','Microsoft YaHei',sans-serif">小红书</text>
-    </svg>
+    <img
+      src="/xiaohongshu-icon.png"
+      alt="小红书"
+      className={`${className} grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-200`}
+      style={{ width: 22, height: 22, objectFit: 'contain' }}
+    />
   )
 }
 
@@ -45,8 +47,8 @@ export default function Footer() {
 
   return (
     <>
-      <footer className="relative bg-darker border-t border-white/[0.08] px-6 lg:px-12 pb-12 md:pb-5">
-        <div className="max-w-[1440px] mx-auto py-5 flex flex-col md:flex-row justify-between items-center gap-4">
+      <footer className="relative bg-darker border-t border-white/[0.08] px-6 lg:px-12 pb-8 md:pb-3">
+        <div className="max-w-[1440px] mx-auto py-3 flex flex-col md:flex-row justify-between items-center gap-2">
           {/* Left */}
           <div className="text-center md:text-left">
             <p className="text-[12px] text-muted">
@@ -126,7 +128,7 @@ export default function Footer() {
         {/* Admin gear — absolute bottom-right */}
         <Link
           to="/admin"
-          className="absolute bottom-3 right-6 lg:right-12 text-[#333333] hover:text-[#666666] transition-colors duration-200"
+          className="absolute bottom-2 right-6 lg:right-12 text-[#333333] hover:text-[#666666] transition-colors duration-200"
           title="Admin"
         >
           <Settings size={14} />
