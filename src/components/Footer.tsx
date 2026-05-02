@@ -47,10 +47,10 @@ export default function Footer() {
 
   return (
     <>
-      <footer className="relative bg-darker border-t border-white/[0.08] px-6 lg:px-12 pb-6 md:pb-2 mt-[-12px]">
+      <footer className="relative bg-darker border-t border-white/[0.08] px-6 lg:px-12 pb-6 md:pb-2">
         <div className="max-w-[1440px] mx-auto w-full py-2 md:py-1.5 flex flex-col md:flex-row justify-between items-center gap-2">
           {/* Left */}
-          <div className="flex items-center gap-2 flex-wrap justify-center md:justify-start text-[12px] text-muted leading-none">
+          <div className="md:h-[16px] flex items-center gap-2 flex-wrap justify-center md:justify-start text-[12px] text-muted leading-none">
             <span>{footer?.copyright || '© 2026 港翼科技 GONYIK 版权所有 [Auto-Deploy v1]'}</span>
             <span className="text-muted/60">|</span>
             <Link to={footer?.privacy_policy_link || '/privacy-policy'} className="hover:text-accent transition-colors">
