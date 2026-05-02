@@ -47,8 +47,8 @@ export default function Footer() {
 
   return (
     <>
-      <footer className="relative bg-darker border-t border-white/[0.08] px-6 lg:px-12 pb-6 md:pb-2">
-        <div className="max-w-[1440px] mx-auto py-1.5 flex flex-col md:flex-row justify-between items-center gap-1">
+      <footer className="relative flex items-center min-h-[52px] md:min-h-[36px] bg-darker border-t border-white/[0.08] px-6 lg:px-12 pb-6 md:pb-2">
+        <div className="max-w-[1440px] mx-auto w-full flex flex-col md:flex-row justify-between items-center gap-1">
           {/* Left */}
           <div className="text-center md:text-left">
             <p className="text-[11px] text-muted leading-tight">
