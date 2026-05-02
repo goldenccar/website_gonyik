@@ -45,7 +45,7 @@ export default function Footer() {
 
   return (
     <>
-      <footer className="relative bg-darker border-t border-white/[0.08] px-6 lg:px-12 pb-[env(safe-area-inset-bottom)]">
+      <footer className="relative bg-darker border-t border-white/[0.08] px-6 lg:px-12 pb-12 md:pb-5">
         <div className="max-w-[1440px] mx-auto py-5 flex flex-col md:flex-row justify-between items-center gap-4">
           {/* Left */}
           <div className="text-center md:text-left">

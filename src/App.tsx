@@ -30,7 +30,7 @@ function PublicLayout() {
 
 function App() {
   return (
-    <div className="min-h-screen bg-bg">
+    <div className="min-h-[100dvh] bg-bg">
       <Routes>
         {/* Admin routes */}
         <Route path="/admin" element={<AdminLogin />} />
