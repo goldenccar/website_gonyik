@@ -263,13 +263,13 @@ export default function Home() {
         >
           <Link
             to={config?.primary_btn_link || '/fabrics'}
-            className="px-6 sm:px-9 py-3.5 bg-white text-primary text-[14px] font-medium hover:bg-bg transition-all duration-250 hover:scale-[1.02] active:scale-[0.98] text-center w-full sm:w-auto"
+            className="px-6 sm:px-9 py-3.5 bg-white text-primary text-[14px] font-medium hover:bg-bg transition-all duration-300 ease-out hover:scale-[1.02] active:scale-[0.98] text-center w-full sm:w-auto rounded-xl"
           >
             {config?.primary_btn_text || '探索无氟科技面料'}
           </Link>
           <Link
             to={config?.secondary_btn_link || '/equipment'}
-            className="px-6 sm:px-9 py-3.5 bg-white/12 text-white text-[14px] font-medium border border-white/25 hover:bg-white/20 hover:border-white/40 transition-all duration-250 text-center w-full sm:w-auto"
+            className="px-6 sm:px-9 py-3.5 bg-white/12 text-white text-[14px] font-medium border border-white/25 hover:bg-white/20 hover:border-white/40 transition-all duration-300 ease-out text-center w-full sm:w-auto rounded-xl"
           >
             {config?.secondary_btn_text || '探索终端装备'}
           </Link>

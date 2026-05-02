@@ -104,7 +104,7 @@ export default function EndUseEquipment() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="relative h-[110px] sm:h-[130px] cursor-pointer overflow-hidden transition-all duration-300 group"
+                className="relative h-[110px] sm:h-[130px] cursor-pointer overflow-hidden transition-all duration-300 group rounded-2xl shadow-sm hover:shadow-md"
                 onClick={() => {
                   setActiveTab(cat.slug)
                   scrollToTabNav()
@@ -169,7 +169,7 @@ export default function EndUseEquipment() {
                     {products.map((product) => {
                       const features: string[] = product.features ? JSON.parse(product.features) : []
                       return (
-                        <div key={product.id} className="bg-bg group hover:-translate-y-1 transition-transform duration-300">
+                        <div key={product.id} className="bg-bg group hover:-translate-y-1 hover:shadow-md transition-all duration-300 rounded-2xl shadow-sm overflow-hidden">
                           <div className="aspect-square bg-[#E0E0E0] relative overflow-hidden">
                             {product.image ? (
                               <img

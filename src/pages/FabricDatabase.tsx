@@ -64,7 +64,7 @@ export default function FabricDatabase() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: idx * 0.1 }}
-                className={`bg-white p-8 cursor-pointer transition-all duration-300 hover:-translate-y-1 group relative overflow-hidden flex flex-col ${
+                className={`bg-white p-8 cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-md group relative overflow-hidden flex flex-col rounded-2xl shadow-sm ${
                   selectedSeries === series.slug ? 'ring-2 ring-primary' : ''
                 } ${seriesList.length > 4 ? 'w-[280px] sm:w-[300px] lg:w-[320px] flex-shrink-0 snap-start' : ''}`}
                 onClick={() => setSelectedSeries(selectedSeries === series.slug ? null : series.slug)}
@@ -109,7 +109,7 @@ export default function FabricDatabase() {
                       const features: string[] = sku.features ? JSON.parse(sku.features) : []
                       const specs: Record<string, string> = sku.specifications ? JSON.parse(sku.specifications) : {}
                       return (
-                        <div key={sku.id} className="bg-bg group hover:-translate-y-1 transition-transform duration-300">
+                        <div key={sku.id} className="bg-bg group hover:-translate-y-1 hover:shadow-md transition-all duration-300 rounded-2xl shadow-sm overflow-hidden">
                           <div className="aspect-[3/4] bg-[#E0E0E0] relative overflow-hidden">
                             {sku.image ? (
                               <img src={sku.image} alt={sku.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -166,7 +166,7 @@ export default function FabricDatabase() {
                 className="cursor-pointer group"
                 onClick={() => openViewer(report)}
               >
-                <div className="aspect-[3/4] bg-bg mb-4 relative overflow-hidden flex items-center justify-center group-hover:bg-[#E8E8E8] transition-colors">
+                <div className="aspect-[3/4] bg-bg mb-4 relative overflow-hidden flex items-center justify-center group-hover:bg-[#E8E8E8] transition-colors rounded-2xl shadow-sm">
                   {report.file_type === 'pdf' ? (
                     <div className="flex flex-col items-center gap-3">
                       <FileText size={48} className="text-muted" />

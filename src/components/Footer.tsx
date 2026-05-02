@@ -15,8 +15,8 @@ function WechatIcon({ className }: { className?: string }) {
 function XiaohongshuIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
-      <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.5 14h-9a.5.5 0 0 1-.5-.5v-7a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5z" />
-      <path d="M8 9.5h8v1H8zm0 2h8v1H8zm0 2h5v1H8z" />
+      <path d="M5 3h14c1.1 0 2 .9 2 2v14c0 1.1-.9 2-2 2H5c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2zm1 2v14h12V5H6zm2 2h8v1.5H8V7zm0 3h8v1.5H8V10zm0 3h5v1.5H8V13z" />
+      <circle cx="16.5" cy="8" r="1.5" />
     </svg>
   )
 }

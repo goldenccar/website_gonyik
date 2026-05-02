@@ -112,7 +112,7 @@ export default function ServicesSupport() {
                   {/* Philosophies */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
                     {aboutData.philosophies?.map((p) => (
-                      <div key={p.id} className="bg-white p-6 sm:p-8">
+                      <div key={p.id} className="bg-white p-6 sm:p-8 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300">
                         <span className="text-[36px] sm:text-[48px] font-black text-bg leading-none">{p.number}</span>
                         <h4 className="text-h5 text-primary mt-4 mb-2">{p.title}</h4>
                         <p className="text-[14px] text-muted leading-relaxed">{p.description}</p>
@@ -136,7 +136,7 @@ export default function ServicesSupport() {
                             className="relative pl-8"
                           >
                             <div className="absolute left-0 top-1.5 w-4 h-4 bg-primary border-[3px] border-white rounded-full" />
-                            <div className="bg-bg p-4 sm:p-6">
+                            <div className="bg-bg p-4 sm:p-6 rounded-xl">
                               <span className="text-h5 text-primary">{m.year}</span>
                               <p className="text-[14px] text-muted mt-1">{m.event}</p>
                             </div>
@@ -186,7 +186,7 @@ export default function ServicesSupport() {
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ duration: 0.4, delay: idx * 0.1 }}
-                          className="bg-white cursor-pointer group hover:-translate-y-1 transition-transform duration-300"
+                          className="bg-white cursor-pointer group hover:-translate-y-1 hover:shadow-md transition-all duration-300 rounded-2xl shadow-sm overflow-hidden"
                           onClick={() => openNews(news)}
                         >
                           <div className="aspect-[16/10] bg-bg overflow-hidden">
@@ -218,7 +218,7 @@ export default function ServicesSupport() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.3 }}
-                  className="bg-white p-10 sm:p-16 text-center"
+                  className="bg-white p-10 sm:p-16 text-center rounded-2xl shadow-sm"
                 >
                   <Code2 size={48} className="mx-auto text-muted mb-6" />
                   <h3 className="text-h3 text-primary mb-4">开发者支持</h3>
@@ -245,7 +245,7 @@ export default function ServicesSupport() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.4, delay: idx * 0.1 }}
-                        className="bg-white p-8"
+                        className="bg-white p-8 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300"
                       >
                         <IconComponent size={40} className="text-primary mb-4" />
                         <h4 className="text-h5 text-primary mb-3">{guide.title}</h4>
@@ -264,7 +264,7 @@ export default function ServicesSupport() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.3 }}
-                  className="bg-white"
+                  className="bg-white rounded-2xl shadow-sm"
                 >
                   {faqs.map((faq) => {
                     const isOpen = openFaq === faq.id
