@@ -32,6 +32,7 @@ export interface FooterConfig {
   privacy_policy_link: string
   icp_number: string
   icp_link: string
+  privacy_policy_content: string
 }
 
 export interface SocialMedia {

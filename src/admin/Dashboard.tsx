@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { LayoutDashboard, Home, Layers, Mountain, Shirt, HelpCircle, Newspaper, Image, Palette, LogOut } from 'lucide-react'
+import { LayoutDashboard, Home, Layers, Mountain, Shirt, HelpCircle, Newspaper, Image, Palette, LogOut, Dock } from 'lucide-react'
 
 const MENU = [
   { label: '概览', icon: LayoutDashboard, path: '/admin/dashboard' },
   { label: '品牌设置', icon: Palette, path: '/admin/brand' },
+  { label: 'Footer 管理', icon: Dock, path: '/admin/footer' },
   { label: '首页管理', icon: Home, path: '/admin/home' },
   { label: '面料系列管理', icon: Layers, path: '/admin/fabrics' },
   { label: '测试报告管理', icon: Mountain, path: '/admin/reports' },

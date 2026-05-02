@@ -55,9 +55,9 @@ export default function Footer() {
               {footer?.copyright || '© 2026 港翼科技 GONYIK 版权所有 [Auto-Deploy v1]'}
             </p>
             <div className="flex items-center gap-1.5 mt-0.5 justify-center md:justify-start">
-              <a href={footer?.privacy_policy_link || '#'} className="text-[11px] text-muted hover:text-accent transition-colors">
+              <Link to={footer?.privacy_policy_link || '/privacy-policy'} className="text-[11px] text-muted hover:text-accent transition-colors">
                 隐私政策
-              </a>
+              </Link>
               <span className="text-muted text-[10px]">·</span>
               <span className="text-[11px] text-muted">{footer?.icp_number || 'ICP备案号（占位）'}</span>
             </div>

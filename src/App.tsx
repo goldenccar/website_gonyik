@@ -16,6 +16,8 @@ import AdminServiceManager from './admin/ServiceManager'
 import AdminNewsManager from './admin/NewsManager'
 import AdminMediaLibrary from './admin/MediaLibrary'
 import AdminBrandSettings from './admin/BrandSettings'
+import AdminFooterManager from './admin/FooterManager'
+import PrivacyPolicy from './pages/PrivacyPolicy'
 
 function PublicLayout() {
   return (
@@ -44,6 +46,7 @@ function App() {
         <Route path="/admin/news" element={<AdminNewsManager />} />
         <Route path="/admin/media" element={<AdminMediaLibrary />} />
         <Route path="/admin/brand" element={<AdminBrandSettings />} />
+        <Route path="/admin/footer" element={<AdminFooterManager />} />
 
         {/* Public routes */}
         <Route element={<PublicLayout />}>
@@ -52,6 +55,7 @@ function App() {
           <Route path="/equipment" element={<EndUseEquipment />} />
           <Route path="/fluorine-free" element={<FluorineFreeFuture />} />
           <Route path="/services" element={<ServicesSupport />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         </Route>
       </Routes>
     </div>
