@@ -47,19 +47,19 @@ export default function Footer() {
 
   return (
     <>
-      <footer className="relative flex items-center min-h-[64px] md:min-h-[44px] bg-darker border-t border-white/[0.08] px-6 lg:px-12 pb-6 md:pb-2">
-        <div className="max-w-[1440px] mx-auto w-full flex flex-col md:flex-row justify-between items-center gap-1">
+      <footer className="relative bg-darker border-t border-white/[0.08] px-6 lg:px-12 pb-8 md:pb-4">
+        <div className="max-w-[1440px] mx-auto w-full py-4 md:py-3 flex flex-col md:flex-row justify-between items-center gap-2">
           {/* Left */}
           <div className="text-center md:text-left">
-            <p className="text-[11px] text-muted leading-tight">
+            <p className="text-[12px] text-muted leading-tight">
               {footer?.copyright || '© 2026 港翼科技 GONYIK 版权所有 [Auto-Deploy v1]'}
             </p>
-            <div className="flex items-center gap-1.5 mt-0.5 justify-center md:justify-start">
-              <Link to={footer?.privacy_policy_link || '/privacy-policy'} className="text-[11px] text-muted hover:text-accent transition-colors">
+            <div className="flex items-center gap-2 mt-1 justify-center md:justify-start">
+              <Link to={footer?.privacy_policy_link || '/privacy-policy'} className="text-[12px] text-muted hover:text-accent transition-colors">
                 隐私政策
               </Link>
-              <span className="text-muted text-[10px]">·</span>
-              <span className="text-[11px] text-muted">{footer?.icp_number || 'ICP备案号（占位）'}</span>
+              <span className="text-muted">·</span>
+              <span className="text-[12px] text-muted">{footer?.icp_number || 'ICP备案号（占位）'}</span>
             </div>
           </div>
 
