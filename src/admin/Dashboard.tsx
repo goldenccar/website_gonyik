@@ -1,19 +1,65 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { LayoutDashboard, Home, Layers, Mountain, Shirt, HelpCircle, Newspaper, Image, Palette, LogOut, Dock } from 'lucide-react'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
+import {
+  LayoutDashboard, Home, Layers, Mountain, Shirt, HelpCircle, Newspaper, Image, Palette, LogOut, Dock, ChevronDown, Settings, FileText, Briefcase
+} from 'lucide-react'
 
-const MENU = [
-  { label: '概览', icon: LayoutDashboard, path: '/admin/dashboard' },
-  { label: '品牌设置', icon: Palette, path: '/admin/brand' },
-  { label: 'Footer 管理', icon: Dock, path: '/admin/footer' },
-  { label: '首页管理', icon: Home, path: '/admin/home' },
-  { label: '面料系列管理', icon: Layers, path: '/admin/fabrics' },
-  { label: '测试报告管理', icon: Mountain, path: '/admin/reports' },
-  { label: '终端装备管理', icon: Shirt, path: '/admin/equipment' },
-  { label: '服务与支持管理', icon: HelpCircle, path: '/admin/services' },
-  { label: '新闻管理', icon: Newspaper, path: '/admin/news' },
-  { label: '多媒体资源库', icon: Image, path: '/admin/media' },
+interface MenuItem {
+  label: string
+  icon: any
+  path: string
+}
+
+interface MenuGroup {
+  label: string
+  icon?: any
+  children: MenuItem[]
+}
+
+const MENU_GROUPS: MenuGroup[] = [
+  {
+    label: '概览',
+    icon: LayoutDashboard,
+    children: [{ label: '概览', icon: LayoutDashboard, path: '/admin/dashboard' }],
+  },
+  {
+    label: '品牌与站点',
+    icon: Palette,
+    children: [
+      { label: '品牌设置', icon: Palette, path: '/admin/brand' },
+      { label: 'Footer 管理', icon: Dock, path: '/admin/footer' },
+    ],
+  },
+  {
+    label: '首页',
+    icon: Home,
+    children: [{ label: '首页管理', icon: Home, path: '/admin/home' }],
+  },
+  {
+    label: '产品管理',
+    icon: Briefcase,
+    children: [
+      { label: '面料系列管理', icon: Layers, path: '/admin/fabrics' },
+      { label: '终端装备管理', icon: Shirt, path: '/admin/equipment' },
+    ],
+  },
+  {
+    label: '内容管理',
+    icon: FileText,
+    children: [
+      { label: '测试报告管理', icon: Mountain, path: '/admin/reports' },
+      { label: '服务与支持管理', icon: HelpCircle, path: '/admin/services' },
+      { label: '新闻管理', icon: Newspaper, path: '/admin/news' },
+    ],
+  },
+  {
+    label: '资源库',
+    icon: Image,
+    children: [{ label: '多媒体资源库', icon: Image, path: '/admin/media' }],
+  },
 ]
+
+const ALL_ITEMS = MENU_GROUPS.flatMap((g) => g.children)
 
 interface DashboardProps {
   children?: React.ReactNode
@@ -21,7 +67,9 @@ interface DashboardProps {
 
 export default function AdminDashboard({ children }: DashboardProps = {}) {
   const navigate = useNavigate()
+  const location = useLocation()
   const [username, setUsername] = useState('Admin')
+  const [expanded, setExpanded] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     const token = localStorage.getItem('admin_token')
@@ -29,6 +77,29 @@ export default function AdminDashboard({ children }: DashboardProps = {}) {
       navigate('/admin')
     }
   }, [navigate])
+
+  // Auto-expand the group containing current path
+  useEffect(() => {
+    const currentPath = location.pathname
+    const group = MENU_GROUPS.find((g) => g.children.some((c) => c.path === currentPath))
+    if (group) {
+      setExpanded((prev) => new Set(prev).add(group.label))
+    }
+  }, [location.pathname])
+
+  const toggleGroup = (label: string) => {
+    setExpanded((prev) => {
+      const next = new Set(prev)
+      if (next.has(label)) {
+        next.delete(label)
+      } else {
+        next.add(label)
+      }
+      return next
+    })
+  }
+
+  const isActive = (path: string) => location.pathname === path
 
   const handleLogout = () => {
     localStorage.removeItem('admin_token')
@@ -42,18 +113,71 @@ export default function AdminDashboard({ children }: DashboardProps = {}) {
         <div className="p-6 border-b border-white/10">
           <h2 className="text-white text-[16px] font-bold">港翼科技 CMS</h2>
         </div>
-        <nav className="flex-1 py-4">
-          {MENU.map((item) => {
-            const Icon = item.icon
+        <nav className="flex-1 py-4 overflow-auto">
+          {MENU_GROUPS.map((group) => {
+            const GroupIcon = group.icon
+            const isSingle = group.children.length === 1
+            const isExpanded = expanded.has(group.label)
+            const hasActiveChild = group.children.some((c) => isActive(c.path))
+
+            if (isSingle) {
+              const item = group.children[0]
+              const ItemIcon = item.icon
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`flex items-center gap-3 px-6 py-3 text-[13px] transition-colors ${
+                    isActive(item.path)
+                      ? 'text-white bg-white/10'
+                      : 'text-accent hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  <ItemIcon size={18} />
+                  {item.label}
+                </Link>
+              )
+            }
+
             return (
-              <Link
-                key={item.path}
-                to={item.path}
-                className="flex items-center gap-3 px-6 py-3 text-[13px] text-accent hover:text-white hover:bg-white/5 transition-colors"
-              >
-                <Icon size={18} />
-                {item.label}
-              </Link>
+              <div key={group.label}>
+                <button
+                  onClick={() => toggleGroup(group.label)}
+                  className={`w-full flex items-center justify-between px-6 py-3 text-[13px] transition-colors ${
+                    hasActiveChild ? 'text-white' : 'text-accent hover:text-white'
+                  } hover:bg-white/5`}
+                >
+                  <div className="flex items-center gap-3">
+                    {GroupIcon && <GroupIcon size={18} />}
+                    <span>{group.label}</span>
+                  </div>
+                  <ChevronDown
+                    size={14}
+                    className={`transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
+                  />
+                </button>
+                {isExpanded && (
+                  <div className="pb-1">
+                    {group.children.map((item) => {
+                      const ItemIcon = item.icon
+                      return (
+                        <Link
+                          key={item.path}
+                          to={item.path}
+                          className={`flex items-center gap-3 pl-[52px] pr-6 py-2.5 text-[13px] transition-colors ${
+                            isActive(item.path)
+                              ? 'text-white bg-white/10'
+                              : 'text-muted hover:text-white hover:bg-white/5'
+                          }`}
+                        >
+                          <ItemIcon size={16} />
+                          {item.label}
+                        </Link>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
             )
           })}
         </nav>
@@ -72,8 +196,8 @@ export default function AdminDashboard({ children }: DashboardProps = {}) {
         {children || (
           <>
             <h1 className="text-h2 text-white mb-8">概览</h1>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {MENU.slice(1).map((item) => {
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {ALL_ITEMS.slice(1).map((item) => {
                 const Icon = item.icon
                 return (
                   <Link
