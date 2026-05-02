@@ -50,7 +50,7 @@ export default function Footer() {
           {/* Left */}
           <div className="text-center md:text-left">
             <p className="text-[12px] text-muted">
-              {footer?.copyright || '© 2026 港翼科技 GONYIK 版权所有'}
+              {footer?.copyright || '© 2026 港翼科技 GONYIK 版权所有 [Auto-Deploy v1]'}
             </p>
             <div className="flex items-center gap-2 mt-1 justify-center md:justify-start">
               <a href={footer?.privacy_policy_link || '#'} className="text-[12px] text-muted hover:text-accent transition-colors">
