@@ -12,6 +12,7 @@ export default {
         secondary: '#888888',
         muted: '#666666',
         accent: '#AAAAAA',
+        accentWarm: '#8B9B8E',
         light: '#CCCCCC',
         bg: '#EDEDED',
         dark: '#0D0F12',

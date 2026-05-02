@@ -14,9 +14,9 @@ function WechatIcon({ className }: { className?: string }) {
 
 function XiaohongshuIcon({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
-      <path d="M5 3h14c1.1 0 2 .9 2 2v14c0 1.1-.9 2-2 2H5c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2zm1 2v14h12V5H6zm2 2h8v1.5H8V7zm0 3h8v1.5H8V10zm0 3h5v1.5H8V13z" />
-      <circle cx="16.5" cy="8" r="1.5" />
+    <svg viewBox="0 0 40 40" fill="currentColor" className={className}>
+      <rect x="2" y="2" width="36" height="36" rx="8" fill="none" stroke="currentColor" strokeWidth="2.5" />
+      <text x="20" y="26" textAnchor="middle" fontSize="11" fontWeight="900" fill="currentColor" fontFamily="'PingFang SC','Microsoft YaHei',sans-serif">小红书</text>
     </svg>
   )
 }
@@ -66,7 +66,7 @@ export default function Footer() {
             {/* WeChat */}
             <div className="relative">
               <button
-                className="text-muted hover:text-white transition-colors duration-200"
+                className="text-muted hover:text-accentWarm transition-colors duration-200"
                 onClick={() => setActiveSocial(activeSocial === 'wechat' ? null : 'wechat')}
                 onMouseEnter={() => setActiveSocial('wechat')}
                 onMouseLeave={() => setActiveSocial(null)}
@@ -88,7 +88,7 @@ export default function Footer() {
             {/* Xiaohongshu */}
             <div className="relative">
               <button
-                className="text-muted hover:text-white transition-colors duration-200"
+                className="text-muted hover:text-accentWarm transition-colors duration-200"
                 onClick={() => setActiveSocial(activeSocial === 'xiaohongshu' ? null : 'xiaohongshu')}
                 onMouseEnter={() => setActiveSocial('xiaohongshu')}
                 onMouseLeave={() => setActiveSocial(null)}
@@ -106,7 +106,7 @@ export default function Footer() {
             {/* Douyin */}
             <div className="relative">
               <button
-                className="text-muted hover:text-white transition-colors duration-200"
+                className="text-muted hover:text-accentWarm transition-colors duration-200"
                 onClick={() => setActiveSocial(activeSocial === 'douyin' ? null : 'douyin')}
                 onMouseEnter={() => setActiveSocial('douyin')}
                 onMouseLeave={() => setActiveSocial(null)}
