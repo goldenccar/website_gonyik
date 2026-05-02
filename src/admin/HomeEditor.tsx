@@ -85,11 +85,16 @@ export default function AdminHomeEditor() {
         {field('副标题 / Slogan', 'hero_slogan', true)}
 
         <div className="mb-6">
-          <label className="block text-[12px] text-secondary uppercase mb-2">背景图片</label>
+          <label className="block text-[12px] text-secondary uppercase mb-2">背景媒体</label>
           {form.hero_background && (
-            <img src={form.hero_background} alt="Hero" className="w-full max-h-[200px] object-cover mb-3" />
+            /\.(mp4|webm|mov)(\?.*)?$/i.test(form.hero_background) ? (
+              <video src={form.hero_background} className="w-full max-h-[200px] object-cover mb-3" autoPlay muted loop playsInline />
+            ) : (
+              <img src={form.hero_background} alt="Hero" className="w-full max-h-[200px] object-cover mb-3" />
+            )
           )}
-          <input type="file" accept="image/*" onChange={handleFileUpload} className="text-white text-[13px]" />
+          <input type="file" accept="image/*,video/mp4,video/webm,video/quicktime" onChange={handleFileUpload} className="text-white text-[13px]" />
+          <p className="text-[12px] text-muted mt-2">支持 JPG、PNG、GIF、WebP、MP4、WebM、MOV</p>
         </div>
 
         <div className="grid grid-cols-2 gap-6">

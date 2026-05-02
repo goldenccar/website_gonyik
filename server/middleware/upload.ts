@@ -23,11 +23,11 @@ export const upload = multer({
   storage,
   limits: { fileSize: 50 * 1024 * 1024 }, // 50MB
   fileFilter: (_req, file, cb) => {
-    const allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml', 'image/webp', 'application/pdf']
+    const allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml', 'image/webp', 'application/pdf', 'video/mp4', 'video/webm', 'video/quicktime']
     if (allowed.includes(file.mimetype)) {
       cb(null, true)
     } else {
-      cb(new Error('Only images and PDF are allowed'))
+      cb(new Error('Only images, videos and PDF are allowed'))
     }
   },
 })

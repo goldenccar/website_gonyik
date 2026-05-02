@@ -203,19 +203,35 @@ export default function Home() {
 
   const titleLines = (config?.hero_title || '科技面料\n定义未来').split('\n')
 
+  const isVideo = (url: string) => /\.(mp4|webm|mov)(\?.*)?$/i.test(url)
+
   return (
     <section className="relative w-full flex-1 overflow-hidden">
       {/* Background */}
       {config?.hero_background ? (
         <>
-          <motion.img
-            src={config.hero_background}
-            alt="Hero"
-            className="absolute inset-0 w-full h-full object-cover"
-            initial={{ scale: 1.08, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-          />
+          {isVideo(config.hero_background) ? (
+            <motion.video
+              src={config.hero_background}
+              className="absolute inset-0 w-full h-full object-cover"
+              autoPlay
+              muted
+              loop
+              playsInline
+              initial={{ scale: 1.08, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+            />
+          ) : (
+            <motion.img
+              src={config.hero_background}
+              alt="Hero"
+              className="absolute inset-0 w-full h-full object-cover"
+              initial={{ scale: 1.08, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+            />
+          )}
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/50 to-black/60" />
         </>
       ) : (
