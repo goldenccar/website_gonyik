@@ -31,6 +31,7 @@ api.interceptors.response.use(
 export default api
 
 export const getHomeConfig = () => api.get('/home')
+export const getSiteConfig = () => api.get('/site-config')
 export const getPageConfig = (key: string) => api.get(`/page/${key}`)
 export const getNavigation = () => api.get('/navigation')
 export const getFooter = () => api.get('/footer')

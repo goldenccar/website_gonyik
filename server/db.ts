@@ -11,6 +11,7 @@ if (!fs.existsSync(UPLOADS_DIR)) {
 
 export interface Database {
   home_config: any
+  site_config: any
   page_configs: any[]
   navigation: any[]
   footer_config: any
@@ -41,6 +42,11 @@ function createDefaultDb(): Database {
       primary_btn_link: '/fluorine-free',
       secondary_btn_text: '探索终端装备',
       secondary_btn_link: '/equipment',
+    },
+    site_config: {
+      logo_url: null,
+      logo_text: '港翼科技',
+      favicon_url: null,
     },
     page_configs: [
       { id: 1, page_key: 'fabrics', page_tag: 'FABRIC DATABASE', page_title: '面料数据库', page_subtitle: '四大核心系列，覆盖户外、运动、工装全场景', hero_background: null },

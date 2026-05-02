@@ -15,6 +15,7 @@ import AdminReportManager from './admin/ReportManager'
 import AdminServiceManager from './admin/ServiceManager'
 import AdminNewsManager from './admin/NewsManager'
 import AdminMediaLibrary from './admin/MediaLibrary'
+import AdminBrandSettings from './admin/BrandSettings'
 
 function PublicLayout() {
   return (
@@ -42,6 +43,7 @@ function App() {
         <Route path="/admin/services" element={<AdminServiceManager />} />
         <Route path="/admin/news" element={<AdminNewsManager />} />
         <Route path="/admin/media" element={<AdminMediaLibrary />} />
+        <Route path="/admin/brand" element={<AdminBrandSettings />} />
 
         {/* Public routes */}
         <Route element={<PublicLayout />}>

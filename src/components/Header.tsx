@@ -2,16 +2,18 @@ import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Menu, X, Globe, Search } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { getNavigation } from '@/api/client'
+import { getNavigation, getSiteConfig } from '@/api/client'
 import type { NavItem } from '@/types'
 
 export default function Header() {
   const [navItems, setNavItems] = useState<NavItem[]>([])
+  const [siteConfig, setSiteConfig] = useState<any>({})
   const [mobileOpen, setMobileOpen] = useState(false)
   const location = useLocation()
 
   useEffect(() => {
     getNavigation().then((res) => setNavItems(res.data.data || []))
+    getSiteConfig().then((res) => setSiteConfig(res.data.data || {}))
   }, [])
 
   useEffect(() => {
@@ -29,11 +31,15 @@ export default function Header() {
         <div className="max-w-[1440px] mx-auto h-full flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center">
-            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" className="mr-2">
-              <rect width="28" height="28" fill="white" />
-              <text x="14" y="19" textAnchor="middle" fill="#0D0D0D" fontSize="11" fontWeight="800" fontFamily="Inter, sans-serif">GY</text>
-            </svg>
-            <span className="text-white text-[15px] font-bold tracking-tight">港翼科技</span>
+            {siteConfig.logo_url ? (
+              <img src={siteConfig.logo_url} alt="Logo" className="h-7 w-auto mr-2" />
+            ) : (
+              <svg width="28" height="28" viewBox="0 0 28 28" fill="none" className="mr-2">
+                <rect width="28" height="28" fill="white" />
+                <text x="14" y="19" textAnchor="middle" fill="#0D0D0D" fontSize="11" fontWeight="800" fontFamily="Inter, sans-serif">GY</text>
+              </svg>
+            )}
+            <span className="text-white text-[15px] font-bold tracking-tight">{siteConfig.logo_text || '港翼科技'}</span>
           </Link>
 
           {/* Desktop Nav */}

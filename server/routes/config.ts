@@ -9,6 +9,32 @@ router.get('/home', (_req, res) => {
   res.json({ data: db.home_config })
 })
 
+router.get('/site-config', (_req, res) => {
+  res.json({ data: db.site_config })
+})
+
+router.put('/admin/site-config', authMiddleware, (req: AuthRequest, res) => {
+  db.site_config = { ...db.site_config, ...req.body }
+  saveDb()
+  res.json({ success: true })
+})
+
+router.put('/admin/site-config/logo', authMiddleware, upload.single('file'), (req: AuthRequest, res) => {
+  if (!req.file) { res.status(400).json({ error: 'No file' }); return }
+  const url = `/uploads/${req.file.filename}`
+  db.site_config.logo_url = url
+  saveDb()
+  res.json({ success: true, url })
+})
+
+router.put('/admin/site-config/favicon', authMiddleware, upload.single('file'), (req: AuthRequest, res) => {
+  if (!req.file) { res.status(400).json({ error: 'No file' }); return }
+  const url = `/uploads/${req.file.filename}`
+  db.site_config.favicon_url = url
+  saveDb()
+  res.json({ success: true, url })
+})
+
 router.get('/page/:pageKey', (req, res) => {
   const row = db.page_configs.find((p) => p.page_key === req.params.pageKey)
   res.json({ data: row || null })
