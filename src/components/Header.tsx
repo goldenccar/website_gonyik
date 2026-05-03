@@ -30,7 +30,10 @@ export default function Header() {
       >
         <div className="max-w-[1440px] mx-auto h-full flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center">
+          <button
+            onClick={() => { window.location.href = '/' }}
+            className="flex items-center cursor-pointer"
+          >
             {siteConfig.logo_url ? (
               <img src={siteConfig.logo_url} alt="Logo" className="h-7 w-auto mr-2" />
             ) : (
@@ -40,7 +43,7 @@ export default function Header() {
               </svg>
             )}
             <span className="text-white text-[15px] font-bold tracking-tight">{siteConfig.logo_text || '港翼科技'}</span>
-          </Link>
+          </button>
 
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-8">

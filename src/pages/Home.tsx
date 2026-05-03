@@ -196,9 +196,13 @@ function DefaultBackground() {
 
 export default function Home() {
   const [config, setConfig] = useState<HomeConfig | null>(null)
+  const [bgLoading, setBgLoading] = useState(true)
 
   useEffect(() => {
-    getHomeConfig().then((res) => setConfig(res.data.data))
+    getHomeConfig().then((res) => {
+      setConfig(res.data.data)
+      setBgLoading(false)
+    })
   }, [])
 
   const titleLines = (config?.hero_title || '科技面料\n定义未来').split('\n')
@@ -208,7 +212,9 @@ export default function Home() {
   return (
     <section className="relative w-full flex-1 overflow-hidden">
       {/* Background */}
-      {config?.hero_background ? (
+      {bgLoading ? (
+        <div className="absolute inset-0 bg-darker" />
+      ) : config?.hero_background ? (
         <>
           {isVideo(config.hero_background) ? (
             <motion.video
