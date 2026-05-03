@@ -31,7 +31,6 @@ export default function FabricDatabase() {
   const [reportFilter, setReportFilter] = useState<string>('all')
   const [viewerOpen, setViewerOpen] = useState(false)
   const [viewerData, setViewerData] = useState<{ url: string; type: string; title: string } | null>(null)
-  const [highlightedSlug, setHighlightedSlug] = useState<string | null>(null)
   const [showKaisSub, setShowKaisSub] = useState(false)
 
   useEffect(() => {
@@ -55,9 +54,7 @@ export default function FabricDatabase() {
     setViewerOpen(true)
   }
 
-  const filteredReports = reportFilter === 'all'
-    ? reports
-    : reports.filter((r) => r.category?.toLowerCase().includes(reportFilter))
+
 
   return (
     <div>
@@ -81,7 +78,6 @@ export default function FabricDatabase() {
               const meta = SERIES_META[series.slug] || SERIES_META['ottex']
               const Icon = meta.icon
               const isKais = series.slug === 'kais'
-              const isHighlighted = highlightedSlug === series.slug
               return (
                 <motion.div
                   key={series.id}
@@ -89,9 +85,7 @@ export default function FabricDatabase() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: idx * 0.1 }}
-                  className={`bg-white cursor-pointer transition-all duration-300 hover:scale-[1.01] group relative overflow-hidden flex flex-col ${
-                    isHighlighted ? 'ring-2 ring-primary' : ''
-                  }`}
+                  className="bg-white cursor-pointer transition-all duration-300 hover:scale-[1.01] group relative overflow-hidden flex flex-col"
                   style={{ borderLeft: `3px solid ${meta.accent}` }}
                   onClick={() => {
                     if (isKais) {
@@ -236,58 +230,41 @@ export default function FabricDatabase() {
       <section className="bg-darker px-6 lg:px-12 py-16">
         <div className="max-w-[1440px] mx-auto">
           <h2 className="text-h4 text-white mb-8">按应用场景选择</h2>
-          <div className="flex flex-wrap gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {SCENES.map((scene) => (
               <button
                 key={scene.label}
-                className="px-5 py-2.5 bg-white/5 border border-white/10 text-[13px] text-accent hover:text-white hover:bg-white/10 hover:border-white/20 transition-all"
-                onMouseEnter={() => {
-                  const s = scene.series.replace('-edge', '').replace('-ignis', '')
-                  setHighlightedSlug(s)
-                }}
-                onMouseLeave={() => setHighlightedSlug(null)}
+                className="text-left p-5 bg-white/5 border border-white/10 text-accent hover:text-white hover:bg-white/10 hover:border-white/20 transition-all"
                 onClick={() => {
                   if (scene.series.startsWith('kais')) {
                     setShowKaisSub(true)
+                    setSelectedSeries(null)
+                    window.scrollTo({ top: 300, behavior: 'smooth' })
                   } else {
+                    setShowKaisSub(false)
                     setSelectedSeries(scene.series)
+                    window.scrollTo({ top: 300, behavior: 'smooth' })
                   }
-                  window.scrollTo({ top: 400, behavior: 'smooth' })
                 }}
               >
-                {scene.label}
+                <span className="text-[14px] font-medium text-white block mb-1">{scene.label}</span>
+                <span className="text-[12px] text-muted">推荐系列：{scene.series === 'kais-edge' ? 'Kais-Edge' : scene.series === 'kais-ignis' ? 'Kais-Ignis' : SERIES_META[scene.series]?.tagline || scene.series}</span>
               </button>
             ))}
           </div>
-          <p className="text-[12px] text-muted mt-4">悬停或点击上方场景，高亮对应的面料系列</p>
         </div>
       </section>
 
       {/* Test Reports */}
       <section className="bg-white px-6 lg:px-12 py-20">
         <div className="max-w-[1440px] mx-auto">
-          <div className="flex items-center justify-between mb-10">
-            <div>
-              <h2 className="text-h3 text-primary mb-2">性能测试与认证</h2>
-              <p className="text-body text-muted">我们的每一款面料均通过严格的国际标准测试</p>
-            </div>
-            <div className="flex gap-2">
-              {['all', 'ottex', 'kais', 'rayo', 'tread'].map((f) => (
-                <button
-                  key={f}
-                  onClick={() => setReportFilter(f)}
-                  className={`px-3 py-1.5 text-[12px] uppercase tracking-wider transition-colors ${
-                    reportFilter === f ? 'bg-primary text-white' : 'bg-bg text-secondary hover:bg-[#E0E0E0]'
-                  }`}
-                >
-                  {f === 'all' ? '全部' : f}
-                </button>
-              ))}
-            </div>
+          <div className="mb-10">
+            <h2 className="text-h3 text-primary mb-2">性能测试与认证</h2>
+            <p className="text-body text-muted">我们的每一款面料均通过严格的国际标准测试</p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredReports.map((report, idx) => (
+            {reports.map((report, idx) =>(
               <motion.div
                 key={report.id}
                 initial={{ opacity: 0, y: 20 }}
