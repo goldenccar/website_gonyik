@@ -75,10 +75,10 @@ function createDefaultDb(): Database {
       { id: 3, platform: 'douyin', account: '港翼科技GONYIK', qrcode_url: null },
     ],
     fabric_series: [
-      { id: 1, name: 'Osmo', slug: 'osmo', description: '仿生防水透气系列，适用于极端户外环境', cover_image: null, order_index: 0 },
-      { id: 2, name: 'Kinetic', slug: 'kinetic', description: '高弹运动系列，为动态表现而生', cover_image: null, order_index: 1 },
-      { id: 3, name: 'Lumix', slug: 'lumix', description: '轻量化透光系列，科技与美学融合', cover_image: null, order_index: 2 },
-      { id: 4, name: 'Tread', slug: 'tread', description: '耐磨工装系列，经久耐用', cover_image: null, order_index: 3 },
+      { id: 1, name: 'Ottex', slug: 'ottex', description: '全流程无氟仿生防水透气系列，3μm UHMWPE 薄膜 + PUR 复合工艺', cover_image: null, order_index: 0 },
+      { id: 2, name: 'Kais', slug: 'kais', description: '专业防护平台，基于 UHMWPE 纤维基材的防刺/防火/防化解决方案', cover_image: null, order_index: 1 },
+      { id: 3, name: 'Rayo', slug: 'rayo', description: '原生防晒导湿系列，Coolmax + TiO2 原纱处理，UPF 150+', cover_image: null, order_index: 2 },
+      { id: 4, name: 'Tread', slug: 'tread', description: '鞋材级耐磨抗撕裂面料，户外鞋与安全鞋专用', cover_image: null, order_index: 3 },
     ],
     fabric_sku: [
       { id: 1, series_id: 1, name: 'Osmo-100', sku_code: 'GY-OSMO-100', image: null, features: '["防水透气","无氟"]', specifications: '{"waterproof":"15000mm","breathable":"10000g/m²/24h","weight":"120g/m²"}', order_index: 0 },

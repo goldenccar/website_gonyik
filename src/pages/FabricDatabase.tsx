@@ -1,9 +1,26 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowRight, FileText, X } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { ArrowRight, FileText, X, Shield, Sun, Droplets, Footprints } from 'lucide-react'
 import { getPageConfig, getFabricSeries, getFabricSeriesDetail, getTestReports } from '@/api/client'
 import FileViewer from '@/components/FileViewer'
 import type { FabricSeries, FabricSku, PageConfig, TestReport } from '@/types'
+
+const SERIES_META: Record<string, { accent: string; icon: any; tagline: string }> = {
+  ottex: { accent: '#4A6FA5', icon: Droplets, tagline: '全流程无氟 · 仿生防水透气' },
+  kais: { accent: '#8B3A3A', icon: Shield, tagline: '专业防护平台 · 防刺/防火/防化' },
+  rayo: { accent: '#C48A4D', icon: Sun, tagline: '原生防晒 · 导湿凉感' },
+  tread: { accent: '#666666', icon: Footprints, tagline: '鞋材级 · 耐磨抗撕裂' },
+}
+
+const SCENES = [
+  { label: '户外硬壳', series: 'ottex' },
+  { label: '战术防护', series: 'kais-edge' },
+  { label: '阻燃工装', series: 'kais-ignis' },
+  { label: '运动防晒', series: 'rayo' },
+  { label: '鞋材应用', series: 'tread' },
+  { label: '城市通勤', series: 'rayo' },
+]
 
 export default function FabricDatabase() {
   const [pageConfig, setPageConfig] = useState<PageConfig | null>(null)
@@ -11,8 +28,11 @@ export default function FabricDatabase() {
   const [selectedSeries, setSelectedSeries] = useState<string | null>(null)
   const [seriesDetail, setSeriesDetail] = useState<(FabricSeries & { skus: FabricSku[] }) | null>(null)
   const [reports, setReports] = useState<TestReport[]>([])
+  const [reportFilter, setReportFilter] = useState<string>('all')
   const [viewerOpen, setViewerOpen] = useState(false)
   const [viewerData, setViewerData] = useState<{ url: string; type: string; title: string } | null>(null)
+  const [highlightedSlug, setHighlightedSlug] = useState<string | null>(null)
+  const [showKaisSub, setShowKaisSub] = useState(false)
 
   useEffect(() => {
     getPageConfig('fabrics').then((res) => setPageConfig(res.data.data))
@@ -21,7 +41,7 @@ export default function FabricDatabase() {
   }, [])
 
   useEffect(() => {
-    if (selectedSeries) {
+    if (selectedSeries && selectedSeries !== 'kais') {
       getFabricSeriesDetail(selectedSeries).then((res) => {
         setSeriesDetail(res.data.data)
       })
@@ -31,56 +51,124 @@ export default function FabricDatabase() {
   }, [selectedSeries])
 
   const openViewer = (report: TestReport) => {
-    setViewerData({
-      url: report.file_url,
-      type: report.file_type,
-      title: report.title,
-    })
+    setViewerData({ url: report.file_url, type: report.file_type, title: report.title })
     setViewerOpen(true)
   }
+
+  const filteredReports = reportFilter === 'all'
+    ? reports
+    : reports.filter((r) => r.category?.toLowerCase().includes(reportFilter))
 
   return (
     <div>
       {/* Hero */}
       <section className="bg-darker flex flex-col justify-center px-6 lg:px-12 pt-[60px]">
         <div className="max-w-[1440px] mx-auto w-full py-8">
-          <p className="text-label text-accent uppercase mb-4">{pageConfig?.page_tag || 'FABRIC DATABASE'}</p>
-          <h1 className="text-h1 text-white mb-4">{pageConfig?.page_title || '面料数据库'}</h1>
+          <p className="text-label text-accent uppercase mb-4">{pageConfig?.page_tag || 'MATERIAL PLATFORMS'}</p>
+          <h1 className="text-h1 text-white mb-4">{pageConfig?.page_title || '高性能功能面料技术平台'}</h1>
           <p className="text-body text-accent max-w-[600px]">
-            {pageConfig?.page_subtitle || '四大核心系列，覆盖户外、运动、工装全场景'}
+            {pageConfig?.page_subtitle || '四大核心技术系列，从仿生防水到专业防护，覆盖户外、工装与运动全场景'}
           </p>
         </div>
       </section>
 
-      {/* Series Grid */}
+      {/* Series Cards */}
       <section className="bg-bg px-6 lg:px-12 py-16">
         <div className="max-w-[1440px] mx-auto">
           <h2 className="text-h4 text-primary mb-8">面料系列</h2>
-          <div className={`gap-6 pb-4 ${seriesList.length > 4 ? 'flex overflow-x-auto snap-x snap-mandatory scroll-smooth' : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'}`}>
-            {seriesList.map((series, idx) => (
-              <motion.div
-                key={series.id}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: idx * 0.1 }}
-                className={`bg-white p-8 cursor-pointer transition-all duration-300 hover:scale-[1.01] group relative overflow-hidden flex flex-col ${
-                  selectedSeries === series.slug ? 'ring-2 ring-primary' : ''
-                } ${seriesList.length > 4 ? 'w-[280px] sm:w-[300px] lg:w-[320px] flex-shrink-0 snap-start' : ''}`}
-                onClick={() => setSelectedSeries(selectedSeries === series.slug ? null : series.slug)}
-              >
-                <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary scale-y-0 group-hover:scale-y-100 transition-transform duration-300 origin-top" />
-                <h3 className="text-h4 text-primary mb-2">{series.name} 系列</h3>
-                <p className="text-[14px] text-muted leading-relaxed line-clamp-2 flex-1">{series.description}</p>
-                <div className="flex items-center justify-between mt-auto pt-4">
-                  <span className="text-label text-secondary">查看详情</span>
-                  <ArrowRight size={16} className="text-primary group-hover:translate-x-1 transition-transform" />
-                </div>
-              </motion.div>
-            ))}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {seriesList.map((series, idx) => {
+              const meta = SERIES_META[series.slug] || SERIES_META['ottex']
+              const Icon = meta.icon
+              const isKais = series.slug === 'kais'
+              const isHighlighted = highlightedSlug === series.slug
+              return (
+                <motion.div
+                  key={series.id}
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: idx * 0.1 }}
+                  className={`bg-white cursor-pointer transition-all duration-300 hover:scale-[1.01] group relative overflow-hidden flex flex-col ${
+                    isHighlighted ? 'ring-2 ring-primary' : ''
+                  }`}
+                  style={{ borderLeft: `3px solid ${meta.accent}` }}
+                  onClick={() => {
+                    if (isKais) {
+                      setShowKaisSub(!showKaisSub)
+                    } else {
+                      setSelectedSeries(selectedSeries === series.slug ? null : series.slug)
+                    }
+                  }}
+                >
+                  <div className="p-8 flex flex-col flex-1">
+                    <div className="flex items-center gap-3 mb-3">
+                      <Icon size={20} style={{ color: meta.accent }} />
+                      <h3 className="text-h4 text-primary">{series.name}</h3>
+                    </div>
+                    <p className="text-[13px] text-muted leading-relaxed flex-1">{series.description}</p>
+                    <div className="flex items-center justify-between mt-auto pt-4">
+                      <span className="text-label text-secondary">{isKais ? '选择子系列' : '查看详情'}</span>
+                      <ArrowRight size={16} className="text-primary group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </div>
+                </motion.div>
+              )
+            })}
           </div>
 
-          {/* Series Detail / SKU Shelf */}
+          {/* Kais Sub-series */}
+          <AnimatePresence>
+            {showKaisSub && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                className="overflow-hidden mt-8"
+              >
+                <div className="bg-white p-8">
+                  <div className="flex items-center justify-between mb-6">
+                    <div>
+                      <h3 className="text-h3 text-primary">Kais 专业防护平台</h3>
+                      <p className="text-body text-muted mt-1">基于 UHMWPE 纤维基材的多场景防护解决方案</p>
+                    </div>
+                    <button onClick={() => setShowKaisSub(false)} className="p-2 hover:bg-bg transition-colors">
+                      <X size={20} />
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <Link to="/fabrics/kais-edge" className="bg-bg p-6 hover:bg-white hover:ring-1 hover:ring-primary transition-all group">
+                      <div className="flex items-center gap-3 mb-3">
+                        <Shield size={20} className="text-[#8B3A3A]" />
+                        <h4 className="text-[18px] font-bold text-primary">Kais-Edge</h4>
+                      </div>
+                      <p className="text-[13px] text-muted mb-1">铠 · 锋</p>
+                      <p className="text-[13px] text-secondary">防切割抗穿刺，通过公安部 D3/D2 认证</p>
+                      <div className="flex items-center gap-2 mt-4 text-[12px] text-secondary group-hover:text-primary transition-colors">
+                        <span>查看技术详情</span>
+                        <ArrowRight size={14} />
+                      </div>
+                    </Link>
+                    <Link to="/fabrics/kais-ignis" className="bg-bg p-6 hover:bg-white hover:ring-1 hover:ring-primary transition-all group">
+                      <div className="flex items-center gap-3 mb-3">
+                        <Shield size={20} className="text-[#C45D3A]" />
+                        <h4 className="text-[18px] font-bold text-primary">Kais-Ignis</h4>
+                      </div>
+                      <p className="text-[13px] text-muted mb-1">铠 · 焰</p>
+                      <p className="text-[13px] text-secondary">阻燃隔热，芳纶 + UHMWPE/TPU 复合膜结构</p>
+                      <div className="flex items-center gap-2 mt-4 text-[12px] text-secondary group-hover:text-primary transition-colors">
+                        <span>查看技术详情</span>
+                        <ArrowRight size={14} />
+                      </div>
+                    </Link>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Series Detail / SKU Shelf (for non-Kais) */}
           <AnimatePresence>
             {seriesDetail && (
               <motion.div
@@ -93,13 +181,10 @@ export default function FabricDatabase() {
                 <div className="bg-white p-6">
                   <div className="flex items-center justify-between mb-6">
                     <div>
-                      <h3 className="text-h3 text-primary">{seriesDetail.name}</h3>
+                      <h3 className="text-h3 text-primary">{seriesDetail.name} 系列</h3>
                       <p className="text-body text-muted mt-1">{seriesDetail.description}</p>
                     </div>
-                    <button
-                      onClick={() => setSelectedSeries(null)}
-                      className="p-2 hover:bg-bg transition-colors"
-                    >
+                    <button onClick={() => setSelectedSeries(null)} className="p-2 hover:bg-bg transition-colors">
                       <X size={20} />
                     </button>
                   </div>
@@ -124,9 +209,7 @@ export default function FabricDatabase() {
                             <h4 className="text-[16px] font-bold text-primary mb-3">{sku.name}</h4>
                             <div className="flex flex-wrap gap-2 mb-3">
                               {features.map((f, i) => (
-                                <span key={i} className="text-[11px] uppercase tracking-wider bg-white px-2 py-1 text-secondary">
-                                  {f}
-                                </span>
+                                <span key={i} className="text-[11px] uppercase tracking-wider bg-white px-2 py-1 text-secondary">{f}</span>
                               ))}
                             </div>
                             <div className="space-y-1">
@@ -149,14 +232,62 @@ export default function FabricDatabase() {
         </div>
       </section>
 
+      {/* Scene Selector */}
+      <section className="bg-darker px-6 lg:px-12 py-16">
+        <div className="max-w-[1440px] mx-auto">
+          <h2 className="text-h4 text-white mb-8">按应用场景选择</h2>
+          <div className="flex flex-wrap gap-3">
+            {SCENES.map((scene) => (
+              <button
+                key={scene.label}
+                className="px-5 py-2.5 bg-white/5 border border-white/10 text-[13px] text-accent hover:text-white hover:bg-white/10 hover:border-white/20 transition-all"
+                onMouseEnter={() => {
+                  const s = scene.series.replace('-edge', '').replace('-ignis', '')
+                  setHighlightedSlug(s)
+                }}
+                onMouseLeave={() => setHighlightedSlug(null)}
+                onClick={() => {
+                  if (scene.series.startsWith('kais')) {
+                    setShowKaisSub(true)
+                  } else {
+                    setSelectedSeries(scene.series)
+                  }
+                  window.scrollTo({ top: 400, behavior: 'smooth' })
+                }}
+              >
+                {scene.label}
+              </button>
+            ))}
+          </div>
+          <p className="text-[12px] text-muted mt-4">悬停或点击上方场景，高亮对应的面料系列</p>
+        </div>
+      </section>
+
       {/* Test Reports */}
       <section className="bg-white px-6 lg:px-12 py-20">
         <div className="max-w-[1440px] mx-auto">
-          <h2 className="text-h3 text-primary mb-2">性能测试与认证</h2>
-          <p className="text-body text-muted mb-10">我们的每一款面料均通过严格的国际标准测试</p>
+          <div className="flex items-center justify-between mb-10">
+            <div>
+              <h2 className="text-h3 text-primary mb-2">性能测试与认证</h2>
+              <p className="text-body text-muted">我们的每一款面料均通过严格的国际标准测试</p>
+            </div>
+            <div className="flex gap-2">
+              {['all', 'ottex', 'kais', 'rayo', 'tread'].map((f) => (
+                <button
+                  key={f}
+                  onClick={() => setReportFilter(f)}
+                  className={`px-3 py-1.5 text-[12px] uppercase tracking-wider transition-colors ${
+                    reportFilter === f ? 'bg-primary text-white' : 'bg-bg text-secondary hover:bg-[#E0E0E0]'
+                  }`}
+                >
+                  {f === 'all' ? '全部' : f}
+                </button>
+              ))}
+            </div>
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {reports.map((report, idx) => (
+            {filteredReports.map((report, idx) => (
               <motion.div
                 key={report.id}
                 initial={{ opacity: 0, y: 20 }}
@@ -196,15 +327,24 @@ export default function FabricDatabase() {
         </div>
       </section>
 
+      {/* CTA */}
+      <section className="bg-darker px-6 lg:px-12 py-20">
+        <div className="max-w-[800px] mx-auto text-center">
+          <h2 className="text-h3 text-white mb-3">找到适合你产品的面料方案？</h2>
+          <p className="text-body text-accent mb-8">申请免费面料小样，附带完整技术规格书</p>
+          <Link
+            to="/sample-request"
+            className="inline-block px-8 py-3.5 bg-white text-primary text-[14px] font-medium hover:bg-bg transition-all duration-250 hover:scale-[1.02] active:scale-[0.98]"
+          >
+            申请面料样品
+          </Link>
+        </div>
+      </section>
+
       {/* File Viewer Modal */}
       <AnimatePresence>
         {viewerOpen && viewerData && (
-          <FileViewer
-            url={viewerData.url}
-            fileType={viewerData.type}
-            title={viewerData.title}
-            onClose={() => setViewerOpen(false)}
-          />
+          <FileViewer url={viewerData.url} fileType={viewerData.type} title={viewerData.title} onClose={() => setViewerOpen(false)} />
         )}
       </AnimatePresence>
     </div>

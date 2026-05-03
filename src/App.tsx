@@ -27,10 +27,12 @@ function PageLoader() {
 // Public pages
 const Home = lazy(() => import('./pages/Home'))
 const FabricDatabase = lazy(() => import('./pages/FabricDatabase'))
+const SeriesPage = lazy(() => import('./pages/SeriesPage'))
 const EndUseEquipment = lazy(() => import('./pages/EndUseEquipment'))
 const FluorineFreeFuture = lazy(() => import('./pages/FluorineFreeFuture'))
 const ServicesSupport = lazy(() => import('./pages/ServicesSupport'))
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'))
+const SampleRequest = lazy(() => import('./pages/SampleRequest'))
 
 // Admin pages
 const AdminLogin = lazy(() => import('./admin/Login'))
