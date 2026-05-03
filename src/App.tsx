@@ -1,7 +1,8 @@
-import { Suspense, lazy } from 'react'
+import { Suspense, lazy, useEffect } from 'react'
 import { Routes, Route, Outlet } from 'react-router-dom'
 import Header from './components/Header'
 import Footer from './components/Footer'
+import { getSiteConfig } from './api/client'
 
 function PublicLayout() {
   return (
@@ -45,6 +46,21 @@ const AdminBrandSettings = lazy(() => import('./admin/BrandSettings'))
 const AdminFooterManager = lazy(() => import('./admin/FooterManager'))
 
 function App() {
+  useEffect(() => {
+    getSiteConfig().then((res) => {
+      const favicon = res.data.data?.favicon_url
+      if (favicon) {
+        let link = document.querySelector('link[rel="icon"]') as HTMLLinkElement
+        if (!link) {
+          link = document.createElement('link')
+          link.rel = 'icon'
+          document.head.appendChild(link)
+        }
+        link.href = favicon
+      }
+    })
+  }, [])
+
   return (
     <div className="min-h-[100dvh] bg-bg">
       <Suspense fallback={<PageLoader />}>
