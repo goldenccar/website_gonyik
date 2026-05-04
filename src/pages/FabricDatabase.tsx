@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { ArrowRight, FileText, X, Shield, Sun, Droplets, Footprints } from 'lucide-react'
+import {
+  ArrowRight, FileText, X, Shield, Sun, Droplets, Footprints,
+  Briefcase, TreePine, Waves, Mountain, Bike, Tent, HardHat, Sailboat, Snowflake
+} from 'lucide-react'
 import { getPageConfig, getFabricSeries, getFabricSeriesDetail, getTestReports } from '@/api/client'
 import FileViewer from '@/components/FileViewer'
 import type { FabricSeries, FabricSku, PageConfig, TestReport } from '@/types'
@@ -13,13 +16,77 @@ const SERIES_META: Record<string, { accent: string; icon: any; tagline: string }
   tread: { accent: '#666666', icon: Footprints, tagline: '鞋材级 · 耐磨抗撕裂' },
 }
 
-const SCENES = [
-  { label: '户外硬壳', series: 'ottex' },
-  { label: '战术防护', series: 'kais-edge' },
-  { label: '阻燃工装', series: 'kais-ignis' },
-  { label: '运动防晒', series: 'rayo' },
-  { label: '鞋材应用', series: 'tread' },
-  { label: '城市通勤', series: 'rayo' },
+// Scene categories inspired by Gore-Tex vertical layout
+interface Scene {
+  label: string
+  series: string
+  icon: any
+}
+
+interface Category {
+  id: string
+  name: string
+  subtitle: string
+  icon: any
+  color: string
+  bgColor: string
+  scenes: Scene[]
+}
+
+const CATEGORIES: Category[] = [
+  {
+    id: 'urban',
+    name: '都市生活',
+    subtitle: '日常 · 通勤 · 差旅',
+    icon: Briefcase,
+    color: '#6B7B8C',
+    bgColor: 'rgba(107,123,140,0.08)',
+    scenes: [
+      { label: '日常通勤', series: 'rayo', icon: Bike },
+      { label: '商务差旅', series: 'ottex', icon: Briefcase },
+      { label: '城市轻户外', series: 'rayo', icon: Mountain },
+    ],
+  },
+  {
+    id: 'light-outdoor',
+    name: '轻户外',
+    subtitle: '休闲 · 露营 · 徒步',
+    icon: TreePine,
+    color: '#5A8A6E',
+    bgColor: 'rgba(90,138,110,0.08)',
+    scenes: [
+      { label: '徒步旅行', series: 'ottex', icon: Mountain },
+      { label: '露营休闲', series: 'ottex', icon: Tent },
+      { label: '城市骑行', series: 'rayo', icon: Bike },
+    ],
+  },
+  {
+    id: 'pro-sport',
+    name: '专业运动',
+    subtitle: '极限 · 竞速 · 水域',
+    icon: Waves,
+    color: '#4A7BA7',
+    bgColor: 'rgba(74,123,167,0.08)',
+    scenes: [
+      { label: '滑雪登山', series: 'ottex', icon: Snowflake },
+      { label: '水域活动', series: 'ottex', icon: Sailboat },
+      { label: '越野跑步', series: 'rayo', icon: Footprints },
+    ],
+  },
+  {
+    id: 'special',
+    name: '特种防护',
+    subtitle: '战术 · 工业 · 安全',
+    icon: Shield,
+    color: '#8B3A3A',
+    bgColor: 'rgba(139,58,58,0.08)',
+    scenes: [
+      { label: '战术防护', series: 'kais-edge', icon: Shield },
+      { label: '阻燃工装', series: 'kais-ignis', icon: HardHat },
+      { label: '工业安全', series: 'kais-edge', icon: HardHat },
+      { label: '鞋材应用', series: 'tread', icon: Footprints },
+    ],
+  },
 ]
 
 export default function FabricDatabase() {
@@ -28,10 +95,10 @@ export default function FabricDatabase() {
   const [selectedSeries, setSelectedSeries] = useState<string | null>(null)
   const [seriesDetail, setSeriesDetail] = useState<(FabricSeries & { skus: FabricSku[] }) | null>(null)
   const [reports, setReports] = useState<TestReport[]>([])
-  const [reportFilter, setReportFilter] = useState<string>('all')
   const [viewerOpen, setViewerOpen] = useState(false)
   const [viewerData, setViewerData] = useState<{ url: string; type: string; title: string } | null>(null)
   const [showKaisSub, setShowKaisSub] = useState(false)
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null)
 
   useEffect(() => {
     getPageConfig('fabrics').then((res) => setPageConfig(res.data.data))
@@ -54,7 +121,24 @@ export default function FabricDatabase() {
     setViewerOpen(true)
   }
 
+  const handleSceneClick = (series: string) => {
+    if (series.startsWith('kais')) {
+      setShowKaisSub(true)
+      setSelectedSeries(null)
+    } else {
+      setShowKaisSub(false)
+      setSelectedSeries(series)
+    }
+    // Smooth scroll to series section
+    const el = document.getElementById('series-section')
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }
 
+  const seriesCardRef = (slug: string) => {
+    return selectedSeries === slug || (slug === 'kais' && showKaisSub)
+  }
 
   return (
     <div>
@@ -69,8 +153,91 @@ export default function FabricDatabase() {
         </div>
       </section>
 
+      {/* Scene Selector — moved above series cards */}
+      <section className="bg-darker px-6 lg:px-12 pb-16">
+        <div className="max-w-[1440px] mx-auto">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-8 h-[2px] bg-white/20" />
+            <h2 className="text-label text-white/60 uppercase tracking-widest">按应用场景选择</h2>
+          </div>
+
+          {/* Category grid — 4 columns desktop, 2 tablet, 1 mobile */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {CATEGORIES.map((cat) => {
+              const CatIcon = cat.icon
+              const isExpanded = expandedCategory === cat.id
+              return (
+                <motion.div
+                  key={cat.id}
+                  layout
+                  className="relative"
+                >
+                  <button
+                    onClick={() => setExpandedCategory(isExpanded ? null : cat.id)}
+                    className={`w-full text-left p-6 border transition-all duration-300 ${
+                      isExpanded
+                        ? 'bg-white/10 border-white/30'
+                        : 'bg-white/[0.03] border-white/10 hover:bg-white/[0.06] hover:border-white/20'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between mb-3">
+                      <div
+                        className="w-10 h-10 flex items-center justify-center"
+                        style={{ backgroundColor: cat.bgColor }}
+                      >
+                        <CatIcon size={20} style={{ color: cat.color }} />
+                      </div>
+                      <motion.div
+                        animate={{ rotate: isExpanded ? 45 : 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="text-white/40 text-lg"
+                      >
+                        +
+                      </motion.div>
+                    </div>
+                    <h3 className="text-[16px] font-medium text-white mb-1">{cat.name}</h3>
+                    <p className="text-[12px] text-white/40">{cat.subtitle}</p>
+                  </button>
+
+                  {/* Expanded scene tags */}
+                  <AnimatePresence>
+                    {isExpanded && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                        className="overflow-hidden"
+                      >
+                        <div className="p-4 pt-2 bg-white/[0.02] border-x border-b border-white/10">
+                          <div className="flex flex-wrap gap-2">
+                            {cat.scenes.map((scene) => {
+                              const SceneIcon = scene.icon
+                              return (
+                                <button
+                                  key={scene.label}
+                                  onClick={() => handleSceneClick(scene.series)}
+                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[12px] text-white/70 bg-white/5 border border-white/10 hover:bg-white/10 hover:text-white hover:border-white/20 transition-all"
+                                >
+                                  <SceneIcon size={12} style={{ color: cat.color }} />
+                                  {scene.label}
+                                </button>
+                              )
+                            })}
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+              )
+            })}
+          </div>
+        </div>
+      </section>
+
       {/* Series Cards */}
-      <section className="bg-bg px-6 lg:px-12 py-16">
+      <section id="series-section" className="bg-bg px-6 lg:px-12 py-16">
         <div className="max-w-[1440px] mx-auto">
           <h2 className="text-h4 text-primary mb-8">面料系列</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -78,6 +245,7 @@ export default function FabricDatabase() {
               const meta = SERIES_META[series.slug] || SERIES_META['ottex']
               const Icon = meta.icon
               const isKais = series.slug === 'kais'
+              const isActive = seriesCardRef(series.slug)
               return (
                 <motion.div
                   key={series.id}
@@ -85,7 +253,9 @@ export default function FabricDatabase() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: idx * 0.1 }}
-                  className="bg-white cursor-pointer transition-all duration-300 hover:scale-[1.01] group relative overflow-hidden flex flex-col"
+                  className={`bg-white cursor-pointer transition-all duration-300 hover:scale-[1.01] group relative overflow-hidden flex flex-col ${
+                    isActive ? 'ring-1 ring-primary shadow-lg' : ''
+                  }`}
                   style={{ borderLeft: `3px solid ${meta.accent}` }}
                   onClick={() => {
                     if (isKais) {
@@ -226,35 +396,6 @@ export default function FabricDatabase() {
         </div>
       </section>
 
-      {/* Scene Selector */}
-      <section className="bg-darker px-6 lg:px-12 py-16">
-        <div className="max-w-[1440px] mx-auto">
-          <h2 className="text-h4 text-white mb-8">按应用场景选择</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {SCENES.map((scene) => (
-              <button
-                key={scene.label}
-                className="text-left p-5 bg-white/5 border border-white/10 text-accent hover:text-white hover:bg-white/10 hover:border-white/20 transition-all"
-                onClick={() => {
-                  if (scene.series.startsWith('kais')) {
-                    setShowKaisSub(true)
-                    setSelectedSeries(null)
-                    window.scrollTo({ top: 300, behavior: 'smooth' })
-                  } else {
-                    setShowKaisSub(false)
-                    setSelectedSeries(scene.series)
-                    window.scrollTo({ top: 300, behavior: 'smooth' })
-                  }
-                }}
-              >
-                <span className="text-[14px] font-medium text-white block mb-1">{scene.label}</span>
-                <span className="text-[12px] text-muted">推荐系列：{scene.series === 'kais-edge' ? 'Kais-Edge' : scene.series === 'kais-ignis' ? 'Kais-Ignis' : SERIES_META[scene.series]?.tagline || scene.series}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Test Reports */}
       <section className="bg-white px-6 lg:px-12 py-20">
         <div className="max-w-[1440px] mx-auto">
@@ -264,7 +405,7 @@ export default function FabricDatabase() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {reports.map((report, idx) =>(
+            {reports.map((report, idx) => (
               <motion.div
                 key={report.id}
                 initial={{ opacity: 0, y: 20 }}
