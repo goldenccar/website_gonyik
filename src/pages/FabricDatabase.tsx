@@ -22,6 +22,22 @@ const CATEGORY_COLORS: Record<string, string> = {
   '特种防护': '#8B3A3A',
 }
 
+const DEFAULT_SCENES: FabricScene[] = [
+  { id: 1, category: '都市生活', label: '日常通勤', series_slug: 'rayo', order_index: 0 },
+  { id: 2, category: '都市生活', label: '商务差旅', series_slug: 'ottex', order_index: 1 },
+  { id: 3, category: '都市生活', label: '城市轻户外', series_slug: 'rayo', order_index: 2 },
+  { id: 4, category: '轻户外', label: '徒步旅行', series_slug: 'ottex', order_index: 3 },
+  { id: 5, category: '轻户外', label: '露营休闲', series_slug: 'ottex', order_index: 4 },
+  { id: 6, category: '轻户外', label: '城市骑行', series_slug: 'rayo', order_index: 5 },
+  { id: 7, category: '专业运动', label: '滑雪登山', series_slug: 'ottex', order_index: 6 },
+  { id: 8, category: '专业运动', label: '水域活动', series_slug: 'ottex', order_index: 7 },
+  { id: 9, category: '专业运动', label: '越野跑步', series_slug: 'rayo', order_index: 8 },
+  { id: 10, category: '特种防护', label: '战术防护', series_slug: 'kais-edge', order_index: 9 },
+  { id: 11, category: '特种防护', label: '阻燃工装', series_slug: 'kais-ignis', order_index: 10 },
+  { id: 12, category: '特种防护', label: '工业安全', series_slug: 'kais-edge', order_index: 11 },
+  { id: 13, category: '特种防护', label: '鞋材应用', series_slug: 'tread', order_index: 12 },
+]
+
 export default function FabricDatabase() {
   const [pageConfig, setPageConfig] = useState<PageConfig | null>(null)
   const [seriesList, setSeriesList] = useState<FabricSeries[]>([])
@@ -108,7 +124,8 @@ export default function FabricDatabase() {
           </div>
           <div className="space-y-4 max-w-[900px]">
             {(() => {
-              const grouped = scenes.reduce<Record<string, FabricScene[]>>((acc, s) => {
+              const displayScenes = scenes.length > 0 ? scenes : DEFAULT_SCENES
+              const grouped = displayScenes.reduce<Record<string, FabricScene[]>>((acc, s) => {
                 if (!acc[s.category]) acc[s.category] = []
                 acc[s.category].push(s)
                 return acc
