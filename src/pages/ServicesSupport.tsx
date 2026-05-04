@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import {
   Building2, Newspaper, Code2, Droplets, HelpCircle, Plus, Minus, ChevronRight,
-  Sun, Wind, Ban, Download, ArrowRight, FileArchive, FileImage, Box, Package, Palette
+  Sun, Wind, Ban, Download, ArrowRight, FileArchive, FileImage, Box, Package, Palette, Send
 } from 'lucide-react'
 import {
   getPageConfig, getAboutUs, getNews, getNewsDetail, getCareGuides, getFaqs,
   getDigitalAssets, getFabricSeries
 } from '@/api/client'
+import SampleForm from '@/components/SampleForm'
 import type { PageConfig, AboutUs, Philosophy, Milestone, NewsItem, CareGuide, FAQ, DigitalAsset, FabricSeries } from '@/types'
 
 const ICON_MAP: Record<string, any> = { Droplets, Sun, Wind, Ban, Code2 }
@@ -32,13 +33,15 @@ const SUB_MODULES = [
   { key: 'about', label: '关于我们', icon: Building2 },
   { key: 'news', label: '新闻中心', icon: Newspaper },
   { key: 'dev', label: '开发者支持', icon: Code2 },
+  { key: 'sample', label: '样品申请', icon: Send },
   { key: 'care', label: '洗护指南', icon: Droplets },
   { key: 'faq', label: 'FAQs', icon: HelpCircle },
 ]
 
 export default function ServicesSupport() {
+  const [searchParams] = useSearchParams()
   const [pageConfig, setPageConfig] = useState<PageConfig | null>(null)
-  const [activeModule, setActiveModule] = useState('about')
+  const [activeModule, setActiveModule] = useState(searchParams.get('tab') || 'about')
   const [aboutData, setAboutData] = useState<{ about: AboutUs; philosophies: Philosophy[]; milestones: Milestone[] } | null>(null)
   const [newsList, setNewsList] = useState<NewsItem[]>([])
   const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null)
@@ -355,13 +358,32 @@ export default function ServicesSupport() {
                       ))}
                     </div>
 
-                    <Link
-                      to="/sample-request"
+                    <button
+                      onClick={() => setActiveModule('sample')}
                       className="inline-flex items-center gap-3 px-8 py-4 border border-white/30 text-white text-[14px] font-medium hover:bg-white hover:text-primary transition-all"
                     >
                       <span>前往申请页面</span>
                       <ArrowRight size={16} />
-                    </Link>
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Sample Request */}
+              {activeModule === 'sample' && (
+                <motion.div
+                  key="sample"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className="bg-white p-6 sm:p-10 mb-6">
+                    <h3 className="text-h4 text-primary mb-3">申请面料样品</h3>
+                    <p className="text-body text-muted max-w-[700px] mb-8">
+                      填写以下信息，我们会尽快与您联系。支持全系列面料样品申请，附带完整技术规格书。
+                    </p>
+                    <SampleForm />
                   </div>
                 </motion.div>
               )}

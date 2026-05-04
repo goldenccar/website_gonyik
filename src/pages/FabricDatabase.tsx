@@ -379,7 +379,7 @@ export default function FabricDatabase() {
           <h2 className="text-h3 text-white mb-3">找到适合你产品的面料方案？</h2>
           <p className="text-body text-accent mb-8">申请免费面料小样，附带完整技术规格书</p>
           <Link
-            to="/sample-request"
+            to="/services?tab=sample"
             className="inline-block px-8 py-3.5 bg-white text-primary text-[14px] font-medium hover:bg-bg transition-all duration-250 hover:scale-[1.02] active:scale-[0.98]"
           >
             申请面料样品
