@@ -62,7 +62,6 @@ function createDefaultDb(): Database {
       { id: 3, label: '终端装备', link: '/equipment', order_index: 2 },
       { id: 4, label: '探索无氟未来', link: '/fluorine-free', order_index: 3 },
       { id: 5, label: '服务与支持', link: '/services', order_index: 4 },
-      { id: 6, label: '开发者支持', link: '/developer-support', order_index: 5 },
     ],
     footer_config: {
       id: 1,
