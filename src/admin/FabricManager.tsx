@@ -37,7 +37,9 @@ export default function AdminFabricManager() {
     const formData = new FormData()
     formData.append('name', data.name as string)
     formData.append('slug', data.slug as string)
+    formData.append('tagline', (data.tagline as string) || '')
     formData.append('description', data.description as string)
+    formData.append('sub_series_data', (data.sub_series_data as string) || '')
     if (file) formData.append('cover_image', file)
     if (editingSeries?.cover_image && !file) formData.append('cover_image', editingSeries.cover_image)
 
@@ -134,7 +136,7 @@ export default function AdminFabricManager() {
                 >
                   <td className="px-6 py-4 font-medium">{s.name}</td>
                   <td className="px-6 py-4 text-accent">{s.slug}</td>
-                  <td className="px-6 py-4 text-accent max-w-[200px] truncate">{s.description}</td>
+                  <td className="px-6 py-4 text-accent max-w-[200px] truncate">{s.tagline || s.description}</td>
                   <td className="px-6 py-4 text-accent">-</td>
                   <td className="px-6 py-4 text-right">
                     <button
@@ -217,8 +219,16 @@ export default function AdminFabricManager() {
                     <input name="slug" defaultValue={editingSeries?.slug || ''} required className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none" />
                   </div>
                   <div>
+                    <label className="block text-[12px] text-secondary uppercase mb-1">标语 Tagline</label>
+                    <input name="tagline" defaultValue={editingSeries?.tagline || ''} className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none" />
+                  </div>
+                  <div>
                     <label className="block text-[12px] text-secondary uppercase mb-1">描述</label>
                     <textarea name="description" defaultValue={editingSeries?.description || ''} rows={3} className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-[12px] text-secondary uppercase mb-1">子系列数据（JSON，仅 Kais 需要）</label>
+                    <textarea name="sub_series_data" defaultValue={editingSeries?.sub_series_data || ''} rows={4} placeholder='[{"slug":"kais-edge","name":"Kais-Edge","subtitle":"铠 · 锋","description":"...","accent_color":"#8B3A3A","link":"/fabrics/kais-edge"}]' className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none font-mono" />
                   </div>
                   <div>
                     <label className="block text-[12px] text-secondary uppercase mb-1">封面图</label>

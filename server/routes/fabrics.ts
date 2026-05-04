@@ -10,7 +10,31 @@ router.get('/series', (_req, res) => {
 })
 
 router.get('/series/:slug', (req, res) => {
-  const series = db.fabric_series.find((s) => s.slug === req.params.slug)
+  const slug = req.params.slug
+  let series = db.fabric_series.find((s) => s.slug === slug)
+  // If not found as a top-level series, check sub_series_data of all series
+  if (!series) {
+    for (const s of db.fabric_series) {
+      if (s.sub_series_data) {
+        try {
+          const subs = JSON.parse(s.sub_series_data)
+          const sub = subs.find((x: any) => x.slug === slug)
+          if (sub) {
+            series = {
+              ...s,
+              id: s.id * 100 + (subs.indexOf(sub) + 1), // pseudo-id
+              name: sub.name,
+              slug: sub.slug,
+              description: sub.description,
+              tagline: sub.subtitle || '',
+              sub_series_data: null,
+            }
+            break
+          }
+        } catch {}
+      }
+    }
+  }
   if (!series) { res.status(404).json({ error: 'Series not found' }); return }
   const skus = db.fabric_sku.filter((k) => k.series_id === series.id).sort((a, b) => a.order_index - b.order_index)
   res.json({ data: { ...series, skus } })
@@ -27,9 +51,9 @@ router.get('/admin/series', authMiddleware, (_req, res) => {
 })
 
 router.post('/admin/series', authMiddleware, upload.single('cover_image'), (req: AuthRequest, res) => {
-  const { name, slug, description } = req.body
+  const { name, slug, description, tagline, sub_series_data } = req.body
   const cover_image = req.file ? `/uploads/${req.file.filename}` : null
-  const newSeries = { id: getNextId(db.fabric_series), name, slug, description, cover_image, order_index: db.fabric_series.length }
+  const newSeries = { id: getNextId(db.fabric_series), name, slug, description, tagline: tagline || '', sub_series_data: sub_series_data || null, cover_image, order_index: db.fabric_series.length }
   db.fabric_series.push(newSeries)
   saveDb()
   res.json({ success: true, id: newSeries.id })
@@ -38,9 +62,9 @@ router.post('/admin/series', authMiddleware, upload.single('cover_image'), (req:
 router.put('/admin/series/:id', authMiddleware, upload.single('cover_image'), (req: AuthRequest, res) => {
   const idx = db.fabric_series.findIndex((s) => s.id === Number(req.params.id))
   if (idx < 0) { res.status(404).json({ error: 'Not found' }); return }
-  const { name, slug, description } = req.body
+  const { name, slug, description, tagline, sub_series_data } = req.body
   const cover_image = req.file ? `/uploads/${req.file.filename}` : (req.body.cover_image || db.fabric_series[idx].cover_image)
-  db.fabric_series[idx] = { ...db.fabric_series[idx], name, slug, description, cover_image }
+  db.fabric_series[idx] = { ...db.fabric_series[idx], name, slug, description, tagline: tagline ?? db.fabric_series[idx].tagline, sub_series_data: sub_series_data ?? db.fabric_series[idx].sub_series_data, cover_image }
   saveDb()
   res.json({ success: true })
 })

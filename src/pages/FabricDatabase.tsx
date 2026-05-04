@@ -263,8 +263,11 @@ export default function FabricDatabase() {
                   style={{ borderLeft: `3px solid ${meta.accent}` }}
                   onClick={() => {
                     if (isKais) {
+                      setSelectedSeries(null)
+                      setSeriesDetail(null)
                       setShowKaisSub(!showKaisSub)
                     } else {
+                      setShowKaisSub(false)
                       setSelectedSeries(selectedSeries === series.slug ? null : series.slug)
                     }
                   }}
@@ -276,7 +279,7 @@ export default function FabricDatabase() {
                     </div>
                     <p className="text-[13px] text-muted leading-relaxed flex-1">{series.description}</p>
                     <div className="flex items-center justify-between mt-auto pt-4">
-                      <span className="text-label text-secondary">{isKais ? '选择子系列' : '查看详情'}</span>
+                      <span className="text-label text-secondary">{isKais ? '选择子系列' : (series.tagline || '查看详情')}</span>
                       <ArrowRight size={16} className="text-primary group-hover:translate-x-1 transition-transform" />
                     </div>
                   </div>
@@ -287,53 +290,51 @@ export default function FabricDatabase() {
 
           {/* Kais Sub-series */}
           <AnimatePresence>
-            {showKaisSub && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                className="overflow-hidden mt-8"
-              >
-                <div className="bg-white p-8">
-                  <div className="flex items-center justify-between mb-6">
-                    <div>
-                      <h3 className="text-h3 text-primary">Kais 专业防护平台</h3>
-                      <p className="text-body text-muted mt-1">基于 UHMWPE 纤维基材的多场景防护解决方案</p>
+            {showKaisSub && (() => {
+              const kaisSeries = seriesList.find((s) => s.slug === 'kais')
+              const subData = kaisSeries?.sub_series_data
+              const subSeries: any[] = subData ? (() => { try { return JSON.parse(subData) } catch { return [] } })() : []
+              return (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                  className="overflow-hidden mt-8"
+                >
+                  <div className="bg-white p-8">
+                    <div className="flex items-center justify-between mb-6">
+                      <div>
+                        <h3 className="text-h3 text-primary">{kaisSeries?.name || 'Kais'} 专业防护平台</h3>
+                        <p className="text-body text-muted mt-1">{kaisSeries?.description || '基于 UHMWPE 纤维基材的多场景防护解决方案'}</p>
+                      </div>
+                      <button onClick={() => setShowKaisSub(false)} className="p-2 hover:bg-bg transition-colors">
+                        <X size={20} />
+                      </button>
                     </div>
-                    <button onClick={() => setShowKaisSub(false)} className="p-2 hover:bg-bg transition-colors">
-                      <X size={20} />
-                    </button>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                      {subSeries.map((sub: any) => (
+                        <Link key={sub.slug} to={sub.link || `/fabrics/${sub.slug}`} className="bg-bg p-6 hover:bg-white hover:ring-1 hover:ring-primary transition-all group">
+                          <div className="flex items-center gap-3 mb-3">
+                            <Shield size={20} style={{ color: sub.accent_color || '#8B3A3A' }} />
+                            <h4 className="text-[18px] font-bold text-primary">{sub.name}</h4>
+                          </div>
+                          {sub.subtitle && <p className="text-[13px] text-muted mb-1">{sub.subtitle}</p>}
+                          <p className="text-[13px] text-secondary">{sub.description}</p>
+                          <div className="flex items-center gap-2 mt-4 text-[12px] text-secondary group-hover:text-primary transition-colors">
+                            <span>查看技术详情</span>
+                            <ArrowRight size={14} />
+                          </div>
+                        </Link>
+                      ))}
+                      {subSeries.length === 0 && (
+                        <div className="col-span-2 text-center py-8 text-muted text-[13px]">暂无子系列数据</div>
+                      )}
+                    </div>
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <Link to="/fabrics/kais-edge" className="bg-bg p-6 hover:bg-white hover:ring-1 hover:ring-primary transition-all group">
-                      <div className="flex items-center gap-3 mb-3">
-                        <Shield size={20} className="text-[#8B3A3A]" />
-                        <h4 className="text-[18px] font-bold text-primary">Kais-Edge</h4>
-                      </div>
-                      <p className="text-[13px] text-muted mb-1">铠 · 锋</p>
-                      <p className="text-[13px] text-secondary">防切割抗穿刺，通过公安部 D3/D2 认证</p>
-                      <div className="flex items-center gap-2 mt-4 text-[12px] text-secondary group-hover:text-primary transition-colors">
-                        <span>查看技术详情</span>
-                        <ArrowRight size={14} />
-                      </div>
-                    </Link>
-                    <Link to="/fabrics/kais-ignis" className="bg-bg p-6 hover:bg-white hover:ring-1 hover:ring-primary transition-all group">
-                      <div className="flex items-center gap-3 mb-3">
-                        <Shield size={20} className="text-[#C45D3A]" />
-                        <h4 className="text-[18px] font-bold text-primary">Kais-Ignis</h4>
-                      </div>
-                      <p className="text-[13px] text-muted mb-1">铠 · 焰</p>
-                      <p className="text-[13px] text-secondary">阻燃隔热，芳纶 + UHMWPE/TPU 复合膜结构</p>
-                      <div className="flex items-center gap-2 mt-4 text-[12px] text-secondary group-hover:text-primary transition-colors">
-                        <span>查看技术详情</span>
-                        <ArrowRight size={14} />
-                      </div>
-                    </Link>
-                  </div>
-                </div>
-              </motion.div>
-            )}
+                </motion.div>
+              )
+            })()}
           </AnimatePresence>
 
           {/* Series Detail / SKU Shelf (for non-Kais) */}

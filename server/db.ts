@@ -75,10 +75,10 @@ function createDefaultDb(): Database {
       { id: 3, platform: 'douyin', account: '港翼科技GONYIK', qrcode_url: null },
     ],
     fabric_series: [
-      { id: 1, name: 'Ottex', slug: 'ottex', description: '全流程无氟仿生防水透气系列，3μm UHMWPE 薄膜 + PUR 复合工艺', cover_image: null, order_index: 0 },
-      { id: 2, name: 'Kais', slug: 'kais', description: '专业防护平台，基于 UHMWPE 纤维基材的防刺/防火/防化解决方案', cover_image: null, order_index: 1 },
-      { id: 3, name: 'Rayo', slug: 'rayo', description: '原生防晒导湿系列，Coolmax + TiO2 原纱处理，UPF 150+', cover_image: null, order_index: 2 },
-      { id: 4, name: 'Tread', slug: 'tread', description: '鞋材级耐磨抗撕裂面料，户外鞋与安全鞋专用', cover_image: null, order_index: 3 },
+      { id: 1, name: 'Ottex', slug: 'ottex', description: '全流程无氟仿生防水透气系列，3μm UHMWPE 薄膜 + PUR 复合工艺', tagline: '全流程无氟 · 仿生防水透气', sub_series_data: null, cover_image: null, order_index: 0 },
+      { id: 2, name: 'Kais', slug: 'kais', description: '专业防护平台，基于 UHMWPE 纤维基材的防刺/防火/防化解决方案', tagline: '专业防护平台 · 防刺/防火/防化', sub_series_data: '[{"slug":"kais-edge","name":"Kais-Edge","subtitle":"铠 · 锋","description":"防切割抗穿刺，通过公安部 D3/D2 认证","accent_color":"#8B3A3A","link":"/fabrics/kais-edge"},{"slug":"kais-ignis","name":"Kais-Ignis","subtitle":"铠 · 焰","description":"阻燃隔热，芳纶 + UHMWPE/TPU 复合膜结构","accent_color":"#C45D3A","link":"/fabrics/kais-ignis"}]', cover_image: null, order_index: 1 },
+      { id: 3, name: 'Rayo', slug: 'rayo', description: '原生防晒导湿系列，Coolmax + TiO2 原纱处理，UPF 150+', tagline: '原生防晒 · 导湿凉感', sub_series_data: null, cover_image: null, order_index: 2 },
+      { id: 4, name: 'Tread', slug: 'tread', description: '鞋材级耐磨抗撕裂面料，户外鞋与安全鞋专用', tagline: '鞋材级 · 耐磨抗撕裂', sub_series_data: null, cover_image: null, order_index: 3 },
     ],
     fabric_sku: [
       { id: 1, series_id: 1, name: 'Osmo-100', sku_code: 'GY-OSMO-100', image: null, features: '["防水透气","无氟"]', specifications: '{"waterproof":"15000mm","breathable":"10000g/m²/24h","weight":"120g/m²"}', order_index: 0 },

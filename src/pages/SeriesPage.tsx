@@ -4,46 +4,36 @@ import { ArrowLeft } from 'lucide-react'
 import { getFabricSeriesDetail } from '@/api/client'
 import type { FabricSeries, FabricSku } from '@/types'
 
-const SERIES_INFO: Record<string, { title: string; subtitle: string; tag: string }> = {
-  ottex: {
-    tag: 'OTTEX SERIES',
-    title: 'Ottex 全流程无氟防水透气',
-    subtitle: '3μm UHMWPE 薄膜 + 定制 PUR 复合工艺，仿生防水透气科技',
-  },
-  'kais-edge': {
-    tag: 'KAIS-EDGE',
-    title: 'Kais-Edge 铠 · 锋',
-    subtitle: '防切割抗穿刺，通过公安部 D3/D2 认证',
-  },
-  'kais-ignis': {
-    tag: 'KAIS-IGNIS',
-    title: 'Kais-Ignis 铠 · 焰',
-    subtitle: '阻燃隔热，芳纶 + UHMWPE/TPU 复合膜结构',
-  },
-  rayo: {
-    tag: 'RAYO SERIES',
-    title: 'Rayo 原生防晒导湿',
-    subtitle: 'Coolmax + TiO2 原纱处理，UPF 150+ 洗不掉',
-  },
-  tread: {
-    tag: 'TREAD SERIES',
-    title: 'Tread 鞋材级耐磨防护',
-    subtitle: '户外鞋与安全鞋专用，耐磨抗撕裂',
-  },
-}
-
 export default function SeriesPage() {
   const { slug } = useParams<{ slug: string }>()
   const [detail, setDetail] = useState<(FabricSeries & { skus: FabricSku[] }) | null>(null)
-  const info = slug ? SERIES_INFO[slug] : null
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (slug && !slug.startsWith('kais')) {
-      getFabricSeriesDetail(slug).then((res) => setDetail(res.data.data))
+    if (slug) {
+      setLoading(true)
+      getFabricSeriesDetail(slug).then((res) => {
+        setDetail(res.data.data)
+        setLoading(false)
+      }).catch(() => {
+        setDetail(null)
+        setLoading(false)
+      })
     }
   }, [slug])
 
-  if (!info) {
+  if (loading) {
+    return (
+      <div className="bg-darker flex-1 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-2 border-white/20 border-t-white/60 rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-accent text-[13px]">加载中...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!detail) {
     return (
       <div className="bg-darker flex-1 flex items-center justify-center">
         <div className="text-center">
@@ -54,6 +44,8 @@ export default function SeriesPage() {
     )
   }
 
+  const tag = detail.tagline || detail.name
+
   return (
     <div className="bg-darker flex-1 flex flex-col">
       {/* Header */}
@@ -63,9 +55,9 @@ export default function SeriesPage() {
             <ArrowLeft size={16} />
             <span className="text-[13px]">返回面料数据库</span>
           </Link>
-          <p className="text-[11px] text-muted tracking-[0.2em] uppercase mb-3">{info.tag}</p>
-          <h1 className="text-[28px] md:text-[36px] font-bold text-white leading-tight">{info.title}</h1>
-          <p className="text-[16px] text-accent mt-3 max-w-[600px]">{info.subtitle}</p>
+          <p className="text-[11px] text-muted tracking-[0.2em] uppercase mb-3">{tag}</p>
+          <h1 className="text-[28px] md:text-[36px] font-bold text-white leading-tight">{detail.name}</h1>
+          <p className="text-[16px] text-accent mt-3 max-w-[600px]">{detail.description}</p>
         </div>
       </div>
 
@@ -77,7 +69,7 @@ export default function SeriesPage() {
         </div>
 
         {/* SKU Shelf */}
-        {detail && detail.skus && detail.skus.length > 0 && (
+        {detail.skus && detail.skus.length > 0 && (
           <div className="mt-16">
             <h2 className="text-h4 text-white mb-8">型号规格</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">

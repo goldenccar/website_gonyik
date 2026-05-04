@@ -47,6 +47,8 @@ export interface FabricSeries {
   name: string
   slug: string
   description: string
+  tagline: string
+  sub_series_data: string | null // JSON: [{slug, name, subtitle, description, accent_color, link}]
   cover_image: string | null
   order_index: number
 }
