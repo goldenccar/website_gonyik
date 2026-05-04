@@ -62,6 +62,18 @@ router.put('/admin/contact-config', authMiddleware, (req: AuthRequest, res) => {
   res.json({ success: true })
 })
 
+router.get('/fluorine-sections', (_req, res) => {
+  res.json({ data: db.fluorine_sections.filter((s) => s.page_key === 'fluorine-free').sort((a, b) => a.order_index - b.order_index) })
+})
+
+router.put('/admin/fluorine-sections/:id', authMiddleware, (req: AuthRequest, res) => {
+  const idx = db.fluorine_sections.findIndex((s) => s.id === Number(req.params.id))
+  if (idx < 0) { res.status(404).json({ error: 'Not found' }); return }
+  db.fluorine_sections[idx] = { ...db.fluorine_sections[idx], ...req.body }
+  saveDb()
+  res.json({ success: true })
+})
+
 router.put('/admin/home', authMiddleware, (req: AuthRequest, res) => {
   db.home_config = { ...db.home_config, ...req.body }
   saveDb()

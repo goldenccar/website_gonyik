@@ -155,3 +155,13 @@ export interface ContactConfig {
   address: string
   response_text: string
 }
+
+export interface FluorineSection {
+  id: number
+  page_key: string
+  order_index: number
+  title: string
+  subtitle: string
+  content: string
+  image_url: string | null
+}

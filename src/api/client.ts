@@ -57,3 +57,6 @@ export const getFaqs = () => api.get('/services/faqs')
 
 export const getContactConfig = () => api.get('/contact-config')
 export const updateContactConfig = (data: any) => api.put('/admin/contact-config', data)
+
+export const getFluorineSections = () => api.get('/fluorine-sections')
+export const updateFluorineSection = (id: number, data: any) => api.put(`/admin/fluorine-sections/${id}`, data)
