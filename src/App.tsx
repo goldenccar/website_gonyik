@@ -50,6 +50,7 @@ const AdminMediaLibrary = lazy(() => import('./admin/MediaLibrary'))
 const AdminBrandSettings = lazy(() => import('./admin/BrandSettings'))
 const AdminFooterManager = lazy(() => import('./admin/FooterManager'))
 const AdminContactConfig = lazy(() => import('./admin/ContactConfig'))
+const AdminFluorineManager = lazy(() => import('./admin/FluorineManager'))
 
 function App() {
   useEffect(() => {
@@ -86,6 +87,7 @@ function App() {
           <Route path="/admin/brand" element={<AdminBrandSettings />} />
           <Route path="/admin/footer" element={<AdminFooterManager />} />
           <Route path="/admin/contact-config" element={<AdminContactConfig />} />
+          <Route path="/admin/fluorine" element={<AdminFluorineManager />} />
 
           {/* Public routes */}
           <Route element={<PublicLayout />}>

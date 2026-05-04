@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import {
-  LayoutDashboard, Home, Layers, Mountain, Shirt, HelpCircle, Newspaper, Image, Palette, LogOut, Dock, ChevronDown, Settings, FileText, Briefcase, MapPin, Download, Mail
+  LayoutDashboard, Home, Layers, Mountain, Shirt, HelpCircle, Newspaper, Image, Palette, LogOut, Dock, ChevronDown, Settings, FileText, Briefcase, MapPin, Download, Mail, Sun
 } from 'lucide-react'
 
 interface MenuItem {
@@ -51,6 +51,7 @@ const MENU_GROUPS: MenuGroup[] = [
     children: [
       { label: '测试报告管理', icon: Mountain, path: '/admin/reports' },
       { label: '服务与支持管理', icon: HelpCircle, path: '/admin/services' },
+      { label: 'RPO材料平台', icon: Sun, path: '/admin/fluorine' },
       { label: '新闻管理', icon: Newspaper, path: '/admin/news' },
     ],
   },
