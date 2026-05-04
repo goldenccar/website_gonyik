@@ -18,6 +18,7 @@ export interface Database {
   social_media: any[]
   fabric_series: any[]
   fabric_sku: any[]
+  fabric_scenes: any[]
   test_reports: any[]
   equipment_categories: any[]
   equipment_products: any[]
@@ -79,6 +80,21 @@ function createDefaultDb(): Database {
       { id: 2, name: 'Kais', slug: 'kais', description: '专业防护平台，基于 UHMWPE 纤维基材的防刺/防火/防化解决方案', tagline: '专业防护平台 · 防刺/防火/防化', sub_series_data: '[{"slug":"kais-edge","name":"Kais-Edge","subtitle":"铠 · 锋","description":"防切割抗穿刺，通过公安部 D3/D2 认证","accent_color":"#8B3A3A","link":"/fabrics/kais-edge"},{"slug":"kais-ignis","name":"Kais-Ignis","subtitle":"铠 · 焰","description":"阻燃隔热，芳纶 + UHMWPE/TPU 复合膜结构","accent_color":"#C45D3A","link":"/fabrics/kais-ignis"}]', cover_image: null, order_index: 1 },
       { id: 3, name: 'Rayo', slug: 'rayo', description: '原生防晒导湿系列，Coolmax + TiO2 原纱处理，UPF 150+', tagline: '原生防晒 · 导湿凉感', sub_series_data: null, cover_image: null, order_index: 2 },
       { id: 4, name: 'Tread', slug: 'tread', description: '鞋材级耐磨抗撕裂面料，户外鞋与安全鞋专用', tagline: '鞋材级 · 耐磨抗撕裂', sub_series_data: null, cover_image: null, order_index: 3 },
+    ],
+    fabric_scenes: [
+      { id: 1, category: '都市生活', label: '日常通勤', series_slug: 'rayo', order_index: 0 },
+      { id: 2, category: '都市生活', label: '商务差旅', series_slug: 'ottex', order_index: 1 },
+      { id: 3, category: '都市生活', label: '城市轻户外', series_slug: 'rayo', order_index: 2 },
+      { id: 4, category: '轻户外', label: '徒步旅行', series_slug: 'ottex', order_index: 3 },
+      { id: 5, category: '轻户外', label: '露营休闲', series_slug: 'ottex', order_index: 4 },
+      { id: 6, category: '轻户外', label: '城市骑行', series_slug: 'rayo', order_index: 5 },
+      { id: 7, category: '专业运动', label: '滑雪登山', series_slug: 'ottex', order_index: 6 },
+      { id: 8, category: '专业运动', label: '水域活动', series_slug: 'ottex', order_index: 7 },
+      { id: 9, category: '专业运动', label: '越野跑步', series_slug: 'rayo', order_index: 8 },
+      { id: 10, category: '特种防护', label: '战术防护', series_slug: 'kais-edge', order_index: 9 },
+      { id: 11, category: '特种防护', label: '阻燃工装', series_slug: 'kais-ignis', order_index: 10 },
+      { id: 12, category: '特种防护', label: '工业安全', series_slug: 'kais-edge', order_index: 11 },
+      { id: 13, category: '特种防护', label: '鞋材应用', series_slug: 'tread', order_index: 12 },
     ],
     fabric_sku: [
       { id: 1, series_id: 1, name: 'Osmo-100', sku_code: 'GY-OSMO-100', image: null, features: '["防水透气","无氟"]', specifications: '{"waterproof":"15000mm","breathable":"10000g/m²/24h","weight":"120g/m²"}', order_index: 0 },

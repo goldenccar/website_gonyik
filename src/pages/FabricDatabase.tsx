@@ -2,12 +2,11 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import {
-  ArrowRight, FileText, X, Shield, Sun, Droplets, Footprints,
-  Briefcase, TreePine, Waves, Mountain, Bike, Tent, HardHat, Sailboat, Snowflake
+  ArrowRight, FileText, X, Shield, Sun, Droplets, Footprints
 } from 'lucide-react'
-import { getPageConfig, getFabricSeries, getFabricSeriesDetail, getTestReports } from '@/api/client'
+import { getPageConfig, getFabricSeries, getFabricSeriesDetail, getTestReports, getFabricScenes } from '@/api/client'
 import FileViewer from '@/components/FileViewer'
-import type { FabricSeries, FabricSku, PageConfig, TestReport } from '@/types'
+import type { FabricSeries, FabricSku, FabricScene, PageConfig, TestReport } from '@/types'
 
 const SERIES_META: Record<string, { accent: string; icon: any; tagline: string }> = {
   ottex: { accent: '#4A6FA5', icon: Droplets, tagline: '全流程无氟 · 仿生防水透气' },
@@ -16,78 +15,12 @@ const SERIES_META: Record<string, { accent: string; icon: any; tagline: string }
   tread: { accent: '#666666', icon: Footprints, tagline: '鞋材级 · 耐磨抗撕裂' },
 }
 
-// Scene categories inspired by Gore-Tex vertical layout
-interface Scene {
-  label: string
-  series: string
-  icon: any
+const CATEGORY_COLORS: Record<string, string> = {
+  '都市生活': '#6B7B8C',
+  '轻户外': '#5A8A6E',
+  '专业运动': '#4A7BA7',
+  '特种防护': '#8B3A3A',
 }
-
-interface Category {
-  id: string
-  name: string
-  subtitle: string
-  icon: any
-  color: string
-  bgColor: string
-  scenes: Scene[]
-}
-
-const CATEGORIES: Category[] = [
-  {
-    id: 'urban',
-    name: '都市生活',
-    subtitle: '日常 · 通勤 · 差旅',
-    icon: Briefcase,
-    color: '#6B7B8C',
-    bgColor: 'rgba(107,123,140,0.08)',
-    scenes: [
-      { label: '日常通勤', series: 'rayo', icon: Bike },
-      { label: '商务差旅', series: 'ottex', icon: Briefcase },
-      { label: '城市轻户外', series: 'rayo', icon: Mountain },
-    ],
-  },
-  {
-    id: 'light-outdoor',
-    name: '轻户外',
-    subtitle: '休闲 · 露营 · 徒步',
-    icon: TreePine,
-    color: '#5A8A6E',
-    bgColor: 'rgba(90,138,110,0.08)',
-    scenes: [
-      { label: '徒步旅行', series: 'ottex', icon: Mountain },
-      { label: '露营休闲', series: 'ottex', icon: Tent },
-      { label: '城市骑行', series: 'rayo', icon: Bike },
-    ],
-  },
-  {
-    id: 'pro-sport',
-    name: '专业运动',
-    subtitle: '极限 · 竞速 · 水域',
-    icon: Waves,
-    color: '#4A7BA7',
-    bgColor: 'rgba(74,123,167,0.08)',
-    scenes: [
-      { label: '滑雪登山', series: 'ottex', icon: Snowflake },
-      { label: '水域活动', series: 'ottex', icon: Sailboat },
-      { label: '越野跑步', series: 'rayo', icon: Footprints },
-    ],
-  },
-  {
-    id: 'special',
-    name: '特种防护',
-    subtitle: '战术 · 工业 · 安全',
-    icon: Shield,
-    color: '#8B3A3A',
-    bgColor: 'rgba(139,58,58,0.08)',
-    scenes: [
-      { label: '战术防护', series: 'kais-edge', icon: Shield },
-      { label: '阻燃工装', series: 'kais-ignis', icon: HardHat },
-      { label: '工业安全', series: 'kais-edge', icon: HardHat },
-      { label: '鞋材应用', series: 'tread', icon: Footprints },
-    ],
-  },
-]
 
 export default function FabricDatabase() {
   const [pageConfig, setPageConfig] = useState<PageConfig | null>(null)
@@ -95,6 +28,7 @@ export default function FabricDatabase() {
   const [selectedSeries, setSelectedSeries] = useState<string | null>(null)
   const [seriesDetail, setSeriesDetail] = useState<(FabricSeries & { skus: FabricSku[] }) | null>(null)
   const [reports, setReports] = useState<TestReport[]>([])
+  const [scenes, setScenes] = useState<FabricScene[]>([])
   const [viewerOpen, setViewerOpen] = useState(false)
   const [viewerData, setViewerData] = useState<{ url: string; type: string; title: string } | null>(null)
   const [showKaisSub, setShowKaisSub] = useState(false)
@@ -103,6 +37,7 @@ export default function FabricDatabase() {
     getPageConfig('fabrics').then((res) => setPageConfig(res.data.data))
     getFabricSeries().then((res) => setSeriesList(res.data.data || []))
     getTestReports().then((res) => setReports(res.data.data || []))
+    getFabricScenes().then((res) => setScenes(res.data.data || []))
   }, [])
 
   useEffect(() => {
@@ -124,67 +59,83 @@ export default function FabricDatabase() {
     if (series.startsWith('kais')) {
       setShowKaisSub(true)
       setSelectedSeries(null)
+      setSeriesDetail(null)
     } else {
       setShowKaisSub(false)
       setSelectedSeries(series)
     }
     // Smooth scroll to series section
-    const el = document.getElementById('series-section')
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }
+    setTimeout(() => {
+      const el = document.getElementById('series-section')
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+    }, 100)
   }
 
   const seriesCardRef = (slug: string) => {
     return selectedSeries === slug || (slug === 'kais' && showKaisSub)
   }
 
+  const scrollToDetail = () => {
+    setTimeout(() => {
+      const el = document.getElementById('series-detail-anchor')
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+    }, 150)
+  }
+
   return (
     <div>
-      {/* Hero + Scene Selector — side by side */}
-      <section className="bg-darker px-6 lg:px-12 pt-[60px] pb-16">
-        <div className="max-w-[1440px] mx-auto w-full">
-          <div className="flex flex-col lg:flex-row lg:items-start lg:gap-16">
-            {/* Left: Title */}
-            <div className="lg:w-[40%] lg:shrink-0 py-8 lg:py-12">
-              <p className="text-label text-accent uppercase mb-4">{pageConfig?.page_tag || 'MATERIAL PLATFORMS'}</p>
-              <h1 className="text-h1 text-white mb-4">{pageConfig?.page_title || '高性能功能面料技术平台'}</h1>
-              <p className="text-body text-accent max-w-[520px]">
-                {pageConfig?.page_subtitle || '四大核心技术系列，从仿生防水到专业防护，覆盖户外、工装与运动全场景'}
-              </p>
-            </div>
+      {/* Hero */}
+      <section className="bg-darker px-6 lg:px-12 pt-[60px]">
+        <div className="max-w-[1440px] mx-auto w-full py-8">
+          <p className="text-label text-accent uppercase mb-4">{pageConfig?.page_tag || 'MATERIAL PLATFORMS'}</p>
+          <h1 className="text-h1 text-white mb-4">{pageConfig?.page_title || '高性能功能面料技术平台'}</h1>
+          <p className="text-body text-accent max-w-[600px]">
+            {pageConfig?.page_subtitle || '四大核心技术系列，从仿生防水到专业防护，覆盖户外、工装与运动全场景'}
+          </p>
+        </div>
+      </section>
 
-            {/* Right: Scene Selector */}
-            <div className="lg:w-[38%] lg:shrink-0 lg:py-8">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-6 h-[1px] bg-white/20" />
-                <span className="text-[11px] text-white/40 uppercase tracking-widest">按应用场景选择</span>
-              </div>
-              <div className="space-y-3">
-                {CATEGORIES.map((cat) => {
-                  const CatIcon = cat.icon
-                  return (
-                    <div key={cat.id} className="flex items-start gap-3">
-                      <div className="flex items-center gap-1.5 shrink-0 mt-1">
-                        <CatIcon size={12} style={{ color: cat.color }} />
-                        <span className="text-[12px] text-white/50 whitespace-nowrap">{cat.name}</span>
-                      </div>
-                      <div className="flex flex-wrap gap-1.5 flex-1">
-                        {cat.scenes.map((scene) => (
-                          <button
-                            key={scene.label}
-                            onClick={() => handleSceneClick(scene.series)}
-                            className="px-2 py-0.5 text-[11px] text-white/60 border border-white/[0.08] hover:text-white hover:border-white/20 hover:bg-white/5 transition-all"
-                          >
-                            {scene.label}
-                          </button>
-                        ))}
-                      </div>
+      {/* Scene Selector — below hero, left-aligned */}
+      <section className="bg-darker px-6 lg:px-12 pb-16">
+        <div className="max-w-[1440px] mx-auto">
+          <div className="flex items-center gap-3 mb-5">
+            <div className="w-6 h-[1px] bg-white/20" />
+            <span className="text-[11px] text-white/40 uppercase tracking-widest">按应用场景选择</span>
+          </div>
+          <div className="space-y-4 max-w-[900px]">
+            {(() => {
+              const grouped = scenes.reduce<Record<string, FabricScene[]>>((acc, s) => {
+                if (!acc[s.category]) acc[s.category] = []
+                acc[s.category].push(s)
+                return acc
+              }, {})
+              return Object.entries(grouped).map(([category, items]) => {
+                const color = CATEGORY_COLORS[category] || '#6B7B8C'
+                return (
+                  <div key={category} className="flex items-start gap-4">
+                    <div className="flex items-center gap-2 shrink-0 mt-1.5 min-w-[80px]">
+                      <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: color }} />
+                      <span className="text-[13px] text-white/60 whitespace-nowrap">{category}</span>
                     </div>
-                  )
-                })}
-              </div>
-            </div>
+                    <div className="flex flex-wrap gap-2 flex-1">
+                      {items.map((scene) => (
+                        <button
+                          key={scene.id}
+                          onClick={() => handleSceneClick(scene.series_slug)}
+                          className="px-3.5 py-1.5 text-[13px] text-white/70 border border-white/[0.08] hover:text-white hover:border-white/25 hover:bg-white/5 transition-all"
+                        >
+                          {scene.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )
+              })
+            })()}
           </div>
         </div>
       </section>
@@ -215,9 +166,12 @@ export default function FabricDatabase() {
                       setSelectedSeries(null)
                       setSeriesDetail(null)
                       setShowKaisSub(!showKaisSub)
+                      if (!showKaisSub) scrollToDetail()
                     } else {
                       setShowKaisSub(false)
-                      setSelectedSeries(selectedSeries === series.slug ? null : series.slug)
+                      const next = selectedSeries === series.slug ? null : series.slug
+                      setSelectedSeries(next)
+                      if (next) scrollToDetail()
                     }
                   }}
                 >
@@ -236,6 +190,9 @@ export default function FabricDatabase() {
               )
             })}
           </div>
+
+          {/* Scroll anchor for expanded detail */}
+          <div id="series-detail-anchor" />
 
           {/* Kais Sub-series */}
           <AnimatePresence>

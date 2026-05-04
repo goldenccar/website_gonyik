@@ -40,6 +40,7 @@ export const getSocial = () => api.get('/social')
 export const getFabricSeries = () => api.get('/fabrics/series')
 export const getFabricSeriesDetail = (slug: string) => api.get(`/fabrics/series/${slug}`)
 export const getFabricSku = (id: number) => api.get(`/fabrics/sku/${id}`)
+export const getFabricScenes = () => api.get('/fabrics/scenes')
 
 export const getEquipmentCategories = () => api.get('/equipment/categories')
 export const getCategoryProducts = (slug: string) => api.get(`/equipment/categories/${slug}/products`)

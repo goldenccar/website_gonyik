@@ -107,4 +107,37 @@ router.delete('/admin/sku/:id', authMiddleware, (req: AuthRequest, res) => {
   res.json({ success: true })
 })
 
+// Scenes (public)
+router.get('/scenes', (_req, res) => {
+  res.json({ data: db.fabric_scenes.sort((a, b) => a.order_index - b.order_index) })
+})
+
+// Scenes (admin)
+router.get('/admin/scenes', authMiddleware, (_req, res) => {
+  res.json({ data: db.fabric_scenes.sort((a, b) => a.order_index - b.order_index) })
+})
+
+router.post('/admin/scenes', authMiddleware, (req: AuthRequest, res) => {
+  const { category, label, series_slug } = req.body
+  const newScene = { id: getNextId(db.fabric_scenes), category, label, series_slug, order_index: db.fabric_scenes.length }
+  db.fabric_scenes.push(newScene)
+  saveDb()
+  res.json({ success: true, id: newScene.id })
+})
+
+router.put('/admin/scenes/:id', authMiddleware, (req: AuthRequest, res) => {
+  const idx = db.fabric_scenes.findIndex((s) => s.id === Number(req.params.id))
+  if (idx < 0) { res.status(404).json({ error: 'Not found' }); return }
+  const { category, label, series_slug } = req.body
+  db.fabric_scenes[idx] = { ...db.fabric_scenes[idx], category, label, series_slug }
+  saveDb()
+  res.json({ success: true })
+})
+
+router.delete('/admin/scenes/:id', authMiddleware, (req: AuthRequest, res) => {
+  db.fabric_scenes = db.fabric_scenes.filter((s) => s.id !== Number(req.params.id))
+  saveDb()
+  res.json({ success: true })
+})
+
 export default router

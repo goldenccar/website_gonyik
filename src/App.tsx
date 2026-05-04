@@ -39,6 +39,7 @@ const AdminLogin = lazy(() => import('./admin/Login'))
 const AdminDashboard = lazy(() => import('./admin/Dashboard'))
 const AdminHomeEditor = lazy(() => import('./admin/HomeEditor'))
 const AdminFabricManager = lazy(() => import('./admin/FabricManager'))
+const AdminSceneManager = lazy(() => import('./admin/SceneManager'))
 const AdminEquipmentManager = lazy(() => import('./admin/EquipmentManager'))
 const AdminReportManager = lazy(() => import('./admin/ReportManager'))
 const AdminServiceManager = lazy(() => import('./admin/ServiceManager'))
@@ -72,6 +73,7 @@ function App() {
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/home" element={<AdminHomeEditor />} />
           <Route path="/admin/fabrics" element={<AdminFabricManager />} />
+          <Route path="/admin/scenes" element={<AdminSceneManager />} />
           <Route path="/admin/equipment" element={<AdminEquipmentManager />} />
           <Route path="/admin/reports" element={<AdminReportManager />} />
           <Route path="/admin/services" element={<AdminServiceManager />} />

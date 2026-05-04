@@ -53,6 +53,14 @@ export interface FabricSeries {
   order_index: number
 }
 
+export interface FabricScene {
+  id: number
+  category: string
+  label: string
+  series_slug: string
+  order_index: number
+}
+
 export interface FabricSku {
   id: number
   series_id: number
