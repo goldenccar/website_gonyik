@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Settings } from 'lucide-react'
 import { getFooter, getSocial } from '@/api/client'
 import type { FooterConfig, SocialMedia } from '@/types'
 
@@ -58,6 +57,10 @@ export default function Footer() {
             </Link>
             <span className="text-muted/60">|</span>
             <span>{footer?.icp_number || 'ICP备案号（占位）'}</span>
+            <span className="text-muted/60">|</span>
+            <Link to="/admin" className="hover:text-accent transition-colors">
+              网站配置
+            </Link>
           </div>
 
           {/* Right: Social icons */}
@@ -122,14 +125,7 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Admin gear — absolute bottom-right */}
-        <Link
-          to="/admin"
-          className="absolute bottom-2 right-6 lg:right-12 text-[#333333] hover:text-[#666666] transition-colors duration-200"
-          title="Admin"
-        >
-          <Settings size={14} />
-        </Link>
+
       </footer>
     </>
   )

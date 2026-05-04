@@ -33,6 +33,7 @@ const FluorineFreeFuture = lazy(() => import('./pages/FluorineFreeFuture'))
 const ServicesSupport = lazy(() => import('./pages/ServicesSupport'))
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'))
 const SampleRequest = lazy(() => import('./pages/SampleRequest'))
+const Contact = lazy(() => import('./pages/Contact'))
 
 // Admin pages
 const AdminLogin = lazy(() => import('./admin/Login'))
@@ -92,6 +93,7 @@ function App() {
             <Route path="/fluorine-free" element={<FluorineFreeFuture />} />
             <Route path="/services" element={<ServicesSupport />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/contact" element={<Contact />} />
           </Route>
         </Routes>
       </Suspense>
