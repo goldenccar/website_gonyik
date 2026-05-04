@@ -23,37 +23,55 @@ const MENU_GROUPS: MenuGroup[] = [
     children: [{ label: '概览', icon: LayoutDashboard, path: '/admin/dashboard' }],
   },
   {
-    label: '品牌与站点',
-    icon: Palette,
-    children: [
-      { label: '品牌设置', icon: Palette, path: '/admin/brand' },
-      { label: 'Footer 管理', icon: Dock, path: '/admin/footer' },
-      { label: '联系配置', icon: Mail, path: '/admin/contact-config' },
-    ],
-  },
-  {
     label: '首页',
     icon: Home,
     children: [{ label: '首页管理', icon: Home, path: '/admin/home' }],
   },
   {
-    label: '产品管理',
-    icon: Briefcase,
+    label: '面料数据库',
+    icon: Layers,
     children: [
       { label: '面料系列管理', icon: Layers, path: '/admin/fabrics' },
       { label: '场景管理', icon: MapPin, path: '/admin/scenes' },
-      { label: '终端装备管理', icon: Shirt, path: '/admin/equipment' },
+      { label: '测试报告管理', icon: Mountain, path: '/admin/reports' },
     ],
   },
   {
-    label: '内容管理',
-    icon: FileText,
+    label: '终端装备',
+    icon: Shirt,
     children: [
-      { label: '测试报告管理', icon: Mountain, path: '/admin/reports' },
-      { label: '服务与支持管理', icon: HelpCircle, path: '/admin/services' },
-      { label: 'RPO材料平台', icon: Sun, path: '/admin/fluorine' },
-      { label: '新闻管理', icon: Newspaper, path: '/admin/news' },
+      { label: '终端装备管理', icon: Shirt, path: '/admin/equipment' },
+      { label: '数字资产管理', icon: Download, path: '/admin/digital-assets' },
     ],
+  },
+  {
+    label: 'RPO材料平台',
+    icon: Sun,
+    children: [{ label: 'RPO材料平台管理', icon: Sun, path: '/admin/fluorine' }],
+  },
+  {
+    label: '服务与支持',
+    icon: HelpCircle,
+    children: [{ label: '服务与支持管理', icon: HelpCircle, path: '/admin/services' }],
+  },
+  {
+    label: '联系我们',
+    icon: Mail,
+    children: [{ label: '联系配置', icon: Mail, path: '/admin/contact-config' }],
+  },
+  {
+    label: '框架管理',
+    icon: Settings,
+    children: [
+      { label: '品牌设置', icon: Palette, path: '/admin/brand' },
+      { label: 'Header 管理', icon: Settings, path: '/admin/header' },
+      { label: 'Footer 管理', icon: Dock, path: '/admin/footer' },
+    ],
+  },
+  {
+    label: '内容运营',
+    icon: Newspaper,
+    children: [{ label: '新闻管理', icon: Newspaper, path: '/admin/news' }],
   },
   {
     label: '资源库',

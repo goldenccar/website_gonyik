@@ -49,6 +49,7 @@ const AdminNewsManager = lazy(() => import('./admin/NewsManager'))
 const AdminMediaLibrary = lazy(() => import('./admin/MediaLibrary'))
 const AdminBrandSettings = lazy(() => import('./admin/BrandSettings'))
 const AdminFooterManager = lazy(() => import('./admin/FooterManager'))
+const AdminHeaderManager = lazy(() => import('./admin/HeaderManager'))
 const AdminContactConfig = lazy(() => import('./admin/ContactConfig'))
 const AdminFluorineManager = lazy(() => import('./admin/FluorineManager'))
 
@@ -86,6 +87,7 @@ function App() {
           <Route path="/admin/media" element={<AdminMediaLibrary />} />
           <Route path="/admin/brand" element={<AdminBrandSettings />} />
           <Route path="/admin/footer" element={<AdminFooterManager />} />
+          <Route path="/admin/header" element={<AdminHeaderManager />} />
           <Route path="/admin/contact-config" element={<AdminContactConfig />} />
           <Route path="/admin/fluorine" element={<AdminFluorineManager />} />
 
