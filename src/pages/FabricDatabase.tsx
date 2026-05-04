@@ -104,55 +104,55 @@ export default function FabricDatabase() {
 
   return (
     <div>
-      {/* Hero */}
-      <section className="bg-darker px-6 lg:px-12 pt-[60px]">
-        <div className="max-w-[1440px] mx-auto w-full py-8">
-          <p className="text-label text-accent uppercase mb-4">{pageConfig?.page_tag || 'MATERIAL PLATFORMS'}</p>
-          <h1 className="text-h1 text-white mb-4">{pageConfig?.page_title || '高性能功能面料技术平台'}</h1>
-          <p className="text-body text-accent max-w-[600px]">
-            {pageConfig?.page_subtitle || '四大核心技术系列，从仿生防水到专业防护，覆盖户外、工装与运动全场景'}
-          </p>
-        </div>
-      </section>
-
-      {/* Scene Selector — below hero, left-aligned */}
-      <section className="bg-darker px-6 lg:px-12 pb-16">
-        <div className="max-w-[1440px] mx-auto">
-          <div className="flex items-center gap-3 mb-5">
-            <div className="w-6 h-[1px] bg-white/20" />
-            <span className="text-[11px] text-white/40 uppercase tracking-widest">按应用场景选择</span>
+      {/* Hero + Scene Selector — side by side */}
+      <section className="bg-darker px-6 lg:px-12 pt-[60px] pb-16">
+        <div className="max-w-[1440px] mx-auto w-full flex flex-col lg:flex-row lg:items-start lg:justify-between gap-10 lg:gap-16">
+          {/* Left: Hero text */}
+          <div className="py-8 shrink-0">
+            <p className="text-label text-accent uppercase mb-4">{pageConfig?.page_tag || 'MATERIAL PLATFORMS'}</p>
+            <h1 className="text-h1 text-white mb-4">{pageConfig?.page_title || '高性能功能面料技术平台'}</h1>
+            <p className="text-body text-accent max-w-[600px]">
+              {pageConfig?.page_subtitle || '四大核心技术系列，从仿生防水到专业防护，覆盖户外、工装与运动全场景'}
+            </p>
           </div>
-          <div className="space-y-4 max-w-[900px]">
-            {(() => {
-              const displayScenes = scenes.length > 0 ? scenes : DEFAULT_SCENES
-              const grouped = displayScenes.reduce<Record<string, FabricScene[]>>((acc, s) => {
-                if (!acc[s.category]) acc[s.category] = []
-                acc[s.category].push(s)
-                return acc
-              }, {})
-              return Object.entries(grouped).map(([category, items]) => {
-                const color = CATEGORY_COLORS[category] || '#6B7B8C'
-                return (
-                  <div key={category} className="flex items-start gap-4">
-                    <div className="flex items-center gap-2 shrink-0 mt-1.5 min-w-[80px]">
-                      <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: color }} />
-                      <span className="text-[13px] text-white/60 whitespace-nowrap">{category}</span>
+          {/* Right: Scene Selector */}
+          <div className="py-8 lg:min-w-[420px]">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-6 h-[1px] bg-white/20" />
+              <span className="text-[11px] text-white/40 uppercase tracking-widest">按应用场景选择</span>
+            </div>
+            <div className="space-y-4">
+              {(() => {
+                const displayScenes = scenes.length > 0 ? scenes : DEFAULT_SCENES
+                const grouped = displayScenes.reduce<Record<string, FabricScene[]>>((acc, s) => {
+                  if (!acc[s.category]) acc[s.category] = []
+                  acc[s.category].push(s)
+                  return acc
+                }, {})
+                return Object.entries(grouped).map(([category, items]) => {
+                  const color = CATEGORY_COLORS[category] || '#6B7B8C'
+                  return (
+                    <div key={category} className="flex items-start gap-4">
+                      <div className="flex items-center gap-2 shrink-0 mt-1.5 min-w-[80px]">
+                        <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: color }} />
+                        <span className="text-[13px] text-white/60 whitespace-nowrap">{category}</span>
+                      </div>
+                      <div className="flex flex-wrap gap-2 flex-1">
+                        {items.map((scene) => (
+                          <button
+                            key={scene.id}
+                            onClick={() => handleSceneClick(scene.series_slug)}
+                            className="px-3.5 py-1.5 text-[13px] text-white/70 border border-white/[0.08] hover:text-white hover:border-white/25 hover:bg-white/5 transition-all"
+                          >
+                            {scene.label}
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                    <div className="flex flex-wrap gap-2 flex-1">
-                      {items.map((scene) => (
-                        <button
-                          key={scene.id}
-                          onClick={() => handleSceneClick(scene.series_slug)}
-                          className="px-3.5 py-1.5 text-[13px] text-white/70 border border-white/[0.08] hover:text-white hover:border-white/25 hover:bg-white/5 transition-all"
-                        >
-                          {scene.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )
-              })
-            })()}
+                  )
+                })
+              })()}
+            </div>
           </div>
         </div>
       </section>
