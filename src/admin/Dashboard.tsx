@@ -109,13 +109,13 @@ export default function AdminDashboard({ children }: DashboardProps = {}) {
   }
 
   return (
-    <div className="min-h-screen bg-darker flex">
+    <div className="h-screen bg-darker flex overflow-hidden">
       {/* Sidebar */}
-      <aside className="w-[240px] bg-dark flex-shrink-0 flex flex-col">
+      <aside className="w-[240px] bg-dark flex-shrink-0 flex flex-col h-screen">
         <div className="p-6 border-b border-white/10">
           <h2 className="text-white text-[16px] font-bold">港翼科技 CMS</h2>
         </div>
-        <nav className="flex-1 py-4 overflow-auto">
+        <nav className="flex-1 py-4 overflow-y-auto">
           {MENU_GROUPS.map((group) => {
             const GroupIcon = group.icon
             const isSingle = group.children.length === 1
@@ -194,7 +194,7 @@ export default function AdminDashboard({ children }: DashboardProps = {}) {
       </aside>
 
       {/* Main */}
-      <main className="flex-1 p-10 overflow-auto">
+      <main className="flex-1 p-10 overflow-y-auto h-screen">
         {children || (
           <>
             <h1 className="text-h2 text-white mb-8">概览</h1>
