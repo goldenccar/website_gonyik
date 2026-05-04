@@ -140,4 +140,56 @@ router.delete('/admin/scenes/:id', authMiddleware, (req: AuthRequest, res) => {
   res.json({ success: true })
 })
 
+// Digital Assets (public)
+router.get('/digital-assets', (req, res) => {
+  const seriesSlug = req.query.series_slug as string | undefined
+  const rows = seriesSlug
+    ? db.digital_assets.filter((a) => a.series_slug === seriesSlug)
+    : db.digital_assets
+  res.json({ data: rows.sort((a, b) => a.order_index - b.order_index) })
+})
+
+// Digital Assets (admin)
+router.get('/admin/digital-assets', authMiddleware, (_req, res) => {
+  res.json({ data: db.digital_assets.sort((a, b) => a.order_index - b.order_index) })
+})
+
+router.post('/admin/digital-assets', authMiddleware, upload.single('file'), (req: AuthRequest, res) => {
+  const { series_slug, file_name, file_type } = req.body
+  const file_url = req.file ? `/uploads/${req.file.filename}` : null
+  const newAsset = {
+    id: getNextId(db.digital_assets),
+    series_slug,
+    file_name: file_name || (req.file ? req.file.originalname : ''),
+    file_url,
+    file_type: file_type || (req.file ? req.file.mimetype : ''),
+    order_index: db.digital_assets.length,
+  }
+  db.digital_assets.push(newAsset)
+  saveDb()
+  res.json({ success: true, id: newAsset.id })
+})
+
+router.put('/admin/digital-assets/:id', authMiddleware, upload.single('file'), (req: AuthRequest, res) => {
+  const idx = db.digital_assets.findIndex((a) => a.id === Number(req.params.id))
+  if (idx < 0) { res.status(404).json({ error: 'Not found' }); return }
+  const { series_slug, file_name, file_type } = req.body
+  const file_url = req.file ? `/uploads/${req.file.filename}` : (req.body.file_url || db.digital_assets[idx].file_url)
+  db.digital_assets[idx] = {
+    ...db.digital_assets[idx],
+    series_slug: series_slug || db.digital_assets[idx].series_slug,
+    file_name: file_name || db.digital_assets[idx].file_name,
+    file_url,
+    file_type: file_type || db.digital_assets[idx].file_type,
+  }
+  saveDb()
+  res.json({ success: true })
+})
+
+router.delete('/admin/digital-assets/:id', authMiddleware, (req: AuthRequest, res) => {
+  db.digital_assets = db.digital_assets.filter((a) => a.id !== Number(req.params.id))
+  saveDb()
+  res.json({ success: true })
+})
+
 export default router

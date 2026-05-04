@@ -61,6 +61,15 @@ export interface FabricScene {
   order_index: number
 }
 
+export interface DigitalAsset {
+  id: number
+  series_slug: string
+  file_name: string
+  file_url: string
+  file_type: string
+  order_index: number
+}
+
 export interface FabricSku {
   id: number
   series_id: number

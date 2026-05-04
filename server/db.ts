@@ -19,6 +19,7 @@ export interface Database {
   fabric_series: any[]
   fabric_sku: any[]
   fabric_scenes: any[]
+  digital_assets: any[]
   test_reports: any[]
   equipment_categories: any[]
   equipment_products: any[]
@@ -61,6 +62,7 @@ function createDefaultDb(): Database {
       { id: 3, label: '终端装备', link: '/equipment', order_index: 2 },
       { id: 4, label: '探索无氟未来', link: '/fluorine-free', order_index: 3 },
       { id: 5, label: '服务与支持', link: '/services', order_index: 4 },
+      { id: 6, label: '开发者支持', link: '/developer-support', order_index: 5 },
     ],
     footer_config: {
       id: 1,
@@ -96,6 +98,7 @@ function createDefaultDb(): Database {
       { id: 12, category: '特种防护', label: '工业安全', series_slug: 'kais-edge', order_index: 11 },
       { id: 13, category: '特种防护', label: '鞋材应用', series_slug: 'tread', order_index: 12 },
     ],
+    digital_assets: [],
     fabric_sku: [
       { id: 1, series_id: 1, name: 'Osmo-100', sku_code: 'GY-OSMO-100', image: null, features: '["防水透气","无氟"]', specifications: '{"waterproof":"15000mm","breathable":"10000g/m²/24h","weight":"120g/m²"}', order_index: 0 },
       { id: 2, series_id: 1, name: 'Osmo-101', sku_code: 'GY-OSMO-101', image: null, features: '["防水透气","无氟"]', specifications: '{"waterproof":"20000mm","breathable":"15000g/m²/24h","weight":"150g/m²"}', order_index: 1 },
