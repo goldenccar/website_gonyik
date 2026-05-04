@@ -94,7 +94,7 @@ bash /var/www/website_gonyik/scripts/auto-deploy.sh
 ---
 
 ## 开发注意
-1. 修改后台数据会实时写入 `db.json`，但**不要提交 `db.json` 到 Git**（已在 `.gitignore` 中排除）
-2. 上传的文件存到 `public/uploads/`，同样被 gitignore
-3. 添加新页面需在 `src/App.tsx` 注册路由
-4. 添加新后台模块需在 `src/admin/` 创建页面并在 `Dashboard.tsx` 添加导航
+1. 上传的文件存到 `public/uploads/`，被 gitignore 排除
+2. 添加新页面需在 `src/App.tsx` 注册路由
+3. 添加新后台模块需在 `src/admin/` 创建页面并在 `Dashboard.tsx` 添加导航
+4. 导航/页面配置等运营数据通过 `/admin` 后台维护，存在 `db.json` 中。修改 `server/db.ts` 的默认数据后，需手动同步到服务器上的 `db.json`（或清理 db.json 让服务器重启时重新初始化）
