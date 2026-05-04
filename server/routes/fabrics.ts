@@ -47,7 +47,14 @@ router.get('/sku/:id', (req, res) => {
 })
 
 router.get('/admin/series', authMiddleware, (_req, res) => {
-  res.json({ data: db.fabric_series.sort((a, b) => a.order_index - b.order_index) })
+  const series = db.fabric_series.sort((a, b) => a.order_index - b.order_index).map((s) => {
+    let sub_series: any[] = []
+    if (s.sub_series_data) {
+      try { sub_series = JSON.parse(s.sub_series_data) } catch { /* ignore */ }
+    }
+    return { ...s, sub_series }
+  })
+  res.json({ data: series })
 })
 
 router.post('/admin/series', authMiddleware, upload.single('cover_image'), (req: AuthRequest, res) => {

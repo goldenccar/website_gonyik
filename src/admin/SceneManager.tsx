@@ -16,6 +16,7 @@ interface SeriesOption {
   id: number
   name: string
   slug: string
+  sub_series?: { slug: string; name: string }[]
 }
 
 export default function AdminSceneManager() {
@@ -169,11 +170,13 @@ export default function AdminSceneManager() {
                     >
                       <option value="" className="bg-dark">请选择面料系列</option>
                       {seriesList.map((ser) => (
-                        <option key={ser.slug} value={ser.slug} className="bg-dark">{ser.name}</option>
+                        <optgroup key={ser.slug} label={ser.name} className="bg-dark">
+                          <option value={ser.slug} className="bg-dark">{ser.name}</option>
+                          {ser.sub_series?.map((sub: any) => (
+                            <option key={sub.slug} value={sub.slug} className="bg-dark">{sub.name}</option>
+                          ))}
+                        </optgroup>
                       ))}
-                      {/* Sub-series options for Kais */}
-                      <option value="kais-edge" className="bg-dark">Kais-Edge</option>
-                      <option value="kais-ignis" className="bg-dark">Kais-Ignis</option>
                     </select>
                   </div>
                 </div>
