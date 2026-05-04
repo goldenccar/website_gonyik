@@ -32,7 +32,7 @@ export default function Contact() {
     if (!validate()) return
     // Send email via mailto
     const body = `姓名：${form.name}\n公司：${form.company || '未填写'}\n电话：${form.phone || '未填写'}\n\n${form.message}`
-    window.location.href = `mailto:contact@gangyi.tech?subject=${encodeURIComponent(form.subject)}&body=${encodeURIComponent(body)}`
+    window.location.href = `mailto:${contactConfig?.email || 'contact@gangyi.tech'}?subject=${encodeURIComponent(form.subject)}&body=${encodeURIComponent(body)}`
     setSubmitted(true)
   }
 
@@ -58,21 +58,21 @@ export default function Contact() {
               <Mail size={18} className="text-secondary shrink-0" />
               <div>
                 <p className="text-[12px] text-muted mb-0.5">邮箱</p>
-                <a href="mailto:contact@gangyi.tech" className="text-[14px] text-primary hover:underline">contact@gangyi.tech</a>
+                <a href={`mailto:${contactConfig?.email || 'contact@gangyi.tech'}`} className="text-[14px] text-primary hover:underline">{contactConfig?.email || 'contact@gangyi.tech'}</a>
               </div>
             </div>
             <div className="flex items-center gap-3">
               <Phone size={18} className="text-secondary shrink-0" />
               <div>
                 <p className="text-[12px] text-muted mb-0.5">电话</p>
-                <p className="text-[14px] text-primary">400-XXX-XXXX</p>
+                <p className="text-[14px] text-primary">{contactConfig?.phone || '400-XXX-XXXX'}</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
               <MapPin size={18} className="text-secondary shrink-0" />
               <div>
                 <p className="text-[12px] text-muted mb-0.5">地址</p>
-                <p className="text-[14px] text-primary">上海市</p>
+                <p className="text-[14px] text-primary">{contactConfig?.address || '上海市'}</p>
               </div>
             </div>
           </div>
