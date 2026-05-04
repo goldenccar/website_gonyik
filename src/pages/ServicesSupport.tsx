@@ -1,10 +1,32 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Building2, Newspaper, Code2, Droplets, HelpCircle, Plus, Minus, ChevronRight, Sun, Wind, Ban } from 'lucide-react'
-import { getPageConfig, getAboutUs, getNews, getNewsDetail, getCareGuides, getFaqs } from '@/api/client'
-import type { PageConfig, AboutUs, Philosophy, Milestone, NewsItem, CareGuide, FAQ } from '@/types'
+import { Link } from 'react-router-dom'
+import {
+  Building2, Newspaper, Code2, Droplets, HelpCircle, Plus, Minus, ChevronRight,
+  Sun, Wind, Ban, Download, ArrowRight, FileArchive, FileImage, Box, Package, Palette
+} from 'lucide-react'
+import {
+  getPageConfig, getAboutUs, getNews, getNewsDetail, getCareGuides, getFaqs,
+  getDigitalAssets, getFabricSeries
+} from '@/api/client'
+import type { PageConfig, AboutUs, Philosophy, Milestone, NewsItem, CareGuide, FAQ, DigitalAsset, FabricSeries } from '@/types'
 
 const ICON_MAP: Record<string, any> = { Droplets, Sun, Wind, Ban, Code2 }
+
+const DEV_SERIES_INFO: Record<string, { name: string; fullName: string; color: string }> = {
+  ottex: { name: 'Ottex', fullName: 'Ottex 全流程无氟防水透气', color: '#4A6FA5' },
+  kais: { name: 'Kais', fullName: 'Kais 专业防护平台', color: '#8B3A3A' },
+  rayo: { name: 'Rayo', fullName: 'Rayo 原生防晒导湿', color: '#C48A4D' },
+  tread: { name: 'Tread', fullName: 'Tread 鞋材级耐磨防护', color: '#666666' },
+}
+
+const FORMAT_ICONS: Record<string, any> = {
+  zip: FileArchive,
+  zfab: Box,
+  u3ma: Palette,
+  sbsar: Package,
+  png: FileImage,
+}
 
 const SUB_MODULES = [
   { key: 'about', label: '关于我们', icon: Building2 },
@@ -24,13 +46,25 @@ export default function ServicesSupport() {
   const [faqs, setFaqs] = useState<FAQ[]>([])
   const [openFaq, setOpenFaq] = useState<number | null>(null)
 
+  // Developer Support states
+  const [selectedDevSeries, setSelectedDevSeries] = useState<string>('ottex')
+  const [devAssets, setDevAssets] = useState<DigitalAsset[]>([])
+  const [devSeriesList, setDevSeriesList] = useState<FabricSeries[]>([])
+
   useEffect(() => {
     getPageConfig('services').then((res) => setPageConfig(res.data.data))
     getAboutUs().then((res) => setAboutData(res.data.data))
     getNews().then((res) => setNewsList(res.data.data || []))
     getCareGuides().then((res) => setCareGuides(res.data.data || []))
     getFaqs().then((res) => setFaqs(res.data.data || []))
+    getFabricSeries().then((res) => setDevSeriesList(res.data.data || []))
   }, [])
+
+  useEffect(() => {
+    if (activeModule === 'dev') {
+      getDigitalAssets(selectedDevSeries).then((res) => setDevAssets(res.data.data || []))
+    }
+  }, [activeModule, selectedDevSeries])
 
   const openNews = async (news: NewsItem) => {
     const res = await getNewsDetail(news.id)
@@ -218,12 +252,117 @@ export default function ServicesSupport() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.3 }}
-                  className="bg-white p-10 sm:p-16 text-center"
                 >
-                  <Code2 size={48} className="mx-auto text-muted mb-6" />
-                  <h3 className="text-h3 text-primary mb-4">开发者支持</h3>
-                  <p className="text-body text-muted mb-8">开发者文档与 API 即将开放，敬请期待</p>
-                  <a href="mailto:dev@gonyik.com" className="text-primary hover:underline">dev@gonyik.com</a>
+                  {/* 3D Digital Assets */}
+                  <div className="bg-white p-6 sm:p-10 mb-6">
+                    <h3 className="text-h4 text-primary mb-3">3D 面料数字资产包</h3>
+                    <p className="text-body text-muted max-w-[700px] mb-8">
+                      面向数字时尚设计师，提供 GONYIK 各系列面料的 3D 材质包。支持 CLO3D、Marvelous Designer 等主流软件直接导入，附带完整面料物理参数预设。
+                    </p>
+
+                    <div className="border-t border-border mb-8">
+                      {[
+                        { label: '支持软件', value: 'CLO3D · Marvelous Designer · Style3D' },
+                        { label: '面料系列', value: 'Ottex · Kais · Rayo · Tread 全系列' },
+                        { label: '物理参数', value: '悬垂度 · 刚度 · 厚度 · 摩擦系数' },
+                        { label: '贴图分辨率', value: '4K PBR 材质（漫反射、法线、粗糙度）' },
+                      ].map((row, i) => (
+                        <div key={i} className="flex items-center justify-between py-3.5 border-b border-border">
+                          <span className="text-[14px] text-muted">{row.label}</span>
+                          <span className="text-[14px] text-primary">{row.value}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    <p className="text-[14px] text-secondary uppercase tracking-wider mb-4">选择系列下载</p>
+                    <div className="flex flex-wrap gap-3 mb-6">
+                      {Object.entries(DEV_SERIES_INFO).map(([slug, s]) => (
+                        <button
+                          key={slug}
+                          onClick={() => setSelectedDevSeries(slug)}
+                          className={`px-5 py-2.5 text-[14px] font-medium border transition-all ${
+                            selectedDevSeries === slug
+                              ? 'bg-primary text-white border-primary'
+                              : 'bg-white text-primary border-border hover:border-primary'
+                          }`}
+                        >
+                          {s.name}
+                        </button>
+                      ))}
+                    </div>
+
+                    <motion.div
+                      key={selectedDevSeries}
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="bg-bg border border-border p-6 mb-6"
+                    >
+                      <h4 className="text-[18px] font-bold text-primary mb-1">{DEV_SERIES_INFO[selectedDevSeries].fullName}</h4>
+                      <p className="text-[14px] text-muted mb-5">{DEV_SERIES_INFO[selectedDevSeries].name} 系列面料 3D 资产包</p>
+
+                      {devAssets.length > 0 ? (
+                        <div className="space-y-3">
+                          {devAssets.map((asset) => (
+                            <a
+                              key={asset.id}
+                              href={asset.file_url}
+                              download
+                              className="flex items-center gap-4 p-4 bg-white border border-border hover:border-primary transition-all group"
+                            >
+                              <Download size={18} className="text-muted group-hover:text-primary transition-colors" />
+                              <div className="flex-1 min-w-0">
+                                <p className="text-[14px] text-primary truncate">{asset.file_name}</p>
+                                <p className="text-[12px] text-muted">{asset.file_type}</p>
+                              </div>
+                              <span className="text-[12px] text-secondary group-hover:text-primary transition-colors shrink-0">下载</span>
+                            </a>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-3 p-4 bg-white border border-border text-muted">
+                          <Download size={18} />
+                          <span className="text-[14px]">资产包即将上线，敬请期待</span>
+                        </div>
+                      )}
+                    </motion.div>
+
+                    <div className="flex flex-wrap gap-2">
+                      {['.zfab', '.u3ma', '.sbsar', '.zip', '.png (4K)'].map((fmt) => (
+                        <span key={fmt} className="px-3 py-1.5 text-[12px] text-secondary bg-bg border border-border">{fmt}</span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Physical Sample Request */}
+                  <div className="bg-darker p-6 sm:p-10">
+                    <h3 className="text-h4 text-white mb-3">面料实物样品申请</h3>
+                    <p className="text-body text-accent max-w-[700px] mb-8">
+                      面向传统版型师和采购团队。实物接触是数字模拟无法替代的——通过我们的样品申请计划，直接获取 GONYIK 各系列面料实物，感受真实的面料触感与性能。
+                    </p>
+
+                    <div className="border-t border-white/10 mb-8">
+                      {[
+                        { label: '覆盖系列', value: 'Ottex · Kais · Rayo · Tread' },
+                        { label: '附送文件', value: 'SGS 认证检测报告（如需）' },
+                        { label: '适用对象', value: '版型师 · 采购 · 品牌研发' },
+                        { label: '响应周期', value: '3 个工作日内联系确认' },
+                      ].map((row, i) => (
+                        <div key={i} className="flex items-center justify-between py-3.5 border-b border-white/10">
+                          <span className="text-[14px] text-white/50">{row.label}</span>
+                          <span className="text-[14px] text-white/80">{row.value}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    <Link
+                      to="/sample-request"
+                      className="inline-flex items-center gap-3 px-8 py-4 border border-white/30 text-white text-[14px] font-medium hover:bg-white hover:text-primary transition-all"
+                    >
+                      <span>前往申请页面</span>
+                      <ArrowRight size={16} />
+                    </Link>
+                  </div>
                 </motion.div>
               )}
 

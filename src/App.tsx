@@ -28,7 +28,6 @@ function PageLoader() {
 const Home = lazy(() => import('./pages/Home'))
 const FabricDatabase = lazy(() => import('./pages/FabricDatabase'))
 const SeriesPage = lazy(() => import('./pages/SeriesPage'))
-const DeveloperSupport = lazy(() => import('./pages/DeveloperSupport'))
 const EndUseEquipment = lazy(() => import('./pages/EndUseEquipment'))
 const FluorineFreeFuture = lazy(() => import('./pages/FluorineFreeFuture'))
 const ServicesSupport = lazy(() => import('./pages/ServicesSupport'))
