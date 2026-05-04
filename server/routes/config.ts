@@ -52,6 +52,16 @@ router.get('/social', (_req, res) => {
   res.json({ data: db.social_media })
 })
 
+router.get('/contact-config', (_req, res) => {
+  res.json({ data: db.contact_config })
+})
+
+router.put('/admin/contact-config', authMiddleware, (req: AuthRequest, res) => {
+  db.contact_config = { ...db.contact_config, ...req.body }
+  saveDb()
+  res.json({ success: true })
+})
+
 router.put('/admin/home', authMiddleware, (req: AuthRequest, res) => {
   db.home_config = { ...db.home_config, ...req.body }
   saveDb()

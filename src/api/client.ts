@@ -54,3 +54,6 @@ export const getNews = () => api.get('/services/news')
 export const getNewsDetail = (id: number) => api.get(`/services/news/${id}`)
 export const getCareGuides = () => api.get('/services/care-guides')
 export const getFaqs = () => api.get('/services/faqs')
+
+export const getContactConfig = () => api.get('/contact-config')
+export const updateContactConfig = (data: any) => api.put('/admin/contact-config', data)

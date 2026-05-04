@@ -1,17 +1,19 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Mail, Send, MapPin, Phone, CheckCircle } from 'lucide-react'
-import { getPageConfig } from '@/api/client'
-import type { PageConfig } from '@/types'
+import { getPageConfig, getContactConfig } from '@/api/client'
+import type { PageConfig, ContactConfig } from '@/types'
 
 export default function Contact() {
   const [pageConfig, setPageConfig] = useState<PageConfig | null>(null)
+  const [contactConfig, setContactConfig] = useState<ContactConfig | null>(null)
   const [form, setForm] = useState({ name: '', company: '', email: '', phone: '', subject: '', message: '' })
   const [submitted, setSubmitted] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   useEffect(() => {
     getPageConfig('contact').then((res) => setPageConfig(res.data.data))
+    getContactConfig().then((res) => setContactConfig(res.data.data))
   }, [])
 
   const validate = () => {
@@ -169,7 +171,7 @@ export default function Contact() {
                   提交留言
                 </button>
                 <p className="text-[13px] text-muted">
-                  提交表单后，我们的面料顾问将在 1 个工作日内与您取得联系
+                  {contactConfig?.response_text || '提交表单后，我们的面料顾问将在 3 个工作日内与您取得联系'}
                 </p>
               </div>
             </form>

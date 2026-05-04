@@ -147,3 +147,11 @@ export interface FAQ {
   answer: string
   category: string
 }
+
+export interface ContactConfig {
+  id: number
+  email: string
+  phone: string
+  address: string
+  response_text: string
+}

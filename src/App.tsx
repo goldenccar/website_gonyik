@@ -49,6 +49,7 @@ const AdminNewsManager = lazy(() => import('./admin/NewsManager'))
 const AdminMediaLibrary = lazy(() => import('./admin/MediaLibrary'))
 const AdminBrandSettings = lazy(() => import('./admin/BrandSettings'))
 const AdminFooterManager = lazy(() => import('./admin/FooterManager'))
+const AdminContactConfig = lazy(() => import('./admin/ContactConfig'))
 
 function App() {
   useEffect(() => {
@@ -84,6 +85,7 @@ function App() {
           <Route path="/admin/media" element={<AdminMediaLibrary />} />
           <Route path="/admin/brand" element={<AdminBrandSettings />} />
           <Route path="/admin/footer" element={<AdminFooterManager />} />
+          <Route path="/admin/contact-config" element={<AdminContactConfig />} />
 
           {/* Public routes */}
           <Route element={<PublicLayout />}>
