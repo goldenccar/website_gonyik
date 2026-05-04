@@ -57,12 +57,11 @@ function createDefaultDb(): Database {
       { id: 4, page_key: 'services', page_tag: 'SERVICES & SUPPORT', page_title: '服务与支持', page_subtitle: '全方位服务体系，助力您的每一个项目', hero_background: null },
     ],
     navigation: [
-      { id: 1, label: '首页', link: '/', order_index: 0 },
-      { id: 2, label: '面料数据库', link: '/fabrics', order_index: 1 },
-      { id: 3, label: '终端装备', link: '/equipment', order_index: 2 },
-      { id: 4, label: '探索无氟未来', link: '/fluorine-free', order_index: 3 },
-      { id: 5, label: '服务与支持', link: '/services', order_index: 4 },
-      { id: 6, label: '联系我们', link: '/contact', order_index: 5 },
+      { id: 2, label: '面料数据库', link: '/fabrics', order_index: 0 },
+      { id: 3, label: '终端装备', link: '/equipment', order_index: 1 },
+      { id: 4, label: '探索无氟未来', link: '/fluorine-free', order_index: 2 },
+      { id: 5, label: '服务与支持', link: '/services', order_index: 3 },
+      { id: 6, label: '联系我们', link: '/contact', order_index: 4 },
     ],
     footer_config: {
       id: 1,
