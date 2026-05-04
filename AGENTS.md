@@ -27,6 +27,72 @@
 - 账号：`admin`
 - 密码：`888888`
 
+## 自动化部署工作流（核心）
+
+> **目标**：任何 AI Agent 或开发者换设备后，都能直接执行这套「修改 → 同步到 GitHub → 自动部署到服务器」的流程。
+
+### 流程图
+```
+本地修改代码 → git commit → git push origin main
+                          ↓
+              GitHub 仓库 (goldenccar/website_gonyik)
+                          ↓
+      腾讯云服务器每5分钟自动 git pull + build + PM2 重启
+```
+
+### 服务器信息
+| 项目 | 详情 |
+|------|------|
+| 供应商 | 腾讯云 CVM |
+| IP | `111.231.141.7` |
+| 系统 | OpenCloudOS 9.4 |
+| 登录用户 | `root` |
+| 密码 | `Tvb_26187228` |
+| 项目路径 | `/var/www/website_gonyik` |
+| 服务进程 | `gonyik` (PM2 管理) |
+| 定时任务 | `*/5 * * * *` 执行 `scripts/auto-deploy.sh` |
+| 部署日志 | `/var/www/deploy.log` |
+
+### 当前环境（已配置）
+- Node.js v20.19.0 ✅
+- Git 2.43.7 ✅
+- PM2 ✅
+- 自动部署脚本 ✅
+- Crontab 定时任务 ✅
+
+### 新服务器初始化（如需迁移）
+```bash
+# 1. SSH 登录服务器
+ssh root@111.231.141.7
+# 密码: Tvb_26187228
+
+# 2. 运行初始化脚本
+bash /var/www/website_gonyik/scripts/server-setup.sh
+```
+
+### 日常操作命令
+```bash
+# 查看服务状态
+pm2 status
+
+# 手动重启
+pm2 restart gonyik
+
+# 查看部署日志
+cat /var/www/deploy.log
+
+# 手动触发部署
+bash /var/www/website_gonyik/scripts/auto-deploy.sh
+```
+
+### 部署脚本说明
+| 文件 | 用途 |
+|------|------|
+| `scripts/auto-deploy.sh` | 服务器定时执行：git pull → 有更新则 build → PM2 重启 |
+| `scripts/server-setup.sh` | 新服务器首次运行：安装依赖、克隆项目、构建、启动 PM2、配置定时任务 |
+
+---
+
 ## 开发注意
 1. 修改后台数据会实时写入 `db.json`，但**不要提交 `db.json` 到 Git**（已在 `.gitignore` 中排除）
 2. 上传的文件存到 `public/uploads/`，同样被 gitignore
