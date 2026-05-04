@@ -98,7 +98,6 @@ export default function FabricDatabase() {
   const [viewerOpen, setViewerOpen] = useState(false)
   const [viewerData, setViewerData] = useState<{ url: string; type: string; title: string } | null>(null)
   const [showKaisSub, setShowKaisSub] = useState(false)
-  const [expandedCategory, setExpandedCategory] = useState<string | null>(null)
 
   useEffect(() => {
     getPageConfig('fabrics').then((res) => setPageConfig(res.data.data))
@@ -156,82 +155,32 @@ export default function FabricDatabase() {
             </div>
 
             {/* Right: Scene Selector */}
-            <div className="lg:flex-1 lg:py-8">
-              <div className="flex items-center gap-3 mb-5">
+            <div className="lg:w-[38%] lg:shrink-0 lg:py-8">
+              <div className="flex items-center gap-3 mb-4">
                 <div className="w-6 h-[1px] bg-white/20" />
                 <span className="text-[11px] text-white/40 uppercase tracking-widest">按应用场景选择</span>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="space-y-3">
                 {CATEGORIES.map((cat) => {
                   const CatIcon = cat.icon
-                  const isExpanded = expandedCategory === cat.id
                   return (
-                    <motion.div
-                      key={cat.id}
-                      layout
-                      className="relative"
-                    >
-                      <button
-                        onClick={() => setExpandedCategory(isExpanded ? null : cat.id)}
-                        className={`w-full text-left p-5 border transition-all duration-300 ${
-                          isExpanded
-                            ? 'bg-white/10 border-white/30'
-                            : 'bg-white/[0.03] border-white/10 hover:bg-white/[0.06] hover:border-white/20'
-                        }`}
-                      >
-                        <div className="flex items-center gap-3">
-                          <div
-                            className="w-9 h-9 flex items-center justify-center shrink-0"
-                            style={{ backgroundColor: cat.bgColor }}
+                    <div key={cat.id} className="flex items-start gap-3">
+                      <div className="flex items-center gap-1.5 shrink-0 mt-1">
+                        <CatIcon size={12} style={{ color: cat.color }} />
+                        <span className="text-[12px] text-white/50 whitespace-nowrap">{cat.name}</span>
+                      </div>
+                      <div className="flex flex-wrap gap-1.5 flex-1">
+                        {cat.scenes.map((scene) => (
+                          <button
+                            key={scene.label}
+                            onClick={() => handleSceneClick(scene.series)}
+                            className="px-2 py-0.5 text-[11px] text-white/60 border border-white/[0.08] hover:text-white hover:border-white/20 hover:bg-white/5 transition-all"
                           >
-                            <CatIcon size={18} style={{ color: cat.color }} />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between">
-                              <h3 className="text-[14px] font-medium text-white">{cat.name}</h3>
-                              <motion.div
-                                animate={{ rotate: isExpanded ? 45 : 0 }}
-                                transition={{ duration: 0.2 }}
-                                className="text-white/40 text-base ml-2"
-                              >
-                                +
-                              </motion.div>
-                            </div>
-                            <p className="text-[11px] text-white/40 mt-0.5">{cat.subtitle}</p>
-                          </div>
-                        </div>
-                      </button>
-
-                      <AnimatePresence>
-                        {isExpanded && (
-                          <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: 'auto', opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                            className="overflow-hidden"
-                          >
-                            <div className="p-3 pt-2 bg-white/[0.02] border-x border-b border-white/10">
-                              <div className="flex flex-wrap gap-1.5">
-                                {cat.scenes.map((scene) => {
-                                  const SceneIcon = scene.icon
-                                  return (
-                                    <button
-                                      key={scene.label}
-                                      onClick={() => handleSceneClick(scene.series)}
-                                      className="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] text-white/70 bg-white/5 border border-white/10 hover:bg-white/10 hover:text-white hover:border-white/20 transition-all"
-                                    >
-                                      <SceneIcon size={11} style={{ color: cat.color }} />
-                                      {scene.label}
-                                    </button>
-                                  )
-                                })}
-                              </div>
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </motion.div>
+                            {scene.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                   )
                 })}
               </div>
