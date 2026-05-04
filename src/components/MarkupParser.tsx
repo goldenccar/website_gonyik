@@ -36,7 +36,7 @@ function parseInlineMarkup(text: string): React.ReactNode[] {
 
   // 按优先级匹配标记：<note> <i> <b>
   const patterns = [
-    { regex: /<note>(.*?)<\/note>/s, wrapper: (content: string, k: number) => <span key={k} className="text-[12px] text-muted">{parseInlineMarkup(content)}</span> },
+    { regex: /<note>(.*?)<\/note>/s, wrapper: (content: string, k: number) => <span key={k} className="text-[10px] text-muted italic">{parseInlineMarkup(content)}</span> },
     { regex: /<i>(.*?)<\/i>/s, wrapper: (content: string, k: number) => <em key={k} className="text-[13px] text-muted italic block mt-2 mb-2 pl-3 border-l-2 border-white/20">{parseInlineMarkup(content)}</em> },
     { regex: /<b>(.*?)<\/b>/s, wrapper: (content: string, k: number) => <strong key={k} className="font-bold text-primary">{parseInlineMarkup(content)}</strong> },
   ]
