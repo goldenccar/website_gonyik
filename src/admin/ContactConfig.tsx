@@ -24,6 +24,11 @@ export default function ContactConfig() {
         phone: config.phone,
         address: config.address,
         response_text: config.response_text,
+        smtp_host: config.smtp_host,
+        smtp_port: config.smtp_port,
+        smtp_user: config.smtp_user,
+        smtp_pass: config.smtp_pass,
+        smtp_secure: config.smtp_secure,
       })
       setMessage('保存成功')
       setTimeout(() => setMessage(''), 2000)
@@ -61,7 +66,7 @@ export default function ContactConfig() {
 
         {/* Form */}
         <div className="mb-6">
-          <label className="block text-[12px] text-secondary uppercase mb-2">联系邮箱</label>
+          <label className="block text-[12px] text-secondary uppercase mb-2">收件邮箱（表单通知）</label>
           <input
             type="email"
             value={config.email}
@@ -69,6 +74,7 @@ export default function ContactConfig() {
             className="w-full bg-white/5 border border-borderDark text-white px-4 py-3 text-[14px] focus:border-white focus:outline-none"
             placeholder="contact@example.com"
           />
+          <p className="text-[12px] text-secondary mt-1.5">用户提交表单后，通知邮件将发送到此邮箱</p>
         </div>
 
         <div className="mb-6">
@@ -103,6 +109,70 @@ export default function ContactConfig() {
             placeholder="提交表单后，我们的面料顾问将在 3 个工作日内与您取得联系"
           />
           <p className="text-[12px] text-secondary mt-1.5">显示在提交按钮右侧的提示文字</p>
+        </div>
+
+        <div className="border-t border-white/10 pt-6 mb-6">
+          <h3 className="text-white font-bold mb-4">SMTP 邮件发送配置</h3>
+          <p className="text-[12px] text-secondary mb-4">配置后，用户提交的表单将通过邮件直接发送到此邮箱。如不配置，表单数据仅保存在后台。</p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label className="block text-[12px] text-secondary uppercase mb-2">SMTP 服务器</label>
+              <input
+                type="text"
+                value={config.smtp_host || ''}
+                onChange={(e) => setConfig({ ...config, smtp_host: e.target.value })}
+                className="w-full bg-white/5 border border-borderDark text-white px-4 py-3 text-[14px] focus:border-white focus:outline-none"
+                placeholder="如：smtp.qq.com"
+              />
+            </div>
+            <div>
+              <label className="block text-[12px] text-secondary uppercase mb-2">SMTP 端口</label>
+              <input
+                type="number"
+                value={config.smtp_port || 587}
+                onChange={(e) => setConfig({ ...config, smtp_port: Number(e.target.value) })}
+                className="w-full bg-white/5 border border-borderDark text-white px-4 py-3 text-[14px] focus:border-white focus:outline-none"
+                placeholder="587"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label className="block text-[12px] text-secondary uppercase mb-2">SMTP 用户名</label>
+              <input
+                type="text"
+                value={config.smtp_user || ''}
+                onChange={(e) => setConfig({ ...config, smtp_user: e.target.value })}
+                className="w-full bg-white/5 border border-borderDark text-white px-4 py-3 text-[14px] focus:border-white focus:outline-none"
+                placeholder="如：contact@gangyi.tech"
+              />
+            </div>
+            <div>
+              <label className="block text-[12px] text-secondary uppercase mb-2">SMTP 密码</label>
+              <input
+                type="password"
+                value={config.smtp_pass || ''}
+                onChange={(e) => setConfig({ ...config, smtp_pass: e.target.value })}
+                className="w-full bg-white/5 border border-borderDark text-white px-4 py-3 text-[14px] focus:border-white focus:outline-none"
+                placeholder="授权码或密码"
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              id="smtp_secure"
+              checked={config.smtp_secure || false}
+              onChange={(e) => setConfig({ ...config, smtp_secure: e.target.checked })}
+              className="w-4 h-4 accent-white"
+            />
+            <label htmlFor="smtp_secure" className="text-[13px] text-white cursor-pointer">
+              使用 SSL（端口 465 时勾选）
+            </label>
+          </div>
         </div>
       </div>
     </Dashboard>

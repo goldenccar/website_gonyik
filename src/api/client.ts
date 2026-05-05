@@ -63,3 +63,5 @@ export const updateFluorineSection = (id: number, data: any) => api.put(`/admin/
 
 export const getInquirySubjects = () => api.get('/inquiry-subjects')
 export const updateInquirySubjects = (data: { items: any[] }) => api.put('/admin/inquiry-subjects', data)
+
+export const submitContactForm = (data: { name: string; company?: string; email: string; phone?: string; subject: string; message: string }) => api.post('/contact', data)

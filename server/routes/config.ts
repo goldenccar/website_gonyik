@@ -1,5 +1,6 @@
 import { Router } from 'express'
-import { db, saveDb } from '../db'
+import nodemailer from 'nodemailer'
+import { db, saveDb, getNextId } from '../db'
 import { authMiddleware, AuthRequest } from '../middleware/auth'
 import { upload } from '../middleware/upload'
 
@@ -132,6 +133,74 @@ router.put('/admin/inquiry-subjects', authMiddleware, (req: AuthRequest, res) =>
   }))
   saveDb()
   res.json({ success: true })
+})
+
+router.post('/contact', async (req, res) => {
+  const { name, company, email, phone, subject, message } = req.body
+  if (!name || !email || !subject || !message) {
+    res.status(400).json({ error: '缺少必填字段' })
+    return
+  }
+
+  // Save to database
+  const msg = {
+    id: getNextId(db.contact_messages),
+    name,
+    company: company || '',
+    email,
+    phone: phone || '',
+    subject,
+    message,
+    created_at: new Date().toISOString(),
+  }
+  db.contact_messages.push(msg)
+  saveDb()
+
+  // Try to send email if SMTP is configured
+  const cfg = db.contact_config
+  let emailSent = false
+  if (cfg.smtp_host && cfg.smtp_user) {
+    try {
+      const transporter = nodemailer.createTransport({
+        host: cfg.smtp_host,
+        port: cfg.smtp_port || 587,
+        secure: cfg.smtp_secure || false,
+        auth: {
+          user: cfg.smtp_user,
+          pass: cfg.smtp_pass || '',
+        },
+      })
+
+      const mailBody = `您收到一条新的网站留言：
+
+━━━━━━━━━━━━━━━━━━━━
+咨询主题：${subject}
+姓名：${name}
+公司：${company || '未填写'}
+邮箱：${email}
+电话：${phone || '未填写'}
+━━━━━━━━━━━━━━━━━━━━
+
+留言内容：
+${message}
+
+━━━━━━━━━━━━━━━━━━━━
+提交时间：${new Date().toLocaleString('zh-CN')}
+`
+
+      await transporter.sendMail({
+        from: `"${cfg.smtp_user}" <${cfg.smtp_user}>`,
+        to: cfg.email || 'contact@gangyi.tech',
+        subject: `[网站留言] ${subject}`,
+        text: mailBody,
+      })
+      emailSent = true
+    } catch (err: any) {
+      console.error('Email send failed:', err.message)
+    }
+  }
+
+  res.json({ success: true, email_sent: emailSent })
 })
 
 export default router

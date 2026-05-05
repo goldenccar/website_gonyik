@@ -154,6 +154,11 @@ export interface ContactConfig {
   phone: string
   address: string
   response_text: string
+  smtp_host: string
+  smtp_port: number
+  smtp_user: string
+  smtp_pass: string
+  smtp_secure: boolean
 }
 
 export interface FluorineSection {

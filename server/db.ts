@@ -32,6 +32,7 @@ export interface Database {
   contact_config: any
   fluorine_sections: any[]
   inquiry_subjects: any[]
+  contact_messages: any[]
   users: any[]
 }
 
@@ -80,6 +81,11 @@ function createDefaultDb(): Database {
       phone: '400-XXX-XXXX',
       address: '上海市',
       response_text: '提交表单后，我们的面料顾问将在 3 个工作日内与您取得联系',
+      smtp_host: '',
+      smtp_port: 587,
+      smtp_user: '',
+      smtp_pass: '',
+      smtp_secure: false,
     },
     inquiry_subjects: [
       { id: 1, label: '功能咨询', order_index: 0 },

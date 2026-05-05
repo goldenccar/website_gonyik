@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Mail, Send, MapPin, Phone, CheckCircle } from 'lucide-react'
-import { getPageConfig, getContactConfig, getInquirySubjects } from '@/api/client'
+import { getPageConfig, getContactConfig, getInquirySubjects, submitContactForm } from '@/api/client'
 import type { PageConfig, ContactConfig, InquirySubject } from '@/types'
 
 export default function Contact() {
@@ -29,13 +29,20 @@ export default function Contact() {
     return Object.keys(e).length === 0
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [submitting, setSubmitting] = useState(false)
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!validate()) return
-    // Send email via mailto
-    const body = `姓名：${form.name}\n公司：${form.company || '未填写'}\n电话：${form.phone || '未填写'}\n\n${form.message}`
-    window.location.href = `mailto:${contactConfig?.email || 'contact@gangyi.tech'}?subject=${encodeURIComponent(form.subject)}&body=${encodeURIComponent(body)}`
-    setSubmitted(true)
+    setSubmitting(true)
+    try {
+      await submitContactForm(form)
+      setSubmitted(true)
+    } catch {
+      setErrors({ submit: '提交失败，请稍后重试' })
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -170,10 +177,11 @@ export default function Contact() {
               <div className="flex items-center gap-6">
                 <button
                   type="submit"
-                  className="inline-flex items-center gap-2 px-8 py-3.5 bg-primary text-white text-[14px] font-medium hover:bg-darker transition-colors"
+                  disabled={submitting}
+                  className="inline-flex items-center gap-2 px-8 py-3.5 bg-primary text-white text-[14px] font-medium hover:bg-darker transition-colors disabled:opacity-50"
                 >
                   <Send size={16} />
-                  提交留言
+                  {submitting ? '提交中...' : '提交留言'}
                 </button>
                 <p className="text-[13px] text-muted">
                   {contactConfig?.response_text || '提交表单后，我们的面料顾问将在 3 个工作日内与您取得联系'}
