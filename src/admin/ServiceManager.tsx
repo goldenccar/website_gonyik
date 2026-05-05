@@ -55,23 +55,41 @@ export default function AdminServiceManager() {
     e.preventDefault()
     const fd = new FormData(e.currentTarget)
     const data = Object.fromEntries(fd)
-    const endpoint = activeTab === 'care' ? 'care-guides' : 'faqs'
-    const payload = activeTab === 'care'
-      ? { icon: data.icon, title: data.title, content: data.content }
-      : { question: data.question, answer: data.answer, category: data.category }
 
-    if (editing?.id) {
-      await api.put(`/services/admin/${endpoint}/${editing.id}`, payload)
+    if (activeTab === 'about' && editing?.type === 'milestone') {
+      const payload = { year: data.year, event: data.event }
+      if (editing?.id) {
+        await api.put(`/services/admin/milestones/${editing.id}`, payload)
+      } else {
+        await api.post('/services/admin/milestones', payload)
+      }
+    } else if (activeTab === 'about') {
+      const payload = { number: Number(data.number), title: data.title, description: data.description }
+      if (editing?.id) {
+        await api.put(`/services/admin/philosophies/${editing.id}`, payload)
+      } else {
+        await api.post('/services/admin/philosophies', payload)
+      }
     } else {
-      await api.post(`/services/admin/${endpoint}`, payload)
+      const endpoint = activeTab === 'care' ? 'care-guides' : 'faqs'
+      const payload = activeTab === 'care'
+        ? { icon: data.icon, title: data.title, content: data.content }
+        : { question: data.question, answer: data.answer, category: data.category }
+      if (editing?.id) {
+        await api.put(`/services/admin/${endpoint}/${editing.id}`, payload)
+      } else {
+        await api.post(`/services/admin/${endpoint}`, payload)
+      }
     }
     setShowForm(false); setEditing(null); load()
     setMessage('保存成功'); setTimeout(() => setMessage(''), 2000)
   }
 
-  const del = async (id: number) => {
+  const del = async (id: number, itemType?: string) => {
     if (!confirm('确定删除？')) return
-    const endpoint = activeTab === 'care' ? 'care-guides' : 'faqs'
+    let endpoint = activeTab === 'care' ? 'care-guides' : 'faqs'
+    if (itemType === 'milestone') endpoint = 'milestones'
+    if (itemType === 'philosophy') endpoint = 'philosophies'
     await api.delete(`/services/admin/${endpoint}/${id}`)
     load()
   }
@@ -114,7 +132,7 @@ export default function AdminServiceManager() {
                     <div><span className="text-accent mr-3">#{p.number}</span><span className="text-white">{p.title}</span></div>
                     <div>
                       <button onClick={() => { setEditing(p); setShowForm(true) }} className="text-accent hover:text-white mr-2"><Edit2 size={14} /></button>
-                      <button onClick={() => del(p.id)} className="text-error hover:text-white"><Trash2 size={14} /></button>
+                      <button onClick={() => del(p.id, 'philosophy')} className="text-error hover:text-white"><Trash2 size={14} /></button>
                     </div>
                   </div>
                 ))}
@@ -132,7 +150,7 @@ export default function AdminServiceManager() {
                     <div><span className="text-white font-bold mr-3">{m.year}</span><span className="text-accent">{m.event}</span></div>
                     <div>
                       <button onClick={() => { setEditing({ ...m, type: 'milestone' }); setShowForm(true) }} className="text-accent hover:text-white mr-2"><Edit2 size={14} /></button>
-                      <button onClick={() => del(m.id)} className="text-error hover:text-white"><Trash2 size={14} /></button>
+                      <button onClick={() => del(m.id, 'milestone')} className="text-error hover:text-white"><Trash2 size={14} /></button>
                     </div>
                   </div>
                 ))}
@@ -258,7 +276,7 @@ export default function AdminServiceManager() {
               <form onSubmit={handleSubmit} className="space-y-4">
                 {activeTab === 'about' && editing?.type === 'milestone' ? (
                   <>
-                    <div><label className="block text-[12px] text-secondary uppercase mb-1">年份</label><input name="year" defaultValue={editing?.year} required className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none" /></div>
+                    <div><label className="block text-[12px] text-secondary uppercase mb-1">时间</label><input name="year" defaultValue={editing?.year} required className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none" /></div>
                     <div><label className="block text-[12px] text-secondary uppercase mb-1">事件</label><input name="event" defaultValue={editing?.event} required className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none" /></div>
                   </>
                 ) : activeTab === 'about' ? (
