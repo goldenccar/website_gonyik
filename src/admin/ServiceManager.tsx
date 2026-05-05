@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Plus, Trash2, Edit2, Save } from 'lucide-react'
+import { ArrowLeft, Plus, Trash2, Edit2, Save, ArrowUp, ArrowDown } from 'lucide-react'
 import api, { getFluorineSections } from '@/api/client'
 import Dashboard from './Dashboard'
 
@@ -94,6 +94,16 @@ export default function AdminServiceManager() {
     load()
   }
 
+  const moveMilestone = async (index: number, direction: -1 | 1) => {
+    const newIndex = index + direction
+    if (newIndex < 0 || newIndex >= milestones.length) return
+    const itemA = milestones[index]
+    const itemB = milestones[newIndex]
+    await api.put(`/services/admin/milestones/${itemA.id}`, { order_index: itemB.order_index })
+    await api.put(`/services/admin/milestones/${itemB.id}`, { order_index: itemA.order_index })
+    load()
+  }
+
   return (
     <Dashboard>
       <div>
@@ -145,9 +155,15 @@ export default function AdminServiceManager() {
                 <button onClick={() => { setEditing({ type: 'milestone' }); setShowForm(true) }} className="flex items-center gap-1 bg-white text-primary px-3 py-1.5 text-[12px] font-medium hover:bg-bg"><Plus size={14} /> 新增</button>
               </div>
               <div className="space-y-3">
-                {milestones.map((m) => (
+                {milestones.map((m, idx) => (
                   <div key={m.id} className="flex items-center justify-between bg-white/5 px-4 py-3">
-                    <div><span className="text-white font-bold mr-3">{m.year}</span><span className="text-accent">{m.event}</span></div>
+                    <div className="flex items-center gap-3">
+                      <div className="flex flex-col gap-0.5">
+                        <button onClick={() => moveMilestone(idx, -1)} disabled={idx === 0} className="text-accent hover:text-white disabled:opacity-30"><ArrowUp size={14} /></button>
+                        <button onClick={() => moveMilestone(idx, 1)} disabled={idx === milestones.length - 1} className="text-accent hover:text-white disabled:opacity-30"><ArrowDown size={14} /></button>
+                      </div>
+                      <div><span className="text-white font-bold mr-3">{m.year}</span><span className="text-accent">{m.event}</span></div>
+                    </div>
                     <div>
                       <button onClick={() => { setEditing({ ...m, type: 'milestone' }); setShowForm(true) }} className="text-accent hover:text-white mr-2"><Edit2 size={14} /></button>
                       <button onClick={() => del(m.id, 'milestone')} className="text-error hover:text-white"><Trash2 size={14} /></button>
