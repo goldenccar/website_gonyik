@@ -48,6 +48,7 @@ export default function AdminFluorineManager() {
             <p><code className="text-accent">&lt;b&gt;...&lt;/b&gt;</code> → 粗体高亮</p>
             <p><code className="text-accent">&lt;i&gt;...&lt;/i&gt;</code> → 引用（斜体灰色）</p>
             <p><code className="text-accent">&lt;note&gt;...&lt;/note&gt;</code> → 备注小字</p>
+            <p><code className="text-accent">&lt;t&gt;...&lt;/t&gt;</code> → 翻译（默认隐藏，点击展开）</p>
             <p><code className="text-accent">/h</code> → 换行分段</p>
           </div>
         </div>
