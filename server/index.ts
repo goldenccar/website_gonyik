@@ -48,6 +48,9 @@ const clientDist = path.resolve(process.cwd(), 'dist/client')
 if (fs.existsSync(clientDist)) {
   app.use(express.static(clientDist))
   app.get('*', (_req, res) => {
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate')
+    res.setHeader('Pragma', 'no-cache')
+    res.setHeader('Expires', '0')
     res.sendFile(path.join(clientDist, 'index.html'))
   })
 }
