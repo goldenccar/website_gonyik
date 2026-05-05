@@ -57,7 +57,10 @@ const MENU_GROUPS: MenuGroup[] = [
   {
     label: '联系我们',
     icon: Mail,
-    children: [{ label: '联系配置', icon: Mail, path: '/admin/contact-config' }],
+    children: [
+      { label: '联系配置', icon: Mail, path: '/admin/contact-config' },
+      { label: '咨询主题管理', icon: Mail, path: '/admin/inquiry-subjects' },
+    ],
   },
   {
     label: '框架管理',

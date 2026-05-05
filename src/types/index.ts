@@ -165,3 +165,9 @@ export interface FluorineSection {
   content: string
   image_url: string | null
 }
+
+export interface InquirySubject {
+  id: number
+  label: string
+  order_index: number
+}

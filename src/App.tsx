@@ -51,6 +51,7 @@ const AdminBrandSettings = lazy(() => import('./admin/BrandSettings'))
 const AdminFooterManager = lazy(() => import('./admin/FooterManager'))
 const AdminHeaderManager = lazy(() => import('./admin/HeaderManager'))
 const AdminContactConfig = lazy(() => import('./admin/ContactConfig'))
+const AdminInquirySubjectManager = lazy(() => import('./admin/InquirySubjectManager'))
 const AdminFluorineManager = lazy(() => import('./admin/FluorineManager'))
 
 function App() {
@@ -89,6 +90,7 @@ function App() {
           <Route path="/admin/footer" element={<AdminFooterManager />} />
           <Route path="/admin/header" element={<AdminHeaderManager />} />
           <Route path="/admin/contact-config" element={<AdminContactConfig />} />
+          <Route path="/admin/inquiry-subjects" element={<AdminInquirySubjectManager />} />
           <Route path="/admin/fluorine" element={<AdminFluorineManager />} />
 
           {/* Public routes */}

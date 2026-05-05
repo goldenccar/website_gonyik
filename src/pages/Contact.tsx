@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Mail, Send, MapPin, Phone, CheckCircle } from 'lucide-react'
-import { getPageConfig, getContactConfig } from '@/api/client'
-import type { PageConfig, ContactConfig } from '@/types'
+import { getPageConfig, getContactConfig, getInquirySubjects } from '@/api/client'
+import type { PageConfig, ContactConfig, InquirySubject } from '@/types'
 
 export default function Contact() {
   const [pageConfig, setPageConfig] = useState<PageConfig | null>(null)
   const [contactConfig, setContactConfig] = useState<ContactConfig | null>(null)
+  const [inquirySubjects, setInquirySubjects] = useState<InquirySubject[]>([])
   const [form, setForm] = useState({ name: '', company: '', email: '', phone: '', subject: '', message: '' })
   const [submitted, setSubmitted] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -14,6 +15,7 @@ export default function Contact() {
   useEffect(() => {
     getPageConfig('contact').then((res) => setPageConfig(res.data.data))
     getContactConfig().then((res) => setContactConfig(res.data.data))
+    getInquirySubjects().then((res) => setInquirySubjects(res.data.data || []))
   }, [])
 
   const validate = () => {
@@ -141,14 +143,17 @@ export default function Contact() {
                 </div>
               </div>
               <div className="mb-5">
-                <label className="block text-[13px] text-secondary mb-2">主题 *</label>
-                <input
-                  type="text"
+                <label className="block text-[13px] text-secondary mb-2">咨询主题 *</label>
+                <select
                   value={form.subject}
                   onChange={(e) => setForm({ ...form, subject: e.target.value })}
-                  className="w-full px-4 py-3 text-[14px] bg-bg border border-border focus:border-primary focus:outline-none transition-colors"
-                  placeholder="咨询主题"
-                />
+                  className="w-full px-4 py-3 text-[14px] bg-bg border border-border focus:border-primary focus:outline-none transition-colors appearance-none cursor-pointer"
+                >
+                  <option value="">请选择咨询主题</option>
+                  {inquirySubjects.map((s) => (
+                    <option key={s.id} value={s.label}>{s.label}</option>
+                  ))}
+                </select>
                 {errors.subject && <p className="text-[12px] text-red-500 mt-1">{errors.subject}</p>}
               </div>
               <div className="mb-6">

@@ -31,6 +31,7 @@ export interface Database {
   faqs: any[]
   contact_config: any
   fluorine_sections: any[]
+  inquiry_subjects: any[]
   users: any[]
 }
 
@@ -80,6 +81,13 @@ function createDefaultDb(): Database {
       address: '上海市',
       response_text: '提交表单后，我们的面料顾问将在 3 个工作日内与您取得联系',
     },
+    inquiry_subjects: [
+      { id: 1, label: '功能咨询', order_index: 0 },
+      { id: 2, label: '样品申请', order_index: 1 },
+      { id: 3, label: '合作洽谈', order_index: 2 },
+      { id: 4, label: '技术支持', order_index: 3 },
+      { id: 5, label: '其他', order_index: 4 },
+    ],
     fluorine_sections: [
       {
         id: 1,
@@ -232,6 +240,23 @@ export let db: Database
 export function initDatabase() {
   if (fs.existsSync(DB_PATH)) {
     db = JSON.parse(fs.readFileSync(DB_PATH, 'utf-8'))
+    // Backward compatibility: ensure new fields exist
+    if (!db.contact_config) {
+      db.contact_config = { id: 1, email: 'contact@gangyi.tech', phone: '400-XXX-XXXX', address: '上海市', response_text: '提交表单后，我们的面料顾问将在 3 个工作日内与您取得联系' }
+    }
+    if (!db.fluorine_sections) db.fluorine_sections = []
+    if (!db.fabric_scenes) db.fabric_scenes = []
+    if (!db.digital_assets) db.digital_assets = []
+    if (!db.inquiry_subjects) {
+      db.inquiry_subjects = [
+        { id: 1, label: '功能咨询', order_index: 0 },
+        { id: 2, label: '样品申请', order_index: 1 },
+        { id: 3, label: '合作洽谈', order_index: 2 },
+        { id: 4, label: '技术支持', order_index: 3 },
+        { id: 5, label: '其他', order_index: 4 },
+      ]
+      saveDb()
+    }
   } else {
     db = createDefaultDb()
   }

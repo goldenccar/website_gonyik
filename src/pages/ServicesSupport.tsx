@@ -33,7 +33,7 @@ const SUB_MODULES = [
   { key: 'about', label: '关于我们', icon: Building2 },
   { key: 'news', label: '新闻中心', icon: Newspaper },
   { key: 'dev', label: '开发者支持', icon: Code2 },
-  { key: 'sample', label: '样品申请', icon: Send },
+  // { key: 'sample', label: '样品申请', icon: Send }, // 暂时关闭
   { key: 'care', label: '洗护指南', icon: Droplets },
   { key: 'faq', label: 'FAQs', icon: HelpCircle },
 ]
@@ -41,7 +41,9 @@ const SUB_MODULES = [
 export default function ServicesSupport() {
   const [searchParams] = useSearchParams()
   const [pageConfig, setPageConfig] = useState<PageConfig | null>(null)
-  const [activeModule, setActiveModule] = useState(searchParams.get('tab') || 'about')
+  const [activeModule, setActiveModule] = useState(
+    searchParams.get('tab') === 'sample' ? 'about' : (searchParams.get('tab') || 'about')
+  )
   const [aboutData, setAboutData] = useState<{ about: AboutUs; philosophies: Philosophy[]; milestones: Milestone[] } | null>(null)
   const [newsList, setNewsList] = useState<NewsItem[]>([])
   const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null)
@@ -358,13 +360,13 @@ export default function ServicesSupport() {
                       ))}
                     </div>
 
-                    <button
-                      onClick={() => setActiveModule('sample')}
+                    <Link
+                      to="/contact"
                       className="inline-flex items-center gap-3 px-8 py-4 border border-white/30 text-white text-[14px] font-medium hover:bg-white hover:text-primary transition-all"
                     >
                       <span>前往申请页面</span>
                       <ArrowRight size={16} />
-                    </button>
+                    </Link>
                   </div>
                 </motion.div>
               )}

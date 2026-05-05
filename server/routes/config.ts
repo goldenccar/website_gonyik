@@ -120,4 +120,18 @@ router.put('/admin/social', authMiddleware, upload.single('qrcode'), (req: AuthR
   res.json({ success: true })
 })
 
+router.get('/inquiry-subjects', (_req, res) => {
+  res.json({ data: db.inquiry_subjects.sort((a, b) => a.order_index - b.order_index) })
+})
+
+router.put('/admin/inquiry-subjects', authMiddleware, (req: AuthRequest, res) => {
+  db.inquiry_subjects = (req.body.items || []).map((item: any, i: number) => ({
+    id: item.id || getNextId(db.inquiry_subjects),
+    label: item.label,
+    order_index: i,
+  }))
+  saveDb()
+  res.json({ success: true })
+})
+
 export default router
