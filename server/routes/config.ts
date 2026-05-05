@@ -135,6 +135,16 @@ router.put('/admin/inquiry-subjects', authMiddleware, (req: AuthRequest, res) =>
   res.json({ success: true })
 })
 
+router.get('/admin/contact-messages', authMiddleware, (_req, res) => {
+  res.json({ data: db.contact_messages.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()) })
+})
+
+router.delete('/admin/contact-messages/:id', authMiddleware, (req: AuthRequest, res) => {
+  db.contact_messages = db.contact_messages.filter((m) => m.id !== Number(req.params.id))
+  saveDb()
+  res.json({ success: true })
+})
+
 router.post('/contact', async (req, res) => {
   const { name, company, email, phone, subject, message } = req.body
   if (!name || !email || !subject || !message) {
