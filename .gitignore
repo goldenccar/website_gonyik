@@ -37,3 +37,6 @@ Thumbs.db
 .env
 .env.local
 .env.*.local
+
+# Deploy key (local only)
+.deploy-key.md

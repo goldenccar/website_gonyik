@@ -39,7 +39,7 @@
 | IP | `111.231.141.7` |
 | 系统 | OpenCloudOS 9.4 |
 | 登录用户 | `root` |
-| 密码 | `Tvb_26187228` |
+| 密码 | 凯撒密码加密：`Wye_b594;:55;`（偏移量见本地 `.deploy-key.md`） |
 | 项目路径 | `/var/www/website_gonyik` |
 | 后端服务 | `gonyik` (PM2 管理)，监听 `localhost:3001` |
 | nginx | 80 端口 → 反向代理到 `localhost:3001`，配置在 `/etc/nginx/conf.d/gonyik.conf` |
