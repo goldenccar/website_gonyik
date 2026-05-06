@@ -7,7 +7,7 @@ import Dashboard from './Dashboard'
 export default function AdminFluorineManager() {
   const navigate = useNavigate()
   const [sections, setSections] = useState<any[]>([])
-  const [message, setMessage] = useState('')
+  const [saveMessages, setSaveMessages] = useState<Record<number, string>>({})
   const [uploadingId, setUploadingId] = useState<number | null>(null)
 
   const load = async () => {
@@ -17,6 +17,17 @@ export default function AdminFluorineManager() {
 
   useEffect(() => { load() }, [])
 
+  const showSectionMessage = (id: number, msg: string, duration = 2000) => {
+    setSaveMessages((prev) => ({ ...prev, [id]: msg }))
+    setTimeout(() => {
+      setSaveMessages((prev) => {
+        const next = { ...prev }
+        delete next[id]
+        return next
+      })
+    }, duration)
+  }
+
   const saveSection = async (section: any) => {
     await api.put(`/admin/fluorine-sections/${section.id}`, {
       title: section.title,
@@ -25,8 +36,7 @@ export default function AdminFluorineManager() {
       image_url: section.image_url,
       image_fit: section.image_fit || 'cover',
     })
-    setMessage('保存成功')
-    setTimeout(() => setMessage(''), 2000)
+    showSectionMessage(section.id, '保存成功')
     load()
   }
 
@@ -36,11 +46,9 @@ export default function AdminFluorineManager() {
       const res = await uploadFile(file)
       const url = res.data.url
       setSections((prev) => prev.map((s) => s.id === sectionId ? { ...s, image_url: url } : s))
-      setMessage('图片上传成功')
-      setTimeout(() => setMessage(''), 2000)
+      showSectionMessage(sectionId, '图片上传成功')
     } catch {
-      setMessage('图片上传失败')
-      setTimeout(() => setMessage(''), 3000)
+      showSectionMessage(sectionId, '图片上传失败', 3000)
     } finally {
       setUploadingId(null)
     }
@@ -62,8 +70,6 @@ export default function AdminFluorineManager() {
           </div>
         </div>
 
-        {message && <p className="text-success text-[13px] mb-4">{message}</p>}
-
         <div className="bg-dark p-4 mb-6">
           <p className="text-[12px] text-accent mb-2">标记语言说明：</p>
           <div className="text-[12px] text-muted space-y-1">
@@ -80,13 +86,18 @@ export default function AdminFluorineManager() {
             <div key={section.id} className="bg-dark p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-white font-bold">{section.title}</h3>
-                <button
-                  onClick={() => saveSection(section)}
-                  className="flex items-center gap-2 bg-white text-primary px-4 py-2 text-[13px] font-medium hover:bg-bg"
-                >
-                  <Save size={14} />
-                  保存
-                </button>
+                <div className="flex items-center gap-3">
+                  {saveMessages[section.id] && (
+                    <span className="text-[12px] text-success">{saveMessages[section.id]}</span>
+                  )}
+                  <button
+                    onClick={() => saveSection(section)}
+                    className="flex items-center gap-2 bg-white text-primary px-4 py-2 text-[13px] font-medium hover:bg-bg"
+                  >
+                    <Save size={14} />
+                    保存
+                  </button>
+                </div>
               </div>
               <div className="space-y-4">
                 <div>
