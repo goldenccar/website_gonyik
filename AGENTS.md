@@ -39,6 +39,7 @@
 | IP | `111.231.141.7` |
 | 系统 | OpenCloudOS 9.4 |
 | 登录用户 | `root` |
+| 密码 | `Tvb_26187228` |
 | 项目路径 | `/var/www/website_gonyik` |
 | 后端服务 | `gonyik` (PM2 管理)，监听 `localhost:3001` |
 | nginx | 80 端口 → 反向代理到 `localhost:3001`，配置在 `/etc/nginx/conf.d/gonyik.conf` |
@@ -92,6 +93,7 @@ sshpass -p 'PASSWORD' ssh -o StrictHostKeyChecking=no root@111.231.141.7 \
 | tsx 缓存 | 修改 `server/` 下任何代码后，**必须** `pm2 restart gonyik`，否则新代码不生效 |
 | 前端缓存 | `index.html` 已加 `Cache-Control: no-cache`，但 CDN/浏览器仍可能缓存，清缓存或硬刷新 |
 | 自动部署失效 | `scripts/auto-deploy.sh` 定时任务经常不工作，**不要依赖它**，改完代码手动部署 |
+| 密码使用规则 | **有完整上下文时**（能直接看到本行密码）可直接使用；**上下文压缩后**（看不到密码）**必须先询问用户** |
 
 ### 日常诊断命令
 ```bash
