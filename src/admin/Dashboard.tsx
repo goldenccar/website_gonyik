@@ -65,6 +65,11 @@ const MENU_GROUPS: MenuGroup[] = [
     ],
   },
   {
+    label: '页面配置',
+    icon: Settings,
+    children: [{ label: '页面配置', icon: Settings, path: '/admin/page-configs' }],
+  },
+  {
     label: '框架管理',
     icon: Settings,
     children: [

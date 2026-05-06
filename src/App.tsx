@@ -55,6 +55,7 @@ const AdminInquirySubjectManager = lazy(() => import('./admin/InquirySubjectMana
 const AdminContactMessageManager = lazy(() => import('./admin/ContactMessageManager'))
 const AdminFluorineManager = lazy(() => import('./admin/FluorineManager'))
 const AdminEquipmentSceneManager = lazy(() => import('./admin/EquipmentSceneManager'))
+const AdminPageConfigManager = lazy(() => import('./admin/PageConfigManager'))
 
 function App() {
   useEffect(() => {
@@ -96,6 +97,7 @@ function App() {
           <Route path="/admin/contact-messages" element={<AdminContactMessageManager />} />
           <Route path="/admin/fluorine" element={<AdminFluorineManager />} />
           <Route path="/admin/equipment-scenes" element={<AdminEquipmentSceneManager />} />
+          <Route path="/admin/page-configs" element={<AdminPageConfigManager />} />
 
           {/* Public routes */}
           <Route element={<PublicLayout />}>

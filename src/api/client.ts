@@ -33,6 +33,7 @@ export default api
 export const getHomeConfig = () => api.get('/home')
 export const getSiteConfig = () => api.get('/site-config')
 export const getPageConfig = (key: string) => api.get(`/page/${key}`)
+export const updatePageConfig = (key: string, data: any) => api.put(`/admin/page/${key}`, data)
 export const getNavigation = () => api.get('/navigation')
 export const getFooter = () => api.get('/footer')
 export const getSocial = () => api.get('/social')
