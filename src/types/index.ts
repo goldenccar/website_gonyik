@@ -169,6 +169,7 @@ export interface FluorineSection {
   subtitle: string
   content: string
   image_url: string | null
+  image_fit: 'cover' | 'contain' | 'original'
 }
 
 export interface InquirySubject {

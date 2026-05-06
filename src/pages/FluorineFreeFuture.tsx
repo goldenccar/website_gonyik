@@ -54,11 +54,11 @@ export default function FluorineFreeFuture() {
                   {/* Image */}
                   <div className="lg:w-[40%] shrink-0">
                     {section.image_url ? (
-                      <div className="aspect-[4/5] bg-darker overflow-hidden">
+                      <div className={`bg-darker overflow-hidden ${section.image_fit === 'original' ? '' : 'aspect-[4/5]'}`}>
                         <img
                           src={section.image_url}
                           alt={section.title}
-                          className="w-full h-full object-cover"
+                          className={`w-full ${section.image_fit === 'original' ? 'h-auto max-h-[600px] object-contain mx-auto' : section.image_fit === 'contain' ? 'h-full object-contain' : 'h-full object-cover'}`}
                         />
                       </div>
                     ) : (

@@ -23,6 +23,7 @@ export default function AdminFluorineManager() {
       subtitle: section.subtitle,
       content: section.content,
       image_url: section.image_url,
+      image_fit: section.image_fit || 'cover',
     })
     setMessage('保存成功')
     setTimeout(() => setMessage(''), 2000)
@@ -106,6 +107,26 @@ export default function AdminFluorineManager() {
                 </div>
                 <div>
                   <label className="block text-[12px] text-secondary uppercase mb-1">配图</label>
+                  <div className="flex items-center gap-3 mb-3">
+                    <label className="text-[12px] text-accent">显示模式：</label>
+                    {[
+                      { value: 'cover', label: '填满裁剪' },
+                      { value: 'contain', label: '完整显示' },
+                      { value: 'original', label: '原始尺寸' },
+                    ].map((opt) => (
+                      <button
+                        key={opt.value}
+                        onClick={() => setSections((prev) => prev.map((s) => s.id === section.id ? { ...s, image_fit: opt.value } : s))}
+                        className={`text-[11px] px-2.5 py-1 transition-colors ${
+                          section.image_fit === opt.value
+                            ? 'bg-white text-primary'
+                            : 'bg-white/10 text-accent hover:text-white'
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
                   {section.image_url ? (
                     <div className="relative mb-3">
                       <img

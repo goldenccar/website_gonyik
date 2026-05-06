@@ -59,29 +59,29 @@ export default function Contact() {
       </section>
 
       {/* Content */}
-      <section className="bg-bg px-6 lg:px-12 py-16">
+      <section className="bg-darker px-6 lg:px-12 py-16">
         <div className="max-w-[1440px] mx-auto">
           {/* Contact Info Bar */}
-          <div className="bg-white p-6 sm:p-8 mb-6 flex flex-wrap items-center gap-6 sm:gap-10">
+          <div className="bg-dark p-6 sm:p-8 mb-6 flex flex-wrap items-center gap-6 sm:gap-10">
             <div className="flex items-center gap-3">
-              <Mail size={18} className="text-secondary shrink-0" />
+              <Mail size={18} className="text-accent shrink-0" />
               <div>
-                <p className="text-[12px] text-muted mb-0.5">邮箱</p>
-                <a href={`mailto:${contactConfig?.email || 'contact@gangyi.tech'}`} className="text-[14px] text-primary hover:underline">{contactConfig?.email || 'contact@gangyi.tech'}</a>
+                <p className="text-[12px] text-accent mb-0.5">邮箱</p>
+                <a href={`mailto:${contactConfig?.email || 'contact@gangyi.tech'}`} className="text-[14px] text-white hover:text-accent transition-colors">{contactConfig?.email || 'contact@gangyi.tech'}</a>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <Phone size={18} className="text-secondary shrink-0" />
+              <Phone size={18} className="text-accent shrink-0" />
               <div>
-                <p className="text-[12px] text-muted mb-0.5">电话</p>
-                <p className="text-[14px] text-primary">{contactConfig?.phone || '400-XXX-XXXX'}</p>
+                <p className="text-[12px] text-accent mb-0.5">电话</p>
+                <p className="text-[14px] text-white">{contactConfig?.phone || '400-XXX-XXXX'}</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <MapPin size={18} className="text-secondary shrink-0" />
+              <MapPin size={18} className="text-accent shrink-0" />
               <div>
-                <p className="text-[12px] text-muted mb-0.5">地址</p>
-                <p className="text-[14px] text-primary">{contactConfig?.address || '上海市'}</p>
+                <p className="text-[12px] text-accent mb-0.5">地址</p>
+                <p className="text-[14px] text-white">{contactConfig?.address || '上海市'}</p>
               </div>
             </div>
           </div>
@@ -91,99 +91,99 @@ export default function Contact() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white p-10 text-center"
+              className="bg-dark p-10 text-center"
             >
-              <CheckCircle size={48} className="mx-auto text-primary mb-4" />
-              <h3 className="text-h4 text-primary mb-2">提交成功</h3>
-              <p className="text-body text-muted mb-6">感谢您的留言，我们会尽快回复您。</p>
+              <CheckCircle size={48} className="mx-auto text-white mb-4" />
+              <h3 className="text-h4 text-white mb-2">提交成功</h3>
+              <p className="text-body text-accent mb-6">感谢您的留言，我们会尽快回复您。</p>
               <button
                 onClick={() => { setSubmitted(false); setForm({ name: '', company: '', email: '', phone: '', subject: '', message: '' }) }}
-                className="px-6 py-3 bg-primary text-white text-[14px] font-medium hover:bg-darker transition-colors"
+                className="px-6 py-3 bg-white text-primary text-[14px] font-medium hover:bg-bg transition-colors"
               >
                 继续留言
               </button>
             </motion.div>
           ) : (
-            <form onSubmit={handleSubmit} className="bg-white p-8 sm:p-10">
+            <form onSubmit={handleSubmit} className="bg-dark p-8 sm:p-10">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
                 <div>
-                  <label className="block text-[13px] text-secondary mb-2">姓名 *</label>
+                  <label className="block text-[13px] text-accent mb-2">姓名 *</label>
                   <input
                     type="text"
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    className="w-full px-4 py-3 text-[14px] bg-bg border border-border focus:border-primary focus:outline-none transition-colors"
+                    className="w-full px-4 py-3 text-[14px] bg-white/5 border border-white/10 text-white focus:border-white focus:outline-none transition-colors placeholder:text-white/30"
                     placeholder="您的姓名"
                   />
-                  {errors.name && <p className="text-[12px] text-red-500 mt-1">{errors.name}</p>}
+                  {errors.name && <p className="text-[12px] text-red-400 mt-1">{errors.name}</p>}
                 </div>
                 <div>
-                  <label className="block text-[13px] text-secondary mb-2">公司名称</label>
+                  <label className="block text-[13px] text-accent mb-2">公司名称</label>
                   <input
                     type="text"
                     value={form.company}
                     onChange={(e) => setForm({ ...form, company: e.target.value })}
-                    className="w-full px-4 py-3 text-[14px] bg-bg border border-border focus:border-primary focus:outline-none transition-colors"
+                    className="w-full px-4 py-3 text-[14px] bg-white/5 border border-white/10 text-white focus:border-white focus:outline-none transition-colors placeholder:text-white/30"
                     placeholder="您的公司（选填）"
                   />
                 </div>
                 <div>
-                  <label className="block text-[13px] text-secondary mb-2">邮箱 *</label>
+                  <label className="block text-[13px] text-accent mb-2">邮箱 *</label>
                   <input
                     type="email"
                     value={form.email}
                     onChange={(e) => setForm({ ...form, email: e.target.value })}
-                    className="w-full px-4 py-3 text-[14px] bg-bg border border-border focus:border-primary focus:outline-none transition-colors"
+                    className="w-full px-4 py-3 text-[14px] bg-white/5 border border-white/10 text-white focus:border-white focus:outline-none transition-colors placeholder:text-white/30"
                     placeholder="example@company.com"
                   />
-                  {errors.email && <p className="text-[12px] text-red-500 mt-1">{errors.email}</p>}
+                  {errors.email && <p className="text-[12px] text-red-400 mt-1">{errors.email}</p>}
                 </div>
                 <div>
-                  <label className="block text-[13px] text-secondary mb-2">电话</label>
+                  <label className="block text-[13px] text-accent mb-2">电话</label>
                   <input
                     type="tel"
                     value={form.phone}
                     onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                    className="w-full px-4 py-3 text-[14px] bg-bg border border-border focus:border-primary focus:outline-none transition-colors"
+                    className="w-full px-4 py-3 text-[14px] bg-white/5 border border-white/10 text-white focus:border-white focus:outline-none transition-colors placeholder:text-white/30"
                     placeholder="您的联系电话（选填）"
                   />
                 </div>
               </div>
               <div className="mb-5">
-                <label className="block text-[13px] text-secondary mb-2">咨询主题 *</label>
+                <label className="block text-[13px] text-accent mb-2">咨询主题 *</label>
                 <select
                   value={form.subject}
                   onChange={(e) => setForm({ ...form, subject: e.target.value })}
-                  className="w-full px-4 py-3 text-[14px] bg-bg border border-border focus:border-primary focus:outline-none transition-colors appearance-none cursor-pointer"
+                  className="w-full px-4 py-3 text-[14px] bg-white/5 border border-white/10 text-white focus:border-white focus:outline-none transition-colors appearance-none cursor-pointer"
                 >
-                  <option value="">请选择咨询主题</option>
+                  <option value="" className="bg-dark text-white">请选择咨询主题</option>
                   {inquirySubjects.map((s) => (
-                    <option key={s.id} value={s.label}>{s.label}</option>
+                    <option key={s.id} value={s.label} className="bg-dark text-white">{s.label}</option>
                   ))}
                 </select>
-                {errors.subject && <p className="text-[12px] text-red-500 mt-1">{errors.subject}</p>}
+                {errors.subject && <p className="text-[12px] text-red-400 mt-1">{errors.subject}</p>}
               </div>
               <div className="mb-6">
-                <label className="block text-[13px] text-secondary mb-2">留言内容 *</label>
+                <label className="block text-[13px] text-accent mb-2">留言内容 *</label>
                 <textarea
                   value={form.message}
                   onChange={(e) => setForm({ ...form, message: e.target.value })}
                   rows={5}
-                  className="w-full px-4 py-3 text-[14px] bg-bg border border-border focus:border-primary focus:outline-none transition-colors resize-none"
+                  className="w-full px-4 py-3 text-[14px] bg-white/5 border border-white/10 text-white focus:border-white focus:outline-none transition-colors resize-none placeholder:text-white/30"
                   placeholder="请详细描述您的需求..."
                 />
-                {errors.message && <p className="text-[12px] text-red-500 mt-1">{errors.message}</p>}
+                {errors.message && <p className="text-[12px] text-red-400 mt-1">{errors.message}</p>}
               </div>
               <div className="flex items-center gap-6">
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="inline-flex items-center gap-2 px-8 py-3.5 bg-primary text-white text-[14px] font-medium hover:bg-darker transition-colors disabled:opacity-50"
+                  className="inline-flex items-center gap-2 px-8 py-3.5 bg-white text-primary text-[14px] font-medium hover:bg-bg transition-colors disabled:opacity-50"
                 >
                   <Send size={16} />
                   {submitting ? '提交中...' : '提交留言'}
                 </button>
-                <p className="text-[13px] text-muted">
+                <p className="text-[13px] text-accent">
                   {contactConfig?.response_text || '提交表单后，我们的面料顾问将在 3 个工作日内与您取得联系'}
                 </p>
               </div>

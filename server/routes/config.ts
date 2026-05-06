@@ -75,6 +75,14 @@ router.put('/admin/fluorine-sections/:id', authMiddleware, (req: AuthRequest, re
   res.json({ success: true })
 })
 
+router.put('/admin/fluorine-sections/:id/image-fit', authMiddleware, (req: AuthRequest, res) => {
+  const idx = db.fluorine_sections.findIndex((s) => s.id === Number(req.params.id))
+  if (idx < 0) { res.status(404).json({ error: 'Not found' }); return }
+  db.fluorine_sections[idx].image_fit = req.body.image_fit
+  saveDb()
+  res.json({ success: true })
+})
+
 router.put('/admin/home', authMiddleware, (req: AuthRequest, res) => {
   db.home_config = { ...db.home_config, ...req.body }
   saveDb()
