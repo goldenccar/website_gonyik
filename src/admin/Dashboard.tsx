@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
+import { createPortal } from 'react-dom'
 import {
   LayoutDashboard, Home, Layers, Mountain, Shirt, HelpCircle, Newspaper, Image, Palette, LogOut, Dock, ChevronDown, Settings, MapPin, Download, Mail, Sun, MessageSquare, PanelLeftClose, PanelLeft
 } from 'lucide-react'
@@ -102,6 +103,9 @@ export default function AdminDashboard({ children }: DashboardProps = {}) {
   const [username, setUsername] = useState('Admin')
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
   const [collapsed, setCollapsed] = useState(false)
+  const [flyoutGroup, setFlyoutGroup] = useState<string | null>(null)
+  const [flyoutPos, setFlyoutPos] = useState<{ top: number }>({ top: 0 })
+  const buttonRefs = useRef<Record<string, HTMLButtonElement | null>>({})
 
   useEffect(() => {
     const token = localStorage.getItem('admin_token')
@@ -110,14 +114,33 @@ export default function AdminDashboard({ children }: DashboardProps = {}) {
     }
   }, [navigate])
 
-  // Auto-expand the group containing current path
+  // Auto-expand the group containing current path (only when sidebar is expanded)
   useEffect(() => {
+    if (collapsed) return
     const currentPath = location.pathname
     const group = MENU_GROUPS.find((g) => g.children.some((c) => c.path === currentPath))
     if (group) {
       setExpanded((prev) => new Set(prev).add(group.label))
     }
+  }, [location.pathname, collapsed])
+
+  // Close flyout when route changes
+  useEffect(() => {
+    setFlyoutGroup(null)
   }, [location.pathname])
+
+  // Close flyout when clicking outside
+  useEffect(() => {
+    if (!flyoutGroup) return
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement
+      if (!target.closest('.flyout-panel') && !target.closest('.flyout-trigger')) {
+        setFlyoutGroup(null)
+      }
+    }
+    document.addEventListener('click', handleClick)
+    return () => document.removeEventListener('click', handleClick)
+  }, [flyoutGroup])
 
   const toggleGroup = (label: string) => {
     setExpanded((prev) => {
@@ -129,6 +152,16 @@ export default function AdminDashboard({ children }: DashboardProps = {}) {
       }
       return next
     })
+  }
+
+  const handleGroupClick = (label: string, e: React.MouseEvent<HTMLButtonElement>) => {
+    if (collapsed) {
+      const rect = (e.currentTarget as HTMLButtonElement).getBoundingClientRect()
+      setFlyoutPos({ top: rect.top })
+      setFlyoutGroup((prev) => (prev === label ? null : label))
+    } else {
+      toggleGroup(label)
+    }
   }
 
   const isActive = (path: string) => location.pathname === path
@@ -188,9 +221,10 @@ export default function AdminDashboard({ children }: DashboardProps = {}) {
             return (
               <div key={group.label} className="relative">
                 <button
-                  onClick={() => toggleGroup(group.label)}
+                  ref={(el) => { buttonRefs.current[group.label] = el }}
+                  onClick={(e) => handleGroupClick(group.label, e)}
                   title={collapsed ? group.label : undefined}
-                  className={`w-full flex items-center text-[13px] transition-colors ${
+                  className={`flyout-trigger w-full flex items-center text-[13px] transition-colors ${
                     collapsed ? 'justify-center px-2 py-3' : 'justify-between px-6 py-3'
                   } ${
                     hasActiveChild ? 'text-white' : 'text-accent hover:text-white'
@@ -211,36 +245,22 @@ export default function AdminDashboard({ children }: DashboardProps = {}) {
                     <GroupIcon size={18} />
                   )}
                 </button>
-                {isExpanded && (
-                  <div
-                    className={`${
-                      collapsed
-                        ? 'absolute left-full top-0 ml-1 bg-dark border border-white/10 shadow-lg z-50 min-w-[200px]'
-                        : 'pb-1'
-                    }`}
-                  >
-                    {collapsed && (
-                      <div className="px-4 py-2 text-[12px] text-accent border-b border-white/10">
-                        {group.label}
-                      </div>
-                    )}
+                {/* Expanded sub-menu (only when sidebar is NOT collapsed) */}
+                {!collapsed && isExpanded && (
+                  <div className="pb-1">
                     {group.children.map((item) => {
                       const ItemIcon = item.icon
                       return (
                         <Link
                           key={item.path}
                           to={item.path}
-                          className={`flex items-center text-[13px] transition-colors ${
-                            collapsed
-                              ? 'gap-2 px-4 py-2.5'
-                              : 'gap-3 pl-[52px] pr-6 py-2.5'
-                          } ${
+                          className={`flex items-center gap-3 pl-[52px] pr-6 py-2.5 text-[13px] transition-colors ${
                             isActive(item.path)
                               ? 'text-white bg-white/10'
                               : 'text-muted hover:text-white hover:bg-white/5'
                           }`}
                         >
-                          <ItemIcon size={collapsed ? 14 : 16} />
+                          <ItemIcon size={16} />
                           {item.label}
                         </Link>
                       )
@@ -270,6 +290,42 @@ export default function AdminDashboard({ children }: DashboardProps = {}) {
           )}
         </div>
       </aside>
+
+      {/* Flyout panel (Portal) - only shown when sidebar is collapsed */}
+      {collapsed && flyoutGroup && (
+        (() => {
+          const group = MENU_GROUPS.find((g) => g.label === flyoutGroup)
+          if (!group) return null
+          return createPortal(
+            <div
+              className="flyout-panel fixed z-50 bg-dark border border-white/10 shadow-lg min-w-[200px]"
+              style={{ left: 68, top: flyoutPos.top }}
+            >
+              <div className="px-4 py-2 text-[12px] text-accent border-b border-white/10">
+                {group.label}
+              </div>
+              {group.children.map((item) => {
+                const ItemIcon = item.icon
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className={`flex items-center gap-2 px-4 py-2.5 text-[13px] transition-colors ${
+                      isActive(item.path)
+                        ? 'text-white bg-white/10'
+                        : 'text-muted hover:text-white hover:bg-white/5'
+                    }`}
+                  >
+                    <ItemIcon size={14} />
+                    {item.label}
+                  </Link>
+                )
+              })}
+            </div>,
+            document.body
+          )
+        })()
+      )}
 
       {/* Main */}
       <main className="flex-1 p-10 overflow-y-auto h-screen">
