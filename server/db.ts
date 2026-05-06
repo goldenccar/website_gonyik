@@ -306,6 +306,15 @@ export function initDatabase() {
       ]
       saveDb()
     }
+    if (!db.page_configs) {
+      db.page_configs = [
+        { id: 1, page_key: 'fabrics', page_tag: 'FABRIC DATABASE', page_title: '面料数据库', page_subtitle: '四大核心系列，覆盖户外、运动、工装全场景', hero_background: null },
+        { id: 2, page_key: 'equipment', page_tag: 'END USE & EQUIPMENT', page_title: '终端装备', page_subtitle: '四大品类，覆盖全场景功能需求', hero_background: null },
+        { id: 3, page_key: 'fluorine-free', page_tag: 'RPO MATERIAL PLATFORM', page_title: 'RPO材料平台 · 探索无氟未来', page_subtitle: '以科技创新推动可持续发展，告别 PFAS，拥抱绿色未来', hero_background: null },
+        { id: 4, page_key: 'services', page_tag: 'SERVICES & SUPPORT', page_title: '服务与支持', page_subtitle: '全方位服务体系，助力您的每一个项目', hero_background: null },
+      ]
+      saveDb()
+    }
   } else {
     db = createDefaultDb()
   }
