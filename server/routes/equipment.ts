@@ -77,4 +77,37 @@ router.delete('/admin/products/:id', authMiddleware, (req: AuthRequest, res) => 
   res.json({ success: true })
 })
 
+// Equipment Scenes (public)
+router.get('/scenes', (_req, res) => {
+  res.json({ data: db.equipment_scenes.sort((a, b) => a.order_index - b.order_index) })
+})
+
+// Equipment Scenes (admin)
+router.get('/admin/equipment-scenes', authMiddleware, (_req, res) => {
+  res.json({ data: db.equipment_scenes.sort((a, b) => a.order_index - b.order_index) })
+})
+
+router.post('/admin/equipment-scenes', authMiddleware, (req: AuthRequest, res) => {
+  const { category, label, equipment_slug } = req.body
+  const newScene = { id: getNextId(db.equipment_scenes), category, label, equipment_slug, order_index: db.equipment_scenes.length }
+  db.equipment_scenes.push(newScene)
+  saveDb()
+  res.json({ success: true, id: newScene.id })
+})
+
+router.put('/admin/equipment-scenes/:id', authMiddleware, (req: AuthRequest, res) => {
+  const idx = db.equipment_scenes.findIndex((s) => s.id === Number(req.params.id))
+  if (idx < 0) { res.status(404).json({ error: 'Not found' }); return }
+  const { category, label, equipment_slug } = req.body
+  db.equipment_scenes[idx] = { ...db.equipment_scenes[idx], category, label, equipment_slug }
+  saveDb()
+  res.json({ success: true })
+})
+
+router.delete('/admin/equipment-scenes/:id', authMiddleware, (req: AuthRequest, res) => {
+  db.equipment_scenes = db.equipment_scenes.filter((s) => s.id !== Number(req.params.id))
+  saveDb()
+  res.json({ success: true })
+})
+
 export default router

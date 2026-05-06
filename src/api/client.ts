@@ -45,6 +45,7 @@ export const getDigitalAssets = (seriesSlug?: string) => api.get('/fabrics/digit
 
 export const getEquipmentCategories = () => api.get('/equipment/categories')
 export const getCategoryProducts = (slug: string) => api.get(`/equipment/categories/${slug}/products`)
+export const getEquipmentScenes = () => api.get('/equipment/scenes')
 
 export const getTestReports = () => api.get('/reports')
 export const getTestReport = (id: number) => api.get(`/reports/${id}`)

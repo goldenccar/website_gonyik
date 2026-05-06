@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import {
-  LayoutDashboard, Home, Layers, Mountain, Shirt, HelpCircle, Newspaper, Image, Palette, LogOut, Dock, ChevronDown, Settings, FileText, Briefcase, MapPin, Download, Mail, Sun, MessageSquare
+  LayoutDashboard, Home, Layers, Mountain, Shirt, HelpCircle, Newspaper, Image, Palette, LogOut, Dock, ChevronDown, Settings, MapPin, Download, Mail, Sun, MessageSquare, PanelLeftClose, PanelLeft
 } from 'lucide-react'
 
 interface MenuItem {
@@ -41,6 +41,7 @@ const MENU_GROUPS: MenuGroup[] = [
     icon: Shirt,
     children: [
       { label: '终端装备管理', icon: Shirt, path: '/admin/equipment' },
+      { label: '场景管理', icon: MapPin, path: '/admin/equipment-scenes' },
       { label: '数字资产管理', icon: Download, path: '/admin/digital-assets' },
     ],
   },
@@ -95,6 +96,7 @@ export default function AdminDashboard({ children }: DashboardProps = {}) {
   const location = useLocation()
   const [username, setUsername] = useState('Admin')
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
+  const [collapsed, setCollapsed] = useState(false)
 
   useEffect(() => {
     const token = localStorage.getItem('admin_token')
@@ -134,11 +136,22 @@ export default function AdminDashboard({ children }: DashboardProps = {}) {
   return (
     <div className="h-screen bg-darker flex overflow-hidden">
       {/* Sidebar */}
-      <aside className="w-[240px] bg-dark flex-shrink-0 flex flex-col h-screen">
-        <div className="p-6 border-b border-white/10">
-          <h2 className="text-white text-[16px] font-bold">港翼科技 CMS</h2>
+      <aside
+        className={`bg-dark flex-shrink-0 flex flex-col h-screen transition-all duration-300 ${
+          collapsed ? 'w-[64px]' : 'w-[240px]'
+        }`}
+      >
+        <div className={`border-b border-white/10 flex items-center ${collapsed ? 'justify-center px-2 py-5' : 'justify-between px-6 py-5'}`}>
+          {!collapsed && <h2 className="text-white text-[16px] font-bold">港翼科技 CMS</h2>}
+          <button
+            onClick={() => setCollapsed(!collapsed)}
+            className="text-accent hover:text-white transition-colors"
+            title={collapsed ? '展开侧边栏' : '收起侧边栏'}
+          >
+            {collapsed ? <PanelLeft size={18} /> : <PanelLeftClose size={18} />}
+          </button>
         </div>
-        <nav className="flex-1 py-4 overflow-y-auto">
+        <nav className="flex-1 py-4 overflow-y-auto overflow-x-hidden">
           {MENU_GROUPS.map((group) => {
             const GroupIcon = group.icon
             const isSingle = group.children.length === 1
@@ -152,50 +165,77 @@ export default function AdminDashboard({ children }: DashboardProps = {}) {
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`flex items-center gap-3 px-6 py-3 text-[13px] transition-colors ${
+                  title={collapsed ? item.label : undefined}
+                  className={`flex items-center text-[13px] transition-colors ${
+                    collapsed ? 'justify-center px-2 py-3' : 'gap-3 px-6 py-3'
+                  } ${
                     isActive(item.path)
                       ? 'text-white bg-white/10'
                       : 'text-accent hover:text-white hover:bg-white/5'
                   }`}
                 >
                   <ItemIcon size={18} />
-                  {item.label}
+                  {!collapsed && item.label}
                 </Link>
               )
             }
 
             return (
-              <div key={group.label}>
+              <div key={group.label} className="relative">
                 <button
                   onClick={() => toggleGroup(group.label)}
-                  className={`w-full flex items-center justify-between px-6 py-3 text-[13px] transition-colors ${
+                  title={collapsed ? group.label : undefined}
+                  className={`w-full flex items-center text-[13px] transition-colors ${
+                    collapsed ? 'justify-center px-2 py-3' : 'justify-between px-6 py-3'
+                  } ${
                     hasActiveChild ? 'text-white' : 'text-accent hover:text-white'
                   } hover:bg-white/5`}
                 >
-                  <div className="flex items-center gap-3">
-                    {GroupIcon && <GroupIcon size={18} />}
-                    <span>{group.label}</span>
-                  </div>
-                  <ChevronDown
-                    size={14}
-                    className={`transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
-                  />
+                  {!collapsed ? (
+                    <>
+                      <div className="flex items-center gap-3">
+                        {GroupIcon && <GroupIcon size={18} />}
+                        <span>{group.label}</span>
+                      </div>
+                      <ChevronDown
+                        size={14}
+                        className={`transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
+                      />
+                    </>
+                  ) : (
+                    <GroupIcon size={18} />
+                  )}
                 </button>
                 {isExpanded && (
-                  <div className="pb-1">
+                  <div
+                    className={`${
+                      collapsed
+                        ? 'absolute left-full top-0 ml-1 bg-dark border border-white/10 shadow-lg z-50 min-w-[200px]'
+                        : 'pb-1'
+                    }`}
+                  >
+                    {collapsed && (
+                      <div className="px-4 py-2 text-[12px] text-accent border-b border-white/10">
+                        {group.label}
+                      </div>
+                    )}
                     {group.children.map((item) => {
                       const ItemIcon = item.icon
                       return (
                         <Link
                           key={item.path}
                           to={item.path}
-                          className={`flex items-center gap-3 pl-[52px] pr-6 py-2.5 text-[13px] transition-colors ${
+                          className={`flex items-center text-[13px] transition-colors ${
+                            collapsed
+                              ? 'gap-2 px-4 py-2.5'
+                              : 'gap-3 pl-[52px] pr-6 py-2.5'
+                          } ${
                             isActive(item.path)
                               ? 'text-white bg-white/10'
                               : 'text-muted hover:text-white hover:bg-white/5'
                           }`}
                         >
-                          <ItemIcon size={16} />
+                          <ItemIcon size={collapsed ? 14 : 16} />
                           {item.label}
                         </Link>
                       )
@@ -206,13 +246,23 @@ export default function AdminDashboard({ children }: DashboardProps = {}) {
             )
           })}
         </nav>
-        <div className="p-4 border-t border-white/10">
-          <div className="flex items-center justify-between">
-            <span className="text-[13px] text-accent">{username}</span>
-            <button onClick={handleLogout} className="text-accent hover:text-white transition-colors">
+        <div className={`border-t border-white/10 ${collapsed ? 'p-2' : 'p-4'}`}>
+          {collapsed ? (
+            <button
+              onClick={handleLogout}
+              className="w-full flex justify-center text-accent hover:text-white transition-colors py-2"
+              title="退出登录"
+            >
               <LogOut size={16} />
             </button>
-          </div>
+          ) : (
+            <div className="flex items-center justify-between">
+              <span className="text-[13px] text-accent">{username}</span>
+              <button onClick={handleLogout} className="text-accent hover:text-white transition-colors">
+                <LogOut size={16} />
+              </button>
+            </div>
+          )}
         </div>
       </aside>
 

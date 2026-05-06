@@ -1,17 +1,21 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { getPageConfig, getEquipmentCategories, getCategoryProducts } from '@/api/client'
-import type { EquipmentCategory, EquipmentProduct, PageConfig } from '@/types'
+import { getPageConfig, getEquipmentCategories, getCategoryProducts, getEquipmentScenes } from '@/api/client'
+import type { EquipmentCategory, EquipmentProduct, EquipmentScene, PageConfig } from '@/types'
 
-const TABS = [
-  { key: 'all', label: 'All' },
-]
+const CATEGORY_COLORS: Record<string, string> = {
+  '都市生活': '#6B7B8C',
+  '轻户外': '#5A8A6E',
+  '专业运动': '#4A7BA7',
+  '特种防护': '#8B3A3A',
+}
 
 export default function EndUseEquipment() {
   const [pageConfig, setPageConfig] = useState<PageConfig | null>(null)
   const [categories, setCategories] = useState<EquipmentCategory[]>([])
   const [activeTab, setActiveTab] = useState('all')
   const [products, setProducts] = useState<EquipmentProduct[]>([])
+  const [scenes, setScenes] = useState<EquipmentScene[]>([])
   const tabNavRef = useRef<HTMLDivElement>(null)
   const cardRefs = useRef<Record<string, HTMLDivElement | null>>({})
 
@@ -20,6 +24,9 @@ export default function EndUseEquipment() {
     getEquipmentCategories().then((res) => {
       const cats = res.data.data || []
       setCategories(cats)
+    })
+    getEquipmentScenes().then((res) => {
+      setScenes(res.data.data || [])
     })
   }, [])
 
@@ -55,16 +62,68 @@ export default function EndUseEquipment() {
     }
   }
 
+  const handleSceneClick = (slug: string) => {
+    setActiveTab(slug)
+    setTimeout(() => scrollToCard(slug), 50)
+  }
+
   return (
     <div>
-      {/* Hero */}
-      <section className="bg-darker flex flex-col justify-center px-6 lg:px-12 pt-[60px]">
-        <div className="max-w-[1440px] mx-auto w-full py-8">
-          <p className="text-label text-accent uppercase mb-4">{pageConfig?.page_tag || 'END USE & EQUIPMENT'}</p>
-          <h1 className="text-h1 text-white mb-4">{pageConfig?.page_title || '终端装备'}</h1>
-          <p className="text-body text-accent max-w-[600px]">
-            {pageConfig?.page_subtitle || '四大品类，覆盖全场景功能需求'}
-          </p>
+      {/* Hero + Scene Selector */}
+      <section className="bg-darker px-6 lg:px-12 pt-[60px] pb-16">
+        <div className="max-w-[1440px] mx-auto w-full flex flex-col lg:flex-row lg:items-start lg:justify-between gap-10 lg:gap-16">
+          {/* Left: Hero text */}
+          <div className="py-8 shrink-0">
+            <p className="text-label text-accent uppercase mb-4">{pageConfig?.page_tag || 'END USE & EQUIPMENT'}</p>
+            <h1 className="text-h1 text-white mb-4">{pageConfig?.page_title || '终端装备'}</h1>
+            <p className="text-body text-accent max-w-[600px]">
+              {pageConfig?.page_subtitle || '四大品类，覆盖全场景功能需求'}
+            </p>
+          </div>
+          {/* Right: Scene Selector */}
+          {scenes.length > 0 && (
+            <div className="py-8 lg:min-w-[420px]">
+              <div className="flex items-center gap-3 mb-5">
+                <div className="w-6 h-[1px] bg-white/20" />
+                <span className="text-[11px] text-white/40 uppercase tracking-widest">按应用场景选择</span>
+              </div>
+              <div className="space-y-4">
+                {(() => {
+                  const grouped = scenes.reduce<Record<string, EquipmentScene[]>>((acc, s) => {
+                    if (!acc[s.category]) acc[s.category] = []
+                    acc[s.category].push(s)
+                    return acc
+                  }, {})
+                  return Object.entries(grouped).map(([category, items]) => {
+                    const color = CATEGORY_COLORS[category] || '#6B7B8C'
+                    return (
+                      <div key={category} className="flex items-start gap-4">
+                        <div className="flex items-center gap-2 shrink-0 mt-1.5 min-w-[80px]">
+                          <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: color }} />
+                          <span className="text-[13px] text-white/60 whitespace-nowrap">{category}</span>
+                        </div>
+                        <div className="flex flex-wrap gap-2 flex-1">
+                          {items.map((scene) => (
+                            <button
+                              key={scene.id}
+                              onClick={() => handleSceneClick(scene.equipment_slug)}
+                              className={`px-3.5 py-1.5 text-[13px] border transition-all ${
+                                activeTab === scene.equipment_slug
+                                  ? 'text-white border-white/25 bg-white/10'
+                                  : 'text-white/70 border-white/[0.08] hover:text-white hover:border-white/25 hover:bg-white/5'
+                              }`}
+                            >
+                              {scene.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )
+                  })
+                })()}
+              </div>
+            </div>
+          )}
         </div>
       </section>
 

@@ -23,6 +23,7 @@ export interface Database {
   test_reports: any[]
   equipment_categories: any[]
   equipment_products: any[]
+  equipment_scenes: any[]
   about_us: any
   philosophies: any[]
   milestones: any[]
@@ -200,6 +201,21 @@ function createDefaultDb(): Database {
       { id: 7, category_id: 4, name: 'A-Line Pro 1', image: null, features: '["全天候","防水","透气"]', order_index: 0 },
       { id: 8, category_id: 4, name: 'A-Line Pro 2', image: null, features: '["全天候","防水","透气"]', order_index: 1 },
     ],
+    equipment_scenes: [
+      { id: 1, category: '都市生活', label: '日常通勤', equipment_slug: 'latent', order_index: 0 },
+      { id: 2, category: '都市生活', label: '商务差旅', equipment_slug: 'latent', order_index: 1 },
+      { id: 3, category: '都市生活', label: '城市轻户外', equipment_slug: 'u-line', order_index: 2 },
+      { id: 4, category: '轻户外', label: '徒步旅行', equipment_slug: 'p-line', order_index: 3 },
+      { id: 5, category: '轻户外', label: '露营休闲', equipment_slug: 'a-line', order_index: 4 },
+      { id: 6, category: '轻户外', label: '城市骑行', equipment_slug: 'u-line', order_index: 5 },
+      { id: 7, category: '专业运动', label: '滑雪登山', equipment_slug: 'p-line', order_index: 6 },
+      { id: 8, category: '专业运动', label: '水域活动', equipment_slug: 'p-line', order_index: 7 },
+      { id: 9, category: '专业运动', label: '越野跑步', equipment_slug: 'p-line', order_index: 8 },
+      { id: 10, category: '特种防护', label: '战术防护', equipment_slug: 'p-line', order_index: 9 },
+      { id: 11, category: '特种防护', label: '阻燃工装', equipment_slug: 'a-line', order_index: 10 },
+      { id: 12, category: '特种防护', label: '工业安全', equipment_slug: 'p-line', order_index: 11 },
+      { id: 13, category: '特种防护', label: '鞋材应用', equipment_slug: 'p-line', order_index: 12 },
+    ],
     about_us: {
       id: 1,
       positioning_title: '公司定位',
@@ -269,6 +285,24 @@ export function initDatabase() {
         { id: 3, label: '合作洽谈', order_index: 2 },
         { id: 4, label: '技术支持', order_index: 3 },
         { id: 5, label: '其他', order_index: 4 },
+      ]
+      saveDb()
+    }
+    if (!db.equipment_scenes) {
+      db.equipment_scenes = [
+        { id: 1, category: '都市生活', label: '日常通勤', equipment_slug: 'latent', order_index: 0 },
+        { id: 2, category: '都市生活', label: '商务差旅', equipment_slug: 'latent', order_index: 1 },
+        { id: 3, category: '都市生活', label: '城市轻户外', equipment_slug: 'u-line', order_index: 2 },
+        { id: 4, category: '轻户外', label: '徒步旅行', equipment_slug: 'p-line', order_index: 3 },
+        { id: 5, category: '轻户外', label: '露营休闲', equipment_slug: 'a-line', order_index: 4 },
+        { id: 6, category: '轻户外', label: '城市骑行', equipment_slug: 'u-line', order_index: 5 },
+        { id: 7, category: '专业运动', label: '滑雪登山', equipment_slug: 'p-line', order_index: 6 },
+        { id: 8, category: '专业运动', label: '水域活动', equipment_slug: 'p-line', order_index: 7 },
+        { id: 9, category: '专业运动', label: '越野跑步', equipment_slug: 'p-line', order_index: 8 },
+        { id: 10, category: '特种防护', label: '战术防护', equipment_slug: 'p-line', order_index: 9 },
+        { id: 11, category: '特种防护', label: '阻燃工装', equipment_slug: 'a-line', order_index: 10 },
+        { id: 12, category: '特种防护', label: '工业安全', equipment_slug: 'p-line', order_index: 11 },
+        { id: 13, category: '特种防护', label: '鞋材应用', equipment_slug: 'p-line', order_index: 12 },
       ]
       saveDb()
     }

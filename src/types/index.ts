@@ -177,3 +177,11 @@ export interface InquirySubject {
   label: string
   order_index: number
 }
+
+export interface EquipmentScene {
+  id: number
+  category: string
+  label: string
+  equipment_slug: string
+  order_index: number
+}
