@@ -92,9 +92,9 @@ function TranslationToggle({ content }: { content: string }) {
   return (
     <button
       onClick={() => setOpen(true)}
-      className="text-[11px] text-accent underline underline-offset-2 hover:text-white transition-colors mt-1 mb-1 cursor-pointer"
+      className="text-[10px] text-white/25 hover:text-white/50 transition-colors mt-0.5 mb-0.5 cursor-pointer ml-1"
     >
-      翻译
+      [译]
     </button>
   )
 }
