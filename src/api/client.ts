@@ -65,3 +65,9 @@ export const getInquirySubjects = () => api.get('/inquiry-subjects')
 export const updateInquirySubjects = (data: { items: any[] }) => api.put('/admin/inquiry-subjects', data)
 
 export const submitContactForm = (data: { name: string; company?: string; email: string; phone?: string; subject: string; message: string }) => api.post('/contact', data)
+
+export const uploadFile = (file: File) => {
+  const fd = new FormData()
+  fd.append('file', file)
+  return api.post('/media/upload', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
+}

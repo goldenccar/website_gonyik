@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Save } from 'lucide-react'
-import api, { getFluorineSections } from '@/api/client'
+import { ArrowLeft, Save, Upload, X, Image } from 'lucide-react'
+import api, { getFluorineSections, uploadFile } from '@/api/client'
 import Dashboard from './Dashboard'
 
 export default function AdminFluorineManager() {
   const navigate = useNavigate()
   const [sections, setSections] = useState<any[]>([])
   const [message, setMessage] = useState('')
+  const [uploadingId, setUploadingId] = useState<number | null>(null)
 
   const load = async () => {
     const res = await getFluorineSections()
@@ -26,6 +27,26 @@ export default function AdminFluorineManager() {
     setMessage('保存成功')
     setTimeout(() => setMessage(''), 2000)
     load()
+  }
+
+  const handleImageUpload = async (sectionId: number, file: File) => {
+    setUploadingId(sectionId)
+    try {
+      const res = await uploadFile(file)
+      const url = res.data.url
+      setSections((prev) => prev.map((s) => s.id === sectionId ? { ...s, image_url: url } : s))
+      setMessage('图片上传成功')
+      setTimeout(() => setMessage(''), 2000)
+    } catch {
+      setMessage('图片上传失败')
+      setTimeout(() => setMessage(''), 3000)
+    } finally {
+      setUploadingId(null)
+    }
+  }
+
+  const clearImage = (sectionId: number) => {
+    setSections((prev) => prev.map((s) => s.id === sectionId ? { ...s, image_url: '' } : s))
   }
 
   return (
@@ -84,13 +105,62 @@ export default function AdminFluorineManager() {
                   />
                 </div>
                 <div>
-                  <label className="block text-[12px] text-secondary uppercase mb-1">配图 URL</label>
+                  <label className="block text-[12px] text-secondary uppercase mb-1">配图</label>
+                  {section.image_url ? (
+                    <div className="relative mb-3">
+                      <img
+                        src={section.image_url}
+                        alt={section.title}
+                        className="w-full max-h-[300px] object-cover bg-white/5"
+                      />
+                      <button
+                        onClick={() => clearImage(section.id)}
+                        className="absolute top-2 right-2 bg-black/60 text-white p-1.5 hover:bg-black/80 transition-colors"
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                  ) : (
+                    <div
+                      className="border border-dashed border-borderDark p-8 text-center mb-3 cursor-pointer hover:border-white/30 transition-colors"
+                      onClick={() => document.getElementById(`file-${section.id}`)?.click()}
+                    >
+                      <Image size={32} className="mx-auto text-accent mb-2" />
+                      <p className="text-[13px] text-accent">点击或拖拽上传图片</p>
+                      <p className="text-[11px] text-muted mt-1">支持 JPG、PNG、WebP</p>
+                    </div>
+                  )}
                   <input
-                    value={section.image_url || ''}
-                    onChange={(e) => setSections((prev) => prev.map((s) => s.id === section.id ? { ...s, image_url: e.target.value } : s))}
-                    className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none"
-                    placeholder="留空则显示占位图"
+                    id={`file-${section.id}`}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0]
+                      if (file) handleImageUpload(section.id, file)
+                      e.currentTarget.value = ''
+                    }}
                   />
+                  {uploadingId === section.id && (
+                    <p className="text-[12px] text-accent mb-2">上传中...</p>
+                  )}
+                  <div className="flex items-center gap-2">
+                    <input
+                      value={section.image_url || ''}
+                      onChange={(e) => setSections((prev) => prev.map((s) => s.id === section.id ? { ...s, image_url: e.target.value } : s))}
+                      className="flex-1 bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none"
+                      placeholder="或手动输入图片 URL"
+                    />
+                    {!section.image_url && (
+                      <button
+                        onClick={() => document.getElementById(`file-${section.id}`)?.click()}
+                        className="flex items-center gap-1.5 bg-white/10 text-white px-3 py-2 text-[12px] hover:bg-white/20 transition-colors"
+                      >
+                        <Upload size={14} />
+                        上传
+                      </button>
+                    )}
+                  </div>
                 </div>
                 <div>
                   <label className="block text-[12px] text-secondary uppercase mb-1">正文内容</label>
