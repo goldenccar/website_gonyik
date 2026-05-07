@@ -315,6 +315,7 @@ export function initDatabase() {
       ]
       saveDb()
     }
+    if (!db.contact_messages) db.contact_messages = []
   } else {
     db = createDefaultDb()
   }

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Trash2, Mail, User, Building2, Phone, Clock, MessageSquare } from 'lucide-react'
+import { ArrowLeft, Trash2, Mail, User, Building2, Phone, Clock, MessageSquare, Briefcase } from 'lucide-react'
 import api from '@/api/client'
 import Dashboard from './Dashboard'
 
@@ -8,6 +8,7 @@ interface ContactMessage {
   id: number
   name: string
   company: string
+  position: string
   email: string
   phone: string
   subject: string
@@ -75,6 +76,7 @@ export default function AdminContactMessageManager() {
                     <div className="flex flex-wrap items-center gap-4 text-[13px] text-accent mb-3">
                       <span className="flex items-center gap-1"><User size={13} />{msg.name}</span>
                       {msg.company && <span className="flex items-center gap-1"><Building2 size={13} />{msg.company}</span>}
+                      {msg.position && <span className="flex items-center gap-1"><Briefcase size={13} />{msg.position}</span>}
                       <span className="flex items-center gap-1"><Mail size={13} />{msg.email}</span>
                       {msg.phone && <span className="flex items-center gap-1"><Phone size={13} />{msg.phone}</span>}
                     </div>

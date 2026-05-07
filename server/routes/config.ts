@@ -154,7 +154,7 @@ router.delete('/admin/contact-messages/:id', authMiddleware, (req: AuthRequest, 
 })
 
 router.post('/contact', async (req, res) => {
-  const { name, company, email, phone, subject, message } = req.body
+  const { name, company, position, email, phone, subject, message } = req.body
   if (!name || !email || !subject || !message) {
     res.status(400).json({ error: '缺少必填字段' })
     return
@@ -165,6 +165,7 @@ router.post('/contact', async (req, res) => {
     id: getNextId(db.contact_messages),
     name,
     company: company || '',
+    position: position || '',
     email,
     phone: phone || '',
     subject,
@@ -195,6 +196,7 @@ router.post('/contact', async (req, res) => {
 咨询主题：${subject}
 姓名：${name}
 公司：${company || '未填写'}
+职位：${position || '未填写'}
 邮箱：${email}
 电话：${phone || '未填写'}
 ━━━━━━━━━━━━━━━━━━━━
