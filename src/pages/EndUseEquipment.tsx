@@ -177,25 +177,15 @@ export default function EndUseEquipment() {
                   }}
                 />
 
-                {/* Background image */}
+                {/* Background image + overlay merged into one layer for sync transition */}
                 {cat.bg_image && (
                   <div
                     className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                     style={{
-                      backgroundImage: `url(${cat.bg_image})`,
-                      backgroundPosition: 'center',
-                      backgroundSize: cat.image_fit === 'contain' ? 'contain' : cat.image_fit === 'original' ? 'auto' : 'cover',
-                      backgroundRepeat: cat.image_fit === 'contain' ? 'no-repeat' : 'no-repeat',
-                    }}
-                  />
-                )}
-
-                {/* Overlay for readability */}
-                {cat.bg_image && (
-                  <div
-                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                    style={{
-                      background: 'linear-gradient(to right, rgba(255,255,255,0.95) 25%, rgba(255,255,255,0.5) 60%, rgba(0,0,0,0.3) 100%)',
+                      backgroundImage: `linear-gradient(to right, rgba(255,255,255,0.95) 25%, rgba(255,255,255,0.5) 60%, rgba(0,0,0,0.3) 100%), url(${cat.bg_image})`,
+                      backgroundPosition: 'center, center',
+                      backgroundSize: `auto, ${cat.image_fit === 'contain' ? 'contain' : cat.image_fit === 'original' ? 'auto' : 'cover'}`,
+                      backgroundRepeat: 'no-repeat, no-repeat',
                     }}
                   />
                 )}
