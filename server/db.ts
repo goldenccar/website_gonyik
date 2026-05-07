@@ -20,6 +20,7 @@ export interface Database {
   fabric_sku: any[]
   fabric_scenes: any[]
   digital_assets: any[]
+  media_items: any[]
   test_reports: any[]
   equipment_categories: any[]
   equipment_products: any[]
@@ -174,6 +175,7 @@ function createDefaultDb(): Database {
       { id: 13, category: '特种防护', label: '鞋材应用', series_slug: 'tread', order_index: 12 },
     ],
     digital_assets: [],
+    media_items: [],
     fabric_sku: [
       { id: 1, series_id: 1, name: 'Osmo-100', sku_code: 'GY-OSMO-100', image: null, features: '["防水透气","无氟"]', specifications: '{"waterproof":"15000mm","breathable":"10000g/m²/24h","weight":"120g/m²"}', order_index: 0 },
       { id: 2, series_id: 1, name: 'Osmo-101', sku_code: 'GY-OSMO-101', image: null, features: '["防水透气","无氟"]', specifications: '{"waterproof":"20000mm","breathable":"15000g/m²/24h","weight":"150g/m²"}', order_index: 1 },
@@ -278,6 +280,30 @@ export function initDatabase() {
     }
     if (!db.fabric_scenes) db.fabric_scenes = []
     if (!db.digital_assets) db.digital_assets = []
+    if (!db.media_items) {
+      // Migrate existing uploads to media_items
+      const uploadsDir = path.resolve(process.cwd(), 'public/uploads')
+      const migrated: any[] = []
+      if (fs.existsSync(uploadsDir)) {
+        fs.readdirSync(uploadsDir).forEach((filename) => {
+          if (filename.startsWith('.')) return
+          const filepath = path.join(uploadsDir, filename)
+          const stat = fs.statSync(filepath)
+          migrated.push({
+            id: migrated.length + 1,
+            filename,
+            url: `/uploads/${filename}`,
+            category: 'other',
+            description: '',
+            file_type: '',
+            size: stat.size,
+            created_at: stat.birthtime.toISOString(),
+          })
+        })
+      }
+      db.media_items = migrated
+      saveDb()
+    }
     if (!db.inquiry_subjects) {
       db.inquiry_subjects = [
         { id: 1, label: '功能咨询', order_index: 0 },
