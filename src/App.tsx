@@ -32,7 +32,7 @@ const EndUseEquipment = lazy(() => import('./pages/EndUseEquipment'))
 const FluorineFreeFuture = lazy(() => import('./pages/FluorineFreeFuture'))
 const ServicesSupport = lazy(() => import('./pages/ServicesSupport'))
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'))
-const SampleRequest = lazy(() => import('./pages/SampleRequest'))
+
 const Contact = lazy(() => import('./pages/Contact'))
 
 // Admin pages

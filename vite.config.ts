@@ -25,5 +25,23 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist/client',
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          // React ecosystem
+          if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/') || id.includes('node_modules/react-router') || id.includes('node_modules/scheduler')) {
+            return 'vendor'
+          }
+          // Animation library
+          if (id.includes('node_modules/framer-motion')) {
+            return 'motion'
+          }
+          // PDF viewer (heavy)
+          if (id.includes('node_modules/react-pdf') || id.includes('node_modules/pdfjs')) {
+            return 'pdf'
+          }
+        },
+      },
+    },
   },
 })

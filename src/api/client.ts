@@ -7,17 +7,41 @@ const api = axios.create({
   },
 })
 
+// Simple in-memory cache for GET requests
+const cache = new Map<string, { data: any; expiry: number }>()
+const CACHE_TTL = 60_000 // 60 seconds
+
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('admin_token')
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
   }
+  // Use cache for GET requests
+  if (config.method === 'get') {
+    const key = config.url + JSON.stringify(config.params || {})
+    const cached = cache.get(key)
+    if (cached && cached.expiry > Date.now()) {
+      // Return cached data by rejecting with a custom flag
+      return Promise.reject({ __cached: true, data: cached.data, config })
+    }
+  }
   return config
 })
 
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // Cache GET responses
+    if (response.config.method === 'get') {
+      const key = response.config.url + JSON.stringify(response.config.params || {})
+      cache.set(key, { data: response.data, expiry: Date.now() + CACHE_TTL })
+    }
+    return response
+  },
   (error) => {
+    // Return cached data
+    if (error.__cached) {
+      return Promise.resolve({ data: error.data, config: error.config, status: 200, statusText: 'OK', headers: {} })
+    }
     if (error.response?.status === 401) {
       localStorage.removeItem('admin_token')
       if (window.location.pathname.startsWith('/admin')) {

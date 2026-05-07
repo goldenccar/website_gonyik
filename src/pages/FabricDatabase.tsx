@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react'
+import { lazy, Suspense, useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import {
   ArrowRight, FileText, X, Shield, Sun, Droplets, Footprints
 } from 'lucide-react'
 import { getPageConfig, getFabricSeries, getFabricSeriesDetail, getTestReports, getFabricScenes } from '@/api/client'
-import FileViewer from '@/components/FileViewer'
+const FileViewer = lazy(() => import('@/components/FileViewer'))
 import type { FabricSeries, FabricSku, FabricScene, PageConfig, TestReport } from '@/types'
 
 const SERIES_META: Record<string, { accent: string; icon: any; tagline: string }> = {
@@ -390,7 +390,9 @@ export default function FabricDatabase() {
       {/* File Viewer Modal */}
       <AnimatePresence>
         {viewerOpen && viewerData && (
-          <FileViewer url={viewerData.url} fileType={viewerData.type} title={viewerData.title} onClose={() => setViewerOpen(false)} />
+          <Suspense fallback={null}>
+            <FileViewer url={viewerData.url} fileType={viewerData.type} title={viewerData.title} onClose={() => setViewerOpen(false)} />
+          </Suspense>
         )}
       </AnimatePresence>
     </div>
