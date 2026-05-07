@@ -180,8 +180,13 @@ export default function EndUseEquipment() {
                 {/* Background image */}
                 {cat.bg_image && (
                   <div
-                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-cover bg-center"
-                    style={{ backgroundImage: `url(${cat.bg_image})` }}
+                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                    style={{
+                      backgroundImage: `url(${cat.bg_image})`,
+                      backgroundPosition: 'center',
+                      backgroundSize: cat.image_fit === 'contain' ? 'contain' : cat.image_fit === 'original' ? 'auto' : 'cover',
+                      backgroundRepeat: cat.image_fit === 'contain' ? 'no-repeat' : 'no-repeat',
+                    }}
                   />
                 )}
 

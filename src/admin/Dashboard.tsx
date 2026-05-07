@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { createPortal } from 'react-dom'
 import {
-  LayoutDashboard, Home, Layers, Mountain, Shirt, HelpCircle, Newspaper, Image, Palette, LogOut, Dock, ChevronDown, Settings, MapPin, Download, Mail, Sun, MessageSquare, PanelLeftClose, PanelLeft
+  LayoutDashboard, Home, Layers, Mountain, Shirt, HelpCircle, Newspaper, Image, Palette, LogOut, Dock, ChevronDown, Settings, MapPin, Download, Mail, Sun, MessageSquare, PanelLeftClose, PanelLeft, FileText,
 } from 'lucide-react'
 
 interface MenuItem {
@@ -32,6 +32,7 @@ const MENU_GROUPS: MenuGroup[] = [
     label: '面料数据库',
     icon: Layers,
     children: [
+      { label: '页面配置', icon: FileText, path: '/admin/fabrics/config' },
       { label: '面料系列管理', icon: Layers, path: '/admin/fabrics' },
       { label: '场景管理', icon: MapPin, path: '/admin/scenes' },
       { label: '测试报告管理', icon: Mountain, path: '/admin/reports' },
@@ -41,6 +42,7 @@ const MENU_GROUPS: MenuGroup[] = [
     label: '终端装备',
     icon: Shirt,
     children: [
+      { label: '页面配置', icon: FileText, path: '/admin/equipment/config' },
       { label: '终端装备管理', icon: Shirt, path: '/admin/equipment' },
       { label: '场景管理', icon: MapPin, path: '/admin/equipment-scenes' },
       { label: '数字资产管理', icon: Download, path: '/admin/digital-assets' },
@@ -49,7 +51,10 @@ const MENU_GROUPS: MenuGroup[] = [
   {
     label: 'RPO材料平台',
     icon: Sun,
-    children: [{ label: 'RPO材料平台管理', icon: Sun, path: '/admin/fluorine' }],
+    children: [
+      { label: '页面配置', icon: FileText, path: '/admin/fluorine/config' },
+      { label: 'RPO材料平台管理', icon: Sun, path: '/admin/fluorine' },
+    ],
   },
   {
     label: '服务与支持',
@@ -65,11 +70,7 @@ const MENU_GROUPS: MenuGroup[] = [
       { label: '留言管理', icon: MessageSquare, path: '/admin/contact-messages' },
     ],
   },
-  {
-    label: '页面配置',
-    icon: Settings,
-    children: [{ label: '页面配置', icon: Settings, path: '/admin/page-configs' }],
-  },
+
   {
     label: '框架管理',
     icon: Settings,

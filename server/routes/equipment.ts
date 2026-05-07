@@ -21,9 +21,9 @@ router.get('/admin/categories', authMiddleware, (_req, res) => {
 })
 
 router.post('/admin/categories', authMiddleware, upload.single('bg_image'), (req: AuthRequest, res) => {
-  const { name, slug, description } = req.body
+  const { name, slug, description, image_fit } = req.body
   const bg_image = req.file ? `/uploads/${req.file.filename}` : null
-  const newCat = { id: getNextId(db.equipment_categories), name, slug, description, bg_image, order_index: db.equipment_categories.length }
+  const newCat = { id: getNextId(db.equipment_categories), name, slug, description, bg_image, image_fit: image_fit || 'cover', order_index: db.equipment_categories.length }
   db.equipment_categories.push(newCat)
   saveDb()
   res.json({ success: true, id: newCat.id })
@@ -32,9 +32,9 @@ router.post('/admin/categories', authMiddleware, upload.single('bg_image'), (req
 router.put('/admin/categories/:id', authMiddleware, upload.single('bg_image'), (req: AuthRequest, res) => {
   const idx = db.equipment_categories.findIndex((c) => c.id === Number(req.params.id))
   if (idx < 0) { res.status(404).json({ error: 'Not found' }); return }
-  const { name, slug, description } = req.body
+  const { name, slug, description, image_fit } = req.body
   const bg_image = req.file ? `/uploads/${req.file.filename}` : (req.body.bg_image || db.equipment_categories[idx].bg_image)
-  db.equipment_categories[idx] = { ...db.equipment_categories[idx], name, slug, description, bg_image }
+  db.equipment_categories[idx] = { ...db.equipment_categories[idx], name, slug, description, bg_image, image_fit: image_fit || 'cover' }
   saveDb()
   res.json({ success: true })
 })

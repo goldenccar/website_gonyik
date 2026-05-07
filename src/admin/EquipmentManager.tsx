@@ -146,6 +146,14 @@ export default function AdminEquipmentManager() {
               <Field label="Slug" name="slug" defaultValue={editingCategory?.slug} required />
               <Field label="描述" name="description" defaultValue={editingCategory?.description} textarea />
               <div><label className="block text-[12px] text-secondary uppercase mb-1">背景图</label><input type="file" name="bg_image" accept="image/*" className="text-white text-[13px]" /></div>
+              <div>
+                <label className="block text-[12px] text-secondary uppercase mb-1">图片适配</label>
+                <select name="image_fit" defaultValue={editingCategory?.image_fit || 'cover'} className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none">
+                  <option value="cover" className="bg-dark">Cover（铺满裁剪）</option>
+                  <option value="contain" className="bg-dark">Contain（完整显示）</option>
+                  <option value="original" className="bg-dark">Original（原始尺寸）</option>
+                </select>
+              </div>
               <div className="flex gap-3 mt-6">
                 <button type="submit" className="flex-1 bg-white text-primary py-2.5 text-[13px] font-medium hover:bg-bg">保存</button>
                 <button type="button" onClick={() => setShowCatForm(false)} className="flex-1 border border-white/20 text-white py-2.5 text-[13px] hover:bg-white/5">取消</button>

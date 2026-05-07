@@ -219,10 +219,10 @@ function createDefaultDb(): Database {
     ],
     test_reports: [],
     equipment_categories: [
-      { id: 1, name: 'Latent', slug: 'latent', description: '隐形防护层，日常通勤与商务场景的低调选择', bg_image: null, order_index: 0 },
-      { id: 2, name: 'U-Line', slug: 'u-line', description: '城市机能线，都市探索者的功能美学', bg_image: null, order_index: 1 },
-      { id: 3, name: 'P-Line', slug: 'p-line', description: '专业性能线，为极限环境打造的旗舰装备', bg_image: null, order_index: 2 },
-      { id: 4, name: 'A-Line', slug: 'a-line', description: '全天候适应线，一件应对多变气候', bg_image: null, order_index: 3 },
+      { id: 1, name: 'Latent', slug: 'latent', description: '隐形防护层，日常通勤与商务场景的低调选择', bg_image: null, image_fit: 'cover', order_index: 0 },
+      { id: 2, name: 'U-Line', slug: 'u-line', description: '城市机能线，都市探索者的功能美学', bg_image: null, image_fit: 'cover', order_index: 1 },
+      { id: 3, name: 'P-Line', slug: 'p-line', description: '专业性能线，为极限环境打造的旗舰装备', bg_image: null, image_fit: 'cover', order_index: 2 },
+      { id: 4, name: 'A-Line', slug: 'a-line', description: '全天候适应线，一件应对多变气候', bg_image: null, image_fit: 'cover', order_index: 3 },
     ],
     equipment_products: [
       { id: 1, category_id: 1, name: 'Latent Pro 1', image: null, features: '["轻量化","防风","透气"]', order_index: 0 },
@@ -388,6 +388,11 @@ export function initDatabase() {
       saveDb()
     }
     if (!db.contact_messages) db.contact_messages = []
+    // Backward compatibility: ensure image_fit exists on equipment_categories
+    if (db.equipment_categories.length > 0 && db.equipment_categories[0].image_fit === undefined) {
+      db.equipment_categories = db.equipment_categories.map((c: any) => ({ ...c, image_fit: 'cover' }))
+      saveDb()
+    }
     // Backward compatibility: ensure cooperation_type exists on existing messages
     if (db.contact_messages.length > 0 && db.contact_messages[0].cooperation_type === undefined) {
       db.contact_messages = db.contact_messages.map((m: any) => ({ ...m, cooperation_type: m.cooperation_type || '' }))

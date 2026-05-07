@@ -97,7 +97,9 @@ function App() {
           <Route path="/admin/contact-messages" element={<AdminContactMessageManager />} />
           <Route path="/admin/fluorine" element={<AdminFluorineManager />} />
           <Route path="/admin/equipment-scenes" element={<AdminEquipmentSceneManager />} />
-          <Route path="/admin/page-configs" element={<AdminPageConfigManager />} />
+          <Route path="/admin/fabrics/config" element={<AdminPageConfigManager pageKey="fabrics" />} />
+          <Route path="/admin/equipment/config" element={<AdminPageConfigManager pageKey="equipment" />} />
+          <Route path="/admin/fluorine/config" element={<AdminPageConfigManager pageKey="fluorine-free" />} />
 
           {/* Public routes */}
           <Route element={<PublicLayout />}>
