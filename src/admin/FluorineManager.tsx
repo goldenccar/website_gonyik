@@ -272,15 +272,7 @@ export default function AdminFluorineManager() {
               </div>
             </div>
             <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-[12px] text-secondary uppercase mb-1">模块标签</label>
-                  <input
-                    value={valueChain.module_tag}
-                    onChange={(e) => setValueChain({ ...valueChain, module_tag: e.target.value })}
-                    className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none"
-                  />
-                </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-[12px] text-secondary uppercase mb-1">标题</label>
                   <input
@@ -290,7 +282,7 @@ export default function AdminFluorineManager() {
                   />
                 </div>
                 <div>
-                  <label className="block text-[12px] text-secondary uppercase mb-1">副标题</label>
+                  <label className="block text-[12px] text-secondary uppercase mb-1">副标题（Slogan）</label>
                   <input
                     value={valueChain.subtitle}
                     onChange={(e) => setValueChain({ ...valueChain, subtitle: e.target.value })}

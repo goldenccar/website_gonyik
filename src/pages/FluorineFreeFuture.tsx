@@ -97,12 +97,9 @@ export default function FluorineFreeFuture() {
         <section className="bg-bg px-6 lg:px-12 py-16 lg:py-24">
           <div className="max-w-[1440px] mx-auto">
             {/* Header */}
-            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 mb-12">
-              <div>
-                <p className="text-label text-muted uppercase mb-3 tracking-widest">{valueChain.module_tag}</p>
-                <h2 className="text-h3 text-primary">{valueChain.title}</h2>
-              </div>
-              <p className="text-body text-muted max-w-[500px] lg:text-right">
+            <div className="mb-12">
+              <h2 className="text-h3 text-primary mb-4">{valueChain.title}</h2>
+              <p className="text-body text-muted max-w-[700px]">
                 {valueChain.subtitle}
               </p>
             </div>
