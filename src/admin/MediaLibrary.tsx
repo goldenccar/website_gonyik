@@ -37,8 +37,10 @@ function getFileIcon(type: string) {
   return File
 }
 
-function isImage(type: string) {
-  return type.startsWith('image/')
+function isImage(type: string, filename: string) {
+  if (type.startsWith('image/')) return true
+  const ext = filename.split('.').pop()?.toLowerCase()
+  return ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp'].includes(ext || '')
 }
 
 interface MediaItem {
@@ -155,7 +157,7 @@ export default function AdminMediaLibrary() {
               <div key={item.id} className="bg-dark group flex flex-col">
                 {/* Preview */}
                 <div className="aspect-square bg-white/5 flex items-center justify-center relative overflow-hidden">
-                  {isImage(item.file_type) ? (
+                  {isImage(item.file_type, item.filename) ? (
                     <img src={item.url} alt={item.filename} className="w-full h-full object-cover" />
                   ) : (
                     <div className="text-center p-4">
