@@ -87,7 +87,10 @@ export default function AdminFluorineManager() {
         module_tag: valueChain.module_tag,
         title: valueChain.title,
         subtitle: valueChain.subtitle,
-        columns: valueChain.columns,
+        columns: valueChain.columns.map((c) => ({
+          ...c,
+          items: c.items.filter((s: string) => s.trim()),
+        })),
       })
       setVcMessage('保存成功')
       setTimeout(() => setVcMessage(''), 2000)
@@ -331,7 +334,7 @@ export default function AdminFluorineManager() {
                         <label className="block text-[11px] text-secondary uppercase mb-1">列表项（每行一个）</label>
                         <textarea
                           value={col.items.join('\n')}
-                          onChange={(e) => updateVcColumn(idx, 'items', e.target.value.split('\n').filter((s) => s.trim()))}
+                          onChange={(e) => updateVcColumn(idx, 'items', e.target.value.split('\n'))}
                           rows={4}
                           className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none font-mono"
                         />
