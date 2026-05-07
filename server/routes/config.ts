@@ -154,7 +154,7 @@ router.delete('/admin/contact-messages/:id', authMiddleware, (req: AuthRequest, 
 })
 
 router.post('/contact', async (req, res) => {
-  const { name, company, position, email, phone, subject, message } = req.body
+  const { name, company, position, email, phone, subject, cooperation_type, message } = req.body
   if (!name || !email || !subject || !message) {
     res.status(400).json({ error: '缺少必填字段' })
     return
@@ -169,6 +169,7 @@ router.post('/contact', async (req, res) => {
     email,
     phone: phone || '',
     subject,
+    cooperation_type: cooperation_type || '',
     message,
     created_at: new Date().toISOString(),
   }
@@ -193,6 +194,7 @@ router.post('/contact', async (req, res) => {
       const mailBody = `您收到一条新的网站留言：
 
 ━━━━━━━━━━━━━━━━━━━━
+客户身份：${cooperation_type || '普通咨询'}
 咨询主题：${subject}
 姓名：${name}
 公司：${company || '未填写'}

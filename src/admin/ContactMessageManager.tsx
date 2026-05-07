@@ -12,6 +12,7 @@ interface ContactMessage {
   email: string
   phone: string
   subject: string
+  cooperation_type: string
   message: string
   created_at: string
 }
@@ -80,6 +81,11 @@ export default function AdminContactMessageManager() {
                       <span className="flex items-center gap-1"><Mail size={13} />{msg.email}</span>
                       {msg.phone && <span className="flex items-center gap-1"><Phone size={13} />{msg.phone}</span>}
                     </div>
+                    {msg.cooperation_type && (
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-[12px] text-white bg-white/10 px-2 py-0.5">客户身份：{msg.cooperation_type}</span>
+                      </div>
+                    )}
                   </div>
                   <button
                     onClick={() => del(msg.id)}

@@ -35,7 +35,7 @@ export default function Contact() {
   const [pageConfig, setPageConfig] = useState<PageConfig | null>(null)
   const [contactConfig, setContactConfig] = useState<ContactConfig | null>(null)
   const [inquirySubjects, setInquirySubjects] = useState<InquirySubject[]>([])
-  const [form, setForm] = useState({ name: '', company: '', position: '', email: '', phone: '', subject: '', message: '' })
+  const [form, setForm] = useState({ name: '', company: '', position: '', email: '', phone: '', subject: '', cooperation_type: '', message: '' })
   const [submitted, setSubmitted] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [submitting, setSubmitting] = useState(false)
@@ -54,6 +54,9 @@ export default function Contact() {
     if (!form.email.trim()) e.email = '请输入邮箱'
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = '邮箱格式不正确'
     if (!form.subject.trim()) e.subject = '请选择联系目的'
+
+    else if (form.message.trim().length < 10) e.message = '留言内容至少需要 10 个字'
+    else if (form.message.trim().length > 500) e.message = '留言内容不能超过 500 字'
     if (!form.message.trim()) e.message = '请输入留言内容'
     setErrors(e)
     return Object.keys(e).length === 0
@@ -74,9 +77,18 @@ export default function Contact() {
   }
 
   const handleCardClick = (title: string) => {
-    setForm((prev) => ({ ...prev, subject: title }))
+    setForm((prev) => ({ ...prev, subject: title, cooperation_type: title }))
     // Scroll to form
     formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
+  const handleSubjectChange = (value: string) => {
+    const isEcosystem = ECOSYSTEM_TYPES.some((t) => t.title === value)
+    setForm((prev) => ({
+      ...prev,
+      subject: value,
+      cooperation_type: isEcosystem ? value : '',
+    }))
   }
 
   return (
@@ -145,7 +157,7 @@ export default function Contact() {
                   <h3 className="text-h4 text-primary mb-2">提交成功</h3>
                   <p className="text-body text-muted mb-6">感谢您的留言，我们会尽快回复您。</p>
                   <button
-                    onClick={() => { setSubmitted(false); setForm({ name: '', company: '', position: '', email: '', phone: '', subject: '', message: '' }) }}
+                    onClick={() => { setSubmitted(false); setForm({ name: '', company: '', position: '', email: '', phone: '', subject: '', cooperation_type: '', message: '' }) }}
                     className="px-6 py-3 bg-primary text-white text-[14px] font-medium hover:bg-darker transition-colors"
                   >
                     继续留言
@@ -212,7 +224,7 @@ export default function Contact() {
                       <label className="block text-[13px] text-secondary mb-1.5">联系目的 *</label>
                       <select
                         value={form.subject}
-                        onChange={(e) => setForm({ ...form, subject: e.target.value })}
+                        onChange={(e) => handleSubjectChange(e.target.value)}
                         className="w-full px-4 py-3 text-[14px] bg-bg border border-border text-primary focus:border-primary focus:outline-none transition-colors appearance-none cursor-pointer"
                       >
                         <option value="" className="bg-white text-primary">请选择联系目的</option>

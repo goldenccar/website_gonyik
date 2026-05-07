@@ -316,6 +316,11 @@ export function initDatabase() {
       saveDb()
     }
     if (!db.contact_messages) db.contact_messages = []
+    // Backward compatibility: ensure cooperation_type exists on existing messages
+    if (db.contact_messages.length > 0 && db.contact_messages[0].cooperation_type === undefined) {
+      db.contact_messages = db.contact_messages.map((m: any) => ({ ...m, cooperation_type: m.cooperation_type || '' }))
+      saveDb()
+    }
   } else {
     db = createDefaultDb()
   }
