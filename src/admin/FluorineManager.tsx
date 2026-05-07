@@ -1,18 +1,40 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, Save, Upload, X, Image } from 'lucide-react'
-import api, { getFluorineSections, uploadFile } from '@/api/client'
+import api, { getFluorineSections, getFluorineValueChain, uploadFile } from '@/api/client'
 import Dashboard from './Dashboard'
+
+interface ValueChainColumn {
+  tag: string
+  tag_cn: string
+  title: string
+  description: string
+  items: string[]
+}
+
+interface ValueChainData {
+  id: number
+  module_tag: string
+  title: string
+  subtitle: string
+  columns: ValueChainColumn[]
+}
 
 export default function AdminFluorineManager() {
   const navigate = useNavigate()
   const [sections, setSections] = useState<any[]>([])
   const [saveMessages, setSaveMessages] = useState<Record<number, string>>({})
   const [uploadingId, setUploadingId] = useState<number | null>(null)
+  const [valueChain, setValueChain] = useState<ValueChainData | null>(null)
+  const [vcMessage, setVcMessage] = useState('')
 
   const load = async () => {
-    const res = await getFluorineSections()
-    setSections(res.data.data || [])
+    const [sRes, vcRes] = await Promise.all([
+      getFluorineSections(),
+      getFluorineValueChain(),
+    ])
+    setSections(sRes.data.data || [])
+    setValueChain(vcRes.data.data)
   }
 
   useEffect(() => { load() }, [])
@@ -58,6 +80,30 @@ export default function AdminFluorineManager() {
     setSections((prev) => prev.map((s) => s.id === sectionId ? { ...s, image_url: '' } : s))
   }
 
+  const saveValueChain = async () => {
+    if (!valueChain) return
+    try {
+      await api.put('/admin/fluorine-value-chain', {
+        module_tag: valueChain.module_tag,
+        title: valueChain.title,
+        subtitle: valueChain.subtitle,
+        columns: valueChain.columns,
+      })
+      setVcMessage('保存成功')
+      setTimeout(() => setVcMessage(''), 2000)
+    } catch {
+      setVcMessage('保存失败')
+      setTimeout(() => setVcMessage(''), 2000)
+    }
+  }
+
+  const updateVcColumn = (index: number, field: keyof ValueChainColumn, value: string | string[]) => {
+    if (!valueChain) return
+    const newColumns = [...valueChain.columns]
+    newColumns[index] = { ...newColumns[index], [field]: value }
+    setValueChain({ ...valueChain, columns: newColumns })
+  }
+
   return (
     <Dashboard>
       <div>
@@ -81,7 +127,8 @@ export default function AdminFluorineManager() {
           </div>
         </div>
 
-        <div className="space-y-6">
+        {/* Sections */}
+        <div className="space-y-6 mb-10">
           {sections.map((section) => (
             <div key={section.id} className="bg-dark p-6">
               <div className="flex items-center justify-between mb-4">
@@ -207,6 +254,103 @@ export default function AdminFluorineManager() {
             </div>
           ))}
         </div>
+
+        {/* Value Chain */}
+        {valueChain && (
+          <div className="bg-dark p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-white font-bold">产业链全景图</h3>
+              <div className="flex items-center gap-3">
+                {vcMessage && <span className="text-[12px] text-success">{vcMessage}</span>}
+                <button
+                  onClick={saveValueChain}
+                  className="flex items-center gap-2 bg-white text-primary px-4 py-2 text-[13px] font-medium hover:bg-bg"
+                >
+                  <Save size={14} />
+                  保存
+                </button>
+              </div>
+            </div>
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-[12px] text-secondary uppercase mb-1">模块标签</label>
+                  <input
+                    value={valueChain.module_tag}
+                    onChange={(e) => setValueChain({ ...valueChain, module_tag: e.target.value })}
+                    className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[12px] text-secondary uppercase mb-1">标题</label>
+                  <input
+                    value={valueChain.title}
+                    onChange={(e) => setValueChain({ ...valueChain, title: e.target.value })}
+                    className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[12px] text-secondary uppercase mb-1">副标题</label>
+                  <input
+                    value={valueChain.subtitle}
+                    onChange={(e) => setValueChain({ ...valueChain, subtitle: e.target.value })}
+                    className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none"
+                  />
+                </div>
+              </div>
+              <div className="space-y-4">
+                {valueChain.columns.map((col, idx) => (
+                  <div key={idx} className="bg-white/5 p-4 border border-borderDark">
+                    <h4 className="text-white text-[14px] font-medium mb-3">第 {idx + 1} 列 — {col.tag_cn}</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-[11px] text-secondary uppercase mb-1">英文标签</label>
+                        <input
+                          value={col.tag}
+                          onChange={(e) => updateVcColumn(idx, 'tag', e.target.value)}
+                          className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] text-secondary uppercase mb-1">中文标签</label>
+                        <input
+                          value={col.tag_cn}
+                          onChange={(e) => updateVcColumn(idx, 'tag_cn', e.target.value)}
+                          className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none"
+                        />
+                      </div>
+                      <div className="md:col-span-2">
+                        <label className="block text-[11px] text-secondary uppercase mb-1">标题</label>
+                        <input
+                          value={col.title}
+                          onChange={(e) => updateVcColumn(idx, 'title', e.target.value)}
+                          className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none"
+                        />
+                      </div>
+                      <div className="md:col-span-2">
+                        <label className="block text-[11px] text-secondary uppercase mb-1">描述</label>
+                        <input
+                          value={col.description}
+                          onChange={(e) => updateVcColumn(idx, 'description', e.target.value)}
+                          className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none"
+                        />
+                      </div>
+                      <div className="md:col-span-2">
+                        <label className="block text-[11px] text-secondary uppercase mb-1">列表项（每行一个）</label>
+                        <textarea
+                          value={col.items.join('\n')}
+                          onChange={(e) => updateVcColumn(idx, 'items', e.target.value.split('\n').filter((s) => s.trim()))}
+                          rows={4}
+                          className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none font-mono"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </Dashboard>
   )

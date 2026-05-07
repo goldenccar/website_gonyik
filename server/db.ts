@@ -33,6 +33,7 @@ export interface Database {
   faqs: any[]
   contact_config: any
   fluorine_sections: any[]
+  fluorine_value_chain: any
   inquiry_subjects: any[]
   contact_messages: any[]
   users: any[]
@@ -148,6 +149,36 @@ function createDefaultDb(): Database {
         image_fit: 'cover',
       },
     ],
+    fluorine_value_chain: {
+      id: 1,
+      page_key: 'fluorine-free',
+      module_tag: 'MODULE 01 · VALUE CHAIN',
+      title: '无氟产业链全景图',
+      subtitle: '从原料端到终端装备，每一个环节严格无氟，构建完整的绿色材料闭环。',
+      columns: [
+        {
+          tag: 'RAW INPUT',
+          tag_cn: '上游基底',
+          title: 'RPO 高性能薄膜',
+          description: '从高分子母粒出发，自主精密合成，构建无氟防水透汽屏障的最小单元。',
+          items: ['高分子母粒', 'RPO 薄膜成形', '微孔结构控制'],
+        },
+        {
+          tag: 'INTEGRATION',
+          tag_cn: '中游协同',
+          title: '无氟基布 + 无氟 DWR',
+          description: '精选功能性无氟基布与顶级无氟拒水助剂，通过特殊界面复合工艺完成技术融合。',
+          items: ['无氟功能基布', '顶级无氟 DWR', '界面粘接体系'],
+        },
+        {
+          tag: 'HIGH-PERF OUTPUT',
+          tag_cn: '下游输出',
+          title: 'SOTEX 面料矩阵',
+          description: '最终交付跨代际防护能力——OS、KS、LS 全系列面料，覆盖从都市到极端环境的全场景需求。',
+          items: ['SOTEX OS', 'SOTEX KS', 'SOTEX LS', 'SOTEX Tread'],
+        },
+      ],
+    },
     social_media: [
       { id: 1, platform: 'wechat', account: '港翼科技GONYIK', qrcode_url: null },
       { id: 2, platform: 'xiaohongshu', account: '港翼科技GONYIK', qrcode_url: null },
@@ -274,6 +305,21 @@ export function initDatabase() {
       db.contact_config = { id: 1, email: 'contact@gangyi.tech', phone: '400-XXX-XXXX', address: '上海市', response_text: '提交表单后，我们的面料顾问将在 3 个工作日内与您取得联系' }
     }
     if (!db.fluorine_sections) db.fluorine_sections = []
+    if (!db.fluorine_value_chain) {
+      db.fluorine_value_chain = {
+        id: 1,
+        page_key: 'fluorine-free',
+        module_tag: 'MODULE 01 · VALUE CHAIN',
+        title: '无氟产业链全景图',
+        subtitle: '从原料端到终端装备，每一个环节严格无氟，构建完整的绿色材料闭环。',
+        columns: [
+          { tag: 'RAW INPUT', tag_cn: '上游基底', title: 'RPO 高性能薄膜', description: '从高分子母粒出发，自主精密合成，构建无氟防水透汽屏障的最小单元。', items: ['高分子母粒', 'RPO 薄膜成形', '微孔结构控制'] },
+          { tag: 'INTEGRATION', tag_cn: '中游协同', title: '无氟基布 + 无氟 DWR', description: '精选功能性无氟基布与顶级无氟拒水助剂，通过特殊界面复合工艺完成技术融合。', items: ['无氟功能基布', '顶级无氟 DWR', '界面粘接体系'] },
+          { tag: 'HIGH-PERF OUTPUT', tag_cn: '下游输出', title: 'SOTEX 面料矩阵', description: '最终交付跨代际防护能力——OS、KS、LS 全系列面料，覆盖从都市到极端环境的全场景需求。', items: ['SOTEX OS', 'SOTEX KS', 'SOTEX LS', 'SOTEX Tread'] },
+        ],
+      }
+      saveDb()
+    }
     if (db.fluorine_sections.length > 0 && !db.fluorine_sections[0].image_fit) {
       db.fluorine_sections = db.fluorine_sections.map((s: any) => ({ ...s, image_fit: 'cover' }))
       saveDb()

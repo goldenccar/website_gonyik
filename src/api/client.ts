@@ -86,6 +86,8 @@ export const updateContactConfig = (data: any) => api.put('/admin/contact-config
 
 export const getFluorineSections = () => api.get('/fluorine-sections')
 export const updateFluorineSection = (id: number, data: any) => api.put(`/admin/fluorine-sections/${id}`, data)
+export const getFluorineValueChain = () => api.get('/fluorine-value-chain')
+export const updateFluorineValueChain = (data: any) => api.put('/admin/fluorine-value-chain', data)
 
 export const getInquirySubjects = () => api.get('/inquiry-subjects')
 export const updateInquirySubjects = (data: { items: any[] }) => api.put('/admin/inquiry-subjects', data)

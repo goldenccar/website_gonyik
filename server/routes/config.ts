@@ -83,6 +83,17 @@ router.put('/admin/fluorine-sections/:id/image-fit', authMiddleware, (req: AuthR
   res.json({ success: true })
 })
 
+// Fluorine Value Chain
+router.get('/fluorine-value-chain', (_req, res) => {
+  res.json({ data: db.fluorine_value_chain || null })
+})
+
+router.put('/admin/fluorine-value-chain', authMiddleware, (req: AuthRequest, res) => {
+  db.fluorine_value_chain = { ...db.fluorine_value_chain, ...req.body }
+  saveDb()
+  res.json({ success: true })
+})
+
 router.put('/admin/home', authMiddleware, (req: AuthRequest, res) => {
   db.home_config = { ...db.home_config, ...req.body }
   saveDb()
