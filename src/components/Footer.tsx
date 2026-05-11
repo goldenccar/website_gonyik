@@ -57,7 +57,14 @@ export default function Footer() {
               隐私政策
             </Link>
             <span className="text-muted/60">|</span>
-            <span>{footer?.icp_number || 'ICP备案号（占位）'}</span>
+            <a
+              href={footer?.icp_link || 'https://beian.miit.gov.cn/'}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-accent transition-colors"
+            >
+              {footer?.icp_number || 'ICP备案号（占位）'}
+            </a>
             {footer?.police_number && (
               <>
                 <span className="text-muted/60">|</span>
