@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { Shield } from 'lucide-react'
 import { getFooter, getSocial } from '@/api/client'
 import type { FooterConfig, SocialMedia } from '@/types'
 
@@ -57,6 +58,20 @@ export default function Footer() {
             </Link>
             <span className="text-muted/60">|</span>
             <span>{footer?.icp_number || 'ICP备案号（占位）'}</span>
+            {footer?.police_number && (
+              <>
+                <span className="text-muted/60">|</span>
+                <a
+                  href={footer?.police_link || 'https://www.beian.gov.cn/portal/registerSystemInfo'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 hover:text-accent transition-colors"
+                >
+                  <Shield size={12} />
+                  {footer.police_number}
+                </a>
+              </>
+            )}
             <span className="text-muted/60">|</span>
             <Link to="/admin" className="hover:text-accent transition-colors">
               网站配置

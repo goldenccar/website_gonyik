@@ -76,6 +76,8 @@ function createDefaultDb(): Database {
       privacy_policy_link: '/privacy-policy',
       icp_number: 'ICP备案号（占位）',
       icp_link: '#',
+      police_number: '',
+      police_link: 'https://www.beian.gov.cn/portal/registerSystemInfo',
       privacy_policy_content: '<h2>隐私政策</h2><p>港翼科技（GONYIK）重视您的隐私保护。本政策说明我们如何收集、使用和保护您的个人信息。</p><h3>信息收集</h3><p>我们可能收集您在使用我们服务时自愿提供的信息，包括但不限于姓名、联系方式、公司名称等。</p><h3>信息使用</h3><p>我们仅将收集的信息用于提供和改善服务、回复您的咨询、发送相关产品信息等目的。</p><h3>信息保护</h3><p>我们采用行业标准的安全措施保护您的个人信息，防止未经授权的访问、使用或泄露。</p><h3>联系我们</h3><p>如您对隐私政策有任何疑问，请通过网站联系方式与我们取得联系。</p>',
     },
     contact_config: {
@@ -388,6 +390,11 @@ export function initDatabase() {
       saveDb()
     }
     if (!db.contact_messages) db.contact_messages = []
+    // Backward compatibility: ensure police_number / police_link exist on footer_config
+    if (db.footer_config && db.footer_config.police_number === undefined) {
+      db.footer_config = { ...db.footer_config, police_number: '', police_link: 'https://www.beian.gov.cn/portal/registerSystemInfo' }
+      saveDb()
+    }
     // Backward compatibility: ensure image_fit exists on equipment_categories
     if (db.equipment_categories.length > 0 && db.equipment_categories[0].image_fit === undefined) {
       db.equipment_categories = db.equipment_categories.map((c: any) => ({ ...c, image_fit: 'cover' }))

@@ -32,6 +32,8 @@ export interface FooterConfig {
   privacy_policy_link: string
   icp_number: string
   icp_link: string
+  police_number: string
+  police_link: string
   privacy_policy_content: string
 }
 

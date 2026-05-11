@@ -125,6 +125,8 @@ export default function AdminFooterManager() {
           {field('版权文字', 'copyright')}
           {field('ICP 备案号', 'icp_number')}
           {field('ICP 链接', 'icp_link')}
+          {field('公安联网备案号', 'police_number')}
+          {field('公安备案链接', 'police_link')}
           {field('隐私政策链接', 'privacy_policy_link')}
           {field('隐私政策内容（支持 HTML）', 'privacy_policy_content', true)}
           <p className="text-[12px] text-secondary -mt-4 mb-6">支持 HTML 标签，如 &lt;h2&gt;、&lt;h3&gt;、&lt;p&gt; 等</p>
