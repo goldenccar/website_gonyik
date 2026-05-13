@@ -23,9 +23,9 @@
     --color-secondary: var(--gray-9);
     --color-muted: var(--gray-11);
     --color-primary: var(--gray-12);
-    --color-dark: var(--gray-2);
-    --color-darker: var(--gray-1);
-    --color-border-dark: var(--gray-5);
+    --color-dark: #0D0F12;
+    --color-darker: #090B0E;
+    --color-border-dark: #333333;
     --color-success: var(--grass-9);
     --color-error: var(--red-9);
     --color-warning: var(--amber-9);
@@ -40,9 +40,7 @@
     --color-secondary: var(--gray-10);
     --color-muted: var(--gray-11);
     --color-primary: var(--gray-12);
-    --color-dark: var(--gray-2);
-    --color-darker: var(--gray-1);
-    --color-border-dark: var(--gray-5);
+    /* dark / darker / border-dark are constants, not overridden */
     --color-success: var(--grass-9);
     --color-error: var(--red-9);
     --color-warning: var(--amber-9);
