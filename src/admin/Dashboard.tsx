@@ -173,7 +173,7 @@ export default function AdminDashboard({ children }: DashboardProps = {}) {
   }
 
   return (
-    <div className="h-screen bg-darker flex overflow-hidden">
+    <div className="h-screen bg-darker flex overflow-hidden dark">
       {/* Sidebar */}
       <aside
         className={`bg-dark flex-shrink-0 flex flex-col h-screen transition-all duration-300 ${

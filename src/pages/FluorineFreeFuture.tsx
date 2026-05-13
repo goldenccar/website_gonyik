@@ -116,7 +116,7 @@ export default function FluorineFreeFuture() {
                   className="relative"
                 >
                   {/* Column Header */}
-                  <div className="bg-[#E8E8E8] px-6 py-4">
+                  <div className="bg-[var(--gray-4)] px-6 py-4">
                     <p className="text-[11px] text-muted uppercase tracking-widest mb-1">{col.tag}</p>
                     <p className="text-[13px] text-primary">{col.tag_cn}</p>
                   </div>

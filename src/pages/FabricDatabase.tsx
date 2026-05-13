@@ -287,7 +287,7 @@ export default function FabricDatabase() {
                       const specs: Record<string, string> = sku.specifications ? JSON.parse(sku.specifications) : {}
                       return (
                         <div key={sku.id} className="bg-bg group hover:scale-[1.01] transition-all duration-300 ease-out">
-                          <div className="aspect-[3/4] bg-[#E0E0E0] relative overflow-hidden">
+                          <div className="aspect-[3/4] bg-[var(--gray-6)] relative overflow-hidden">
                             {sku.image ? (
                               <img src={sku.image} alt={sku.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                             ) : (
@@ -343,7 +343,7 @@ export default function FabricDatabase() {
                 className="cursor-pointer group"
                 onClick={() => openViewer(report)}
               >
-                <div className="aspect-[3/4] bg-bg mb-4 relative overflow-hidden flex items-center justify-center group-hover:bg-[#E8E8E8] transition-colors">
+                <div className="aspect-[3/4] bg-bg mb-4 relative overflow-hidden flex items-center justify-center group-hover:bg-[var(--gray-4)] transition-colors">
                   {report.file_type === 'pdf' ? (
                     <div className="flex flex-col items-center gap-3">
                       <FileText size={48} className="text-muted" />

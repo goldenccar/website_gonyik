@@ -13,6 +13,7 @@
     "setup": "node -e \"import('tsx').then(() => import('./server/db.ts')).then(m => m.initDatabase())\""
   },
   "dependencies": {
+    "@radix-ui/colors": "^3.0.0",
     "axios": "^1.15.2",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.6",

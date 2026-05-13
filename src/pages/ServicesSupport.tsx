@@ -107,8 +107,8 @@ export default function ServicesSupport() {
                     }}
                     className={`flex items-center gap-2 lg:gap-3 px-4 lg:px-6 py-3 lg:py-3.5 text-[13px] lg:text-[14px] font-medium transition-all whitespace-nowrap flex-shrink-0 ${
                       isActive
-                        ? 'text-primary bg-[#F5F5F5] border-b-[3px] lg:border-b-0 lg:border-l-[3px] border-primary'
-                        : 'text-secondary hover:bg-[#F9F9F9] border-b-[3px] lg:border-b-0 border-transparent'
+                        ? 'text-primary bg-[var(--gray-2)] border-b-[3px] lg:border-b-0 lg:border-l-[3px] border-primary'
+                        : 'text-secondary hover:bg-[var(--gray-2)] border-b-[3px] lg:border-b-0 border-transparent'
                     }`}
                   >
                     <Icon size={16} className="lg:w-[18px] lg:h-[18px]" />
@@ -232,7 +232,7 @@ export default function ServicesSupport() {
                             {news.cover_image ? (
                               <img src={news.cover_image} alt={news.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                             ) : (
-                              <div className="w-full h-full bg-gradient-to-br from-[#E0E0E0] to-[#CCCCCC]" />
+                              <div className="w-full h-full bg-[var(--gray-6)]" />
                             )}
                           </div>
                           <div className="p-5 sm:p-6">
@@ -435,7 +435,7 @@ export default function ServicesSupport() {
                       <div key={faq.id} className="border-b border-border last:border-0">
                         <button
                           onClick={() => setOpenFaq(isOpen ? null : faq.id)}
-                          className="w-full flex items-center justify-between px-8 py-5 text-left hover:bg-[#F9F9F9] transition-colors"
+                          className="w-full flex items-center justify-between px-8 py-5 text-left hover:bg-[var(--gray-2)] transition-colors"
                         >
                           <span className="text-[16px] font-bold text-primary pr-4">{faq.question}</span>
                           {isOpen ? <Minus size={18} className="text-secondary flex-shrink-0" /> : <Plus size={18} className="text-secondary flex-shrink-0" />}

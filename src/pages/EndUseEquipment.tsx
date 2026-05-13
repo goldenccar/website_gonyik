@@ -192,7 +192,7 @@ export default function EndUseEquipment() {
 
                 {/* No image fallback */}
                 {!cat.bg_image && (
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-r from-[#E8E8E8] to-transparent" />
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-r from-[var(--gray-4)] to-transparent" />
                 )}
 
                 {/* Content */}
@@ -224,7 +224,7 @@ export default function EndUseEquipment() {
                       const features: string[] = product.features ? JSON.parse(product.features) : []
                       return (
                         <div key={product.id} className="bg-bg group hover:scale-[1.01] transition-all duration-300 ease-out">
-                          <div className="aspect-square bg-[#E0E0E0] relative overflow-hidden">
+                          <div className="aspect-square bg-[var(--gray-6)] relative overflow-hidden">
                             {product.image ? (
                               <img
                                 src={product.image}
@@ -232,7 +232,7 @@ export default function EndUseEquipment() {
                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                               />
                             ) : (
-                              <div className="w-full h-full bg-gradient-to-br from-[#E0E0E0] to-[#CCCCCC]" />
+                              <div className="w-full h-full bg-[var(--gray-6)]" />
                             )}
                           </div>
                           <div className="p-5">

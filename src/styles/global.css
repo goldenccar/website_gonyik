@@ -1,16 +1,62 @@
+@import '@radix-ui/colors/gray.css';
+@import '@radix-ui/colors/gray-dark.css';
+@import '@radix-ui/colors/sage.css';
+@import '@radix-ui/colors/sage-dark.css';
+@import '@radix-ui/colors/grass.css';
+@import '@radix-ui/colors/grass-dark.css';
+@import '@radix-ui/colors/red.css';
+@import '@radix-ui/colors/red-dark.css';
+@import '@radix-ui/colors/amber.css';
+@import '@radix-ui/colors/amber-dark.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --color-bg: var(--gray-3);
+    --color-border: var(--gray-4);
+    --color-light: var(--gray-7);
+    --color-accent: var(--gray-8);
+    --color-accent-warm: var(--sage-9);
+    --color-secondary: var(--gray-9);
+    --color-muted: var(--gray-11);
+    --color-primary: var(--gray-12);
+    --color-dark: var(--gray-2);
+    --color-darker: var(--gray-1);
+    --color-border-dark: var(--gray-5);
+    --color-success: var(--grass-9);
+    --color-error: var(--red-9);
+    --color-warning: var(--amber-9);
+  }
+
+  .dark {
+    --color-bg: var(--gray-2);
+    --color-border: var(--gray-4);
+    --color-light: var(--gray-8);
+    --color-accent: var(--gray-8);
+    --color-accent-warm: var(--sage-9);
+    --color-secondary: var(--gray-10);
+    --color-muted: var(--gray-11);
+    --color-primary: var(--gray-12);
+    --color-dark: var(--gray-2);
+    --color-darker: var(--gray-1);
+    --color-border-dark: var(--gray-5);
+    --color-success: var(--grass-9);
+    --color-error: var(--red-9);
+    --color-warning: var(--amber-9);
+  }
+
   html {
     scroll-behavior: smooth;
     overflow-y: scroll;
   }
+
   body {
     font-family: 'Inter', 'Alibaba PuHuiTi 2.0', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-    color: #1A1A1A;
-    background-color: #EDEDED;
+    color: var(--color-primary);
+    background-color: var(--color-bg);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -30,11 +76,11 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #CCCCCC;
+  background: var(--color-light);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #888888;
+  background: var(--color-secondary);
 }
 
 /* PDF viewer override */
