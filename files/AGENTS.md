@@ -9,8 +9,8 @@
 ## 关键文件
 | 文件 | 作用 |
 |------|------|
-| `PROJECT_LOG.md` | 完整项目决策记录、功能清单、待办事项 |
-| `PRD.md` | 原始产品需求文档 |
+| `files/PROJECT_LOG.md` | 完整项目决策记录、功能清单、待办事项 |
+| `files/PRD.md` | 原始产品需求文档 |
 | `server/db.ts` | 数据库定义和默认数据 |
 | `src/api/client.ts` | 前端 API 封装 |
 | `src/components/Header.tsx` | 全局导航（GORE-TEX 风格） |
