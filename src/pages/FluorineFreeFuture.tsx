@@ -5,6 +5,43 @@ import { getPageConfig, getFluorineSections, getFluorineValueChain } from '@/api
 import MarkupParser from '@/components/MarkupParser'
 import type { PageConfig, FluorineSection } from '@/types'
 
+function LazyImage({
+  src,
+  alt,
+  className,
+  fit,
+}: {
+  src: string
+  alt: string
+  className?: string
+  fit?: string
+}) {
+  const [loaded, setLoaded] = useState(false)
+  const isOriginal = fit === 'original'
+  const isContain = fit === 'contain'
+
+  return (
+    <div
+      className={`bg-darker overflow-hidden ${isOriginal ? '' : 'aspect-[4/5]'}`}
+    >
+      <img
+        src={src}
+        alt={alt}
+        loading="lazy"
+        decoding="async"
+        onLoad={() => setLoaded(true)}
+        className={`w-full transition-opacity duration-500 ${loaded ? 'opacity-100' : 'opacity-0'} ${
+          isOriginal
+            ? 'h-auto max-h-[600px] object-contain mx-auto'
+            : isContain
+            ? 'h-full object-contain'
+            : 'h-full object-cover'
+        } ${className || ''}`}
+      />
+    </div>
+  )
+}
+
 interface ValueChainColumn {
   tag: string
   tag_cn: string
@@ -72,13 +109,11 @@ export default function FluorineFreeFuture() {
                   {/* Image */}
                   <div className="lg:w-[40%] shrink-0">
                     {section.image_url ? (
-                      <div className={`bg-darker overflow-hidden ${section.image_fit === 'original' ? '' : 'aspect-[4/5]'}`}>
-                        <img
-                          src={section.image_url}
-                          alt={section.title}
-                          className={`w-full ${section.image_fit === 'original' ? 'h-auto max-h-[600px] object-contain mx-auto' : section.image_fit === 'contain' ? 'h-full object-contain' : 'h-full object-cover'}`}
-                        />
-                      </div>
+                      <LazyImage
+                        src={section.image_url}
+                        alt={section.title}
+                        fit={section.image_fit}
+                      />
                     ) : (
                       <div className="aspect-[4/5] bg-white/10 flex items-center justify-center">
                         <span className="text-[13px] text-accent">图片占位</span>
