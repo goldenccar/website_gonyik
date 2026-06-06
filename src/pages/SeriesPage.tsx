@@ -55,9 +55,16 @@ export default function SeriesPage() {
             <ArrowLeft size={16} />
             <span className="text-[13px]">返回面料数据库</span>
           </Link>
-          <p className="text-[11px] text-muted tracking-[0.2em] uppercase mb-3">{tag}</p>
-          <h1 className="text-[28px] md:text-[36px] font-bold text-white leading-tight">{detail.name}</h1>
-          <p className="text-[16px] text-accent mt-3 max-w-[600px]">{detail.description}</p>
+          <div className="flex items-start gap-4">
+            {detail.cover_image && (
+              <img src={detail.cover_image} alt={detail.name} className="h-14 w-auto object-contain" />
+            )}
+            <div>
+              <p className="text-[11px] text-muted tracking-[0.2em] uppercase mb-3">{tag}</p>
+              <h1 className="text-[28px] md:text-[36px] font-bold text-white leading-tight">{detail.name}</h1>
+              <p className="text-[16px] text-accent mt-3 max-w-[600px]">{detail.description}</p>
+            </div>
+          </div>
         </div>
       </div>
 

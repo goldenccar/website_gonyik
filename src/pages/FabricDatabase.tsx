@@ -193,9 +193,14 @@ export default function FabricDatabase() {
                   }}
                 >
                   <div className="p-8 flex flex-col flex-1">
-                    <div className="flex items-center gap-3 mb-3">
-                      <Icon size={20} style={{ color: meta.accent }} />
-                      <h3 className="text-h4 text-primary">{series.name}</h3>
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <Icon size={20} style={{ color: meta.accent }} />
+                        <h3 className="text-h4 text-primary">{series.name}</h3>
+                      </div>
+                      {series.cover_image && (
+                        <img src={series.cover_image} alt={series.name} className="h-8 w-auto object-contain" />
+                      )}
                     </div>
                     <p className="text-[13px] text-muted leading-relaxed flex-1">{series.description}</p>
                     <div className="flex items-center justify-between mt-auto pt-4">
@@ -272,9 +277,14 @@ export default function FabricDatabase() {
               >
                 <div className="bg-white p-6">
                   <div className="flex items-center justify-between mb-6">
-                    <div>
-                      <h3 className="text-h3 text-primary">{seriesDetail.name} 系列</h3>
-                      <p className="text-body text-muted mt-1">{seriesDetail.description}</p>
+                    <div className="flex items-center gap-4">
+                      {seriesDetail.cover_image && (
+                        <img src={seriesDetail.cover_image} alt={seriesDetail.name} className="h-12 w-auto object-contain" />
+                      )}
+                      <div>
+                        <h3 className="text-h3 text-primary">{seriesDetail.name} 系列</h3>
+                        <p className="text-body text-muted mt-1">{seriesDetail.description}</p>
+                      </div>
                     </div>
                     <button onClick={() => setSelectedSeries(null)} className="p-2 hover:bg-bg transition-colors">
                       <X size={20} />

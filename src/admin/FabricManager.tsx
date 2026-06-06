@@ -120,10 +120,10 @@ export default function AdminFabricManager() {
           <table className="w-full text-left text-[13px]">
             <thead className="border-b border-white/10 text-accent uppercase">
               <tr>
+                <th className="px-6 py-3">Logo</th>
                 <th className="px-6 py-3">名称</th>
                 <th className="px-6 py-3">Slug</th>
                 <th className="px-6 py-3">描述</th>
-                <th className="px-6 py-3">SKU 数</th>
                 <th className="px-6 py-3 text-right">操作</th>
               </tr>
             </thead>
@@ -231,8 +231,14 @@ export default function AdminFabricManager() {
                     <textarea name="sub_series_data" defaultValue={editingSeries?.sub_series_data || ''} rows={4} placeholder='[{"slug":"kais-edge","name":"Kais-Edge","subtitle":"铠 · 锋","description":"...","accent_color":"#8B3A3A","link":"/fabrics/kais-edge"}]' className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none font-mono" />
                   </div>
                   <div>
-                    <label className="block text-[12px] text-secondary uppercase mb-1">封面图</label>
-                    <input type="file" name="cover_image" accept="image/*" className="text-white text-[13px]" />
+                    <label className="block text-[12px] text-secondary uppercase mb-1">系列 Logo</label>
+                    {editingSeries?.cover_image && (
+                      <div className="mb-2">
+                        <img src={editingSeries.cover_image} alt="当前 logo" className="h-10 w-auto object-contain" />
+                        <p className="text-[11px] text-muted mt-1">当前 logo</p>
+                      </div>
+                    )}
+                    <input type="file" name="cover_image" accept="image/*,image/svg+xml" className="text-white text-[13px]" />
                   </div>
                 </div>
                 <div className="flex gap-3 mt-6">
