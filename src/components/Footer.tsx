@@ -1,6 +1,14 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Shield } from 'lucide-react'
+function BeianIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className={className}>
+      <path d="M10 1L2 4.5V9C2 13.5 5.5 17.5 10 19C14.5 17.5 18 13.5 18 9V4.5L10 1Z" fill="currentColor" opacity="0.85" />
+      <path d="M10 3.5L4.5 6V9.2C4.5 12.5 7 15.5 10 16.5C13 15.5 15.5 12.5 15.5 9.2V6L10 3.5Z" fill="none" stroke="currentColor" strokeWidth="0.8" opacity="0.6" />
+      <path d="M10 6L11.2 8.5H14L11.7 10.2L12.5 13L10 11.3L7.5 13L8.3 10.2L6 8.5H8.8L10 6Z" fill="currentColor" opacity="0.9" />
+    </svg>
+  )
+}
 import { getFooter, getSocial } from '@/api/client'
 import type { FooterConfig, SocialMedia } from '@/types'
 
@@ -74,7 +82,7 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className="flex items-center gap-1 hover:text-accent transition-colors"
                 >
-                  <Shield size={12} />
+                  <BeianIcon className="w-[14px] h-[14px]" />
                   {footer.police_number}
                 </a>
               </>

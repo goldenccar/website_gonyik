@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Send, CheckCircle } from 'lucide-react'
 
 const SERIES_OPTIONS = [
-  { value: 'ottex', label: 'Ottex — 全流程无氟防水透气' },
+  { value: 'otter', label: 'Otter — 无氟高性能复合面料' },
   { value: 'kais-edge', label: 'Kais-Edge — 防切割抗穿刺' },
   { value: 'kais-ignis', label: 'Kais-Ignis — 阻燃隔热' },
   { value: 'rayo', label: 'Rayo — 原生防晒导湿' },

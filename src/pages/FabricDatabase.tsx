@@ -9,7 +9,7 @@ const FileViewer = lazy(() => import('@/components/FileViewer'))
 import type { FabricSeries, FabricSku, FabricScene, PageConfig, TestReport } from '@/types'
 
 const SERIES_META: Record<string, { accent: string; icon: any; tagline: string }> = {
-  ottex: { accent: '#4A6FA5', icon: Droplets, tagline: '全流程无氟 · 仿生防水透气' },
+  otter: { accent: '#E87B3C', icon: Droplets, tagline: '新一代无氟防护 · 高性能复合' },
   kais: { accent: '#8B3A3A', icon: Shield, tagline: '专业防护平台 · 防刺/防火/防化' },
   rayo: { accent: '#C48A4D', icon: Sun, tagline: '原生防晒 · 导湿凉感' },
   tread: { accent: '#666666', icon: Footprints, tagline: '鞋材级 · 耐磨抗撕裂' },
@@ -24,13 +24,13 @@ const CATEGORY_COLORS: Record<string, string> = {
 
 const DEFAULT_SCENES: FabricScene[] = [
   { id: 1, category: '都市生活', label: '日常通勤', series_slug: 'rayo', order_index: 0 },
-  { id: 2, category: '都市生活', label: '商务差旅', series_slug: 'ottex', order_index: 1 },
+  { id: 2, category: '都市生活', label: '商务差旅', series_slug: 'otter', order_index: 1 },
   { id: 3, category: '都市生活', label: '城市轻户外', series_slug: 'rayo', order_index: 2 },
-  { id: 4, category: '轻户外', label: '徒步旅行', series_slug: 'ottex', order_index: 3 },
-  { id: 5, category: '轻户外', label: '露营休闲', series_slug: 'ottex', order_index: 4 },
+  { id: 4, category: '轻户外', label: '徒步旅行', series_slug: 'otter', order_index: 3 },
+  { id: 5, category: '轻户外', label: '露营休闲', series_slug: 'otter', order_index: 4 },
   { id: 6, category: '轻户外', label: '城市骑行', series_slug: 'rayo', order_index: 5 },
-  { id: 7, category: '专业运动', label: '滑雪登山', series_slug: 'ottex', order_index: 6 },
-  { id: 8, category: '专业运动', label: '水域活动', series_slug: 'ottex', order_index: 7 },
+  { id: 7, category: '专业运动', label: '滑雪登山', series_slug: 'otter', order_index: 6 },
+  { id: 8, category: '专业运动', label: '水域活动', series_slug: 'otter', order_index: 7 },
   { id: 9, category: '专业运动', label: '越野跑步', series_slug: 'rayo', order_index: 8 },
   { id: 10, category: '特种防护', label: '战术防护', series_slug: 'kais-edge', order_index: 9 },
   { id: 11, category: '特种防护', label: '阻燃工装', series_slug: 'kais-ignis', order_index: 10 },
@@ -163,7 +163,7 @@ export default function FabricDatabase() {
           <h2 className="text-h4 text-primary mb-8">面料系列</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {seriesList.map((series, idx) => {
-              const meta = SERIES_META[series.slug] || SERIES_META['ottex']
+              const meta = SERIES_META[series.slug] || SERIES_META['otter']
               const Icon = meta.icon
               const isKais = series.slug === 'kais'
               const isActive = seriesCardRef(series.slug)

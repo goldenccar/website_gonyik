@@ -155,7 +155,7 @@ export default function AdminDigitalAssetManager() {
                     <input
                       name="file_name"
                       required
-                      placeholder="如：Ottex_3D_Asset_Pack.zip"
+                      placeholder="如：Otter_3D_Asset_Pack.zip"
                       className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none"
                     />
                   </div>

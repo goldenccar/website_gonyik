@@ -15,7 +15,7 @@ import type { PageConfig, AboutUs, Philosophy, Milestone, NewsItem, CareGuide, F
 const ICON_MAP: Record<string, any> = { Droplets, Sun, Wind, Ban, Code2 }
 
 const DEV_SERIES_INFO: Record<string, { name: string; fullName: string; color: string }> = {
-  ottex: { name: 'Ottex', fullName: 'Ottex 全流程无氟防水透气', color: '#4A6FA5' },
+  otter: { name: 'Otter', fullName: 'Otter 无氟高性能复合面料', color: '#E87B3C' },
   kais: { name: 'Kais', fullName: 'Kais 专业防护平台', color: '#8B3A3A' },
   rayo: { name: 'Rayo', fullName: 'Rayo 原生防晒导湿', color: '#C48A4D' },
   tread: { name: 'Tread', fullName: 'Tread 鞋材级耐磨防护', color: '#666666' },
@@ -52,7 +52,7 @@ export default function ServicesSupport() {
   const [openFaq, setOpenFaq] = useState<number | null>(null)
 
   // Developer Support states
-  const [selectedDevSeries, setSelectedDevSeries] = useState<string>('ottex')
+  const [selectedDevSeries, setSelectedDevSeries] = useState<string>('otter')
   const [devAssets, setDevAssets] = useState<DigitalAsset[]>([])
   const [devSeriesList, setDevSeriesList] = useState<FabricSeries[]>([])
 
@@ -268,7 +268,7 @@ export default function ServicesSupport() {
                     <div className="border-t border-border mb-8">
                       {[
                         { label: '支持软件', value: 'CLO3D · Marvelous Designer · Style3D' },
-                        { label: '面料系列', value: 'Ottex · Kais · Rayo · Tread 全系列' },
+                        { label: '面料系列', value: 'Otter · Kais · Rayo · Tread 全系列' },
                         { label: '物理参数', value: '悬垂度 · 刚度 · 厚度 · 摩擦系数' },
                         { label: '贴图分辨率', value: '4K PBR 材质（漫反射、法线、粗糙度）' },
                       ].map((row, i) => (
@@ -348,7 +348,7 @@ export default function ServicesSupport() {
 
                     <div className="border-t border-white/10 mb-8">
                       {[
-                        { label: '覆盖系列', value: 'Ottex · Kais · Rayo · Tread' },
+                        { label: '覆盖系列', value: 'Otter · Kais · Rayo · Tread' },
                         { label: '附送文件', value: 'SGS 认证检测报告（如需）' },
                         { label: '适用对象', value: '版型师 · 采购 · 品牌研发' },
                         { label: '响应周期', value: '3 个工作日内联系确认' },
