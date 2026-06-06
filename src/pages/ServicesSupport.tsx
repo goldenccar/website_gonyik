@@ -15,7 +15,7 @@ import type { PageConfig, AboutUs, Philosophy, Milestone, NewsItem, CareGuide, F
 const ICON_MAP: Record<string, any> = { Droplets, Sun, Wind, Ban, Code2 }
 
 const DEV_SERIES_INFO: Record<string, { name: string; fullName: string; color: string }> = {
-  otter: { name: 'Otter', fullName: 'Otter 无氟高性能复合面料', color: '#E87B3C' },
+  otter: { name: 'Otter', fullName: 'Otter 无氟高性能复合面料', color: '#1B2A44' },
   kais: { name: 'Kais', fullName: 'Kais 专业防护平台', color: '#8B3A3A' },
   rayo: { name: 'Rayo', fullName: 'Rayo 原生防晒导湿', color: '#C48A4D' },
   tread: { name: 'Tread', fullName: 'Tread 鞋材级耐磨防护', color: '#666666' },

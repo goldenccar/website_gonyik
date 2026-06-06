@@ -9,7 +9,7 @@ const FileViewer = lazy(() => import('@/components/FileViewer'))
 import type { FabricSeries, FabricSku, FabricScene, PageConfig, TestReport } from '@/types'
 
 const SERIES_META: Record<string, { accent: string; icon: any; tagline: string }> = {
-  otter: { accent: '#E87B3C', icon: Droplets, tagline: '新一代无氟防护 · 高性能复合' },
+  otter: { accent: '#1B2A44', icon: Droplets, tagline: '新一代无氟防护 · 高性能复合' },
   kais: { accent: '#8B3A3A', icon: Shield, tagline: '专业防护平台 · 防刺/防火/防化' },
   rayo: { accent: '#C48A4D', icon: Sun, tagline: '原生防晒 · 导湿凉感' },
   tread: { accent: '#666666', icon: Footprints, tagline: '鞋材级 · 耐磨抗撕裂' },
