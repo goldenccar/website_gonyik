@@ -287,7 +287,7 @@ export default function FabricDatabase() {
                       const specs: Record<string, string> = (typeof sku.specifications === 'object' && sku.specifications !== null) ? sku.specifications : (sku.specifications ? JSON.parse(sku.specifications) : {})
                       return (
                         <div key={sku.id} className="bg-bg group hover:scale-[1.01] transition-all duration-300 ease-out">
-                          <div className="aspect-[3/4] bg-[var(--gray-6)] relative overflow-hidden">
+                          <div className="hidden aspect-[3/4] bg-[var(--gray-6)] relative overflow-hidden">
                             {sku.image ? (
                               <img src={sku.image} alt={sku.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                             ) : (
