@@ -261,7 +261,7 @@ export default function AdminFabricManager() {
                   </div>
                   <div>
                     <label className="block text-[12px] text-secondary uppercase mb-1">特点（逗号分隔）</label>
-                    <input name="features" defaultValue={editingSku?.features ? JSON.parse(editingSku.features).join(', ') : ''} className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none" />
+                    <input name="features" defaultValue={editingSku?.features ? (Array.isArray(editingSku.features) ? editingSku.features : JSON.parse(editingSku.features)).join(', ') : ''} className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none" />
                   </div>
                   <div>
                     <label className="block text-[12px] text-secondary uppercase mb-1">参数（JSON）</label>

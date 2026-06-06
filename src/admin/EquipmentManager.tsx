@@ -166,7 +166,7 @@ export default function AdminEquipmentManager() {
           <Modal title={editingProduct ? '编辑产品' : '新增产品'} onClose={() => setShowProdForm(false)}>
             <form onSubmit={handleSaveProduct} className="space-y-4">
               <Field label="产品名" name="name" defaultValue={editingProduct?.name} required />
-              <Field label="特点（逗号分隔）" name="features" defaultValue={editingProduct?.features ? JSON.parse(editingProduct.features).join(', ') : ''} />
+              <Field label="特点（逗号分隔）" name="features" defaultValue={editingProduct?.features ? (Array.isArray(editingProduct.features) ? editingProduct.features : JSON.parse(editingProduct.features)).join(', ') : ''} />
               <div><label className="block text-[12px] text-secondary uppercase mb-1">产品图</label><input type="file" name="image" accept="image/*" className="text-white text-[13px]" /></div>
               <div className="flex gap-3 mt-6">
                 <button type="submit" className="flex-1 bg-white text-primary py-2.5 text-[13px] font-medium hover:bg-bg">保存</button>

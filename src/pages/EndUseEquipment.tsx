@@ -221,7 +221,7 @@ export default function EndUseEquipment() {
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                     {products.map((product) => {
-                      const features: string[] = product.features ? JSON.parse(product.features) : []
+                      const features: string[] = Array.isArray(product.features) ? product.features : (product.features ? JSON.parse(product.features) : [])
                       return (
                         <div key={product.id} className="bg-bg group hover:scale-[1.01] transition-all duration-300 ease-out">
                           <div className="aspect-square bg-[var(--gray-6)] relative overflow-hidden">

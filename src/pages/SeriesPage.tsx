@@ -74,8 +74,8 @@ export default function SeriesPage() {
             <h2 className="text-h4 text-white mb-8">型号规格</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
               {detail.skus.map((sku) => {
-                const features: string[] = sku.features ? JSON.parse(sku.features) : []
-                const specs: Record<string, string> = sku.specifications ? JSON.parse(sku.specifications) : {}
+                const features: string[] = Array.isArray(sku.features) ? sku.features : (sku.features ? JSON.parse(sku.features) : [])
+                const specs: Record<string, string> = (typeof sku.specifications === 'object' && sku.specifications !== null) ? sku.specifications : (sku.specifications ? JSON.parse(sku.specifications) : {})
                 return (
                   <div key={sku.id} className="bg-white group hover:scale-[1.01] transition-all">
                     <div className="aspect-[3/4] bg-[var(--gray-6)] relative overflow-hidden">
