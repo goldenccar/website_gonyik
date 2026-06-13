@@ -60,6 +60,7 @@ router.get('/admin/series', authMiddleware, (_req, res) => {
 router.post('/admin/series', authMiddleware, upload.single('cover_image'), (req: AuthRequest, res) => {
   const { name, slug, description, tagline, sub_series_data, home_image } = req.body
   const cover_image = req.file ? uploadUrl(req.file) : null
+  const normalizedHomeImage = home_image && home_image !== 'undefined' ? home_image : null
   const newSeries = {
     id: getNextId(db.fabric_series),
     name,
@@ -68,7 +69,7 @@ router.post('/admin/series', authMiddleware, upload.single('cover_image'), (req:
     tagline: tagline || '',
     sub_series_data: sub_series_data || null,
     cover_image,
-    home_image: home_image || null,
+    home_image: normalizedHomeImage,
     order_index: nextOrderIndex(db.fabric_series),
   }
   db.fabric_series.push(newSeries)
@@ -82,6 +83,7 @@ router.put('/admin/series/:id', authMiddleware, upload.single('cover_image'), (r
   if (!existing) { res.status(404).json({ error: 'Not found' }); return }
   const { name, slug, description, tagline, sub_series_data, home_image } = req.body
   const cover_image = req.file ? uploadUrl(req.file) : (req.body.cover_image || existing.cover_image)
+  const normalizedHomeImage = home_image && home_image !== 'undefined' ? home_image : null
   updateById(db.fabric_series, id, {
     name: name ?? existing.name,
     slug: slug ?? existing.slug,
@@ -89,7 +91,7 @@ router.put('/admin/series/:id', authMiddleware, upload.single('cover_image'), (r
     tagline: tagline ?? existing.tagline,
     sub_series_data: sub_series_data ?? existing.sub_series_data,
     cover_image,
-    home_image: home_image ?? existing.home_image,
+    home_image: normalizedHomeImage ?? existing.home_image,
   })
   saveDb()
   res.json({ success: true })

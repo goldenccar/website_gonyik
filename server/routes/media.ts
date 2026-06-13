@@ -32,7 +32,7 @@ router.post('/upload', authMiddleware, upload.single('file'), (req: AuthRequest,
   }
   db.media_items.push(newItem)
   saveDb()
-  res.json({ success: true, data: newItem })
+  res.json({ success: true, url: newItem.url, data: newItem })
 })
 
 router.put('/admin/:id', authMiddleware, (req: AuthRequest, res) => {

@@ -519,6 +519,11 @@ export function initDatabase() {
       db.fabric_series = db.fabric_series.map((s: any) => ({ ...s, home_image: s.home_image ?? null }))
       saveDb()
     }
+    // Data cleanup: replace corrupted home_image values (literal "undefined" or empty string) with null
+    if (db.fabric_series && db.fabric_series.some((s: any) => s.home_image === 'undefined' || s.home_image === '')) {
+      db.fabric_series = db.fabric_series.map((s: any) => ({ ...s, home_image: s.home_image && s.home_image !== 'undefined' ? s.home_image : null }))
+      saveDb()
+    }
     // Backward compatibility: remove Tread series/SKUs/scenes if present
     if (db.fabric_series && db.fabric_series.some((s: any) => s.slug === 'tread')) {
       const treadIds = new Set(db.fabric_series.filter((s: any) => s.slug === 'tread').map((s: any) => s.id))
