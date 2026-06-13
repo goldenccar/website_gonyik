@@ -253,16 +253,17 @@ function HeroSection({ config }: { config: HomeConfig }) {
       {/* Background */}
       {config.hero_background ? (
         <>
-          <motion.img
-            src={config.hero_background}
-            alt="Hero"
-            className="absolute inset-0 w-full h-full object-cover"
-            initial={{ scale: 1.08, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/40" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30" />
+          <div className="absolute top-0 right-0 h-full w-[60%] overflow-hidden">
+            <motion.img
+              src={config.hero_background}
+              alt="Hero"
+              className="absolute inset-0 h-full w-full object-cover"
+              initial={{ scale: 1.08, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+            />
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-r from-black via-black/95 via-[40%] to-transparent to-[65%]" />
         </>
       ) : (
         <>
