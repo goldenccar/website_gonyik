@@ -68,13 +68,13 @@ export default function FabricDatabase() {
       setSelectedSeries(null)
       setSeriesDetail(null)
       setShowKaisSub(true)
-      scrollToDetail()
+      scrollToSeriesSection()
     } else {
       setShowKaisSub(false)
       setSelectedSeries(slug)
       getFabricSeriesDetail(slug).then((res) => {
         setSeriesDetail(res.data.data)
-        scrollToDetail()
+        scrollToSeriesSection()
       })
     }
   }
@@ -96,24 +96,18 @@ export default function FabricDatabase() {
 
   const handleSceneClick = (series: string) => {
     activateSeries(series.startsWith('kais') ? 'kais' : series)
-    // Smooth scroll to series section
-    setTimeout(() => {
-      const el = document.getElementById('series-section')
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      }
-    }, 100)
   }
 
   const seriesCardRef = (slug: string) => {
     return selectedSeries === slug || (slug === 'kais' && showKaisSub)
   }
 
-  const scrollToDetail = () => {
+  const scrollToSeriesSection = () => {
     setTimeout(() => {
-      const el = document.getElementById('series-detail-anchor')
+      const el = document.getElementById('series-section')
       if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        const top = el.getBoundingClientRect().top + window.scrollY - 60
+        window.scrollTo({ top, behavior: 'smooth' })
       }
     }, 150)
   }
@@ -171,12 +165,12 @@ export default function FabricDatabase() {
                       setSelectedSeries(null)
                       setSeriesDetail(null)
                       setShowKaisSub(!showKaisSub)
-                      if (!showKaisSub) scrollToDetail()
+                      if (!showKaisSub) scrollToSeriesSection()
                     } else {
                       setShowKaisSub(false)
                       const next = selectedSeries === series.slug ? null : series.slug
                       setSelectedSeries(next)
-                      if (next) scrollToDetail()
+                      if (next) scrollToSeriesSection()
                     }
                   }}
                 >
