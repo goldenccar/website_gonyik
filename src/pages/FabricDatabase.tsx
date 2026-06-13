@@ -1,6 +1,6 @@
 import { lazy, Suspense, useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import {
   ArrowRight, FileText, X, Shield, Sun, Droplets, Footprints
 } from 'lucide-react'
@@ -31,9 +31,10 @@ const DEFAULT_SCENES: FabricScene[] = [
   { id: 11, category: '特种防护', label: '阻燃工装', series_slug: 'kais-ignis', order_index: 10 },
   { id: 12, category: '特种防护', label: '工业安全', series_slug: 'kais-edge', order_index: 11 },
   { id: 13, category: '特种防护', label: '鞋材应用', series_slug: 'tread', order_index: 12 },
-]
+].filter((s) => s.series_slug !== 'tread' && !s.series_slug.startsWith('tread'))
 
 export default function FabricDatabase() {
+  const [searchParams, setSearchParams] = useSearchParams()
   const [pageConfig, setPageConfig] = useState<PageConfig | null>(null)
   const [seriesList, setSeriesList] = useState<FabricSeries[]>([])
   const [selectedSeries, setSelectedSeries] = useState<string | null>(null)
@@ -51,6 +52,33 @@ export default function FabricDatabase() {
     getFabricScenes().then((res) => setScenes(res.data.data || []))
   }, [])
 
+  // Auto-expand series from query param
+  useEffect(() => {
+    const slug = searchParams.get('series')
+    if (!slug || seriesList.length === 0) return
+    const normalized = slug.startsWith('kais') ? 'kais' : slug
+    // Remove query param after handling to keep URL clean
+    setSearchParams({}, { replace: true })
+    activateSeries(normalized)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [seriesList])
+
+  const activateSeries = (slug: string) => {
+    if (slug === 'kais') {
+      setSelectedSeries(null)
+      setSeriesDetail(null)
+      setShowKaisSub(true)
+      scrollToDetail()
+    } else {
+      setShowKaisSub(false)
+      setSelectedSeries(slug)
+      getFabricSeriesDetail(slug).then((res) => {
+        setSeriesDetail(res.data.data)
+        scrollToDetail()
+      })
+    }
+  }
+
   useEffect(() => {
     if (selectedSeries && selectedSeries !== 'kais') {
       getFabricSeriesDetail(selectedSeries).then((res) => {
@@ -67,14 +95,7 @@ export default function FabricDatabase() {
   }
 
   const handleSceneClick = (series: string) => {
-    if (series.startsWith('kais')) {
-      setShowKaisSub(true)
-      setSelectedSeries(null)
-      setSeriesDetail(null)
-    } else {
-      setShowKaisSub(false)
-      setSelectedSeries(series)
-    }
+    activateSeries(series.startsWith('kais') ? 'kais' : series)
     // Smooth scroll to series section
     setTimeout(() => {
       const el = document.getElementById('series-section')

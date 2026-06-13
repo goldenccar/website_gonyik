@@ -27,7 +27,7 @@ function PageLoader() {
 // Public pages
 const Home = lazy(() => import('./pages/Home'))
 const FabricDatabase = lazy(() => import('./pages/FabricDatabase'))
-const SeriesPage = lazy(() => import('./pages/SeriesPage'))
+
 const EndUseEquipment = lazy(() => import('./pages/EndUseEquipment'))
 const FluorineFreeFuture = lazy(() => import('./pages/FluorineFreeFuture'))
 const ServicesSupport = lazy(() => import('./pages/ServicesSupport'))
@@ -105,7 +105,7 @@ function App() {
           <Route element={<PublicLayout />}>
             <Route path="/" element={<Home />} />
             <Route path="/fabrics" element={<FabricDatabase />} />
-            <Route path="/fabrics/:slug" element={<SeriesPage />} />
+
             <Route path="/equipment" element={<EndUseEquipment />} />
             <Route path="/fluorine-free" element={<FluorineFreeFuture />} />
             <Route path="/services" element={<ServicesSupport />} />

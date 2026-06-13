@@ -217,25 +217,25 @@ function SectionHeader({
   light?: boolean
 }) {
   return (
-    <div className="max-w-[360px]">
+    <div className="max-w-[320px]">
       {tag && (
-        <p className={`text-label uppercase mb-3 ${light ? 'text-white/60' : 'text-secondary'}`}>{tag}</p>
+        <p className={`text-label uppercase mb-2 ${light ? 'text-white/60' : 'text-secondary'}`}>{tag}</p>
       )}
-      <h2 className={`text-[24px] md:text-[28px] font-bold leading-tight mb-3 ${light ? 'text-white' : 'text-primary'}`}>{title}</h2>
+      <h2 className={`text-[20px] md:text-[22px] font-bold leading-tight mb-2 ${light ? 'text-white' : 'text-primary'}`}>{title}</h2>
       {subtitle && (
-        <p className={`text-[14px] leading-relaxed mb-4 ${light ? 'text-white/70' : 'text-secondary'}`}>{subtitle}</p>
+        <p className={`text-[13px] leading-relaxed mb-3 ${light ? 'text-white/70' : 'text-secondary'}`}>{subtitle}</p>
       )}
       {linkText && linkTo && (
         <Link
           to={linkTo}
-          className={`inline-flex items-center gap-2 text-[13px] font-medium group ${
+          className={`inline-flex items-center gap-1.5 text-[12px] font-medium group ${
             light ? 'text-white/80 hover:text-white' : 'text-secondary hover:text-primary'
           }`}
         >
           {linkText}
           <DynamicIcon
             name="ArrowRight"
-            size={13}
+            size={12}
             className={`transition-transform group-hover:translate-x-1 ${light ? 'text-white/60' : 'text-accent'}`}
           />
         </Link>
@@ -274,11 +274,11 @@ function HeroSection({ config }: { config: HomeConfig }) {
 
       {/* Content */}
       <div className="relative z-10 max-w-[1440px] mx-auto px-6 lg:px-12 pt-[60px]">
-        <div className="py-6 max-w-[720px]">
+        <div className="py-5 max-w-[720px]">
           <motion.p
             {...fadeUp}
             transition={{ ...fadeUp.transition, delay: 0.2 }}
-            className="text-label text-accentWarm uppercase mb-3"
+            className="text-label text-accentWarm uppercase mb-2"
           >
             {config.hero_tag || 'PFAS-FREE PERFORMANCE MATERIALS'}
           </motion.p>
@@ -286,7 +286,7 @@ function HeroSection({ config }: { config: HomeConfig }) {
           <motion.h1
             {...fadeUp}
             transition={{ ...fadeUp.transition, delay: 0.35 }}
-            className="text-[26px] sm:text-[32px] md:text-[38px] font-bold text-white mb-3 leading-[1.15]"
+            className="text-[24px] sm:text-[30px] md:text-[36px] font-bold text-white mb-2 leading-[1.15]"
           >
             {titleLines.map((line, i) => (
               <span key={i} className="block">
@@ -303,7 +303,7 @@ function HeroSection({ config }: { config: HomeConfig }) {
           <motion.p
             {...fadeUp}
             transition={{ ...fadeUp.transition, delay: 0.5 }}
-            className="text-[14px] md:text-[15px] text-white/75 max-w-[520px] leading-relaxed mb-6"
+            className="text-[13px] md:text-[14px] text-white/75 max-w-[480px] leading-relaxed mb-5"
           >
             {config.hero_slogan || '固纳 RPO 无氟材料平台，融合先进复合技术与结构设计，赋予面料持久防护、舒适透气与多功能表现。'}
           </motion.p>
@@ -311,17 +311,17 @@ function HeroSection({ config }: { config: HomeConfig }) {
           <motion.div
             {...fadeUp}
             transition={{ ...fadeUp.transition, delay: 0.65 }}
-            className="flex flex-col sm:flex-row gap-3"
+            className="flex flex-col sm:flex-row gap-2.5"
           >
             <Link
               to={config.primary_btn_link || '/fabrics'}
-              className="px-5 sm:px-6 py-2.5 bg-accentWarm text-white text-[13px] font-medium hover:bg-accentWarm/90 transition-all duration-250 hover:scale-[1.02] active:scale-[0.98] text-center w-full sm:w-auto"
+              className="px-5 sm:px-6 py-2 bg-accentWarm text-white text-[13px] font-medium hover:bg-accentWarm/90 transition-all duration-250 hover:scale-[1.02] active:scale-[0.98] text-center w-full sm:w-auto"
             >
               {config.primary_btn_text || '探索材料平台'}
             </Link>
             <Link
               to={config.secondary_btn_link || '/fluorine-free'}
-              className="px-5 sm:px-6 py-2.5 bg-white/10 text-white text-[13px] font-medium border border-white/25 hover:bg-white/20 hover:border-white/40 transition-all duration-250 text-center w-full sm:w-auto"
+              className="px-5 sm:px-6 py-2 bg-white/10 text-white text-[13px] font-medium border border-white/25 hover:bg-white/20 hover:border-white/40 transition-all duration-250 text-center w-full sm:w-auto"
             >
               {config.secondary_btn_text || '了解无氟未来'}
             </Link>
@@ -333,7 +333,7 @@ function HeroSection({ config }: { config: HomeConfig }) {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="flex flex-wrap gap-5 lg:gap-8 border-t border-white/10 py-4"
+          className="flex flex-wrap gap-4 lg:gap-7 border-t border-white/10 py-3"
         >
           {features.map((f, idx) => (
             <div key={idx} className="flex items-start gap-2 max-w-[180px]">
@@ -355,9 +355,9 @@ function HeroSection({ config }: { config: HomeConfig }) {
 function PlatformSection({ config }: { config: HomeConfig }) {
   const cards = Array.isArray(config.platform_cards) ? config.platform_cards : []
   return (
-    <section className="bg-bg py-10 lg:py-14">
+    <section className="bg-bg py-6 lg:py-8">
       <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
-        <div className="flex flex-col lg:flex-row gap-8 lg:gap-14">
+        <div className="flex flex-col lg:flex-row gap-6 lg:gap-10">
           <SectionHeader
             title={config.platform_section_title || '技术来源与材料平台'}
             subtitle={config.platform_section_subtitle || '源自科研，成就可靠材料解决方案。'}
@@ -373,23 +373,23 @@ function PlatformSection({ config }: { config: HomeConfig }) {
                 whileInView={{ y: 0, opacity: 1 }}
                 viewport={{ once: true, margin: '-80px' }}
                 transition={{ duration: 0.5, delay: idx * 0.08, ease: [0.22, 1, 0.36, 1] }}
-                className="bg-white border border-border p-4 group hover:shadow-sm transition-all duration-300"
+                className="bg-white border border-border p-3 group hover:shadow-sm transition-all duration-300"
               >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="p-2 bg-bg text-primary">
-                    <DynamicIcon name={card.icon} size={18} />
+                <div className="flex items-start justify-between mb-3">
+                  <div className="p-1.5 bg-bg text-primary">
+                    <DynamicIcon name={card.icon} size={16} />
                   </div>
                 </div>
-                <h3 className="text-[16px] font-bold text-primary mb-1">{card.title}</h3>
-                <p className="text-[12px] text-secondary mb-3 leading-snug">{card.subtitle}</p>
-                <div className="space-y-0.5 mb-4">
-                  {(card.description || '').split('\n').filter(Boolean).map((line, i) => (
-                    <p key={i} className="text-[12px] text-muted leading-relaxed">
+                <h3 className="text-[14px] font-bold text-primary mb-0.5">{card.title}</h3>
+                <p className="text-[11px] text-secondary mb-2 leading-snug line-clamp-1">{card.subtitle}</p>
+                <div className="space-y-0.5 mb-3">
+                  {(card.description || '').split('\n').filter(Boolean).slice(0, 2).map((line, i) => (
+                    <p key={i} className="text-[11px] text-muted leading-relaxed line-clamp-1">
                       {line}
                     </p>
                   ))}
                 </div>
-                <p className="text-[10px] text-accent uppercase tracking-wider">{card.footer}</p>
+                <p className="text-[9px] text-accent uppercase tracking-wider">{card.footer}</p>
               </motion.div>
             ))}
           </div>
@@ -406,9 +406,9 @@ function SeriesSection({ config, series }: { config: HomeConfig; series: FabricS
     .slice(0, 3)
 
   return (
-    <section className="bg-darker py-10 lg:py-14">
+    <section className="bg-darker py-6 lg:py-8">
       <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
-        <div className="flex flex-col lg:flex-row gap-8 lg:gap-14 mb-8">
+        <div className="flex flex-col lg:flex-row gap-6 lg:gap-10">
           <SectionHeader
             title={config.series_section_title || '核心面料平台'}
             subtitle={config.series_section_subtitle || '面向多元应用的材料平台，让高性能更可持续。'}
@@ -416,48 +416,48 @@ function SeriesSection({ config, series }: { config: HomeConfig; series: FabricS
             linkTo={config.series_section_link || '/fabrics'}
             light
           />
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {displaySeries.map((s, idx) => (
-            <motion.div
-              key={s.id}
-              initial={{ y: 24, opacity: 0 }}
-              whileInView={{ y: 0, opacity: 1 }}
-              viewport={{ once: true, margin: '-80px' }}
-              transition={{ duration: 0.5, delay: idx * 0.1, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <Link
-                to={`/fabrics/${s.slug}`}
-                className="group relative block h-[260px] lg:h-[300px] overflow-hidden border border-white/10 bg-dark"
+          <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {displaySeries.map((s, idx) => (
+              <motion.div
+                key={s.id}
+                initial={{ y: 20, opacity: 0 }}
+                whileInView={{ y: 0, opacity: 1 }}
+                viewport={{ once: true, margin: '-80px' }}
+                transition={{ duration: 0.5, delay: idx * 0.08, ease: [0.22, 1, 0.36, 1] }}
               >
-                {s.home_image ? (
-                  <img
-                    src={s.home_image}
-                    alt={s.name}
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                ) : (
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent" />
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                <Link
+                  to={`/fabrics?series=${s.slug}`}
+                  className="group relative block h-[150px] lg:h-[170px] overflow-hidden border border-white/10 bg-dark"
+                >
+                  {s.home_image ? (
+                    <img
+                      src={s.home_image}
+                      alt={s.name}
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent" />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
 
-                <div className="absolute inset-0 p-5 flex flex-col justify-between">
-                  <div>
-                    <h3 className="text-[24px] font-bold text-white mb-1">{s.name}</h3>
-                    <p className="text-[13px] text-white/80 font-medium mb-2">{s.tagline}</p>
-                    <p className="text-[12px] text-white/60 leading-relaxed line-clamp-2">{s.description}</p>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] text-white/50 uppercase tracking-wider">{s.slug}</span>
-                    <div className="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center text-white/70 group-hover:bg-white group-hover:text-primary transition-all">
-                      <DynamicIcon name="ArrowRight" size={14} />
+                  <div className="absolute inset-0 p-3.5 flex flex-col justify-between">
+                    <div>
+                      <h3 className="text-[18px] font-bold text-white mb-0">{s.name}</h3>
+                      <p className="text-[11px] text-white/80 font-medium mb-1">{s.tagline}</p>
+                      <p className="text-[10px] text-white/60 leading-relaxed line-clamp-2">{s.description}</p>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[9px] text-white/50 uppercase tracking-wider">{s.slug}</span>
+                      <div className="w-6 h-6 rounded-full border border-white/20 flex items-center justify-center text-white/70 group-hover:bg-white group-hover:text-primary transition-all">
+                        <DynamicIcon name="ArrowRight" size={11} />
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Link>
-            </motion.div>
-          ))}
+                </Link>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
@@ -467,31 +467,34 @@ function SeriesSection({ config, series }: { config: HomeConfig; series: FabricS
 function ScenariosSection({ config }: { config: HomeConfig }) {
   const scenarios = Array.isArray(config.scenarios) ? config.scenarios : []
   return (
-    <section className="bg-bg py-8 lg:py-10 border-b border-border">
+    <Link to="/equipment" className="block bg-bg py-4 lg:py-5 border-b border-border hover:bg-[var(--gray-4)] transition-colors">
       <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
-        <div className="flex flex-col lg:flex-row lg:items-center gap-6">
-          <h3 className="text-[13px] font-semibold text-primary uppercase tracking-wider whitespace-nowrap">
+        <div className="flex flex-col lg:flex-row lg:items-center gap-3">
+          <h3 className="text-[12px] font-semibold text-primary uppercase tracking-wider whitespace-nowrap">
             {config.scenarios_section_title || '应用场景提示'}
           </h3>
-          <div className="flex-1 flex flex-wrap gap-5 lg:gap-8">
+          <div className="flex-1 flex flex-wrap gap-4 lg:gap-6">
             {scenarios.map((item, idx) => (
-              <Link
+              <div
                 key={idx}
-                to={item.link || '#'}
-                className="flex items-center gap-2 text-secondary hover:text-primary transition-colors group"
+                className="flex items-center gap-2 text-secondary group"
               >
                 <DynamicIcon
                   name={item.icon}
-                  size={18}
+                  size={16}
                   className="text-accent group-hover:text-accentWarm transition-colors"
                 />
-                <span className="text-[13px]">{item.label}</span>
-              </Link>
+                <span className="text-[12px]">{item.label}</span>
+              </div>
             ))}
+          </div>
+          <div className="hidden lg:flex items-center gap-1 text-[12px] text-secondary group">
+            <span>查看终端装备</span>
+            <DynamicIcon name="ArrowRight" size={12} className="text-accent" />
           </div>
         </div>
       </div>
-    </section>
+    </Link>
   )
 }
 

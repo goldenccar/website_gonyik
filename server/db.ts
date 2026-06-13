@@ -251,7 +251,6 @@ function createDefaultDb(): Database {
       { id: 1, name: 'Otter', slug: 'otter', description: '无氟高性能复合面料 3L，Solidgood RPO Membrane 中间层，香港科技大学前沿纳米材料 / 日内瓦国际发明展金奖技术', tagline: '新一代无氟防护 · 高性能复合', sub_series_data: null, cover_image: '/uploads/otter-logo.svg', home_image: null, order_index: 0 },
       { id: 2, name: 'Kais', slug: 'kais', description: '专业防护平台，基于 UHMWPE 纤维基材的防刺/防火/防化解决方案', tagline: '专业防护平台 · 防刺/防火/防化', sub_series_data: '[{"slug":"kais-edge","name":"Kais-Edge","subtitle":"铠 · 锋","description":"防切割抗穿刺，通过公安部 D3/D2 认证","accent_color":"#8B3A3A","link":"/fabrics/kais-edge"},{"slug":"kais-ignis","name":"Kais-Ignis","subtitle":"铠 · 焰","description":"阻燃隔热，芳纶 + UHMWPE/TPU 复合膜结构","accent_color":"#C45D3A","link":"/fabrics/kais-ignis"}]', cover_image: null, home_image: null, order_index: 1 },
       { id: 3, name: 'Rayo', slug: 'rayo', description: '原生防晒导湿系列，Coolmax + TiO2 原纱处理，UPF 150+', tagline: '原生防晒 · 导湿凉感', sub_series_data: null, cover_image: null, home_image: null, order_index: 2 },
-      { id: 4, name: 'Tread', slug: 'tread', description: '鞋材级耐磨抗撕裂面料，户外鞋与安全鞋专用', tagline: '鞋材级 · 耐磨抗撕裂', sub_series_data: null, cover_image: null, home_image: null, order_index: 3 },
     ],
     fabric_scenes: [
       { id: 1, category: '都市生活', label: '日常通勤', series_slug: 'rayo', order_index: 0 },
@@ -266,7 +265,6 @@ function createDefaultDb(): Database {
       { id: 10, category: '特种防护', label: '战术防护', series_slug: 'kais-edge', order_index: 9 },
       { id: 11, category: '特种防护', label: '阻燃工装', series_slug: 'kais-ignis', order_index: 10 },
       { id: 12, category: '特种防护', label: '工业安全', series_slug: 'kais-edge', order_index: 11 },
-      { id: 13, category: '特种防护', label: '鞋材应用', series_slug: 'tread', order_index: 12 },
     ],
     digital_assets: [],
     media_items: [],
@@ -278,8 +276,6 @@ function createDefaultDb(): Database {
       { id: 4, series_id: 2, name: 'Kinetic-101', sku_code: 'GY-KINETIC-101', image: null, features: '["高弹","速干"]', specifications: '{"stretch":"40%","breathable":"15000g/m²/24h","weight":"110g/m²"}', order_index: 1 },
       { id: 5, series_id: 3, name: 'Lumix-100', sku_code: 'GY-LUMIX-100', image: null, features: '["轻量化","透光"]', specifications: '{"weight":"60g/m²","transparency":"15%","uv":"UPF50+"}', order_index: 0 },
       { id: 6, series_id: 3, name: 'Lumix-101', sku_code: 'GY-LUMIX-101', image: null, features: '["轻量化","透光"]', specifications: '{"weight":"70g/m²","transparency":"20%","uv":"UPF50+"}', order_index: 1 },
-      { id: 7, series_id: 4, name: 'Tread-100', sku_code: 'GY-TREAD-100', image: null, features: '["耐磨","防风"]', specifications: '{"abrasion":"50000+","windproof":"100%","weight":"200g/m²"}', order_index: 0 },
-      { id: 8, series_id: 4, name: 'Tread-101', sku_code: 'GY-TREAD-101', image: null, features: '["耐磨","防风"]', specifications: '{"abrasion":"80000+","windproof":"100%","weight":"220g/m²"}', order_index: 1 },
     ],
     test_reports: [],
     equipment_categories: [
@@ -521,6 +517,14 @@ export function initDatabase() {
     // Backward compatibility: ensure home_image exists on fabric_series
     if (db.fabric_series && db.fabric_series.length > 0 && db.fabric_series[0].home_image === undefined) {
       db.fabric_series = db.fabric_series.map((s: any) => ({ ...s, home_image: s.home_image ?? null }))
+      saveDb()
+    }
+    // Backward compatibility: remove Tread series/SKUs/scenes if present
+    if (db.fabric_series && db.fabric_series.some((s: any) => s.slug === 'tread')) {
+      const treadIds = new Set(db.fabric_series.filter((s: any) => s.slug === 'tread').map((s: any) => s.id))
+      db.fabric_series = db.fabric_series.filter((s: any) => s.slug !== 'tread')
+      if (db.fabric_sku) db.fabric_sku = db.fabric_sku.filter((k: any) => !treadIds.has(k.series_id))
+      if (db.fabric_scenes) db.fabric_scenes = db.fabric_scenes.filter((s: any) => s.series_slug !== 'tread' && !s.series_slug.startsWith('tread'))
       saveDb()
     }
     // Backward compatibility: ensure police_number / police_link exist on footer_config
