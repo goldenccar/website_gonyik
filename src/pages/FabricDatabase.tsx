@@ -27,9 +27,9 @@ const DEFAULT_SCENES: FabricScene[] = [
   { id: 7, category: '专业运动', label: '滑雪登山', series_slug: 'otter', order_index: 6 },
   { id: 8, category: '专业运动', label: '水域活动', series_slug: 'otter', order_index: 7 },
   { id: 9, category: '专业运动', label: '越野跑步', series_slug: 'rayo', order_index: 8 },
-  { id: 10, category: '特种防护', label: '战术防护', series_slug: 'kais-edge', order_index: 9 },
-  { id: 11, category: '特种防护', label: '阻燃工装', series_slug: 'kais-ignis', order_index: 10 },
-  { id: 12, category: '特种防护', label: '工业安全', series_slug: 'kais-edge', order_index: 11 },
+  { id: 10, category: '特种防护', label: '战术防护', series_slug: 'kais', order_index: 9 },
+  { id: 11, category: '特种防护', label: '阻燃工装', series_slug: 'kais', order_index: 10 },
+  { id: 12, category: '特种防护', label: '工业安全', series_slug: 'kais', order_index: 11 },
   { id: 13, category: '特种防护', label: '鞋材应用', series_slug: 'tread', order_index: 12 },
 ].filter((s) => s.series_slug !== 'tread' && !s.series_slug.startsWith('tread'))
 
@@ -43,7 +43,7 @@ export default function FabricDatabase() {
   const [scenes, setScenes] = useState<FabricScene[]>([])
   const [viewerOpen, setViewerOpen] = useState(false)
   const [viewerData, setViewerData] = useState<{ url: string; type: string; title: string } | null>(null)
-  const [showKaisSub, setShowKaisSub] = useState(false)
+
 
   useEffect(() => {
     getPageConfig('fabrics').then((res) => setPageConfig(res.data.data))
@@ -56,31 +56,22 @@ export default function FabricDatabase() {
   useEffect(() => {
     const slug = searchParams.get('series')
     if (!slug || seriesList.length === 0) return
-    const normalized = slug.startsWith('kais') ? 'kais' : slug
     // Remove query param after handling to keep URL clean
     setSearchParams({}, { replace: true })
-    activateSeries(normalized)
+    activateSeries(slug)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [seriesList])
 
   const activateSeries = (slug: string) => {
-    if (slug === 'kais') {
-      setSelectedSeries(null)
-      setSeriesDetail(null)
-      setShowKaisSub(true)
+    setSelectedSeries(slug)
+    getFabricSeriesDetail(slug).then((res) => {
+      setSeriesDetail(res.data.data)
       scrollToSeriesSection()
-    } else {
-      setShowKaisSub(false)
-      setSelectedSeries(slug)
-      getFabricSeriesDetail(slug).then((res) => {
-        setSeriesDetail(res.data.data)
-        scrollToSeriesSection()
-      })
-    }
+    })
   }
 
   useEffect(() => {
-    if (selectedSeries && selectedSeries !== 'kais') {
+    if (selectedSeries) {
       getFabricSeriesDetail(selectedSeries).then((res) => {
         setSeriesDetail(res.data.data)
       })
@@ -95,11 +86,11 @@ export default function FabricDatabase() {
   }
 
   const handleSceneClick = (series: string) => {
-    activateSeries(series.startsWith('kais') ? 'kais' : series)
+    activateSeries(series)
   }
 
   const seriesCardRef = (slug: string) => {
-    return selectedSeries === slug || (slug === 'kais' && showKaisSub)
+    return selectedSeries === slug
   }
 
   const scrollToSeriesSection = () => {
@@ -115,7 +106,7 @@ export default function FabricDatabase() {
   return (
     <div>
       {/* Hero + Scene Selector — side by side */}
-      <section className="bg-darker px-6 lg:px-12 pt-[60px] pb-16">
+      <section className="bg-darker px-6 lg:px-12 pt-[60px] pb-16 min-h-[460px]">
         <div className="max-w-[1440px] mx-auto w-full flex flex-col lg:flex-row lg:items-start lg:justify-between gap-10 lg:gap-16">
           {/* Left: Hero text */}
           <div className="py-8 shrink-0">
@@ -147,7 +138,6 @@ export default function FabricDatabase() {
             {seriesList.map((series, idx) => {
               const meta = SERIES_META[series.slug] || SERIES_META['otter']
               const Icon = meta.icon
-              const isKais = series.slug === 'kais'
               const isActive = seriesCardRef(series.slug)
               return (
                 <motion.div
@@ -161,16 +151,15 @@ export default function FabricDatabase() {
                   }`}
                   style={{ borderLeft: `3px solid ${meta.accent}` }}
                   onClick={() => {
-                    if (isKais) {
-                      setSelectedSeries(null)
-                      setSeriesDetail(null)
-                      setShowKaisSub(!showKaisSub)
-                      if (!showKaisSub) scrollToSeriesSection()
+                    const next = selectedSeries === series.slug ? null : series.slug
+                    setSelectedSeries(next)
+                    if (next) {
+                      getFabricSeriesDetail(next).then((res) => {
+                        setSeriesDetail(res.data.data)
+                        scrollToSeriesSection()
+                      })
                     } else {
-                      setShowKaisSub(false)
-                      const next = selectedSeries === series.slug ? null : series.slug
-                      setSelectedSeries(next)
-                      if (next) scrollToSeriesSection()
+                      setSeriesDetail(null)
                     }
                   }}
                 >
@@ -186,7 +175,7 @@ export default function FabricDatabase() {
                     </div>
                     <p className="text-[13px] text-muted leading-relaxed flex-1">{series.description}</p>
                     <div className="flex items-center justify-between mt-auto pt-4">
-                      <span className="text-label text-secondary">{isKais ? '选择子系列' : (series.tagline || '查看详情')}</span>
+                      <span className="text-label text-secondary">{series.tagline || '查看详情'}</span>
                       <ArrowRight size={16} className="text-primary group-hover:translate-x-1 transition-transform" />
                     </div>
                   </div>
@@ -198,56 +187,7 @@ export default function FabricDatabase() {
           {/* Scroll anchor for expanded detail */}
           <div id="series-detail-anchor" />
 
-          {/* Kais Sub-series */}
-          <AnimatePresence>
-            {showKaisSub && (() => {
-              const kaisSeries = seriesList.find((s) => s.slug === 'kais')
-              const subData = kaisSeries?.sub_series_data
-              const subSeries: any[] = subData ? (() => { try { return JSON.parse(subData) } catch { return [] } })() : []
-              return (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                  className="overflow-hidden mt-8"
-                >
-                  <div className="bg-white p-8">
-                    <div className="flex items-center justify-between mb-6">
-                      <div>
-                        <h3 className="text-h3 text-primary">{kaisSeries?.name || 'Kais'} 专业防护平台</h3>
-                        <p className="text-body text-muted mt-1">{kaisSeries?.description || '基于 UHMWPE 纤维基材的多场景防护解决方案'}</p>
-                      </div>
-                      <button onClick={() => setShowKaisSub(false)} className="p-2 hover:bg-bg transition-colors">
-                        <X size={20} />
-                      </button>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                      {subSeries.map((sub: any) => (
-                        <Link key={sub.slug} to={sub.link || `/fabrics/${sub.slug}`} className="bg-bg p-6 hover:bg-white hover:ring-1 hover:ring-primary transition-all group">
-                          <div className="flex items-center gap-3 mb-3">
-                            <Shield size={20} style={{ color: sub.accent_color || '#8B3A3A' }} />
-                            <h4 className="text-[18px] font-bold text-primary">{sub.name}</h4>
-                          </div>
-                          {sub.subtitle && <p className="text-[13px] text-muted mb-1">{sub.subtitle}</p>}
-                          <p className="text-[13px] text-secondary">{sub.description}</p>
-                          <div className="flex items-center gap-2 mt-4 text-[12px] text-secondary group-hover:text-primary transition-colors">
-                            <span>查看技术详情</span>
-                            <ArrowRight size={14} />
-                          </div>
-                        </Link>
-                      ))}
-                      {subSeries.length === 0 && (
-                        <div className="col-span-2 text-center py-8 text-muted text-[13px]">暂无子系列数据</div>
-                      )}
-                    </div>
-                  </div>
-                </motion.div>
-              )
-            })()}
-          </AnimatePresence>
-
-          {/* Series Detail / SKU Shelf (for non-Kais) */}
+          {/* Series Detail / SKU Shelf */}
           <AnimatePresence>
             {seriesDetail && (
               <motion.div
@@ -273,11 +213,23 @@ export default function FabricDatabase() {
                     </button>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                    {seriesDetail.skus?.map((sku) => (
-                      <SkuCard key={sku.id} sku={sku} />
-                    ))}
-                  </div>
+                  {(() => {
+                    const meta = SERIES_META[seriesDetail.slug] || SERIES_META['otter']
+                    return (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {seriesDetail.skus?.map((sku) => (
+                          <SkuCard
+                            key={sku.id}
+                            sku={sku}
+                            seriesName={seriesDetail.name}
+                            seriesIcon={meta.icon}
+                            seriesAccent={meta.accent}
+                            seriesTagline={seriesDetail.tagline || meta.tagline}
+                          />
+                        ))}
+                      </div>
+                    )
+                  })()}
                 </div>
               </motion.div>
             )}

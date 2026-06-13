@@ -249,7 +249,7 @@ function createDefaultDb(): Database {
     ],
     fabric_series: [
       { id: 1, name: 'Otter', slug: 'otter', description: '无氟高性能复合面料 3L，Solidgood RPO Membrane 中间层，香港科技大学前沿纳米材料 / 日内瓦国际发明展金奖技术', tagline: '新一代无氟防护 · 高性能复合', sub_series_data: null, cover_image: '/uploads/otter-logo.svg', home_image: null, order_index: 0 },
-      { id: 2, name: 'Kais', slug: 'kais', description: '专业防护平台，基于 UHMWPE 纤维基材的防刺/防火/防化解决方案', tagline: '专业防护平台 · 防刺/防火/防化', sub_series_data: '[{"slug":"kais-edge","name":"Kais-Edge","subtitle":"铠 · 锋","description":"防切割抗穿刺，通过公安部 D3/D2 认证","accent_color":"#8B3A3A","link":"/fabrics/kais-edge"},{"slug":"kais-ignis","name":"Kais-Ignis","subtitle":"铠 · 焰","description":"阻燃隔热，芳纶 + UHMWPE/TPU 复合膜结构","accent_color":"#C45D3A","link":"/fabrics/kais-ignis"}]', cover_image: null, home_image: null, order_index: 1 },
+      { id: 2, name: 'Kais', slug: 'kais', description: '专业防护平台，基于 UHMWPE 纤维基材的防刺/防火/防化解决方案', tagline: '专业防护平台 · 防刺/防火/防化', sub_series_data: null, cover_image: null, home_image: null, order_index: 1 },
       { id: 3, name: 'Rayo', slug: 'rayo', description: '原生防晒导湿系列，Coolmax + TiO2 原纱处理，UPF 150+', tagline: '原生防晒 · 导湿凉感', sub_series_data: null, cover_image: null, home_image: null, order_index: 2 },
     ],
     fabric_scenes: [
@@ -522,6 +522,11 @@ export function initDatabase() {
     // Data cleanup: replace corrupted home_image values (literal "undefined" or empty string) with null
     if (db.fabric_series && db.fabric_series.some((s: any) => s.home_image === 'undefined' || s.home_image === '')) {
       db.fabric_series = db.fabric_series.map((s: any) => ({ ...s, home_image: s.home_image && s.home_image !== 'undefined' ? s.home_image : null }))
+      saveDb()
+    }
+    // Data cleanup: remove Kais sub_series_data now that Kais uses the same structure as Otter/Rayo
+    if (db.fabric_series && db.fabric_series.some((s: any) => s.slug === 'kais' && s.sub_series_data)) {
+      db.fabric_series = db.fabric_series.map((s: any) => s.slug === 'kais' ? { ...s, sub_series_data: null } : s)
       saveDb()
     }
     // Backward compatibility: remove Tread series/SKUs/scenes if present

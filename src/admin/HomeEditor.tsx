@@ -190,7 +190,7 @@ export default function AdminHomeEditor() {
         <label className="block text-[12px] text-secondary uppercase mb-2">背景媒体</label>
 
         {/* Frontend Hero preview */}
-        <div className="relative w-full h-[220px] overflow-hidden bg-darker rounded border border-white/10 mb-3">
+        <div className="relative w-full aspect-video overflow-hidden bg-darker rounded border border-white/10 mb-3">
           {(() => {
             const previewUrl = cropPreview || form.hero_background
             if (!previewUrl) return <div className="absolute inset-0 bg-darker" />
@@ -223,6 +223,7 @@ export default function AdminHomeEditor() {
         {cropSrc && (
           <ImageCropper
             src={cropSrc}
+            aspect={16 / 9}
             onComplete={handleCropComplete}
             onCancel={handleCropCancel}
           />
@@ -232,7 +233,7 @@ export default function AdminHomeEditor() {
           <>
             <input type="file" accept="image/*,video/mp4,video/webm,video/quicktime" onChange={handleHeroBackgroundSelect} className="text-white text-[13px]" />
             <p className="text-[12px] text-muted mt-2">
-              支持 JPG、PNG、GIF、WebP、MP4、WebM、MOV。图片建议宽度 ≥1920px，前台会以 object-cover 方式铺满 Hero 区域，核心内容请放在中间偏左。
+              支持 JPG、PNG、GIF、WebP、MP4、WebM、MOV。图片建议宽度 ≥1920px，按 16:9 比例裁切，前台会以 object-cover 方式铺满 Hero 区域，核心内容请放在中间偏左。
             </p>
             {cropBlob && (
               <div className="flex items-center gap-3 mt-3">
