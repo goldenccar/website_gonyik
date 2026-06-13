@@ -21,10 +21,20 @@ if [ "$BEFORE" = "$AFTER" ]; then
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] 无更新，跳过构建" >> "$LOG_FILE"
 else
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] 检测到更新 ($BEFORE -> $AFTER)，开始部署..." >> "$LOG_FILE"
-  npm install >> "$LOG_FILE" 2>&1
+  if git diff --name-only "$BEFORE" "$AFTER" | grep -qE 'package(-lock)?\.json'; then
+    npm ci >> "$LOG_FILE" 2>&1
+  else
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] 依赖未变更，跳过 npm ci" >> "$LOG_FILE"
+  fi
   npm run build >> "$LOG_FILE" 2>&1
   mkdir -p logs
   pm2 reload ecosystem.config.cjs >> "$LOG_FILE" 2>&1
-  curl -s http://localhost:3001/api/health >> "$LOG_FILE" 2>&1
+  # 健康检查重试
+  for i in 1 2 3 4 5; do
+    if curl -s http://localhost:3001/api/health >> "$LOG_FILE" 2>&1; then
+      break
+    fi
+    sleep 2
+  done
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] 部署完成" >> "$LOG_FILE"
 fi

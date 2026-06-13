@@ -123,12 +123,12 @@ async function deployRemote(password) {
     `cd ${SERVER_PATH}`,
     'git reset --hard HEAD',
     'git pull origin main',
-    'npm install',
+    "if git diff --name-only HEAD@{1} HEAD | grep -qE 'package(-lock)?\\.json'; then npm ci; else echo '依赖未变更，跳过 npm ci'; fi",
     'npm run build',
     'mkdir -p logs',
     'pm2 reload ecosystem.config.cjs || pm2 start ecosystem.config.cjs',
     'pm2 save',
-    'curl -s http://localhost:3001/api/health',
+    '(for i in 1 2 3 4 5; do curl -s http://localhost:3001/api/health && exit 0; sleep 2; done; exit 1)',
   ].join(' && ')
 
   const conn = new Client()

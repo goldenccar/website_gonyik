@@ -4,7 +4,7 @@ module.exports = {
       name: 'gonyik',
       script: './server/index.ts',
       interpreter: 'node',
-      interpreter_args: '--import tsx',
+      interpreter_args: '--import ./node_modules/tsx/dist/loader.mjs',
       env: {
         NODE_ENV: 'production',
         PORT: 3001,
