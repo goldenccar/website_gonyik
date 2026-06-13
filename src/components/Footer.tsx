@@ -88,9 +88,14 @@ export default function Footer() {
               </>
             )}
             <span className="text-muted/60">|</span>
-            <Link to="/admin" className="hover:text-accent transition-colors">
+            <a
+              href="/admin"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-accent transition-colors"
+            >
               网站配置
-            </Link>
+            </a>
           </div>
 
           {/* Right: Social icons */}
