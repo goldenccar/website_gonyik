@@ -29,8 +29,8 @@
 
 ## 部署工作流（核心）
 
-> **目标**：任何 AI Agent 或开发者换设备后，都能直接执行这套「修改 → 同步到 GitHub → 部署到服务器」的流程。
-> **密码**：服务器 root 密码不记得时直接问用户，**不要猜测或硬编码**。
+> **目标**：任何 AI Agent 或开发者换设备后，都能直接执行这套「修改 → 同步到 GitHub → 部署到服务器」的流程，且支持 Windows / macOS / Linux。
+> **密码**：服务器 root 密码已加密存储在本地 `.deploy-key.md`，部署脚本会自动读取解密，**不要硬编码到代码里**。
 
 ### 服务器信息
 | 项目 | 详情 |
@@ -39,17 +39,31 @@
 | IP | `111.231.141.7` |
 | 系统 | OpenCloudOS 9.4 |
 | 登录用户 | `root` |
-| 密码 | 凯撒密码加密：`Wye_b594;:55;`（偏移量见本地 `.deploy-key.md`） |
+| 密码 | 凯撒密码加密：`Wyeb594;:55;`（偏移量见本地 `.deploy-key.md`） |
 | 项目路径 | `/var/www/website_gonyik` |
 | 后端服务 | `gonyik` (PM2 管理)，监听 `localhost:3001` |
+| PM2 配置 | `ecosystem.config.cjs` |
 | nginx | 80 端口 → 反向代理到 `localhost:3001`，配置在 `/etc/nginx/conf.d/gonyik.conf` |
-| 定时任务 | 理论上 `*/5 * * * *` 执行 `scripts/auto-deploy.sh`（**实际经常失效，需手动部署**） |
+| 定时任务 | `*/5 * * * *` 执行 `scripts/auto-deploy.sh`（已修复为通过 commit hash 判断更新） |
 
-### 完整手动部署命令（每次改完代码必执行）
+### 一键部署（推荐）
+
+```bash
+npm run deploy
+```
+
+非交互模式（Agent 自动执行）：
+
+```bash
+npm run deploy -y
+```
+
+该命令会依次完成：本地构建 → Git 提交 → Git 推送 → SSH 登录服务器 → 拉代码 → 安装依赖 → 构建 → PM2 重启 → 健康检查。
+
+### 完整手动部署命令
 
 **第 1 步：本地验证 + 推送**
 ```bash
-cd /Users/ccar/Desktop/web_gangyi
 npm run build          # 确保本地构建通过
 git add -A
 git commit -m "feat: xxx"
@@ -58,30 +72,13 @@ git push origin main
 
 **第 2 步：SSH 到服务器执行部署**
 ```bash
-# SSH 登录（密码问用户）
 ssh root@111.231.141.7
-
-# 进入项目目录
 cd /var/www/website_gonyik
-
-# 拉取最新代码
 git pull
-
-# 构建前端
+npm install
 npm run build
-
-# 重启后端（tsx 有缓存，server 代码修改后必须重启）
-pm2 restart gonyik
-
-# 验证后端是否存活
-curl -s http://localhost:3001/api/equipment/categories
-```
-
-**或用 sshpass 一键执行（需先装 sshpass）**
-```bash
-# 密码问用户，替换 PASSWORD
-sshpass -p 'PASSWORD' ssh -o StrictHostKeyChecking=no root@111.231.141.7 \
-  'cd /var/www/website_gonyik && git pull && npm run build && pm2 restart gonyik'
+pm2 reload ecosystem.config.cjs
+curl -s http://localhost:3001/api/health
 ```
 
 ### 关键注意事项
@@ -90,10 +87,10 @@ sshpass -p 'PASSWORD' ssh -o StrictHostKeyChecking=no root@111.231.141.7 \
 |------|------|
 | `db.json` 不提交 | 被 `.gitignore` 排除，服务器上独立维护 |
 | 向后兼容 | `server/db.ts` 的 `initDatabase()` 会自动补全新增字段，**一般无需手动修改服务器 db.json** |
-| tsx 缓存 | 修改 `server/` 下任何代码后，**必须** `pm2 restart gonyik`，否则新代码不生效 |
+| 服务端运行方式 | 生产环境使用 `node --import tsx server/index.ts`（PM2 管理），修改 `server/` 代码后必须 `pm2 reload gonyik` |
 | 前端缓存 | `index.html` 已加 `Cache-Control: no-cache`，但 CDN/浏览器仍可能缓存，清缓存或硬刷新 |
-| 自动部署失效 | `scripts/auto-deploy.sh` 定时任务经常不工作，**不要依赖它**，改完代码手动部署 |
-| 密码使用规则 | **有完整上下文时**（能直接看到本行密码）可直接使用；**上下文压缩后**（看不到密码）**必须先询问用户** |
+| 自动部署 | `scripts/auto-deploy.sh` 每 5 分钟检查一次，通过 commit hash 判断是否有更新 |
+| 跨平台 | 优先使用 `npm run deploy`，不要依赖硬编码的本地路径 |
 
 ### 日常诊断命令
 ```bash
@@ -105,7 +102,7 @@ pm2 logs gonyik --lines 20
 ss -tlnp | grep 3001
 
 # 测试 API
-curl -s http://localhost:3001/api/equipment/scenes
+curl -s http://localhost:3001/api/health
 
 # 查看 nginx 配置
 cat /etc/nginx/conf.d/gonyik.conf

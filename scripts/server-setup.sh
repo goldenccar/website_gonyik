@@ -4,7 +4,7 @@
 set -e
 
 PROJECT_DIR="/var/www/website_gonyik"
-REPO_URL="git@github.com:goldenccar/website_gonyik.git"
+REPO_URL="https://github.com/goldenccar/website_gonyik.git"
 
 echo "=== GONYIK 服务器初始化 ==="
 
@@ -45,7 +45,8 @@ npm run build
 
 # 5. PM2 启动
 echo "[6/6] 启动服务..."
-pm2 start dist/server/index.js --name gonyik || pm2 restart gonyik
+mkdir -p logs
+pm2 start ecosystem.config.cjs || pm2 reload ecosystem.config.cjs
 pm2 save
 
 # 6. 配置定时任务

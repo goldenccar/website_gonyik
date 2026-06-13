@@ -6,6 +6,7 @@ node_modules/
 dist/
 dist-ssr/
 *.local
+logs/
 
 # Database & uploads (user data, should not be committed)
 db.json

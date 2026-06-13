@@ -57,6 +57,7 @@
 | 后台入口 | `/admin`（账号 `admin` / 密码 `888888`） |
 | 本地开发 | `npm run dev`（前后端同时启动） |
 | 生产构建 | `npm run build` |
+| 一键部署 | `npm run deploy`（跨平台，Windows / macOS / Linux 均可） |
 | 部署服务器 | 腾讯云 `111.231.141.7`（详见 files/AGENTS.md & deploy skill） |
 
 ---
