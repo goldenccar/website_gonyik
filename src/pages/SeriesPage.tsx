@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import { getFabricSeriesDetail } from '@/api/client'
+import SkuCard from '@/components/SkuCard'
 import type { FabricSeries, FabricSku } from '@/types'
 
 export default function SeriesPage() {
@@ -80,40 +81,9 @@ export default function SeriesPage() {
           <div className="mt-16">
             <h2 className="text-h4 text-white mb-8">型号规格</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-              {detail.skus.map((sku) => {
-                const features: string[] = Array.isArray(sku.features) ? sku.features : (sku.features ? JSON.parse(sku.features) : [])
-                const specs: Record<string, string> = (typeof sku.specifications === 'object' && sku.specifications !== null) ? sku.specifications : (sku.specifications ? JSON.parse(sku.specifications) : {})
-                return (
-                  <div key={sku.id} className="bg-white group hover:scale-[1.01] transition-all">
-                    <div className="hidden aspect-[3/4] bg-[var(--gray-6)] relative overflow-hidden">
-                      {sku.image ? (
-                        <img src={sku.image} alt={sku.name} className="w-full h-full object-cover" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-muted bg-bg">
-                          <span className="text-[12px]">{sku.sku_code}</span>
-                        </div>
-                      )}
-                    </div>
-                    <div className="p-5">
-                      <p className="text-[11px] text-secondary uppercase tracking-wider mb-1">{sku.sku_code}</p>
-                      <h4 className="text-[16px] font-bold text-primary mb-3">{sku.name}</h4>
-                      <div className="flex flex-wrap gap-2 mb-3">
-                        {features.map((f, i) => (
-                          <span key={i} className="text-[11px] uppercase tracking-wider bg-bg px-2 py-1 text-secondary">{f}</span>
-                        ))}
-                      </div>
-                      <div className="space-y-1">
-                        {Object.entries(specs).slice(0, 3).map(([k, v]) => (
-                          <div key={k} className="flex justify-between text-[12px]">
-                            <span className="text-muted capitalize">{k}</span>
-                            <span className="text-primary font-medium">{v}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                )
-              })}
+              {detail.skus.map((sku) => (
+                <SkuCard key={sku.id} sku={sku} variant="white" />
+              ))}
             </div>
           </div>
         )}

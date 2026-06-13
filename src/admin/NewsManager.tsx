@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Plus, Trash2, Edit2 } from 'lucide-react'
+import { Plus, Trash2, Edit2 } from 'lucide-react'
 import api from '@/api/client'
 import Dashboard from './Dashboard'
+import AdminHeader from './components/AdminHeader'
+import Modal from './components/Modal'
+import FormField from './components/FormField'
+import SaveCancelButtons from './components/SaveCancelButtons'
 
 export default function AdminNewsManager() {
-  const navigate = useNavigate()
   const [news, setNews] = useState<any[]>([])
   const [showForm, setShowForm] = useState(false)
   const [editing, setEditing] = useState<any | null>(null)
@@ -48,13 +50,14 @@ export default function AdminNewsManager() {
   return (
     <Dashboard>
       <div>
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
-            <button onClick={() => navigate('/admin/dashboard')} className="text-accent hover:text-white"><ArrowLeft size={20} /></button>
-            <h1 className="text-h3 text-white">新闻管理</h1>
-          </div>
-          <button onClick={() => { setEditing(null); setShowForm(true) }} className="flex items-center gap-2 bg-white text-primary px-4 py-2 text-[13px] font-medium hover:bg-bg"><Plus size={16} /> 新增新闻</button>
-        </div>
+        <AdminHeader
+          title="新闻管理"
+          action={(
+            <button onClick={() => { setEditing(null); setShowForm(true) }} className="flex items-center gap-2 bg-white text-primary px-4 py-2 text-[13px] font-medium hover:bg-bg">
+              <Plus size={16} /> 新增新闻
+            </button>
+          )}
+        />
         {message && <p className="text-success text-[13px] mb-4">{message}</p>}
 
         <div className="bg-dark">
@@ -78,27 +81,24 @@ export default function AdminNewsManager() {
         </div>
 
         {showForm && (
-          <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-6 overflow-auto">
-            <div className="bg-dark w-full max-w-[600px] p-8 my-10">
-              <h3 className="text-white text-[18px] font-bold mb-6">{editing ? '编辑新闻' : '新增新闻'}</h3>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div><label className="block text-[12px] text-secondary uppercase mb-1">标题</label><input name="title" defaultValue={editing?.title} required className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none" /></div>
-                <div><label className="block text-[12px] text-secondary uppercase mb-1">封面图 URL</label><input name="cover_image" defaultValue={editing?.cover_image || ''} className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none" /></div>
-                <div><label className="block text-[12px] text-secondary uppercase mb-1">内容（支持 HTML）</label><textarea name="content" defaultValue={editing?.content || ''} rows={10} required className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none font-mono" /></div>
-                <div>
-                  <label className="block text-[12px] text-secondary uppercase mb-1">状态</label>
-                  <select name="status" defaultValue={editing?.status || 'draft'} className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none">
-                    <option value="draft">草稿</option>
-                    <option value="published">已发布</option>
-                  </select>
-                </div>
-                <div className="flex gap-3 mt-6">
-                  <button type="submit" className="flex-1 bg-white text-primary py-2.5 text-[13px] font-medium hover:bg-bg">保存</button>
-                  <button type="button" onClick={() => setShowForm(false)} className="flex-1 border border-white/20 text-white py-2.5 text-[13px] hover:bg-white/5">取消</button>
-                </div>
-              </form>
-            </div>
-          </div>
+          <Modal title={editing ? '编辑新闻' : '新增新闻'} onClose={() => setShowForm(false)} maxWidth="max-w-[600px]">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <FormField label="标题" name="title" defaultValue={editing?.title} required />
+              <FormField label="封面图 URL" name="cover_image" defaultValue={editing?.cover_image || ''} />
+              <FormField label="内容（支持 HTML）" name="content" defaultValue={editing?.content || ''} textarea rows={10} required />
+              <FormField
+                label="状态"
+                name="status"
+                select
+                defaultValue={editing?.status || 'draft'}
+                options={[
+                  { value: 'draft', label: '草稿' },
+                  { value: 'published', label: '已发布' },
+                ]}
+              />
+              <SaveCancelButtons onCancel={() => setShowForm(false)} />
+            </form>
+          </Modal>
         )}
       </div>
     </Dashboard>

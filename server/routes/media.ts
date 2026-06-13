@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import path from 'path'
 import fs from 'fs'
-import { db, saveDb, getNextId } from '../db'
+import { db, saveDb, getNextId, updateById, deleteById, uploadUrl } from '../db'
 import { authMiddleware, AuthRequest } from '../middleware/auth'
 import { upload } from '../middleware/upload'
 
@@ -23,7 +23,7 @@ router.post('/upload', authMiddleware, upload.single('file'), (req: AuthRequest,
   const newItem = {
     id: getNextId(db.media_items),
     filename: req.file.filename,
-    url: `/uploads/${req.file.filename}`,
+    url: uploadUrl(req.file),
     category: category || 'other',
     description: description || '',
     file_type: req.file.mimetype || '',
@@ -36,25 +36,25 @@ router.post('/upload', authMiddleware, upload.single('file'), (req: AuthRequest,
 })
 
 router.put('/admin/:id', authMiddleware, (req: AuthRequest, res) => {
-  const idx = db.media_items.findIndex((m) => m.id === Number(req.params.id))
-  if (idx < 0) { res.status(404).json({ error: 'Not found' }); return }
+  const id = Number(req.params.id)
+  const existing = db.media_items.find((m) => m.id === id)
+  if (!existing) { res.status(404).json({ error: 'Not found' }); return }
   const { category, description } = req.body
-  db.media_items[idx] = {
-    ...db.media_items[idx],
-    category: category !== undefined ? category : db.media_items[idx].category,
-    description: description !== undefined ? description : db.media_items[idx].description,
-  }
+  updateById(db.media_items, id, {
+    category: category !== undefined ? category : existing.category,
+    description: description !== undefined ? description : existing.description,
+  })
   saveDb()
   res.json({ success: true })
 })
 
 router.delete('/:id', authMiddleware, (req: AuthRequest, res) => {
-  const idx = db.media_items.findIndex((m) => m.id === Number(req.params.id))
-  if (idx < 0) { res.status(404).json({ error: 'Not found' }); return }
-  const item = db.media_items[idx]
+  const id = Number(req.params.id)
+  const item = db.media_items.find((m) => m.id === id)
+  if (!item) { res.status(404).json({ error: 'Not found' }); return }
   const filepath = path.join(UPLOADS_DIR, item.filename)
   if (fs.existsSync(filepath)) fs.unlinkSync(filepath)
-  db.media_items.splice(idx, 1)
+  deleteById(db.media_items, id)
   saveDb()
   res.json({ success: true })
 })

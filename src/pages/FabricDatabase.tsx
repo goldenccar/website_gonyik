@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom'
 import {
   ArrowRight, FileText, X, Shield, Sun, Droplets, Footprints
 } from 'lucide-react'
+import SceneSelector from '@/components/SceneSelector'
+import SkuCard from '@/components/SkuCard'
 import { getPageConfig, getFabricSeries, getFabricSeriesDetail, getTestReports, getFabricScenes } from '@/api/client'
 const FileViewer = lazy(() => import('@/components/FileViewer'))
 import type { FabricSeries, FabricSku, FabricScene, PageConfig, TestReport } from '@/types'
@@ -13,13 +15,6 @@ const SERIES_META: Record<string, { accent: string; icon: any; tagline: string }
   kais: { accent: '#8B3A3A', icon: Shield, tagline: '专业防护平台 · 防刺/防火/防化' },
   rayo: { accent: '#C48A4D', icon: Sun, tagline: '原生防晒 · 导湿凉感' },
   tread: { accent: '#666666', icon: Footprints, tagline: '鞋材级 · 耐磨抗撕裂' },
-}
-
-const CATEGORY_COLORS: Record<string, string> = {
-  '都市生活': '#6B7B8C',
-  '轻户外': '#5A8A6E',
-  '专业运动': '#4A7BA7',
-  '特种防护': '#8B3A3A',
 }
 
 const DEFAULT_SCENES: FabricScene[] = [
@@ -116,44 +111,16 @@ export default function FabricDatabase() {
             </p>
           </div>
           {/* Right: Scene Selector */}
-          <div className="py-8 lg:min-w-[420px]">
-            <div className="flex items-center gap-3 mb-5">
-              <div className="w-6 h-[1px] bg-white/20" />
-              <span className="text-[11px] text-white/40 uppercase tracking-widest">按应用场景选择</span>
-            </div>
-            <div className="space-y-4">
-              {(() => {
-                const displayScenes = scenes.length > 0 ? scenes : DEFAULT_SCENES
-                const grouped = displayScenes.reduce<Record<string, FabricScene[]>>((acc, s) => {
-                  if (!acc[s.category]) acc[s.category] = []
-                  acc[s.category].push(s)
-                  return acc
-                }, {})
-                return Object.entries(grouped).map(([category, items]) => {
-                  const color = CATEGORY_COLORS[category] || '#6B7B8C'
-                  return (
-                    <div key={category} className="flex items-start gap-4">
-                      <div className="flex items-center gap-2 shrink-0 mt-1.5 min-w-[80px]">
-                        <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: color }} />
-                        <span className="text-[13px] text-white/60 whitespace-nowrap">{category}</span>
-                      </div>
-                      <div className="flex flex-wrap gap-2 flex-1">
-                        {items.map((scene) => (
-                          <button
-                            key={scene.id}
-                            onClick={() => handleSceneClick(scene.series_slug)}
-                            className="px-3.5 py-1.5 text-[13px] text-white/70 border border-white/[0.08] hover:text-white hover:border-white/25 hover:bg-white/5 transition-all"
-                          >
-                            {scene.label}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )
-                })
-              })()}
-            </div>
-          </div>
+          <SceneSelector
+            items={(scenes.length > 0 ? scenes : DEFAULT_SCENES).map((s) => ({
+              id: s.id,
+              category: s.category,
+              label: s.label,
+              value: s.series_slug,
+            }))}
+            activeValue={selectedSeries}
+            onSelect={handleSceneClick}
+          />
         </div>
       </section>
 
@@ -292,40 +259,9 @@ export default function FabricDatabase() {
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                    {seriesDetail.skus?.map((sku) => {
-                      const features: string[] = Array.isArray(sku.features) ? sku.features : (sku.features ? JSON.parse(sku.features) : [])
-                      const specs: Record<string, string> = (typeof sku.specifications === 'object' && sku.specifications !== null) ? sku.specifications : (sku.specifications ? JSON.parse(sku.specifications) : {})
-                      return (
-                        <div key={sku.id} className="bg-bg group hover:scale-[1.01] transition-all duration-300 ease-out">
-                          <div className="hidden aspect-[3/4] bg-[var(--gray-6)] relative overflow-hidden">
-                            {sku.image ? (
-                              <img src={sku.image} alt={sku.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center text-muted">
-                                <FileText size={32} />
-                              </div>
-                            )}
-                          </div>
-                          <div className="p-5">
-                            <p className="text-[11px] text-secondary uppercase tracking-wider mb-1">{sku.sku_code}</p>
-                            <h4 className="text-[16px] font-bold text-primary mb-3">{sku.name}</h4>
-                            <div className="flex flex-wrap gap-2 mb-3">
-                              {features.map((f, i) => (
-                                <span key={i} className="text-[11px] uppercase tracking-wider bg-white px-2 py-1 text-secondary">{f}</span>
-                              ))}
-                            </div>
-                            <div className="space-y-1">
-                              {Object.entries(specs).slice(0, 3).map(([k, v]) => (
-                                <div key={k} className="flex justify-between text-[12px]">
-                                  <span className="text-muted capitalize">{k}</span>
-                                  <span className="text-primary font-medium">{v}</span>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-                      )
-                    })}
+                    {seriesDetail.skus?.map((sku) => (
+                      <SkuCard key={sku.id} sku={sku} />
+                    ))}
                   </div>
                 </div>
               </motion.div>

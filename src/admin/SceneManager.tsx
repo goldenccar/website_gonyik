@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Plus, Trash2, Edit2, X, Save } from 'lucide-react'
+import { Plus, Trash2, Edit2 } from 'lucide-react'
 import api from '@/api/client'
 import Dashboard from './Dashboard'
+import AdminHeader from './components/AdminHeader'
+import Modal from './components/Modal'
+import SaveCancelButtons from './components/SaveCancelButtons'
 
 interface Scene {
   id: number
@@ -20,7 +22,6 @@ interface SeriesOption {
 }
 
 export default function AdminSceneManager() {
-  const navigate = useNavigate()
   const [scenes, setScenes] = useState<Scene[]>([])
   const [seriesList, setSeriesList] = useState<SeriesOption[]>([])
   const [showForm, setShowForm] = useState(false)
@@ -78,21 +79,18 @@ export default function AdminSceneManager() {
   return (
     <Dashboard>
       <div>
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
-            <button onClick={() => navigate('/admin/dashboard')} className="text-accent hover:text-white">
-              <ArrowLeft size={20} />
+        <AdminHeader
+          title="场景管理"
+          action={(
+            <button
+              onClick={() => { setEditing(null); setShowForm(true) }}
+              className="flex items-center gap-2 bg-white text-primary px-4 py-2 text-[13px] font-medium hover:bg-bg"
+            >
+              <Plus size={16} />
+              新增场景
             </button>
-            <h1 className="text-h3 text-white">场景管理</h1>
-          </div>
-          <button
-            onClick={() => { setEditing(null); setShowForm(true) }}
-            className="flex items-center gap-2 bg-white text-primary px-4 py-2 text-[13px] font-medium hover:bg-bg"
-          >
-            <Plus size={16} />
-            新增场景
-          </button>
-        </div>
+          )}
+        />
 
         {message && <p className="text-success text-[13px] mb-4">{message}</p>}
 
@@ -133,60 +131,51 @@ export default function AdminSceneManager() {
           )}
         </div>
 
-        {/* Form Modal */}
         {showForm && (
-          <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-6">
-            <div className="bg-dark w-full max-w-[500px] p-8">
-              <h3 className="text-white text-[18px] font-bold mb-6">{editing ? '编辑场景' : '新增场景'}</h3>
-              <form onSubmit={handleSave}>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-[12px] text-secondary uppercase mb-1">分类</label>
-                    <input
-                      name="category"
-                      defaultValue={editing?.category || ''}
-                      required
-                      placeholder="如：都市生活、轻户外"
-                      className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[12px] text-secondary uppercase mb-1">场景名称</label>
-                    <input
-                      name="label"
-                      defaultValue={editing?.label || ''}
-                      required
-                      placeholder="如：日常通勤"
-                      className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[12px] text-secondary uppercase mb-1">对应面料系列</label>
-                    <select
-                      name="series_slug"
-                      defaultValue={editing?.series_slug || ''}
-                      required
-                      className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none"
-                    >
-                      <option value="" className="bg-dark">请选择面料系列</option>
-                      {seriesList.map((ser) => (
-                        <optgroup key={ser.slug} label={ser.name} className="bg-dark">
-                          <option value={ser.slug} className="bg-dark">{ser.name}</option>
-                          {ser.sub_series?.map((sub: any) => (
-                            <option key={sub.slug} value={sub.slug} className="bg-dark">{sub.name}</option>
-                          ))}
-                        </optgroup>
+          <Modal title={editing ? '编辑场景' : '新增场景'} onClose={() => setShowForm(false)}>
+            <form onSubmit={handleSave} className="space-y-4">
+              <div>
+                <label className="block text-[12px] text-secondary uppercase mb-1">分类</label>
+                <input
+                  name="category"
+                  defaultValue={editing?.category || ''}
+                  required
+                  placeholder="如：都市生活、轻户外"
+                  className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-[12px] text-secondary uppercase mb-1">场景名称</label>
+                <input
+                  name="label"
+                  defaultValue={editing?.label || ''}
+                  required
+                  placeholder="如：日常通勤"
+                  className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-[12px] text-secondary uppercase mb-1">对应面料系列</label>
+                <select
+                  name="series_slug"
+                  defaultValue={editing?.series_slug || ''}
+                  required
+                  className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none"
+                >
+                  <option value="" className="bg-dark">请选择面料系列</option>
+                  {seriesList.map((ser) => (
+                    <optgroup key={ser.slug} label={ser.name} className="bg-dark">
+                      <option value={ser.slug} className="bg-dark">{ser.name}</option>
+                      {ser.sub_series?.map((sub: any) => (
+                        <option key={sub.slug} value={sub.slug} className="bg-dark">{sub.name}</option>
                       ))}
-                    </select>
-                  </div>
-                </div>
-                <div className="flex gap-3 mt-6">
-                  <button type="submit" className="flex-1 bg-white text-primary py-2.5 text-[13px] font-medium hover:bg-bg">保存</button>
-                  <button type="button" onClick={() => setShowForm(false)} className="flex-1 border border-white/20 text-white py-2.5 text-[13px] hover:bg-white/5">取消</button>
-                </div>
-              </form>
-            </div>
-          </div>
+                    </optgroup>
+                  ))}
+                </select>
+              </div>
+              <SaveCancelButtons onCancel={() => setShowForm(false)} />
+            </form>
+          </Modal>
         )}
       </div>
     </Dashboard>

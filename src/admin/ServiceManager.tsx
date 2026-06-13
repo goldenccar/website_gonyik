@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Plus, Trash2, Edit2, Save, ArrowUp, ArrowDown } from 'lucide-react'
+import { Plus, Trash2, Edit2, Save, ArrowUp, ArrowDown } from 'lucide-react'
 import api, { getFluorineSections } from '@/api/client'
 import Dashboard from './Dashboard'
+import AdminHeader from './components/AdminHeader'
+import Modal from './components/Modal'
+import FormField from './components/FormField'
+import SaveCancelButtons from './components/SaveCancelButtons'
 
 export default function AdminServiceManager() {
-  const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState<'about' | 'care' | 'faq' | 'fluorine'>('about')
   const [about, setAbout] = useState<any>({})
   const [philosophies, setPhilosophies] = useState<any[]>([])
@@ -107,10 +109,7 @@ export default function AdminServiceManager() {
   return (
     <Dashboard>
       <div>
-        <div className="flex items-center gap-4 mb-8">
-          <button onClick={() => navigate('/admin/dashboard')} className="text-accent hover:text-white"><ArrowLeft size={20} /></button>
-          <h1 className="text-h3 text-white">服务与支持管理</h1>
-        </div>
+        <AdminHeader title="服务与支持管理" />
         {message && <p className="text-success text-[13px] mb-4">{message}</p>}
 
         <div className="flex gap-4 mb-6 border-b border-white/10">
@@ -245,40 +244,10 @@ export default function AdminServiceManager() {
                   </button>
                 </div>
                 <div className="space-y-4">
-                  <div>
-                    <label className="block text-[12px] text-secondary uppercase mb-1">标题</label>
-                    <input
-                      value={section.title || ''}
-                      onChange={(e) => setFluorineSections((prev) => prev.map((s) => s.id === section.id ? { ...s, title: e.target.value } : s))}
-                      className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[12px] text-secondary uppercase mb-1">摘要</label>
-                    <input
-                      value={section.subtitle || ''}
-                      onChange={(e) => setFluorineSections((prev) => prev.map((s) => s.id === section.id ? { ...s, subtitle: e.target.value } : s))}
-                      className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[12px] text-secondary uppercase mb-1">配图 URL</label>
-                    <input
-                      value={section.image_url || ''}
-                      onChange={(e) => setFluorineSections((prev) => prev.map((s) => s.id === section.id ? { ...s, image_url: e.target.value } : s))}
-                      className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none"
-                      placeholder="留空则显示占位图"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[12px] text-secondary uppercase mb-1">正文内容</label>
-                    <textarea
-                      value={section.content || ''}
-                      onChange={(e) => setFluorineSections((prev) => prev.map((s) => s.id === section.id ? { ...s, content: e.target.value } : s))}
-                      rows={10}
-                      className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none font-mono"
-                    />
-                  </div>
+                  <FormField label="标题" name={`title-${section.id}`} value={section.title || ''} onChange={(e) => setFluorineSections((prev) => prev.map((s) => s.id === section.id ? { ...s, title: e.target.value } : s))} />
+                  <FormField label="摘要" name={`subtitle-${section.id}`} value={section.subtitle || ''} onChange={(e) => setFluorineSections((prev) => prev.map((s) => s.id === section.id ? { ...s, subtitle: e.target.value } : s))} />
+                  <FormField label="配图 URL" name={`image-${section.id}`} value={section.image_url || ''} onChange={(e) => setFluorineSections((prev) => prev.map((s) => s.id === section.id ? { ...s, image_url: e.target.value } : s))} placeholder="留空则显示占位图" />
+                  <FormField label="正文内容" name={`content-${section.id}`} value={section.content || ''} onChange={(e) => setFluorineSections((prev) => prev.map((s) => s.id === section.id ? { ...s, content: e.target.value } : s))} textarea rows={10} />
                 </div>
               </div>
             ))}
@@ -286,41 +255,35 @@ export default function AdminServiceManager() {
         )}
 
         {showForm && (
-          <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-6">
-            <div className="bg-dark w-full max-w-[500px] p-8">
-              <h3 className="text-white text-[18px] font-bold mb-6">{editing ? '编辑' : '新增'}</h3>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                {activeTab === 'about' && editing?.type === 'milestone' ? (
-                  <>
-                    <div><label className="block text-[12px] text-secondary uppercase mb-1">时间</label><input name="year" defaultValue={editing?.year} required className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none" /></div>
-                    <div><label className="block text-[12px] text-secondary uppercase mb-1">事件</label><input name="event" defaultValue={editing?.event} required className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none" /></div>
-                  </>
-                ) : activeTab === 'about' ? (
-                  <>
-                    <div><label className="block text-[12px] text-secondary uppercase mb-1">编号</label><input name="number" type="number" defaultValue={editing?.number} required className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none" /></div>
-                    <div><label className="block text-[12px] text-secondary uppercase mb-1">标题</label><input name="title" defaultValue={editing?.title} required className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none" /></div>
-                    <div><label className="block text-[12px] text-secondary uppercase mb-1">描述</label><textarea name="description" defaultValue={editing?.description} rows={3} className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none" /></div>
-                  </>
-                ) : activeTab === 'care' ? (
-                  <>
-                    <div><label className="block text-[12px] text-secondary uppercase mb-1">图标（Lucide 名称）</label><input name="icon" defaultValue={editing?.icon} required className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none" /></div>
-                    <div><label className="block text-[12px] text-secondary uppercase mb-1">标题</label><input name="title" defaultValue={editing?.title} required className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none" /></div>
-                    <div><label className="block text-[12px] text-secondary uppercase mb-1">内容</label><textarea name="content" defaultValue={editing?.content} rows={4} required className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none" /></div>
-                  </>
-                ) : (
-                  <>
-                    <div><label className="block text-[12px] text-secondary uppercase mb-1">问题</label><input name="question" defaultValue={editing?.question} required className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none" /></div>
-                    <div><label className="block text-[12px] text-secondary uppercase mb-1">答案</label><textarea name="answer" defaultValue={editing?.answer} rows={4} required className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none" /></div>
-                    <div><label className="block text-[12px] text-secondary uppercase mb-1">分类</label><input name="category" defaultValue={editing?.category} className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none" /></div>
-                  </>
-                )}
-                <div className="flex gap-3 mt-6">
-                  <button type="submit" className="flex-1 bg-white text-primary py-2.5 text-[13px] font-medium hover:bg-bg">保存</button>
-                  <button type="button" onClick={() => setShowForm(false)} className="flex-1 border border-white/20 text-white py-2.5 text-[13px] hover:bg-white/5">取消</button>
-                </div>
-              </form>
-            </div>
-          </div>
+          <Modal title={editing ? '编辑' : '新增'} onClose={() => setShowForm(false)}>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {activeTab === 'about' && editing?.type === 'milestone' ? (
+                <>
+                  <FormField label="时间" name="year" defaultValue={editing?.year} required />
+                  <FormField label="事件" name="event" defaultValue={editing?.event} required />
+                </>
+              ) : activeTab === 'about' ? (
+                <>
+                  <FormField label="编号" name="number" type="number" defaultValue={editing?.number} required />
+                  <FormField label="标题" name="title" defaultValue={editing?.title} required />
+                  <FormField label="描述" name="description" defaultValue={editing?.description} textarea />
+                </>
+              ) : activeTab === 'care' ? (
+                <>
+                  <FormField label="图标（Lucide 名称）" name="icon" defaultValue={editing?.icon} required />
+                  <FormField label="标题" name="title" defaultValue={editing?.title} required />
+                  <FormField label="内容" name="content" defaultValue={editing?.content} textarea rows={4} required />
+                </>
+              ) : (
+                <>
+                  <FormField label="问题" name="question" defaultValue={editing?.question} required />
+                  <FormField label="答案" name="answer" defaultValue={editing?.answer} textarea rows={4} required />
+                  <FormField label="分类" name="category" defaultValue={editing?.category} />
+                </>
+              )}
+              <SaveCancelButtons onCancel={() => setShowForm(false)} />
+            </form>
+          </Modal>
         )}
       </div>
     </Dashboard>

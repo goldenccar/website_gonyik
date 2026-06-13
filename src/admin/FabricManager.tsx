@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Plus, Trash2, Edit2, Save, X } from 'lucide-react'
+import { Plus, Trash2, Edit2, X } from 'lucide-react'
 import api from '@/api/client'
 import Dashboard from './Dashboard'
+import AdminHeader from './components/AdminHeader'
+import Modal from './components/Modal'
+import FormField from './components/FormField'
+import SaveCancelButtons from './components/SaveCancelButtons'
 
 export default function AdminFabricManager() {
-  const navigate = useNavigate()
   const [series, setSeries] = useState<any[]>([])
   const [skus, setSkus] = useState<any[]>([])
   const [selectedSeries, setSelectedSeries] = useState<number | null>(null)
@@ -94,24 +96,20 @@ export default function AdminFabricManager() {
     loadData()
   }
 
+  const seriesAction = (
+    <button
+      onClick={() => { setEditingSeries(null); setShowSeriesForm(true) }}
+      className="flex items-center gap-2 bg-white text-primary px-4 py-2 text-[13px] font-medium hover:bg-bg"
+    >
+      <Plus size={16} />
+      新增系列
+    </button>
+  )
+
   return (
     <Dashboard>
       <div>
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
-            <button onClick={() => navigate('/admin/dashboard')} className="text-accent hover:text-white">
-              <ArrowLeft size={20} />
-            </button>
-            <h1 className="text-h3 text-white">面料系列管理</h1>
-          </div>
-          <button
-            onClick={() => { setEditingSeries(null); setShowSeriesForm(true) }}
-            className="flex items-center gap-2 bg-white text-primary px-4 py-2 text-[13px] font-medium hover:bg-bg"
-          >
-            <Plus size={16} />
-            新增系列
-          </button>
-        </div>
+        <AdminHeader title="面料系列管理" action={seriesAction} />
 
         {message && <p className="text-success text-[13px] mb-4">{message}</p>}
 
@@ -134,10 +132,16 @@ export default function AdminFabricManager() {
                   className={`border-b border-white/5 cursor-pointer hover:bg-white/5 ${selectedSeries === s.id ? 'bg-white/10' : ''}`}
                   onClick={() => setSelectedSeries(s.id)}
                 >
+                  <td className="px-6 py-4">
+                    {s.cover_image ? (
+                      <img src={s.cover_image} alt={s.name} className="h-8 w-auto object-contain" />
+                    ) : (
+                      <span className="text-accent">-</span>
+                    )}
+                  </td>
                   <td className="px-6 py-4 font-medium">{s.name}</td>
                   <td className="px-6 py-4 text-accent">{s.slug}</td>
                   <td className="px-6 py-4 text-accent max-w-[200px] truncate">{s.tagline || s.description}</td>
-                  <td className="px-6 py-4 text-accent">-</td>
                   <td className="px-6 py-4 text-right">
                     <button
                       onClick={(e) => { e.stopPropagation(); setEditingSeries(s); setShowSeriesForm(true) }}
@@ -205,86 +209,54 @@ export default function AdminFabricManager() {
 
         {/* Series Form Modal */}
         {showSeriesForm && (
-          <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-6">
-            <div className="bg-dark w-full max-w-[500px] p-8">
-              <h3 className="text-white text-[18px] font-bold mb-6">{editingSeries ? '编辑系列' : '新增系列'}</h3>
-              <form onSubmit={handleSaveSeries}>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-[12px] text-secondary uppercase mb-1">名称</label>
-                    <input name="name" defaultValue={editingSeries?.name || ''} required className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none" />
+          <Modal title={editingSeries ? '编辑系列' : '新增系列'} onClose={() => setShowSeriesForm(false)}>
+            <form onSubmit={handleSaveSeries} className="space-y-4">
+              <FormField label="名称" name="name" defaultValue={editingSeries?.name} required />
+              <FormField label="Slug" name="slug" defaultValue={editingSeries?.slug} required />
+              <FormField label="标语 Tagline" name="tagline" defaultValue={editingSeries?.tagline} />
+              <FormField label="描述" name="description" defaultValue={editingSeries?.description} textarea />
+              <FormField
+                label="子系列数据（JSON，仅 Kais 需要）"
+                name="sub_series_data"
+                defaultValue={editingSeries?.sub_series_data}
+                textarea
+                rows={4}
+                placeholder='[{"slug":"kais-edge","name":"Kais-Edge","subtitle":"铠 · 锋","description":"...","accent_color":"#8B3A3A","link":"/fabrics/kais-edge"}]'
+              />
+              <div>
+                <label className="block text-[12px] text-secondary uppercase mb-1">系列 Logo</label>
+                {editingSeries?.cover_image && (
+                  <div className="mb-2">
+                    <img src={editingSeries.cover_image} alt="当前 logo" className="h-10 w-auto object-contain" />
+                    <p className="text-[11px] text-muted mt-1">当前 logo</p>
                   </div>
-                  <div>
-                    <label className="block text-[12px] text-secondary uppercase mb-1">Slug</label>
-                    <input name="slug" defaultValue={editingSeries?.slug || ''} required className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none" />
-                  </div>
-                  <div>
-                    <label className="block text-[12px] text-secondary uppercase mb-1">标语 Tagline</label>
-                    <input name="tagline" defaultValue={editingSeries?.tagline || ''} className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none" />
-                  </div>
-                  <div>
-                    <label className="block text-[12px] text-secondary uppercase mb-1">描述</label>
-                    <textarea name="description" defaultValue={editingSeries?.description || ''} rows={3} className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none" />
-                  </div>
-                  <div>
-                    <label className="block text-[12px] text-secondary uppercase mb-1">子系列数据（JSON，仅 Kais 需要）</label>
-                    <textarea name="sub_series_data" defaultValue={editingSeries?.sub_series_data || ''} rows={4} placeholder='[{"slug":"kais-edge","name":"Kais-Edge","subtitle":"铠 · 锋","description":"...","accent_color":"#8B3A3A","link":"/fabrics/kais-edge"}]' className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none font-mono" />
-                  </div>
-                  <div>
-                    <label className="block text-[12px] text-secondary uppercase mb-1">系列 Logo</label>
-                    {editingSeries?.cover_image && (
-                      <div className="mb-2">
-                        <img src={editingSeries.cover_image} alt="当前 logo" className="h-10 w-auto object-contain" />
-                        <p className="text-[11px] text-muted mt-1">当前 logo</p>
-                      </div>
-                    )}
-                    <input type="file" name="cover_image" accept="image/*,image/svg+xml" className="text-white text-[13px]" />
-                  </div>
-                </div>
-                <div className="flex gap-3 mt-6">
-                  <button type="submit" className="flex-1 bg-white text-primary py-2.5 text-[13px] font-medium hover:bg-bg">保存</button>
-                  <button type="button" onClick={() => setShowSeriesForm(false)} className="flex-1 border border-white/20 text-white py-2.5 text-[13px] hover:bg-white/5">取消</button>
-                </div>
-              </form>
-            </div>
-          </div>
+                )}
+                <input type="file" name="cover_image" accept="image/*,image/svg+xml" className="text-white text-[13px]" />
+              </div>
+              <SaveCancelButtons onCancel={() => setShowSeriesForm(false)} />
+            </form>
+          </Modal>
         )}
 
         {/* SKU Form Modal */}
         {showSkuForm && (
-          <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-6">
-            <div className="bg-dark w-full max-w-[500px] p-8">
-              <h3 className="text-white text-[18px] font-bold mb-6">{editingSku ? '编辑 SKU' : '新增 SKU'}</h3>
-              <form onSubmit={handleSaveSku}>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-[12px] text-secondary uppercase mb-1">SKU 名称</label>
-                    <input name="name" defaultValue={editingSku?.name || ''} required className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none" />
-                  </div>
-                  <div>
-                    <label className="block text-[12px] text-secondary uppercase mb-1">编码</label>
-                    <input name="sku_code" defaultValue={editingSku?.sku_code || ''} className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none" />
-                  </div>
-                  <div>
-                    <label className="block text-[12px] text-secondary uppercase mb-1">特点（逗号分隔）</label>
-                    <input name="features" defaultValue={editingSku?.features ? (Array.isArray(editingSku.features) ? editingSku.features : JSON.parse(editingSku.features)).join(', ') : ''} className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none" />
-                  </div>
-                  <div>
-                    <label className="block text-[12px] text-secondary uppercase mb-1">参数（JSON）</label>
-                    <textarea name="specifications" defaultValue={editingSku?.specifications || '{}'} rows={3} className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none" />
-                  </div>
-                  <div>
-                    <label className="block text-[12px] text-secondary uppercase mb-1">产品图</label>
-                    <input type="file" name="image" accept="image/*" className="text-white text-[13px]" />
-                  </div>
-                </div>
-                <div className="flex gap-3 mt-6">
-                  <button type="submit" className="flex-1 bg-white text-primary py-2.5 text-[13px] font-medium hover:bg-bg">保存</button>
-                  <button type="button" onClick={() => setShowSkuForm(false)} className="flex-1 border border-white/20 text-white py-2.5 text-[13px] hover:bg-white/5">取消</button>
-                </div>
-              </form>
-            </div>
-          </div>
+          <Modal title={editingSku ? '编辑 SKU' : '新增 SKU'} onClose={() => setShowSkuForm(false)}>
+            <form onSubmit={handleSaveSku} className="space-y-4">
+              <FormField label="SKU 名称" name="name" defaultValue={editingSku?.name} required />
+              <FormField label="编码" name="sku_code" defaultValue={editingSku?.sku_code} />
+              <FormField
+                label="特点（逗号分隔）"
+                name="features"
+                defaultValue={editingSku?.features ? (Array.isArray(editingSku.features) ? editingSku.features : JSON.parse(editingSku.features)).join(', ') : ''}
+              />
+              <FormField label="参数（JSON）" name="specifications" defaultValue={editingSku?.specifications || '{}'} textarea />
+              <div>
+                <label className="block text-[12px] text-secondary uppercase mb-1">产品图</label>
+                <input type="file" name="image" accept="image/*" className="text-white text-[13px]" />
+              </div>
+              <SaveCancelButtons onCancel={() => setShowSkuForm(false)} />
+            </form>
+          </Modal>
         )}
       </div>
     </Dashboard>

@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Plus, Trash2, Edit2 } from 'lucide-react'
+import { Plus, Trash2, Edit2 } from 'lucide-react'
 import api from '@/api/client'
 import Dashboard from './Dashboard'
+import AdminHeader from './components/AdminHeader'
+import Modal from './components/Modal'
+import FormField from './components/FormField'
+import SaveCancelButtons from './components/SaveCancelButtons'
 
 export default function AdminEquipmentManager() {
-  const navigate = useNavigate()
   const [categories, setCategories] = useState<any[]>([])
   const [products, setProducts] = useState<any[]>([])
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null)
@@ -35,6 +37,7 @@ export default function AdminEquipmentManager() {
     formData.append('name', data.name as string)
     formData.append('slug', data.slug as string)
     formData.append('description', data.description as string)
+    formData.append('image_fit', data.image_fit as string)
     if (file) formData.append('bg_image', file)
     if (editingCategory?.bg_image && !file) formData.append('bg_image', editingCategory.bg_image)
 
@@ -82,15 +85,14 @@ export default function AdminEquipmentManager() {
   return (
     <Dashboard>
       <div>
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
-            <button onClick={() => navigate('/admin/dashboard')} className="text-accent hover:text-white"><ArrowLeft size={20} /></button>
-            <h1 className="text-h3 text-white">终端装备管理</h1>
-          </div>
-          <button onClick={() => { setEditingCategory(null); setShowCatForm(true) }} className="flex items-center gap-2 bg-white text-primary px-4 py-2 text-[13px] font-medium hover:bg-bg">
-            <Plus size={16} /> 新增品类
-          </button>
-        </div>
+        <AdminHeader
+          title="终端装备管理"
+          action={(
+            <button onClick={() => { setEditingCategory(null); setShowCatForm(true) }} className="flex items-center gap-2 bg-white text-primary px-4 py-2 text-[13px] font-medium hover:bg-bg">
+              <Plus size={16} /> 新增品类
+            </button>
+          )}
+        />
         {message && <p className="text-success text-[13px] mb-4">{message}</p>}
 
         <div className="bg-dark mb-8">
@@ -142,22 +144,25 @@ export default function AdminEquipmentManager() {
         {showCatForm && (
           <Modal title={editingCategory ? '编辑品类' : '新增品类'} onClose={() => setShowCatForm(false)}>
             <form onSubmit={handleSaveCategory} className="space-y-4">
-              <Field label="名称" name="name" defaultValue={editingCategory?.name} required />
-              <Field label="Slug" name="slug" defaultValue={editingCategory?.slug} required />
-              <Field label="描述" name="description" defaultValue={editingCategory?.description} textarea />
-              <div><label className="block text-[12px] text-secondary uppercase mb-1">背景图</label><input type="file" name="bg_image" accept="image/*" className="text-white text-[13px]" /></div>
+              <FormField label="名称" name="name" defaultValue={editingCategory?.name} required />
+              <FormField label="Slug" name="slug" defaultValue={editingCategory?.slug} required />
+              <FormField label="描述" name="description" defaultValue={editingCategory?.description} textarea />
+              <FormField
+                label="图片适配"
+                name="image_fit"
+                select
+                defaultValue={editingCategory?.image_fit || 'cover'}
+                options={[
+                  { value: 'cover', label: 'Cover（铺满裁剪）' },
+                  { value: 'contain', label: 'Contain（完整显示）' },
+                  { value: 'original', label: 'Original（原始尺寸）' },
+                ]}
+              />
               <div>
-                <label className="block text-[12px] text-secondary uppercase mb-1">图片适配</label>
-                <select name="image_fit" defaultValue={editingCategory?.image_fit || 'cover'} className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none">
-                  <option value="cover" className="bg-dark">Cover（铺满裁剪）</option>
-                  <option value="contain" className="bg-dark">Contain（完整显示）</option>
-                  <option value="original" className="bg-dark">Original（原始尺寸）</option>
-                </select>
+                <label className="block text-[12px] text-secondary uppercase mb-1">背景图</label>
+                <input type="file" name="bg_image" accept="image/*" className="text-white text-[13px]" />
               </div>
-              <div className="flex gap-3 mt-6">
-                <button type="submit" className="flex-1 bg-white text-primary py-2.5 text-[13px] font-medium hover:bg-bg">保存</button>
-                <button type="button" onClick={() => setShowCatForm(false)} className="flex-1 border border-white/20 text-white py-2.5 text-[13px] hover:bg-white/5">取消</button>
-              </div>
+              <SaveCancelButtons onCancel={() => setShowCatForm(false)} />
             </form>
           </Modal>
         )}
@@ -165,41 +170,21 @@ export default function AdminEquipmentManager() {
         {showProdForm && (
           <Modal title={editingProduct ? '编辑产品' : '新增产品'} onClose={() => setShowProdForm(false)}>
             <form onSubmit={handleSaveProduct} className="space-y-4">
-              <Field label="产品名" name="name" defaultValue={editingProduct?.name} required />
-              <Field label="特点（逗号分隔）" name="features" defaultValue={editingProduct?.features ? (Array.isArray(editingProduct.features) ? editingProduct.features : JSON.parse(editingProduct.features)).join(', ') : ''} />
-              <div><label className="block text-[12px] text-secondary uppercase mb-1">产品图</label><input type="file" name="image" accept="image/*" className="text-white text-[13px]" /></div>
-              <div className="flex gap-3 mt-6">
-                <button type="submit" className="flex-1 bg-white text-primary py-2.5 text-[13px] font-medium hover:bg-bg">保存</button>
-                <button type="button" onClick={() => setShowProdForm(false)} className="flex-1 border border-white/20 text-white py-2.5 text-[13px] hover:bg-white/5">取消</button>
+              <FormField label="产品名" name="name" defaultValue={editingProduct?.name} required />
+              <FormField
+                label="特点（逗号分隔）"
+                name="features"
+                defaultValue={editingProduct?.features ? (Array.isArray(editingProduct.features) ? editingProduct.features : JSON.parse(editingProduct.features)).join(', ') : ''}
+              />
+              <div>
+                <label className="block text-[12px] text-secondary uppercase mb-1">产品图</label>
+                <input type="file" name="image" accept="image/*" className="text-white text-[13px]" />
               </div>
+              <SaveCancelButtons onCancel={() => setShowProdForm(false)} />
             </form>
           </Modal>
         )}
       </div>
     </Dashboard>
-  )
-}
-
-function Modal({ title, children, onClose }: { title: string; children: React.ReactNode; onClose: () => void }) {
-  return (
-    <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-6">
-      <div className="bg-dark w-full max-w-[500px] p-8">
-        <h3 className="text-white text-[18px] font-bold mb-6">{title}</h3>
-        {children}
-      </div>
-    </div>
-  )
-}
-
-function Field({ label, name, defaultValue, required, textarea }: any) {
-  return (
-    <div>
-      <label className="block text-[12px] text-secondary uppercase mb-1">{label}</label>
-      {textarea ? (
-        <textarea name={name} defaultValue={defaultValue || ''} required={required} rows={3} className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none" />
-      ) : (
-        <input type="text" name={name} defaultValue={defaultValue || ''} required={required} className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none" />
-      )}
-    </div>
   )
 }

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { Mail, Send, MapPin, Phone, CheckCircle, ArrowRight, Factory, Shirt, Store, FlaskConical } from 'lucide-react'
 import { getPageConfig, getContactConfig, getInquirySubjects, submitContactForm } from '@/api/client'
+import PageHero from '@/components/PageHero'
 import type { PageConfig, ContactConfig, InquirySubject } from '@/types'
 
 const ECOSYSTEM_TYPES = [
@@ -55,9 +56,9 @@ export default function Contact() {
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = '邮箱格式不正确'
     if (!form.subject.trim()) e.subject = '请选择联系目的'
 
+    if (!form.message.trim()) e.message = '请输入留言内容'
     else if (form.message.trim().length < 10) e.message = '留言内容至少需要 10 个字'
     else if (form.message.trim().length > 500) e.message = '留言内容不能超过 500 字'
-    if (!form.message.trim()) e.message = '请输入留言内容'
     setErrors(e)
     return Object.keys(e).length === 0
   }
@@ -93,16 +94,11 @@ export default function Contact() {
 
   return (
     <div>
-      {/* Hero */}
-      <section className="bg-darker px-6 lg:px-12 pt-[60px]">
-        <div className="max-w-[1440px] mx-auto w-full py-8">
-          <p className="text-label text-accent uppercase mb-4">{pageConfig?.page_tag || 'CONTACT US'}</p>
-          <h1 className="text-h1 text-white mb-4">{pageConfig?.page_title || '联系我们'}</h1>
-          <p className="text-body text-accent max-w-[600px]">
-            {pageConfig?.page_subtitle || '有任何面料需求或合作意向，欢迎与我们取得联系'}
-          </p>
-        </div>
-      </section>
+      <PageHero
+        tag={pageConfig?.page_tag || 'CONTACT US'}
+        title={pageConfig?.page_title || '联系我们'}
+        subtitle={pageConfig?.page_subtitle || '有任何面料需求或合作意向，欢迎与我们取得联系'}
+      />
 
       {/* Ecosystem Program + Form */}
       <section className="bg-bg px-6 lg:px-12 py-16">

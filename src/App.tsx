@@ -105,6 +105,7 @@ function App() {
           <Route element={<PublicLayout />}>
             <Route path="/" element={<Home />} />
             <Route path="/fabrics" element={<FabricDatabase />} />
+            <Route path="/fabrics/:slug" element={<SeriesPage />} />
             <Route path="/equipment" element={<EndUseEquipment />} />
             <Route path="/fluorine-free" element={<FluorineFreeFuture />} />
             <Route path="/services" element={<ServicesSupport />} />

@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Plus, Trash2, Download } from 'lucide-react'
+import { Plus, Trash2, Download } from 'lucide-react'
 import api from '@/api/client'
 import Dashboard from './Dashboard'
+import AdminHeader from './components/AdminHeader'
+import Modal from './components/Modal'
+import FormField from './components/FormField'
+import SaveCancelButtons from './components/SaveCancelButtons'
 
 interface DigitalAsset {
   id: number
@@ -20,7 +23,6 @@ interface SeriesOption {
 }
 
 export default function AdminDigitalAssetManager() {
-  const navigate = useNavigate()
   const [assets, setAssets] = useState<DigitalAsset[]>([])
   const [seriesList, setSeriesList] = useState<SeriesOption[]>([])
   const [showForm, setShowForm] = useState(false)
@@ -77,21 +79,18 @@ export default function AdminDigitalAssetManager() {
   return (
     <Dashboard>
       <div>
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
-            <button onClick={() => navigate('/admin/dashboard')} className="text-accent hover:text-white">
-              <ArrowLeft size={20} />
+        <AdminHeader
+          title="数字资产管理"
+          action={(
+            <button
+              onClick={() => setShowForm(true)}
+              className="flex items-center gap-2 bg-white text-primary px-4 py-2 text-[13px] font-medium hover:bg-bg"
+            >
+              <Plus size={16} />
+              上传资产
             </button>
-            <h1 className="text-h3 text-white">数字资产管理</h1>
-          </div>
-          <button
-            onClick={() => setShowForm(true)}
-            className="flex items-center gap-2 bg-white text-primary px-4 py-2 text-[13px] font-medium hover:bg-bg"
-          >
-            <Plus size={16} />
-            上传资产
-          </button>
-        </div>
+          )}
+        />
 
         {message && <p className="text-success text-[13px] mb-4">{message}</p>}
 
@@ -130,61 +129,28 @@ export default function AdminDigitalAssetManager() {
           )}
         </div>
 
-        {/* Upload Form Modal */}
         {showForm && (
-          <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-6">
-            <div className="bg-dark w-full max-w-[500px] p-8">
-              <h3 className="text-white text-[18px] font-bold mb-6">上传数字资产</h3>
-              <form onSubmit={handleSave}>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-[12px] text-secondary uppercase mb-1">对应面料系列</label>
-                    <select
-                      name="series_slug"
-                      required
-                      className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none"
-                    >
-                      <option value="" className="bg-dark">请选择系列</option>
-                      {seriesList.map((s) => (
-                        <option key={s.slug} value={s.slug} className="bg-dark">{s.name}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-[12px] text-secondary uppercase mb-1">文件名称</label>
-                    <input
-                      name="file_name"
-                      required
-                      placeholder="如：Otter_3D_Asset_Pack.zip"
-                      className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[12px] text-secondary uppercase mb-1">文件格式</label>
-                    <input
-                      name="file_type"
-                      required
-                      placeholder="如：zip / zfab / u3ma / sbsar / png"
-                      className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[12px] text-secondary uppercase mb-1">上传文件</label>
-                    <input
-                      type="file"
-                      name="file"
-                      required
-                      className="text-white text-[13px]"
-                    />
-                  </div>
-                </div>
-                <div className="flex gap-3 mt-6">
-                  <button type="submit" className="flex-1 bg-white text-primary py-2.5 text-[13px] font-medium hover:bg-bg">上传</button>
-                  <button type="button" onClick={() => setShowForm(false)} className="flex-1 border border-white/20 text-white py-2.5 text-[13px] hover:bg-white/5">取消</button>
-                </div>
-              </form>
-            </div>
-          </div>
+          <Modal title="上传数字资产" onClose={() => setShowForm(false)}>
+            <form onSubmit={handleSave} className="space-y-4">
+              <FormField
+                label="对应面料系列"
+                name="series_slug"
+                select
+                required
+                options={[
+                  { value: '', label: '请选择系列' },
+                  ...seriesList.map((s) => ({ value: s.slug, label: s.name })),
+                ]}
+              />
+              <FormField label="文件名称" name="file_name" required placeholder="如：Otter_3D_Asset_Pack.zip" />
+              <FormField label="文件格式" name="file_type" required placeholder="如：zip / zfab / u3ma / sbsar / png" />
+              <div>
+                <label className="block text-[12px] text-secondary uppercase mb-1">上传文件</label>
+                <input type="file" name="file" required className="text-white text-[13px]" />
+              </div>
+              <SaveCancelButtons onCancel={() => setShowForm(false)} submitLabel="上传" />
+            </form>
+          </Modal>
         )}
       </div>
     </Dashboard>

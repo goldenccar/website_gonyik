@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
 import { getPageConfig, getFluorineSections, getFluorineValueChain } from '@/api/client'
 import MarkupParser from '@/components/MarkupParser'
+import PageHero from '@/components/PageHero'
 import type { PageConfig, FluorineSection } from '@/types'
 
 function LazyImage({
@@ -70,16 +71,11 @@ export default function FluorineFreeFuture() {
 
   return (
     <div>
-      {/* Hero */}
-      <section className="bg-darker px-6 lg:px-12 pt-[60px]">
-        <div className="max-w-[1440px] mx-auto w-full py-8">
-          <p className="text-label text-accent uppercase mb-4">{pageConfig?.page_tag || 'RPO MATERIAL PLATFORM'}</p>
-          <h1 className="text-h1 text-white mb-4">{pageConfig?.page_title || 'RPO材料平台 · 探索无氟未来'}</h1>
-          <p className="text-body text-accent max-w-[600px]">
-            {pageConfig?.page_subtitle || '以科技创新推动可持续发展，告别 PFAS，拥抱绿色未来'}
-          </p>
-        </div>
-      </section>
+      <PageHero
+        tag={pageConfig?.page_tag || 'RPO MATERIAL PLATFORM'}
+        title={pageConfig?.page_title || 'RPO材料平台 · 探索无氟未来'}
+        subtitle={pageConfig?.page_subtitle || '以科技创新推动可持续发展，告别 PFAS，拥抱绿色未来'}
+      />
 
       {/* Sections */}
       <section className="bg-darker">

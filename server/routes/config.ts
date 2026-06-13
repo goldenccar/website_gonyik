@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import nodemailer from 'nodemailer'
-import { db, saveDb, getNextId } from '../db'
+import { db, saveDb, getNextId, sortByOrderIndex, updateById, deleteById, uploadUrl, nextOrderIndex } from '../db'
 import { authMiddleware, AuthRequest } from '../middleware/auth'
 import { upload } from '../middleware/upload'
 
@@ -22,18 +22,16 @@ router.put('/admin/site-config', authMiddleware, (req: AuthRequest, res) => {
 
 router.put('/admin/site-config/logo', authMiddleware, upload.single('file'), (req: AuthRequest, res) => {
   if (!req.file) { res.status(400).json({ error: 'No file' }); return }
-  const url = `/uploads/${req.file.filename}`
-  db.site_config.logo_url = url
+  db.site_config.logo_url = uploadUrl(req.file)
   saveDb()
-  res.json({ success: true, url })
+  res.json({ success: true, url: db.site_config.logo_url })
 })
 
 router.put('/admin/site-config/favicon', authMiddleware, upload.single('file'), (req: AuthRequest, res) => {
   if (!req.file) { res.status(400).json({ error: 'No file' }); return }
-  const url = `/uploads/${req.file.filename}`
-  db.site_config.favicon_url = url
+  db.site_config.favicon_url = uploadUrl(req.file)
   saveDb()
-  res.json({ success: true, url })
+  res.json({ success: true, url: db.site_config.favicon_url })
 })
 
 router.get('/page/:pageKey', (req, res) => {
@@ -42,7 +40,7 @@ router.get('/page/:pageKey', (req, res) => {
 })
 
 router.get('/navigation', (_req, res) => {
-  res.json({ data: db.navigation.sort((a, b) => a.order_index - b.order_index) })
+  res.json({ data: db.navigation.sort(sortByOrderIndex) })
 })
 
 router.get('/footer', (_req, res) => {
@@ -64,21 +62,19 @@ router.put('/admin/contact-config', authMiddleware, (req: AuthRequest, res) => {
 })
 
 router.get('/fluorine-sections', (_req, res) => {
-  res.json({ data: db.fluorine_sections.filter((s) => s.page_key === 'fluorine-free').sort((a, b) => a.order_index - b.order_index) })
+  res.json({ data: db.fluorine_sections.filter((s) => s.page_key === 'fluorine-free').sort(sortByOrderIndex) })
 })
 
 router.put('/admin/fluorine-sections/:id', authMiddleware, (req: AuthRequest, res) => {
-  const idx = db.fluorine_sections.findIndex((s) => s.id === Number(req.params.id))
-  if (idx < 0) { res.status(404).json({ error: 'Not found' }); return }
-  db.fluorine_sections[idx] = { ...db.fluorine_sections[idx], ...req.body }
+  const ok = updateById(db.fluorine_sections, Number(req.params.id), req.body)
+  if (!ok) { res.status(404).json({ error: 'Not found' }); return }
   saveDb()
   res.json({ success: true })
 })
 
 router.put('/admin/fluorine-sections/:id/image-fit', authMiddleware, (req: AuthRequest, res) => {
-  const idx = db.fluorine_sections.findIndex((s) => s.id === Number(req.params.id))
-  if (idx < 0) { res.status(404).json({ error: 'Not found' }); return }
-  db.fluorine_sections[idx].image_fit = req.body.image_fit
+  const ok = updateById(db.fluorine_sections, Number(req.params.id), { image_fit: req.body.image_fit })
+  if (!ok) { res.status(404).json({ error: 'Not found' }); return }
   saveDb()
   res.json({ success: true })
 })
@@ -102,10 +98,9 @@ router.put('/admin/home', authMiddleware, (req: AuthRequest, res) => {
 
 router.put('/admin/home/background', authMiddleware, upload.single('file'), (req: AuthRequest, res) => {
   if (!req.file) { res.status(400).json({ error: 'No file' }); return }
-  const url = `/uploads/${req.file.filename}`
-  db.home_config.hero_background = url
+  db.home_config.hero_background = uploadUrl(req.file)
   saveDb()
-  res.json({ success: true, url })
+  res.json({ success: true, url: db.home_config.hero_background })
 })
 
 router.put('/admin/page/:pageKey', authMiddleware, (req: AuthRequest, res) => {
@@ -118,7 +113,7 @@ router.put('/admin/page/:pageKey', authMiddleware, (req: AuthRequest, res) => {
 })
 
 router.put('/admin/navigation', authMiddleware, (req: AuthRequest, res) => {
-  db.navigation = req.body.items.map((item: any, i: number) => ({ ...item, order_index: i }))
+  db.navigation = (req.body.items || []).map((item: any, i: number) => ({ ...item, order_index: i }))
   saveDb()
   res.json({ success: true })
 })
@@ -132,7 +127,7 @@ router.put('/admin/footer', authMiddleware, (req: AuthRequest, res) => {
 router.put('/admin/social', authMiddleware, upload.single('qrcode'), (req: AuthRequest, res) => {
   const { platform, account } = req.body
   const idx = db.social_media.findIndex((s) => s.platform === platform)
-  const qrcode_url = req.file ? `/uploads/${req.file.filename}` : req.body.qrcode_url
+  const qrcode_url = req.file ? uploadUrl(req.file) : req.body.qrcode_url
   if (idx >= 0) {
     db.social_media[idx] = { ...db.social_media[idx], account, qrcode_url }
     saveDb()
@@ -141,7 +136,7 @@ router.put('/admin/social', authMiddleware, upload.single('qrcode'), (req: AuthR
 })
 
 router.get('/inquiry-subjects', (_req, res) => {
-  res.json({ data: db.inquiry_subjects.sort((a, b) => a.order_index - b.order_index) })
+  res.json({ data: db.inquiry_subjects.sort(sortByOrderIndex) })
 })
 
 router.put('/admin/inquiry-subjects', authMiddleware, (req: AuthRequest, res) => {
@@ -159,7 +154,7 @@ router.get('/admin/contact-messages', authMiddleware, (_req, res) => {
 })
 
 router.delete('/admin/contact-messages/:id', authMiddleware, (req: AuthRequest, res) => {
-  db.contact_messages = db.contact_messages.filter((m) => m.id !== Number(req.params.id))
+  deleteById(db.contact_messages, Number(req.params.id))
   saveDb()
   res.json({ success: true })
 })

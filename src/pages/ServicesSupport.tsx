@@ -3,13 +3,13 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Link, useSearchParams } from 'react-router-dom'
 import {
   Building2, Newspaper, Code2, Droplets, HelpCircle, Plus, Minus, ChevronRight,
-  Sun, Wind, Ban, Download, ArrowRight, FileArchive, FileImage, Box, Package, Palette, Send
+  Sun, Wind, Ban, Download, ArrowRight, FileArchive, FileImage, Box, Package, Palette
 } from 'lucide-react'
 import {
   getPageConfig, getAboutUs, getNews, getNewsDetail, getCareGuides, getFaqs,
   getDigitalAssets, getFabricSeries
 } from '@/api/client'
-import SampleForm from '@/components/SampleForm'
+import PageHero from '@/components/PageHero'
 import type { PageConfig, AboutUs, Philosophy, Milestone, NewsItem, CareGuide, FAQ, DigitalAsset, FabricSeries } from '@/types'
 
 const ICON_MAP: Record<string, any> = { Droplets, Sun, Wind, Ban, Code2 }
@@ -33,7 +33,6 @@ const SUB_MODULES = [
   { key: 'about', label: '关于我们', icon: Building2 },
   { key: 'news', label: '新闻中心', icon: Newspaper },
   { key: 'dev', label: '开发者支持', icon: Code2 },
-  // { key: 'sample', label: '样品申请', icon: Send }, // 暂时关闭
   { key: 'care', label: '洗护指南', icon: Droplets },
   { key: 'faq', label: 'FAQs', icon: HelpCircle },
 ]
@@ -78,16 +77,11 @@ export default function ServicesSupport() {
 
   return (
     <div>
-      {/* Hero */}
-      <section className="bg-darker flex flex-col justify-center px-6 lg:px-12 pt-[60px]">
-        <div className="max-w-[1440px] mx-auto w-full py-8">
-          <p className="text-label text-accent uppercase mb-4">{pageConfig?.page_tag || 'SERVICES & SUPPORT'}</p>
-          <h1 className="text-h1 text-white mb-4">{pageConfig?.page_title || '服务与支持'}</h1>
-          <p className="text-body text-accent max-w-[600px]">
-            {pageConfig?.page_subtitle || '全方位服务体系，助力您的每一个项目'}
-          </p>
-        </div>
-      </section>
+      <PageHero
+        tag={pageConfig?.page_tag || 'SERVICES & SUPPORT'}
+        title={pageConfig?.page_title || '服务与支持'}
+        subtitle={pageConfig?.page_subtitle || '全方位服务体系，助力您的每一个项目'}
+      />
 
       {/* Content Area */}
       <section className="bg-bg px-6 lg:px-12 py-12">
@@ -367,25 +361,6 @@ export default function ServicesSupport() {
                       <span>前往申请页面</span>
                       <ArrowRight size={16} />
                     </Link>
-                  </div>
-                </motion.div>
-              )}
-
-              {/* Sample Request */}
-              {activeModule === 'sample' && (
-                <motion.div
-                  key="sample"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <div className="bg-white p-6 sm:p-10 mb-6">
-                    <h3 className="text-h4 text-primary mb-3">申请面料样品</h3>
-                    <p className="text-body text-muted max-w-[700px] mb-8">
-                      填写以下信息，我们会尽快与您联系。支持全系列面料样品申请，附带完整技术规格书。
-                    </p>
-                    <SampleForm />
                   </div>
                 </motion.div>
               )}

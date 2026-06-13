@@ -289,6 +289,7 @@ function createDefaultDb(): Database {
       { id: 5, question: '面料的环保认证有哪些？', answer: '我们的产品已通过 bluesign®、OEKO-TEX® Standard 100、GRS 等多项国际环保认证。', category: null, order_index: 4 },
       { id: 6, question: '如何验证面料的真伪？', answer: '每批面料均配有唯一批次号，可通过官网或联系客服进行溯源验证。', category: null, order_index: 5 },
     ],
+    contact_messages: [],
     users: [
       { id: 1, username: 'admin', password_hash: bcrypt.hashSync('888888', 10), must_change_password: 0, created_at: new Date().toISOString() },
     ],
@@ -418,4 +419,30 @@ export function saveDb() {
 // Helper functions
 export function getNextId(arr: any[]): number {
   return arr.length > 0 ? Math.max(...arr.map((i) => i.id)) + 1 : 1
+}
+
+export function sortByOrderIndex<T extends { order_index?: number }>(a: T, b: T): number {
+  return (a.order_index ?? 0) - (b.order_index ?? 0)
+}
+
+export function updateById<T extends { id: number }>(arr: T[], id: number, patch: Partial<T>): boolean {
+  const idx = arr.findIndex((item) => item.id === id)
+  if (idx < 0) return false
+  arr[idx] = { ...arr[idx], ...patch }
+  return true
+}
+
+export function deleteById<T extends { id: number }>(arr: T[], id: number): boolean {
+  const idx = arr.findIndex((item) => item.id === id)
+  if (idx < 0) return false
+  arr.splice(idx, 1)
+  return true
+}
+
+export function uploadUrl(file: { filename: string }): string {
+  return `/uploads/${file.filename}`
+}
+
+export function nextOrderIndex(arr: { length: number }): number {
+  return arr.length
 }
