@@ -15,7 +15,9 @@ interface PageConfigItem {
 const PAGE_KEY_MAP: Record<string, { label: string; backPath: string }> = {
   fabrics: { label: '面料数据库', backPath: '/admin/fabrics' },
   equipment: { label: '终端装备', backPath: '/admin/equipment' },
-  'fluorine-free': { label: '探索无氟未来', backPath: '/admin/fluorine' },
+  'fluorine-free': { label: '无氟未来', backPath: '/admin/fluorine' },
+  services: { label: '服务与支持', backPath: '/admin/services' },
+  contact: { label: '联系我们', backPath: '/admin/contact-config' },
 }
 
 interface PageConfigManagerProps {

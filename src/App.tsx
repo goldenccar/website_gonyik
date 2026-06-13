@@ -100,6 +100,8 @@ function App() {
           <Route path="/admin/fabrics/config" element={<AdminPageConfigManager pageKey="fabrics" />} />
           <Route path="/admin/equipment/config" element={<AdminPageConfigManager pageKey="equipment" />} />
           <Route path="/admin/fluorine/config" element={<AdminPageConfigManager pageKey="fluorine-free" />} />
+          <Route path="/admin/services/config" element={<AdminPageConfigManager pageKey="services" />} />
+          <Route path="/admin/contact/config" element={<AdminPageConfigManager pageKey="contact" />} />
 
           {/* Public routes */}
           <Route element={<PublicLayout />}>

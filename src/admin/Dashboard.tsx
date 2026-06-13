@@ -45,45 +45,44 @@ const MENU_GROUPS: MenuGroup[] = [
       { label: '页面配置', icon: FileText, path: '/admin/equipment/config' },
       { label: '终端装备管理', icon: Shirt, path: '/admin/equipment' },
       { label: '场景管理', icon: MapPin, path: '/admin/equipment-scenes' },
-      { label: '数字资产管理', icon: Download, path: '/admin/digital-assets' },
     ],
   },
   {
-    label: 'RPO材料平台',
+    label: '无氟未来',
     icon: Sun,
     children: [
       { label: '页面配置', icon: FileText, path: '/admin/fluorine/config' },
-      { label: 'RPO材料平台管理', icon: Sun, path: '/admin/fluorine' },
+      { label: '无氟未来内容管理', icon: Sun, path: '/admin/fluorine' },
     ],
   },
   {
     label: '服务与支持',
     icon: HelpCircle,
-    children: [{ label: '服务与支持管理', icon: HelpCircle, path: '/admin/services' }],
+    children: [
+      { label: '页面配置', icon: FileText, path: '/admin/services/config' },
+      { label: '服务与支持管理', icon: HelpCircle, path: '/admin/services' },
+      { label: '新闻管理', icon: Newspaper, path: '/admin/news' },
+      { label: '数字资产管理', icon: Download, path: '/admin/digital-assets' },
+    ],
   },
   {
     label: '联系我们',
     icon: Mail,
     children: [
+      { label: '页面配置', icon: FileText, path: '/admin/contact/config' },
       { label: '联系配置', icon: Mail, path: '/admin/contact-config' },
       { label: '咨询主题管理', icon: Mail, path: '/admin/inquiry-subjects' },
       { label: '留言管理', icon: MessageSquare, path: '/admin/contact-messages' },
     ],
   },
-
   {
-    label: '框架管理',
+    label: '站点框架',
     icon: Settings,
     children: [
       { label: '品牌设置', icon: Palette, path: '/admin/brand' },
       { label: 'Header 管理', icon: Settings, path: '/admin/header' },
       { label: 'Footer 管理', icon: Dock, path: '/admin/footer' },
     ],
-  },
-  {
-    label: '内容运营',
-    icon: Newspaper,
-    children: [{ label: '新闻管理', icon: Newspaper, path: '/admin/news' }],
   },
   {
     label: '资源库',
