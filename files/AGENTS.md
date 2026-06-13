@@ -17,11 +17,13 @@
 | `src/components/Footer.tsx` | 全局页脚 + 社交媒体 + 后台入口 |
 
 ## 设计规范
-- **色彩**：主背景 `#EDEDED`，深黑 `#0D0D0D`，主文字 `#1A1A1A`
+- **视觉定位**：高性能防护材料品牌，参考 GORE-TEX / eVent / Arc'teryx 材料技术页
+- **色彩**：Graphite Black `#0D0D0D`、Deep Charcoal `#1A1A1A`、Mist White `#F5F5F5`、Cool Silver `#EDEDED`、Technical Green 薄荷绿仅作 5%–10% 点缀
+- **首屏视觉**：必须使用真实面料、膜层、雨水微距、测试场景等物理对象，禁止纯抽象科技背景
+- **文案风格**：材料 datasheet + 户外品牌官网，避免“科技赋能”“定义未来”等泛化表达
 - **卡片/按钮**：无圆角（`0px`）
 - **页面水平内边距**：48px（桌面）/ 24px（移动端）
 - **响应式**：iPhone 375px 为基准移动端适配
-
 ## 后台管理
 - 入口：`http://localhost:5173/admin` 或 Footer 右下角齿轮
 - 账号：`admin`

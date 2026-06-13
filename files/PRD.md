@@ -1,4 +1,4 @@
-# 港怡科技面料品牌官网 — 产品需求文档 (PRD)
+# GONYIK 高性能防护材料品牌官网 — 产品需求文档 & 视觉/内容策略 v2
 
 ---
 
@@ -16,12 +16,14 @@
 | 内容管理员 | 内容更新效率、多媒体管理 | 通过后台 CMS 维护全站文案与素材 |
 
 ### 1.3 设计原则
-1. **极简克制（Apple 风格）**：大面积留白、大字号标题、精致微交互、让内容本身成为视觉焦点；
+
+1. **高性能材料品牌感**：视觉语言接近 GORE-TEX / eVent / Arc'teryx 材料技术页，强调真实材料质感、户外应用场景、膜层结构与测试验证；
 2. **内容即配置**：所有展示层内容抽离为数据库配置，后台修改即时生效，零代码更新；
-3. **智能兜底**：未配置数据时，系统自动生成美观的默认内容（Logo、背景图、产品数据等）；
-4. **暗色科技基调**：深色背景用于 hero，浅灰用于内容区，形成节奏；
+3. **智能兜底**：未配置数据时，系统自动生成符合品牌定位的默认内容（Logo、背景图、产品数据等）；
+4. **物理对象优先**：首屏与关键区块必须使用真实面料、膜层、测试场景等物理对象，禁止纯抽象科技背景；
 5. **中英双语预留**：数据结构支持多语言扩展，首期仅展示中文。
 
+> **参考风格**：GORE-TEX / eVent / Arc'teryx 材料技术页 — 真实材料质感、户外应用场景、膜层结构、测试验证与品牌级克制排版。
 ---
 
 ## 2. 技术栈
@@ -79,22 +81,21 @@ project/
 - 后台上传 Logo 后，立即替换为上传文件。
 
 ### 3.2 首页背景图默认生成
-- **未上传背景图时**：前端用 CSS + Canvas 生成动态科技纹理背景：
-  - 深色渐变底色（`#0D0D0D` → `#1A1A1A`）
-  - 微妙的网格线条（`rgba(255,255,255,0.03)`）
-  - 缓慢浮动的光斑粒子效果（Canvas 绘制，性能友好）
-- 后台上传背景图/GIF 后，立即替换。
 
+- **未上传背景图时**：前端使用真实面料/雨水微距占位图或视频，确保首屏第一判断是“高性能材料品牌”；
+- 背景图为深色、低饱和、材料细节清晰，禁止使用抽象科技纹理、网格线、漂浮光斑粒子；
+- 后台上传背景图/视频/GIF 后，立即替换。
 ### 3.3 面料系列默认数据
+
 | 系列名 | 默认描述 | 默认 SKU 数量 |
 |--------|---------|--------------|
-| Osmo | 仿生防水透气系列，适用于极端户外环境 | 6 款 |
-| Kinetic | 高弹运动系列，为动态表现而生 | 6 款 |
-| Lumix | 轻量化透光系列，科技与美学融合 | 6 款 |
-| Tread | 耐磨工装系列，经久耐用 | 6 款 |
+| Otter | PFAS-free waterproof-breathable laminated fabrics：全流程无氟防水透湿复合体系 | 6 款 |
+| Kais | Protective textile composites：高强防护复合体系，面向防刺、防切割、抗冲击场景 | 6 款 |
+| Rayo | Sun-protective moisture-management fabrics：高防晒、高导湿、轻量舒适的功能织物体系 | 6 款 |
 
-每个 SKU 生成默认参数（防水等级、透气指数、克重等），用程序随机生成合理数值。
+每个 SKU 生成默认参数（静水压、透湿、剥离强力、克重、UPF 等），用程序随机生成合理数值。
 
+> **命名过渡说明**：旧版系列名 Osmo / Kinetic / Lumix / Tread 已统一替换为 Otter / Kais / Rayo。如 CMS 中仍有旧数据，后台可直接重命名或替换。
 ### 3.4 终端装备品类默认数据
 | 品类名 | 默认描述 | 默认产品数量 |
 |--------|---------|------------|
@@ -208,42 +209,42 @@ project/
 
 ---
 
-### 5.1 首页 (Home) — 全屏极简
+### 5.1 首页 (Home) — 高性能防护材料品牌入口
 
-> **参考风格**：Apple 官网首页 — 全屏高质量背景、居中巨型标题、精炼副标题、底部双按钮、大量留白。
+> **参考风格**：GORE-TEX / eVent / Arc'teryx 材料技术页 — 真实面料、膜层结构、户外应用场景、克制排版。
 
-#### Hero Section（唯一区块）
+#### Hero Section
 
 **布局**
 - 全屏高度（`100vh` / `100dvh`），全屏宽度；
 - 背景层：
-  - 有数据时：CMS 配置的图片/GIF，`object-fit: cover`；
-  - 无数据时：Canvas 生成科技纹理动态背景（深色渐变 + 网格线 + 微光粒子）；
-- 背景叠加层：线性渐变 `rgba(0,0,0,0.4)` → `rgba(0,0,0,0.6)`，确保文字可读；
+  - 有数据时：CMS 配置的图片/视频，`object-fit: cover`；
+  - 无数据时：使用深色真实面料微距/雨水视频占位（或静态图），而非抽象科技纹理；
+- 背景叠加层：线性渐变 `rgba(0,0,0,0.4)` → `rgba(0,0,0,0.65)`，确保文字可读；
 - 内容层：绝对定位居中，`text-align: center`。
 
 **内容**
 ```
-[标签 — 10px，uppercase，letter-spacing: 3px，#AAAAAA]
-TECHNOLOGY FABRIC
+[标签 — 10px，uppercase，letter-spacing: 3px，Technical Green 薄荷绿]
+PFAS-FREE PERFORMANCE MATERIALS
 
 [主标题 — 48px–56px，font-weight: 700，#FFFFFF，行高 1.15]
-科技面料
-定义未来
+UHMWPE 微孔膜
+构建下一代无氟防护面料
 
-[副标题 — 18px–20px，font-weight: 400，#CCCCCC，行高 1.6，max-width: 480px]
-以创新材料科技，重塑户外与运动的边界
+[副标题 — 18px–20px，font-weight: 400，#CCCCCC，行高 1.6，max-width: 560px]
+以超薄 UHMWPE 微孔膜、无氟复合体系与功能织物结构为核心，为户外、通勤、防护与运动装备提供轻量、防水透湿、高强度的材料解决方案。
 
 [按钮组 — flex，gap: 16px，margin-top: 40px]
-[探索无氟科技面料]    [探索终端装备]
+[查看材料体系]    [申请样品测试]
 ```
 
 **按钮样式**
 
 | 按钮 | 样式 |
 |------|------|
-| **探索无氟科技面料（主按钮）** | 背景 `#FFFFFF`，文字 `#1A1A1A`，padding: 14px 36px，font: 14px/500，无圆角。Hover：背景 `#EDEDED`，`scale(1.02)`。 |
-| **探索终端装备（次按钮）** | 背景 `rgba(255,255,255,0.12)`，文字 `#FFFFFF`，边框 1px `rgba(255,255,255,0.25)`，padding: 14px 36px，font: 14px/500，无圆角。Hover：背景 `rgba(255,255,255,0.2)`。 |
+| **查看材料体系（主按钮）** | 背景 `#FFFFFF`，文字 `#1A1A1A`，padding: 14px 36px，font: 14px/500，无圆角。Hover：背景 `#EDEDED`，`scale(1.02)`。 |
+| **申请样品测试（次按钮）** | 背景 `rgba(255,255,255,0.12)`，文字 `#FFFFFF`，边框 1px `rgba(255,255,255,0.25)`，padding: 14px 36px，font: 14px/500，无圆角。Hover：背景 `rgba(255,255,255,0.2)`。 |
 
 **动效**
 - 背景：从 `scale(1.08) opacity: 0` → `scale(1) opacity: 1`，1.2s；
@@ -252,15 +253,24 @@ TECHNOLOGY FABRIC
 **CMS 字段**
 | 字段 | 类型 | 默认值 |
 |------|------|--------|
-| hero_tag | string | "TECHNOLOGY FABRIC" |
-| hero_title | string | "科技面料\n定义未来" |
-| hero_slogan | string | "以创新材料科技，重塑户外与运动的边界" |
-| hero_background | media | Canvas 生成 |
-| primary_btn_text | string | "探索无氟科技面料" |
-| primary_btn_link | string | "/fluorine-free" |
-| secondary_btn_text | string | "探索终端装备" |
-| secondary_btn_link | string | "/equipment" |
+| hero_tag | string | "PFAS-FREE PERFORMANCE MATERIALS" |
+| hero_title | string | "UHMWPE 微孔膜\n构建下一代无氟防护面料" |
+| hero_slogan | string | "以超薄 UHMWPE 微孔膜、无氟复合体系与功能织物结构为核心，为真实装备提供可测试、可复合、可导入的材料解决方案。" |
+| hero_background | media | 真实面料/雨水微距占位 |
+| primary_btn_text | string | "查看材料体系" |
+| primary_btn_link | string | "/fabrics" |
+| secondary_btn_text | string | "申请样品测试" |
+| secondary_btn_link | string | "/contact?sample=1" |
 
+#### 首页其它区块
+
+首页后续区块结构按《视觉与文案策略 v2》执行：
+
+- **Block 2 — Material System**：从膜到面料的无氟防护体系（外层织物 / UHMWPE 微孔膜 / 复合胶层 / 内层织物）
+- **Block 3 — Product Platforms**：三大材料平台（Otter / Kais / Rayo）
+- **Block 4 — Verified by Testing**：性能测试验证（静水压、透湿、剥离强力、洗后耐久等）
+- **Block 5 — Applications**：真实装备应用场景（户外硬壳、城市通勤、防护装备、鞋材与装备）
+- **Block 6 — Sample Request**：申请样品，进入测试
 ---
 
 ### 5.2 面料数据库 (FabricDatabase)
@@ -269,15 +279,14 @@ TECHNOLOGY FABRIC
 
 ```
 [页面标题区 — 深黑背景]
-  标签: FABRIC DATABASE
-  标题: 面料数据库
-  描述: 四大核心系列，覆盖户外、运动、工装全场景
+  标签: PERFORMANCE MATERIAL SYSTEMS
+  标题: 材料体系
+  描述: 三大核心平台，覆盖防水透湿、防护复合与高防晒导湿应用
 
-[面料系列展示 — 卡片网格]
-  Osmo 系列卡片 → 点击展开系列详情
-  Kinetic 系列卡片
-  Lumix 系列卡片
-  Tread 系列卡片
+[材料平台展示 — 卡片网格]
+  Otter 平台卡片 → 点击展开系列详情
+  Kais 平台卡片
+  Rayo 平台卡片
 
 [性能测试与认证 — 独立区块]
   测试报告列表（PDF/图片）
@@ -289,24 +298,24 @@ TECHNOLOGY FABRIC
 - 标签、标题、描述居中或左对齐（80px 内边距）；
 - **CMS 字段**：`page_tag`, `page_title`, `page_subtitle`。
 
-#### 5.2.3 面料系列卡片网格
+#### 5.2.3 材料平台卡片网格
 
 **布局**
 - 背景：`#EDEDED`；
 - 内边距：80px 48px；
-- 网格：4 列（桌面）/ 2 列（平板）/ 1 列（移动端），gap: 24px。
+- 网格：3 列（桌面）/ 1 列（移动端），gap: 24px。
 
-**系列卡片样式**
+**平台卡片样式**
 - 背景：`#FFFFFF`；
 - 宽高比：4:3 或 16:10；
 - 无圆角；
 - 内边距：32px；
 - 内容：
-  - 系列名称：28px，bold，`#1A1A1A`；
-  - 系列描述：14px，`#666666`，2 行截断；
-  - SKU 数量：11px，uppercase，`#888888`；
+  - 平台名称：28px，bold，`#1A1A1A`；
+  - 平台副标题（英文）：12px，uppercase，`#888888`；
+  - 平台描述：14px，`#666666`，2 行截断；
   - 底部箭头：→，hover 右移 4px。
-- hover：`translateY(-4px)`，过渡 0.3s，左侧出现 4px `#1A1A1A` 竖条装饰。
+- hover：`translateY(-4px)`，过渡 0.3s，左侧出现 4px Technical Green 竖条装饰。
 
 **点击交互**
 - 点击卡片 → 在当前页展开/或路由到系列详情；
@@ -316,11 +325,11 @@ TECHNOLOGY FABRIC
   - SKU 卡片：产品图（1:1 或 3:4）、SKU 名称、产品特点关键词标签。
 
 **默认数据**
-- 4 个系列（Osmo / Kinetic / Lumix / Tread）
-- 每个系列 6 个 SKU，参数随机生成合理值。
+- 3 个平台（Otter / Kais / Rayo）
+- 每个平台 6 个 SKU，参数随机生成合理值。
 
 **CMS 维护**
-- 系列：增删改查（名称、slug、描述、封面图、排序）；
+- 系列/平台：增删改查（名称、slug、描述、封面图、排序）；
 - SKU：增删改查（名称、SKU 编码、所属系列、图片、特点标签 JSON、参数 JSON）。
 
 #### 5.2.4 性能测试与认证
@@ -354,19 +363,6 @@ TECHNOLOGY FABRIC
     - 触摸支持：滑动翻页；
   - **SVG 文件**：直接嵌入，可缩放；
 - 关闭按钮：右上角 ×，40px，白色。
-
-**支持的文件格式**
-| 格式 | 展示方式 | 缩略图 |
-|------|---------|--------|
-| PDF | react-pdf 渲染 | 后端生成第一页 PNG |
-| PNG/JPG/JPEG | img 标签 | 原图压缩 |
-| SVG | 直接嵌入 | 原图 |
-
-**CMS 维护**
-- 报告：增删改查（标题、文件上传、分类、排序）；
-- 文件上传支持：PDF, PNG, JPG, JPEG, SVG；
-- 上传 PDF 后，后端自动用 `pdf-poppler` 生成第一页缩略图。
-
 ---
 
 ### 5.3 终端装备 (EndUseEquipment)
@@ -1082,29 +1078,57 @@ DELETE /api/admin/media/:filename → 删除文件
 
 ### 10.1 色彩系统
 
+**主色（占 85%–90%）**
+
+| 名称 | 色值 | 用途 |
+|------|------|------|
+| Graphite Black / 石墨黑 | `#0D0D0D` | Hero 背景、Header/Footer 背景 |
+| Deep Charcoal / 深炭灰 | `#1A1A1A` | 主文字、深区块背景 |
+| Mist White / 雾白 | `#F5F5F5` | 浅背景、内容区 |
+| Cool Silver / 冷银灰 | `#EDEDED` / `#CCCCCC` | 主背景、分割线、次要信息 |
+| 纯白 | `#FFFFFF` | 按钮、卡片、高对比文字 |
+
+**点缀色（占 5%–10%，仅作局部强调）**
+
+| 名称 | 色值 | 用途 |
+|------|------|------|
+| Technical Green / 技术薄荷绿 | `#2DD4A0` 或类似低饱和薄荷绿 | 技术标签、参数高亮、按钮 hover、局部线条、图表重点 |
+
+**功能色**
+
 | 用途 | 色值 |
 |------|------|
-| 主背景 | `#EDEDED` |
-| 纯白 | `#FFFFFF` |
-| 深黑 | `#1A1A1A` |
-| 纯黑背景 | `#111111` / `#0D0D0D` |
-| 主文字 | `#1A1A1A` |
-| 次要文字 | `#888888` / `#666666` |
-| 辅助文字 | `#AAAAAA` / `#CCCCCC` |
-| 分割线 | `rgba(255,255,255,0.08)` / `#333333` / `#E8E8E8` |
 | 成功 | `#22AA66` |
 | 错误 | `#FF4444` |
 | 警告 | `#FFAA00` |
 
+**使用规则**
+
+- 薄荷绿只能用于技术标签、参数高亮、按钮 hover、局部线条、图表重点数据；
+- 禁止大面积铺满薄荷绿，避免页面看起来像环保公益或软件仪表盘；
+- 深色背景用于 Hero 与头部/底部，浅灰内容区形成节奏。
 ### 10.2 字体规范
 
 - **英文**：Inter（Google Fonts）
 - **中文**：PingFang SC / Microsoft YaHei
 - **字体栈**：`'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif`
-- **标题**：48px–56px / 32px–36px / 28px / 22px / 18px（font-weight: 700）
-- **正文**：13px–16px（line-height: 1.7–1.9）
+- **标题**：短句、重量感，不使用夸张营销语；避免“未来”“颠覆”“重新定义”等泛化表达；
+  - 一级：48px–56px / font-weight: 700
+  - 二级：32px–36px / font-weight: 700
+  - 三级：28px / font-weight: 700
+  - 四级：22px / font-weight: 700
+  - 五级：18px / font-weight: 700
+- **正文**：每段只讲一个物理事实或应用价值，优先使用材料、结构、测试、应用场景相关词汇；
+  - 字号：13px–16px（line-height: 1.7–1.9）
 - **标签**：10px–11px（letter-spacing: 2px–3px，uppercase）
 
+**推荐表达**
+
+UHMWPE microporous film、PFAS-free laminated system、waterproof-breathable composite、hydrostatic pressure、moisture vapor transmission、peel strength、wash durability、fabric construction、field-ready material solution。
+
+**减少表达**
+
+科技赋能、定义未来、颠覆传统、智能材料生态、打造边界、全场景解决方案、革命性创新。
 ### 10.3 间距规范
 
 - **页面水平内边距**：48px（桌面）/ 32px（平板）/ 24px（移动端）
@@ -1234,3 +1258,515 @@ web-gangyi/
 *文档版本：v3.0*  
 *更新日期：2026-04-28*  
 *技术栈：React 19 + TypeScript + Vite + Tailwind CSS + Express + SQLite*
+
+---
+
+# 附录 A：GONYIK Website Visual Style & Copy Strategy v2（完整策略原文）
+
+# GONYIK Website Visual Style & Copy Strategy v2
+
+> 目标：把 GONYIK 官网从“科技软件感”调整为“高性能防护材料品牌感”。  
+> 核心判断：GONYIK 不是 SaaS，不是 AI 平台，也不是普通纺织厂；GONYIK 是以 UHMWPE 微孔膜、复合面料和功能性织物结构为核心的高性能防护材料品牌。
+
+---
+
+## 1. 品牌视觉定位
+
+GONYIK 的官网视觉应该接近：
+
+- 高性能材料品牌
+- 户外功能面料 ingredient brand
+- 防水透湿 / 防护 / 防晒材料解决方案
+- 可被品牌、面料厂、成衣厂、鞋材厂采用的技术平台
+
+不应该接近：
+
+- SaaS 软件官网
+- AI 科技平台
+- 区块链 / 半导体 / 数字基础设施官网
+- 抽象未来科技展示页
+
+视觉关键词：
+
+膜、面料、雨水、风、雪、织物纹理、复合层、实验室测试、样布、膜卷、成衣应用、户外环境、材料剖面、真实验证。
+
+避免关键词：
+
+发光粒子、抽象网格、漂浮卡片、玻璃拟态、渐变光球、软件仪表盘、过度动效、无实体对象的科技背景。
+
+---
+
+## 2. 首页首屏方向
+
+### 当前问题
+
+原首页方向是：
+
+- TECHNOLOGY FABRIC
+- 科技面料
+- 定义未来
+- 以创新材料科技，重塑户外与运动的边界
+
+这组文案过于泛化。它可以用于任何科技纺织、AI 面料、软件平台、设计工作室，不能立刻建立 GONYIK 的材料身份。
+
+### 新首页首屏文案
+
+标签：
+
+PFAS-FREE PERFORMANCE MATERIALS
+
+主标题：
+
+UHMWPE 微孔膜  
+构建下一代无氟防护面料
+
+副标题：
+
+以超薄 UHMWPE 微孔膜、无氟复合体系与功能织物结构为核心，为户外、通勤、防护与运动装备提供轻量、防水透湿、高强度的材料解决方案。
+
+主按钮：
+
+查看材料体系
+
+副按钮：
+
+申请样品测试
+
+英文备用版本：
+
+PFAS-Free Protection, Engineered from UHMWPE Microporous Film.
+
+副标题英文备用：
+
+A material platform for lightweight waterproof-breathable fabrics, protective composites, and next-generation performance apparel.
+
+---
+
+## 3. 首页视觉要求
+
+首页首屏必须有明确的物理对象，不允许只用抽象科技背景。
+
+优先级从高到低：
+
+1. 雨水打在深色复合面料上的微距视频或图片
+2. UHMWPE 膜卷展开，局部叠加微孔结构
+3. 三层复合面料剖面：外层织物 / UHMWPE 微孔膜 / 内层织物
+4. 冲锋衣、滑雪服、通勤外套等真实成衣应用
+5. 实验室测试场景：静水压、透湿、剥离强力、洗后测试
+
+禁止使用：
+
+- 纯黑背景上的发光线条
+- 蓝绿渐变科技粒子
+- 大面积玻璃拟态卡片
+- 像数据平台一样的 dashboard
+- 没有材料实物的抽象 3D 图形
+
+首页的第一视觉判断必须是：
+
+“这是一个高性能材料和功能面料品牌。”
+
+而不是：
+
+“这是一个科技软件公司。”
+
+---
+
+## 4. 色彩方向
+
+主色：
+
+- Graphite Black / 石墨黑
+- Deep Charcoal / 深炭灰
+- Mist White / 雾白
+- Cool Silver / 冷银灰
+- Technical Green / 技术薄荷绿，仅作点缀
+
+色彩比例：
+
+- 黑、灰、白：85%–90%
+- 薄荷绿：5%–10%
+- 其他强调色：不超过 5%
+
+薄荷绿只能用于：
+
+- 技术标签
+- 参数高亮
+- 按钮 hover
+- 局部线条
+- 图表重点数据
+
+不要大面积铺满薄荷绿。大面积高饱和绿会削弱材料的高级感，使页面更像环保公益或软件仪表盘。
+
+---
+
+## 5. 字体与版式
+
+整体版式应偏“材料 datasheet + 户外品牌官网”，不是“软件产品 landing page”。
+
+标题：
+
+- 短句
+- 重量感
+- 不使用夸张营销语
+- 避免“未来”“颠覆”“重新定义”泛化表达
+
+正文：
+
+- 每段只讲一个物理事实或应用价值
+- 优先使用材料、结构、测试、应用场景
+- 不堆空泛形容词
+
+推荐表达：
+
+- UHMWPE microporous film
+- PFAS-free laminated system
+- waterproof-breathable composite
+- hydrostatic pressure
+- moisture vapor transmission
+- peel strength
+- wash durability
+- fabric construction
+- field-ready material solution
+
+减少表达：
+
+- 科技赋能
+- 定义未来
+- 颠覆传统
+- 智能材料生态
+- 打造边界
+- 全场景解决方案
+- 革命性创新
+
+---
+
+## 6. 首页结构建议
+
+### Block 1 — Hero
+
+目的：3 秒内让访客知道 GONYIK 是做高性能无氟防护材料的。
+
+内容：
+
+- 标签：PFAS-FREE PERFORMANCE MATERIALS
+- 主标题：UHMWPE 微孔膜，构建下一代无氟防护面料
+- 副标题：以超薄 UHMWPE 微孔膜、无氟复合体系与功能织物结构为核心，为户外、通勤、防护与运动装备提供轻量、防水透湿、高强度的材料解决方案。
+- CTA 1：查看材料体系
+- CTA 2：申请样品测试
+
+视觉：
+
+- 深色真实面料微距
+- 雨水滚落
+- 局部膜层剖面
+- 不使用抽象科技粒子背景
+
+---
+
+### Block 2 — Material System
+
+标题：
+
+从膜到面料的无氟防护体系
+
+副标题：
+
+GONYIK 不只提供单一面料，而是围绕 UHMWPE 微孔膜、PUR 复合、无氟整理和织物结构设计，形成可打样、可测试、可导入的材料平台。
+
+模块：
+
+1. 外层织物  
+负责耐磨、手感、外观与应用场景适配。
+
+2. UHMWPE 微孔膜  
+提供防水、透湿、轻量和高强度的核心功能层。
+
+3. 复合胶层  
+连接膜与织物，影响剥离强力、透湿保持率和洗后耐久。
+
+4. 内层织物  
+影响穿着舒适性、排湿效率、噪音和整体手感。
+
+视觉：
+
+- 三层结构剖面图
+- 真实面料切片或工程示意图
+- 每一层用材料语言标注，不做软件图标卡片
+
+---
+
+### Block 3 — Product Platforms
+
+标题：
+
+三大材料平台
+
+副标题：
+
+覆盖防水透湿、防护复合和高防晒导湿三类应用方向。
+
+平台一：
+
+Otter  
+PFAS-free waterproof-breathable laminated fabrics  
+全流程无氟防水透湿复合体系，面向冲锋衣、通勤外套、滑雪服和户外装备。
+
+平台二：
+
+Kais  
+Protective textile composites  
+高强防护复合体系，面向防刺、防切割、抗冲击和特种防护场景。
+
+平台三：
+
+Rayo  
+Sun-protective moisture-management fabrics  
+高防晒、高导湿、轻量舒适的功能织物体系，面向跑步、骑行、城市运动和夏季通勤。
+
+视觉：
+
+- 每个平台一张真实材料或应用图
+- 不用图标代替材料图
+- 不用“软件功能卡片”式排版
+
+---
+
+### Block 4 — Verified by Testing
+
+标题：
+
+性能必须被测试验证
+
+副标题：
+
+高性能面料不应只停留在概念层面。GONYIK 以静水压、透湿、剥离强力、洗后耐久和应用场景测试作为材料开发依据。
+
+数据模块：
+
+- Hydrostatic Pressure / 静水压
+- MVTR / 透湿
+- Peel Strength / 剥离强力
+- Wash Durability / 洗后耐久
+- PFAS-free Process / 无氟体系
+- Composite Stability / 复合稳定性
+
+视觉：
+
+- 实验室照片
+- 测试仪器
+- 测试报告局部
+- 样布编号
+- 数据表格
+
+版式应类似材料测试报告，不要类似软件 dashboard。
+
+---
+
+### Block 5 — Applications
+
+标题：
+
+为真实装备而开发
+
+副标题：
+
+从户外硬壳到城市通勤，从鞋材到防护装备，GONYIK 的材料体系面向真实产品导入，而不是概念展示。
+
+场景：
+
+1. Outdoor Shells  
+冲锋衣、滑雪服、登山外套
+
+2. Urban Commuting  
+行政夹克、城市机能外套、轻量雨衣
+
+3. Protective Apparel  
+防刺、防切割、抗冲击复合装备
+
+4. Footwear & Gear  
+鞋面、背包、装备外层和增强部位
+
+视觉：
+
+- 真实成衣
+- 真实户外环境
+- 局部细节：拉链、压胶、缝线、水珠、面料折痕
+- 不用过度干净的 3D 渲染图
+
+---
+
+### Block 6 — Sample Request
+
+标题：
+
+申请样品，进入测试
+
+副标题：
+
+向我们说明应用场景、目标性能和复合结构需求，GONYIK 可提供面料样品、测试数据和材料导入建议。
+
+CTA：
+
+申请样品测试
+
+辅助 CTA：
+
+联系技术团队
+
+---
+
+## 7. 产品系列命名修正
+
+当前网站如继续使用 Osmo / Kinetic / Lumix / Tread，可以作为过渡。但对外建议逐步切换到更贴合项目真实体系的命名：
+
+- Otter：无氟防水透湿复合体系
+- Kais：特种防护复合体系
+- Rayo：高防晒高导湿功能织物体系
+
+命名原则：
+
+1. 系列名可以有品牌感，但副标题必须材料化。
+2. 不要让用户猜系列是什么。
+3. 每个系列都必须回答三个问题：
+   - 这是什么材料体系？
+   - 解决什么性能问题？
+   - 用在哪些产品上？
+
+---
+
+## 8. 禁用文案
+
+以下表达不要作为首屏或核心模块标题：
+
+- 科技面料，定义未来
+- 以创新材料科技，重塑户外与运动的边界
+- 未来已来
+- 颠覆传统面料
+- 重新定义一切
+- 打造全场景生态
+- 智能材料平台
+- 赋能户外新体验
+- 科技改变穿着
+
+这些表达过于泛化，容易让网站失去材料行业可信度。
+
+---
+
+## 9. 推荐文案库
+
+### 品牌总句
+
+GONYIK develops PFAS-free performance material systems based on UHMWPE microporous film and functional textile construction.
+
+中文：
+
+GONYIK 基于 UHMWPE 微孔膜与功能织物结构，开发全流程无氟的高性能防护材料体系。
+
+---
+
+### Otter 系列
+
+标题：
+
+Otter 无氟防水透湿复合体系
+
+副标题：
+
+以 UHMWPE 微孔膜为核心，通过无氟整理、PUR 复合和织物结构设计，实现轻量、防水、透湿与洗后耐久的平衡。
+
+应用：
+
+适用于冲锋衣、滑雪服、通勤外套、轻量雨衣和户外装备面料。
+
+---
+
+### Kais 系列
+
+标题：
+
+Kais 高强防护复合体系
+
+副标题：
+
+基于 UHMWPE 纤维织物与抗冲击膜层的复合设计，面向防刺、防切割、抗冲击等特种防护场景。
+
+应用：
+
+适用于防护服、防刺内胆、工业防切割装备、战术防护和增强部位材料。
+
+---
+
+### Rayo 系列
+
+标题：
+
+Rayo 高防晒高导湿织物体系
+
+副标题：
+
+通过原纱防晒、导湿纱线和织物结构设计，在轻量面料中实现高 UPF、防晒耐久和快速导湿。
+
+应用：
+
+适用于跑步、骑行、夏季通勤、防晒外套和高温环境运动服。
+
+---
+
+## 10. 图片与视频制作准则
+
+必须优先制作：
+
+1. 首页 Hero：雨水落在深色面料上的微距视频或照片
+2. Otter：三层复合结构剖面图
+3. Otter：静水压 / 透湿 / 剥离强力测试照片
+4. Kais：刀尖接触 UHMWPE 织物的防刺示意图
+5. Rayo：纱线截面与导湿路径示意图
+6. 样布平铺图：统一暗灰背景、低反光、带编号标签
+7. 膜卷 / 薄膜实物图：用于建立材料真实性
+
+图片风格：
+
+- 真实
+- 冷静
+- 高对比
+- 低饱和
+- 材料细节清楚
+- 不过度商业广告化
+
+不要使用：
+
+- 过度精修的假户外照片
+- 夸张合成光效
+- 纯 AI 生成但没有材料真实感的图
+- 软件官网常见的抽象 3D 背景
+
+---
+
+## 11. 最终判断标准
+
+每一屏上线前问三个问题：
+
+1. 用户能不能在 3 秒内判断这是“材料 / 面料 / 防护体系”？
+2. 这张图里有没有真实物理对象？
+3. 文案是否讲清楚了材料结构、性能或应用，而不是只讲愿景？
+
+只要答案有一个是否定，就需要重做。
+
+原：
+参考风格：Apple 官网首页 — 全屏高质量背景、居中巨型标题、精炼副标题、底部双按钮、大量留白。
+
+改：
+参考风格：GORE-TEX / eVent / Arc'teryx 材料技术页 — 真实材料质感、户外应用场景、膜层结构、测试验证与品牌级克制排版。首页可以保持全屏 Hero，但必须以真实面料、膜层或应用场景作为视觉锚点，不使用纯抽象科技纹理作为主视觉。
+
+原：
+TECHNOLOGY FABRIC  
+科技面料  
+定义未来  
+以创新材料科技，重塑户外与运动的边界
+
+改：
+PFAS-FREE PERFORMANCE MATERIALS  
+UHMWPE 微孔膜  
+构建下一代无氟防护面料  
+以超薄 UHMWPE 微孔膜、无氟复合体系与功能织物结构为核心，为真实装备提供可测试、可复合、可导入的材料解决方案。
