@@ -109,8 +109,7 @@ export default function ImageCropper({ src, aspect = 16 / 9, onComplete, onCance
           </div>
           <div className="relative aspect-video overflow-hidden rounded border border-white/10 bg-darker">
             <canvas ref={previewRef} className="absolute inset-0 w-full h-full object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/40" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30" />
+            <div className="absolute inset-0 bg-gradient-to-r from-black via-black/90 via-[40%] to-transparent to-[100%]" />
             <div className="relative z-10 h-full flex flex-col justify-center px-5">
               <p className="text-[10px] text-accentWarm uppercase tracking-wider mb-1">TAG</p>
               <h3 className="text-[22px] font-bold text-white leading-tight">主标题</h3>
