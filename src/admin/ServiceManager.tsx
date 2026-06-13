@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
-import { Plus, Trash2, Edit2, Save, ArrowUp, ArrowDown } from 'lucide-react'
+import { Plus, Trash2, Edit2, ArrowUp, ArrowDown } from 'lucide-react'
 import api, { getFluorineSections } from '@/api/client'
 import Dashboard from './Dashboard'
 import AdminHeader from './components/AdminHeader'
 import Modal from './components/Modal'
 import FormField from './components/FormField'
 import SaveCancelButtons from './components/SaveCancelButtons'
+import SaveButton from './components/SaveButton'
 
 export default function AdminServiceManager() {
   const [activeTab, setActiveTab] = useState<'about' | 'care' | 'faq' | 'fluorine'>('about')
@@ -126,7 +127,7 @@ export default function AdminServiceManager() {
                 <div><label className="block text-[12px] text-secondary uppercase mb-1">标题</label><input value={about.positioning_title || ''} onChange={(e) => setAbout({ ...about, positioning_title: e.target.value })} className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none" /></div>
                 <div><label className="block text-[12px] text-secondary uppercase mb-1">内容</label><textarea value={about.positioning_content || ''} onChange={(e) => setAbout({ ...about, positioning_content: e.target.value })} rows={5} className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none" /></div>
                 <div><label className="block text-[12px] text-secondary uppercase mb-1">Slogan</label><input value={about.slogan_text || ''} onChange={(e) => setAbout({ ...about, slogan_text: e.target.value })} className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none" /></div>
-                <button onClick={saveAbout} className="bg-white text-primary px-5 py-2 text-[13px] font-medium hover:bg-bg">保存</button>
+                <SaveButton onClick={saveAbout} size="sm">保存</SaveButton>
               </div>
             </div>
 
@@ -235,13 +236,9 @@ export default function AdminServiceManager() {
               <div key={section.id} className="bg-dark p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-white font-bold">{section.title}</h3>
-                  <button
-                    onClick={() => saveFluorineSection(section)}
-                    className="flex items-center gap-2 bg-white text-primary px-4 py-2 text-[13px] font-medium hover:bg-bg"
-                  >
-                    <Save size={14} />
+                  <SaveButton onClick={() => saveFluorineSection(section)} size="sm">
                     保存
-                  </button>
+                  </SaveButton>
                 </div>
                 <div className="space-y-4">
                   <FormField label="标题" name={`title-${section.id}`} value={section.title || ''} onChange={(e) => setFluorineSections((prev) => prev.map((s) => s.id === section.id ? { ...s, title: e.target.value } : s))} />

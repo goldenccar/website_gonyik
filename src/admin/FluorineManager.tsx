@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Save, Upload, X, Image } from 'lucide-react'
+import { ArrowLeft, Upload, X, Image } from 'lucide-react'
 import api, { getFluorineSections, getFluorineValueChain, uploadFile } from '@/api/client'
 import Dashboard from './Dashboard'
+import SaveButton from './components/SaveButton'
 
 interface ValueChainColumn {
   tag: string
@@ -140,13 +141,9 @@ export default function AdminFluorineManager() {
                   {saveMessages[section.id] && (
                     <span className="text-[12px] text-success">{saveMessages[section.id]}</span>
                   )}
-                  <button
-                    onClick={() => saveSection(section)}
-                    className="flex items-center gap-2 bg-white text-primary px-4 py-2 text-[13px] font-medium hover:bg-bg"
-                  >
-                    <Save size={14} />
+                  <SaveButton onClick={() => saveSection(section)} size="sm">
                     保存
-                  </button>
+                  </SaveButton>
                 </div>
               </div>
               <div className="space-y-4">
@@ -265,13 +262,9 @@ export default function AdminFluorineManager() {
               <h3 className="text-white font-bold">产业链全景图</h3>
               <div className="flex items-center gap-3">
                 {vcMessage && <span className="text-[12px] text-success">{vcMessage}</span>}
-                <button
-                  onClick={saveValueChain}
-                  className="flex items-center gap-2 bg-white text-primary px-4 py-2 text-[13px] font-medium hover:bg-bg"
-                >
-                  <Save size={14} />
+                <SaveButton onClick={saveValueChain} size="sm">
                   保存
-                </button>
+                </SaveButton>
               </div>
             </div>
             <div className="space-y-4">

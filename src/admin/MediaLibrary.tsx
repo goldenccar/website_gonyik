@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Trash2, Copy, Upload, Edit2, X, Save, Image, FileText, Film, Music, File } from 'lucide-react'
+import { ArrowLeft, Trash2, Copy, Upload, Edit2, X, Image, FileText, Film, Music, File } from 'lucide-react'
 import api from '@/api/client'
 import Dashboard from './Dashboard'
 
@@ -220,7 +220,7 @@ export default function AdminMediaLibrary() {
                 </div>
               </div>
               <div className="flex gap-3 mt-6">
-                <button type="submit" className="flex-1 bg-white text-primary py-2.5 text-[13px] font-medium hover:bg-bg">上传</button>
+                <button type="submit" className="flex-1 inline-flex items-center justify-center gap-2 bg-accentWarm text-white py-2.5 text-[14px] font-medium rounded shadow-sm hover:bg-accentWarm/90 active:scale-[0.98] transition-all disabled:opacity-50">上传</button>
                 <button type="button" onClick={() => setShowUpload(false)} className="flex-1 border border-white/20 text-white py-2.5 text-[13px] hover:bg-white/5">取消</button>
               </div>
             </form>
@@ -252,7 +252,7 @@ export default function AdminMediaLibrary() {
                 </div>
               </div>
               <div className="flex gap-3 mt-6">
-                <button type="submit" className="flex-1 bg-white text-primary py-2.5 text-[13px] font-medium hover:bg-bg">保存</button>
+                <button type="submit" className="flex-1 inline-flex items-center justify-center gap-2 bg-accentWarm text-white py-2.5 text-[14px] font-medium rounded shadow-sm hover:bg-accentWarm/90 active:scale-[0.98] transition-all disabled:opacity-50">保存</button>
                 <button type="button" onClick={() => setEditing(null)} className="flex-1 border border-white/20 text-white py-2.5 text-[13px] hover:bg-white/5">取消</button>
               </div>
             </form>

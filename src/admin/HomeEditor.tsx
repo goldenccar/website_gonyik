@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Save, Home, Layers, Shirt, MapPin, Award } from 'lucide-react'
+import { ArrowLeft, Home, Layers, Shirt, MapPin, Award } from 'lucide-react'
 import api, { getHomeConfig, getFabricSeries, uploadFile } from '@/api/client'
 import Dashboard from './Dashboard'
+import SaveButton from './components/SaveButton'
 import ImageCropper from './ImageCropper'
 
 const TABS = [
@@ -552,14 +553,7 @@ export default function AdminHomeEditor() {
             </button>
             <h1 className="text-h3 text-white">首页管理</h1>
           </div>
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="flex items-center gap-2 bg-white text-primary px-5 py-2.5 text-[13px] font-medium hover:bg-bg transition-colors disabled:opacity-50"
-          >
-            <Save size={16} />
-            {saving ? '保存中...' : '保存更改'}
-          </button>
+          <SaveButton onClick={handleSave} loading={saving} />
         </div>
 
         {message && <p className="text-success text-[13px] mb-4">{message}</p>}

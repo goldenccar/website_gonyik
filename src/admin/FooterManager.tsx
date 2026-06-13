@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Save, Upload } from 'lucide-react'
+import { ArrowLeft, Upload } from 'lucide-react'
 import api, { getFooter, getSocial } from '@/api/client'
 import Dashboard from './Dashboard'
+import SaveButton from './components/SaveButton'
 import type { FooterConfig, SocialMedia } from '@/types'
 
 const PLATFORM_NAMES: Record<string, string> = {
@@ -107,14 +108,7 @@ export default function AdminFooterManager() {
             </button>
             <h1 className="text-h3 text-white">Footer 管理</h1>
           </div>
-          <button
-            onClick={handleSaveFooter}
-            disabled={saving}
-            className="flex items-center gap-2 bg-white text-primary px-5 py-2.5 text-[13px] font-medium hover:bg-bg transition-colors disabled:opacity-50"
-          >
-            <Save size={16} />
-            {saving ? '保存中...' : '保存更改'}
-          </button>
+          <SaveButton onClick={handleSaveFooter} loading={saving} />
         </div>
 
         {message && <p className="text-success text-[13px] mb-4">{message}</p>}

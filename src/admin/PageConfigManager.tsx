@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Save } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import api, { getPageConfig, updatePageConfig } from '@/api/client'
 import Dashboard from './Dashboard'
+import SaveButton from './components/SaveButton'
 
 interface PageConfigItem {
   page_key: string
@@ -82,14 +83,9 @@ export default function PageConfigManager({ pageKey }: PageConfigManagerProps = 
             </button>
             <h1 className="text-h3 text-white">{meta.label} — 页面配置</h1>
           </div>
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="flex items-center gap-2 bg-white text-primary px-4 py-2 text-[13px] font-medium hover:bg-bg transition-colors disabled:opacity-50"
-          >
-            <Save size={14} />
-            {saving ? '保存中...' : '保存'}
-          </button>
+          <SaveButton onClick={handleSave} loading={saving} size="sm">
+            保存
+          </SaveButton>
         </div>
 
         {message && <p className="text-success text-[13px] mb-6">{message}</p>}
