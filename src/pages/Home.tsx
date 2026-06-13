@@ -263,7 +263,7 @@ function HeroSection({ config }: { config: HomeConfig }) {
               transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
             />
           </div>
-          <div className="absolute inset-0 bg-gradient-to-r from-black via-black/95 via-[40%] to-transparent to-[65%]" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black via-black/90 via-[40%] to-transparent to-[100%]" />
         </>
       ) : (
         <>
