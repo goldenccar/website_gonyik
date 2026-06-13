@@ -121,6 +121,8 @@ async function confirm(message) {
 async function deployRemote(password) {
   const remoteCmd = [
     `cd ${SERVER_PATH}`,
+    '# 丢弃工作区变更（db.json / uploads 等已被 gitignore，不会受影响）',
+    'git reset --hard HEAD',
     'git pull origin main',
     'npm install',
     'npm run build',

@@ -12,6 +12,8 @@ echo "[$(date '+%Y-%m-%d %H:%M:%S')] 开始检查更新..." >> "$LOG_FILE"
 
 # 通过 commit hash 判断是否有更新，避免 locale 影响
 BEFORE=$(git rev-parse HEAD)
+# 丢弃工作区变更（db.json / uploads 等已被 gitignore，不会受影响）
+git reset --hard HEAD >> "$LOG_FILE" 2>&1
 git pull origin main >> "$LOG_FILE" 2>&1
 AFTER=$(git rev-parse HEAD)
 
