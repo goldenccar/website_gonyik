@@ -64,7 +64,7 @@ export default function EndUseEquipment() {
   return (
     <div>
       {/* Hero + Scene Selector */}
-      <section className="bg-darker px-6 lg:px-12 pt-[60px] pb-16 min-h-[460px]">
+      <section className="bg-darker px-6 lg:px-12 pt-[60px] pb-16 aspect-video min-h-[460px]">
         <div className="max-w-[1440px] mx-auto w-full flex flex-col lg:flex-row lg:items-start lg:justify-between gap-10 lg:gap-16">
           {/* Left: Hero text */}
           <div className="py-8 shrink-0">

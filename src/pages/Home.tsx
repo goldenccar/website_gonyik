@@ -249,7 +249,7 @@ function HeroSection({ config }: { config: HomeConfig }) {
   const features = Array.isArray(config.hero_features) ? config.hero_features : []
 
   return (
-    <section className="relative w-full overflow-hidden bg-darker min-h-[460px]">
+    <section className="relative w-full overflow-hidden bg-darker aspect-video min-h-[460px]">
       {/* Background */}
       {config.hero_background ? (
         <>
