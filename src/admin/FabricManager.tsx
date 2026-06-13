@@ -40,7 +40,7 @@ export default function AdminFabricManager() {
     let home_image = editingSeries?.home_image || ''
     if (homeFile) {
       const up = await uploadFile(homeFile)
-      home_image = up.data.url
+      home_image = up.data.url || up.data.data?.url || ''
     }
 
     const formData = new FormData()

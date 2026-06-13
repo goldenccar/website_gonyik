@@ -249,106 +249,114 @@ function HeroSection({ config }: { config: HomeConfig }) {
   const features = Array.isArray(config.hero_features) ? config.hero_features : []
 
   return (
-    <section className="relative w-full overflow-hidden bg-darker">
-      {/* Background */}
-      {config.hero_background ? (
-        <>
-          <motion.img
-            src={config.hero_background}
-            alt="Hero"
-            className="absolute inset-0 w-full h-full object-cover"
-            initial={{ scale: 1.08, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/40" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30" />
-        </>
-      ) : (
-        <>
-          <DefaultBackground />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
-        </>
-      )}
+    <>
+      <section className="relative w-full overflow-hidden bg-darker">
+        {/* Background */}
+        {config.hero_background ? (
+          <>
+            <motion.img
+              src={config.hero_background}
+              alt="Hero"
+              className="absolute inset-0 w-full h-full object-cover"
+              initial={{ scale: 1.08, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/40" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30" />
+          </>
+        ) : (
+          <>
+            <DefaultBackground />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
+          </>
+        )}
 
-      {/* Content */}
-      <div className="relative z-10 max-w-[1440px] mx-auto px-6 lg:px-12 pt-[60px]">
-        <div className="py-8 max-w-[720px]">
-          <motion.p
-            {...fadeUp}
-            transition={{ ...fadeUp.transition, delay: 0.2 }}
-            className="text-label text-accentWarm uppercase mb-4"
-          >
-            {config.hero_tag || 'PFAS-FREE PERFORMANCE MATERIALS'}
-          </motion.p>
-
-          <motion.h1
-            {...fadeUp}
-            transition={{ ...fadeUp.transition, delay: 0.35 }}
-            className="text-[28px] sm:text-h1 text-white mb-4 leading-[1.12]"
-          >
-            {titleLines.map((line, i) => (
-              <span key={i} className="block">
-                {line.split('RPO').map((part, j, arr) => (
-                  <span key={j}>
-                    {part}
-                    {j < arr.length - 1 && <span className="text-accentWarm">RPO</span>}
-                  </span>
-                ))}
-              </span>
-            ))}
-          </motion.h1>
-
-          <motion.p
-            {...fadeUp}
-            transition={{ ...fadeUp.transition, delay: 0.5 }}
-            className="text-body text-white/75 max-w-[520px] mb-8"
-          >
-            {config.hero_slogan || '固纳 RPO 无氟材料平台，融合先进复合技术与结构设计，赋予面料持久防护、舒适透气与多功能表现。'}
-          </motion.p>
-
-          <motion.div
-            {...fadeUp}
-            transition={{ ...fadeUp.transition, delay: 0.65 }}
-            className="flex flex-col sm:flex-row gap-4"
-          >
-            <Link
-              to={config.primary_btn_link || '/fabrics'}
-              className="px-6 sm:px-9 py-3 bg-accentWarm text-white text-[14px] font-medium hover:bg-accentWarm/90 transition-all duration-250 hover:scale-[1.02] active:scale-[0.98] text-center w-full sm:w-auto"
+        {/* Content */}
+        <div className="relative z-10 max-w-[1440px] mx-auto px-6 lg:px-12 pt-[60px] pb-16">
+          <div className="py-8 max-w-[720px]">
+            <motion.p
+              {...fadeUp}
+              transition={{ ...fadeUp.transition, delay: 0.2 }}
+              className="text-label text-accentWarm uppercase mb-4"
             >
-              {config.primary_btn_text || '探索材料平台'}
-            </Link>
-            <Link
-              to={config.secondary_btn_link || '/fluorine-free'}
-              className="px-6 sm:px-9 py-3 bg-white/10 text-white text-[14px] font-medium border border-white/25 hover:bg-white/20 hover:border-white/40 transition-all duration-250 text-center w-full sm:w-auto"
+              {config.hero_tag || 'PFAS-FREE PERFORMANCE MATERIALS'}
+            </motion.p>
+
+            <motion.h1
+              {...fadeUp}
+              transition={{ ...fadeUp.transition, delay: 0.35 }}
+              className="text-[28px] sm:text-h1 text-white mb-4 leading-[1.12]"
             >
-              {config.secondary_btn_text || '了解无氟未来'}
-            </Link>
-          </motion.div>
+              {titleLines.map((line, i) => (
+                <span key={i} className="block">
+                  {line.split('RPO').map((part, j, arr) => (
+                    <span key={j}>
+                      {part}
+                      {j < arr.length - 1 && <span className="text-accentWarm">RPO</span>}
+                    </span>
+                  ))}
+                </span>
+              ))}
+            </motion.h1>
+
+            <motion.p
+              {...fadeUp}
+              transition={{ ...fadeUp.transition, delay: 0.5 }}
+              className="text-body text-white/75 max-w-[520px] mb-8"
+            >
+              {config.hero_slogan || '固纳 RPO 无氟材料平台，融合先进复合技术与结构设计，赋予面料持久防护、舒适透气与多功能表现。'}
+            </motion.p>
+
+            <motion.div
+              {...fadeUp}
+              transition={{ ...fadeUp.transition, delay: 0.65 }}
+              className="flex flex-col sm:flex-row gap-4"
+            >
+              <Link
+                to={config.primary_btn_link || '/fabrics'}
+                className="px-6 sm:px-9 py-3 bg-accentWarm text-white text-[14px] font-medium hover:bg-accentWarm/90 transition-all duration-250 hover:scale-[1.02] active:scale-[0.98] text-center w-full sm:w-auto"
+              >
+                {config.primary_btn_text || '探索材料平台'}
+              </Link>
+              <Link
+                to={config.secondary_btn_link || '/fluorine-free'}
+                className="px-6 sm:px-9 py-3 bg-white/10 text-white text-[14px] font-medium border border-white/25 hover:bg-white/20 hover:border-white/40 transition-all duration-250 text-center w-full sm:w-auto"
+              >
+                {config.secondary_btn_text || '了解无氟未来'}
+              </Link>
+            </motion.div>
+          </div>
         </div>
+      </section>
 
-        {/* Hero features */}
-        <motion.div
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="flex flex-wrap gap-8 lg:gap-12 border-t border-white/10 py-4"
-        >
-          {features.map((f, idx) => (
-            <div key={idx} className="flex items-start gap-3 max-w-[200px]">
-              <div className="mt-0.5 text-white/80">
-                <DynamicIcon name={f.icon} size={20} />
-              </div>
-              <div>
-                <p className="text-[14px] font-semibold text-white">{f.title}</p>
-                <p className="text-[13px] text-white/60 mt-0.5">{f.subtitle}</p>
-              </div>
-            </div>
-          ))}
-        </motion.div>
-      </div>
-    </section>
+      {/* Hero features */}
+      {features.length > 0 && (
+        <section className="bg-darker px-6 lg:px-12">
+          <div className="max-w-[1440px] mx-auto">
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
+              className="flex flex-wrap gap-8 lg:gap-12 py-4"
+            >
+              {features.map((f, idx) => (
+                <div key={idx} className="flex items-start gap-3 max-w-[200px]">
+                  <div className="mt-0.5 text-white/80">
+                    <DynamicIcon name={f.icon} size={20} />
+                  </div>
+                  <div>
+                    <p className="text-[14px] font-semibold text-white">{f.title}</p>
+                    <p className="text-[13px] text-white/60 mt-0.5">{f.subtitle}</p>
+                  </div>
+                </div>
+              ))}
+            </motion.div>
+          </div>
+        </section>
+      )}
+    </>
   )
 }
 

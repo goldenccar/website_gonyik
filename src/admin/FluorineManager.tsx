@@ -66,7 +66,7 @@ export default function AdminFluorineManager() {
     setUploadingId(sectionId)
     try {
       const res = await uploadFile(file)
-      const url = res.data.url
+      const url = res.data.url || res.data.data?.url
       setSections((prev) => prev.map((s) => s.id === sectionId ? { ...s, image_url: url } : s))
       showSectionMessage(sectionId, '图片上传成功')
     } catch {

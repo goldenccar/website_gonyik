@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, Save, Home, Layers, Shirt, MapPin, Award } from 'lucide-react'
 import api, { getHomeConfig, getFabricSeries, uploadFile } from '@/api/client'
 import Dashboard from './Dashboard'
+import ImageCropper from './ImageCropper'
 
 const TABS = [
   { key: 'hero', label: 'Hero', icon: Home },
@@ -48,6 +49,9 @@ export default function AdminHomeEditor() {
   const [message, setMessage] = useState('')
   const [activeTab, setActiveTab] = useState('hero')
   const [uploadingField, setUploadingField] = useState<string | null>(null)
+  const [cropSrc, setCropSrc] = useState<string | null>(null)
+  const [cropBlob, setCropBlob] = useState<Blob | null>(null)
+  const [cropPreview, setCropPreview] = useState<string | null>(null)
 
   useEffect(() => {
     getHomeConfig().then((res) => setForm(res.data.data || {}))
@@ -67,20 +71,55 @@ export default function AdminHomeEditor() {
     }
   }
 
-  const handleHeroBackgroundUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const uploadHeroBackground = async (file: File | Blob, filename?: string) => {
+    const fd = new FormData()
+    fd.append('file', file, filename || 'hero-bg.jpg')
+    const res = await api.put('/admin/home/background', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
+    return res.data.url as string
+  }
+
+  const handleHeroBackgroundSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-    const fd = new FormData()
-    fd.append('file', file)
-    const res = await api.put('/admin/home/background', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
-    setForm({ ...form, hero_background: res.data.url })
+    if (/\.(mp4|webm|mov)$/i.test(file.name)) {
+      const url = await uploadHeroBackground(file, file.name)
+      setForm({ ...form, hero_background: url })
+      setCropBlob(null)
+      setCropPreview(null)
+    } else {
+      if (cropSrc) URL.revokeObjectURL(cropSrc)
+      setCropSrc(URL.createObjectURL(file))
+      setCropBlob(null)
+      setCropPreview(null)
+    }
+    e.target.value = ''
+  }
+
+  const handleCropComplete = (blob: Blob, previewUrl: string) => {
+    if (cropSrc) URL.revokeObjectURL(cropSrc)
+    setCropBlob(blob)
+    setCropPreview(previewUrl)
+    setCropSrc(null)
+  }
+
+  const handleCropCancel = () => {
+    if (cropSrc) URL.revokeObjectURL(cropSrc)
+    setCropSrc(null)
+  }
+
+  const handleCropUpload = async () => {
+    if (!cropBlob) return
+    const url = await uploadHeroBackground(cropBlob, 'hero-bg.jpg')
+    setForm({ ...form, hero_background: url })
+    setCropBlob(null)
+    setCropPreview(null)
   }
 
   const uploadImageFor = async (path: string, file: File, updater: (url: string) => void) => {
     setUploadingField(path)
     try {
       const res = await uploadFile(file)
-      updater(res.data.url)
+      updater(res.data.url || res.data.data?.url)
     } finally {
       setUploadingField(null)
     }
@@ -149,13 +188,73 @@ export default function AdminHomeEditor() {
 
       <div className="mb-6">
         <label className="block text-[12px] text-secondary uppercase mb-2">背景媒体</label>
-        {form.hero_background && /\.(mp4|webm|mov)(\?.*)?$/i.test(form.hero_background) ? (
-          <video src={form.hero_background} className="w-full max-h-[200px] object-cover mb-3" autoPlay muted loop playsInline />
-        ) : form.hero_background ? (
-          <img src={form.hero_background} alt="Hero" className="w-full max-h-[200px] object-cover mb-3" />
-        ) : null}
-        <input type="file" accept="image/*,video/mp4,video/webm,video/quicktime" onChange={handleHeroBackgroundUpload} className="text-white text-[13px]" />
-        <p className="text-[12px] text-muted mt-2">支持 JPG、PNG、GIF、WebP、MP4、WebM、MOV</p>
+
+        {/* Frontend Hero preview */}
+        <div className="relative w-full h-[220px] overflow-hidden bg-darker rounded border border-white/10 mb-3">
+          {(() => {
+            const previewUrl = cropPreview || form.hero_background
+            if (!previewUrl) return <div className="absolute inset-0 bg-darker" />
+            const isVideo = /\.(mp4|webm|mov)(\?.*)?$/i.test(previewUrl)
+            return (
+              <>
+                {isVideo ? (
+                  <video src={previewUrl} className="absolute inset-0 w-full h-full object-cover" autoPlay muted loop playsInline />
+                ) : (
+                  <img src={previewUrl} alt="Hero" className="absolute inset-0 w-full h-full object-cover" />
+                )}
+                <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/40" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30" />
+              </>
+            )
+          })()}
+          <div className="relative z-10 h-full flex flex-col justify-center px-6">
+            <p className="text-label text-accentWarm uppercase mb-2">{form.hero_tag || 'TAG'}</p>
+            <h2 className="text-[20px] sm:text-[28px] text-white leading-tight mb-2 line-clamp-2 whitespace-pre-line">
+              {(form.hero_title || '主标题').split('\n').slice(0, 2).join('\n')}
+            </h2>
+            <p className="text-[12px] text-white/75 max-w-[400px] mb-3 line-clamp-2">{form.hero_slogan || '副标题'}</p>
+            <div className="flex gap-2">
+              <span className="px-3 py-1.5 bg-accentWarm text-white text-[12px]">{form.primary_btn_text || '主按钮'}</span>
+              <span className="px-3 py-1.5 bg-white/10 border border-white/25 text-white text-[12px]">{form.secondary_btn_text || '次按钮'}</span>
+            </div>
+          </div>
+        </div>
+
+        {cropSrc && (
+          <ImageCropper
+            src={cropSrc}
+            onComplete={handleCropComplete}
+            onCancel={handleCropCancel}
+          />
+        )}
+
+        {!cropSrc && (
+          <>
+            <input type="file" accept="image/*,video/mp4,video/webm,video/quicktime" onChange={handleHeroBackgroundSelect} className="text-white text-[13px]" />
+            <p className="text-[12px] text-muted mt-2">
+              支持 JPG、PNG、GIF、WebP、MP4、WebM、MOV。图片建议宽度 ≥1920px，前台会以 object-cover 方式铺满 Hero 区域，核心内容请放在中间偏左。
+            </p>
+            {cropBlob && (
+              <div className="flex items-center gap-3 mt-3">
+                <span className="text-[13px] text-accentWarm">已生成裁切预览</span>
+                <button
+                  type="button"
+                  onClick={handleCropUpload}
+                  className="px-4 py-2 text-[13px] bg-accentWarm text-white hover:bg-accentWarm/90 transition-colors"
+                >
+                  上传并应用
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setCropBlob(null); setCropPreview(null) }}
+                  className="text-[13px] text-white/60 hover:text-white"
+                >
+                  清除
+                </button>
+              </div>
+            )}
+          </>
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-6">
