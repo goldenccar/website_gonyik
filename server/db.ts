@@ -43,14 +43,75 @@ function createDefaultDb(): Database {
   const defaultDb: Database = {
     home_config: {
       id: 1,
-      hero_tag: 'TECHNOLOGY FABRIC',
-      hero_title: '科技面料\n定义未来',
-      hero_slogan: '以创新材料科技，重塑户外与运动的边界',
+      hero_tag: 'PFAS-FREE PERFORMANCE MATERIALS',
+      hero_title: '以固纳 RPO 无氟材料科技\n创造更安全的高性能织物',
+      hero_slogan: '固纳 RPO 无氟材料平台，融合先进复合技术与结构设计，赋予面料持久防护、舒适透气与多功能表现。',
       hero_background: null,
-      primary_btn_text: '探索无氟科技面料',
+      primary_btn_text: '探索材料平台',
       primary_btn_link: '/fabrics',
-      secondary_btn_text: '探索终端装备',
-      secondary_btn_link: '/equipment',
+      secondary_btn_text: '了解无氟未来',
+      secondary_btn_link: '/fluorine-free',
+      hero_features: [
+        { icon: 'ShieldCheck', title: '100% PFAS-FREE', subtitle: '全系无氟' },
+        { icon: 'Droplets', title: '防水透湿', subtitle: '平衡舒适' },
+        { icon: 'Layers', title: '多功能复合', subtitle: '应对多元场景' },
+        { icon: 'Leaf', title: '可持续创新', subtitle: '安全·耐用·可信赖' },
+      ],
+      platform_section_title: '技术来源与材料平台',
+      platform_section_subtitle: '源自科研，成就可靠材料解决方案。',
+      platform_section_link_text: '了解更多',
+      platform_section_link: '/fluorine-free',
+      platform_cards: [
+        {
+          icon: 'Building2',
+          title: '科研来源',
+          subtitle: '香港科技大学（广州）科创成果转化',
+          description: '先进材料与工程研究基础\n创新驱动，工程化商落地',
+          footer: 'HKUST(GZ) Origin',
+        },
+        {
+          icon: 'Atom',
+          title: '固纳 RPO',
+          subtitle: 'GONYIK 专有无氟材料平台',
+          description: '以配方与工艺创新\n实现高性能与可持续的平衡',
+          footer: 'GONYIK Proprietary Platform',
+        },
+        {
+          icon: 'Hexagon',
+          title: '无氟复合体系',
+          subtitle: 'PFAS-FREE 复合材料体系',
+          description: '在防护、耐久与舒适之间\n达成可靠平衡',
+          footer: 'PFAS-Free by Design',
+        },
+        {
+          icon: 'Shirt',
+          title: '功能织物结构设计',
+          subtitle: '以纤维与结构设计',
+          description: '放大材料潜能\n服务多样化应用需求',
+          footer: 'Engineered for Performance',
+        },
+      ],
+      series_section_title: '核心面料平台',
+      series_section_subtitle: '面向多元应用的材料平台，让高性能更可持续。',
+      series_section_link_text: '查看全部系列',
+      series_section_link: '/fabrics',
+      scenarios_section_title: '应用场景提示',
+      scenarios: [
+        { icon: 'Shirt', label: '冲锋衣', link: '/fabrics/otter' },
+        { icon: 'Shield', label: '防护服', link: '/fabrics/kais' },
+        { icon: 'Backpack', label: '背负系统', link: '/equipment' },
+        { icon: 'Sun', label: '防晒轻量单品', link: '/fabrics/rayo' },
+      ],
+      verification_section_title: '验证与标准',
+      verification_section_subtitle: '平台级验证，安心选择。',
+      verification_section_link_text: '具体指标见系列',
+      verification_section_link: '/fabrics',
+      verifications: [
+        { icon: 'Award', title: '平台级验证', subtitle: '面料通过多维性能验证' },
+        { icon: 'Droplets', title: '防水透湿性能', subtitle: '在防护中保持舒适干爽' },
+        { icon: 'Sun', title: '抗紫外线防护', subtitle: '有效阻隔紫外线' },
+        { icon: 'Leaf', title: 'PFAS 检测（LC-MS）', subtitle: '未检出，全系无氟' },
+      ],
     },
     site_config: {
       logo_url: null,
@@ -187,10 +248,10 @@ function createDefaultDb(): Database {
       { id: 3, platform: 'douyin', account: '港翼科技GONYIK', qrcode_url: null },
     ],
     fabric_series: [
-      { id: 1, name: 'Otter', slug: 'otter', description: '无氟高性能复合面料 3L，Solidgood RPO Membrane 中间层，香港科技大学前沿纳米材料 / 日内瓦国际发明展金奖技术', tagline: '新一代无氟防护 · 高性能复合', sub_series_data: null, cover_image: '/uploads/otter-logo.svg', order_index: 0 },
-      { id: 2, name: 'Kais', slug: 'kais', description: '专业防护平台，基于 UHMWPE 纤维基材的防刺/防火/防化解决方案', tagline: '专业防护平台 · 防刺/防火/防化', sub_series_data: '[{"slug":"kais-edge","name":"Kais-Edge","subtitle":"铠 · 锋","description":"防切割抗穿刺，通过公安部 D3/D2 认证","accent_color":"#8B3A3A","link":"/fabrics/kais-edge"},{"slug":"kais-ignis","name":"Kais-Ignis","subtitle":"铠 · 焰","description":"阻燃隔热，芳纶 + UHMWPE/TPU 复合膜结构","accent_color":"#C45D3A","link":"/fabrics/kais-ignis"}]', cover_image: null, order_index: 1 },
-      { id: 3, name: 'Rayo', slug: 'rayo', description: '原生防晒导湿系列，Coolmax + TiO2 原纱处理，UPF 150+', tagline: '原生防晒 · 导湿凉感', sub_series_data: null, cover_image: null, order_index: 2 },
-      { id: 4, name: 'Tread', slug: 'tread', description: '鞋材级耐磨抗撕裂面料，户外鞋与安全鞋专用', tagline: '鞋材级 · 耐磨抗撕裂', sub_series_data: null, cover_image: null, order_index: 3 },
+      { id: 1, name: 'Otter', slug: 'otter', description: '无氟高性能复合面料 3L，Solidgood RPO Membrane 中间层，香港科技大学前沿纳米材料 / 日内瓦国际发明展金奖技术', tagline: '新一代无氟防护 · 高性能复合', sub_series_data: null, cover_image: '/uploads/otter-logo.svg', home_image: null, order_index: 0 },
+      { id: 2, name: 'Kais', slug: 'kais', description: '专业防护平台，基于 UHMWPE 纤维基材的防刺/防火/防化解决方案', tagline: '专业防护平台 · 防刺/防火/防化', sub_series_data: '[{"slug":"kais-edge","name":"Kais-Edge","subtitle":"铠 · 锋","description":"防切割抗穿刺，通过公安部 D3/D2 认证","accent_color":"#8B3A3A","link":"/fabrics/kais-edge"},{"slug":"kais-ignis","name":"Kais-Ignis","subtitle":"铠 · 焰","description":"阻燃隔热，芳纶 + UHMWPE/TPU 复合膜结构","accent_color":"#C45D3A","link":"/fabrics/kais-ignis"}]', cover_image: null, home_image: null, order_index: 1 },
+      { id: 3, name: 'Rayo', slug: 'rayo', description: '原生防晒导湿系列，Coolmax + TiO2 原纱处理，UPF 150+', tagline: '原生防晒 · 导湿凉感', sub_series_data: null, cover_image: null, home_image: null, order_index: 2 },
+      { id: 4, name: 'Tread', slug: 'tread', description: '鞋材级耐磨抗撕裂面料，户外鞋与安全鞋专用', tagline: '鞋材级 · 耐磨抗撕裂', sub_series_data: null, cover_image: null, home_image: null, order_index: 3 },
     ],
     fabric_scenes: [
       { id: 1, category: '都市生活', label: '日常通勤', series_slug: 'rayo', order_index: 0 },
@@ -392,6 +453,76 @@ export function initDatabase() {
       saveDb()
     }
     if (!db.contact_messages) db.contact_messages = []
+    // Backward compatibility: ensure new home_config fields exist
+    if (db.home_config) {
+      const homeDefaults: Record<string, any> = {
+        hero_features: [
+          { icon: 'ShieldCheck', title: '100% PFAS-FREE', subtitle: '全系无氟' },
+          { icon: 'Droplets', title: '防水透湿', subtitle: '平衡舒适' },
+          { icon: 'Layers', title: '多功能复合', subtitle: '应对多元场景' },
+          { icon: 'Leaf', title: '可持续创新', subtitle: '安全·耐用·可信赖' },
+        ],
+        platform_section_title: '技术来源与材料平台',
+        platform_section_subtitle: '源自科研，成就可靠材料解决方案。',
+        platform_section_link_text: '了解更多',
+        platform_section_link: '/fluorine-free',
+        platform_cards: [
+          { icon: 'Building2', title: '科研来源', subtitle: '香港科技大学（广州）科创成果转化', description: '先进材料与工程研究基础\n创新驱动，工程化商落地', footer: 'HKUST(GZ) Origin' },
+          { icon: 'Atom', title: '固纳 RPO', subtitle: 'GONYIK 专有无氟材料平台', description: '以配方与工艺创新\n实现高性能与可持续的平衡', footer: 'GONYIK Proprietary Platform' },
+          { icon: 'Hexagon', title: '无氟复合体系', subtitle: 'PFAS-FREE 复合材料体系', description: '在防护、耐久与舒适之间\n达成可靠平衡', footer: 'PFAS-Free by Design' },
+          { icon: 'Shirt', title: '功能织物结构设计', subtitle: '以纤维与结构设计', description: '放大材料潜能\n服务多样化应用需求', footer: 'Engineered for Performance' },
+        ],
+        series_section_title: '核心面料平台',
+        series_section_subtitle: '面向多元应用的材料平台，让高性能更可持续。',
+        series_section_link_text: '查看全部系列',
+        series_section_link: '/fabrics',
+        scenarios_section_title: '应用场景提示',
+        scenarios: [
+          { icon: 'Shirt', label: '冲锋衣', link: '/fabrics/otter' },
+          { icon: 'Shield', label: '防护服', link: '/fabrics/kais' },
+          { icon: 'Backpack', label: '背负系统', link: '/equipment' },
+          { icon: 'Sun', label: '防晒轻量单品', link: '/fabrics/rayo' },
+        ],
+        verification_section_title: '验证与标准',
+        verification_section_subtitle: '平台级验证，安心选择。',
+        verification_section_link_text: '具体指标见系列',
+        verification_section_link: '/fabrics',
+        verifications: [
+          { icon: 'Award', title: '平台级验证', subtitle: '面料通过多维性能验证' },
+          { icon: 'Droplets', title: '防水透湿性能', subtitle: '在防护中保持舒适干爽' },
+          { icon: 'Sun', title: '抗紫外线防护', subtitle: '有效阻隔紫外线' },
+          { icon: 'Leaf', title: 'PFAS 检测（LC-MS）', subtitle: '未检出，全系无氟' },
+        ],
+      }
+      let homeChanged = false
+      for (const [key, value] of Object.entries(homeDefaults)) {
+        if (db.home_config[key] === undefined) {
+          db.home_config[key] = value
+          homeChanged = true
+        }
+      }
+      // Migrate old default hero content to new optimized defaults
+      if (
+        db.home_config.hero_tag === 'TECHNOLOGY FABRIC' &&
+        db.home_config.hero_title === '科技面料\n定义未来' &&
+        db.home_config.hero_slogan === '以创新材料科技，重塑户外与运动的边界'
+      ) {
+        db.home_config.hero_tag = 'PFAS-FREE PERFORMANCE MATERIALS'
+        db.home_config.hero_title = '以固纳 RPO 无氟材料科技\n创造更安全的高性能织物'
+        db.home_config.hero_slogan = '固纳 RPO 无氟材料平台，融合先进复合技术与结构设计，赋予面料持久防护、舒适透气与多功能表现。'
+        db.home_config.primary_btn_text = '探索材料平台'
+        db.home_config.primary_btn_link = '/fabrics'
+        db.home_config.secondary_btn_text = '了解无氟未来'
+        db.home_config.secondary_btn_link = '/fluorine-free'
+        homeChanged = true
+      }
+      if (homeChanged) saveDb()
+    }
+    // Backward compatibility: ensure home_image exists on fabric_series
+    if (db.fabric_series && db.fabric_series.length > 0 && db.fabric_series[0].home_image === undefined) {
+      db.fabric_series = db.fabric_series.map((s: any) => ({ ...s, home_image: s.home_image ?? null }))
+      saveDb()
+    }
     // Backward compatibility: ensure police_number / police_link exist on footer_config
     if (db.footer_config && db.footer_config.police_number === undefined) {
       db.footer_config = { ...db.footer_config, police_number: '', police_link: 'https://www.beian.gov.cn/portal/registerSystemInfo' }

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Plus, Trash2, Edit2, X } from 'lucide-react'
-import api from '@/api/client'
+import api, { uploadFile } from '@/api/client'
 import Dashboard from './Dashboard'
 import AdminHeader from './components/AdminHeader'
 import Modal from './components/Modal'
@@ -34,7 +34,14 @@ export default function AdminFabricManager() {
     e.preventDefault()
     const fd = new FormData(e.currentTarget)
     const data = Object.fromEntries(fd)
-    const file = (e.currentTarget as any).cover_image.files[0]
+    const coverFile = (e.currentTarget as any).cover_image.files[0]
+    const homeFile = (e.currentTarget as any).home_image.files[0]
+
+    let home_image = editingSeries?.home_image || ''
+    if (homeFile) {
+      const up = await uploadFile(homeFile)
+      home_image = up.data.url
+    }
 
     const formData = new FormData()
     formData.append('name', data.name as string)
@@ -42,8 +49,9 @@ export default function AdminFabricManager() {
     formData.append('tagline', (data.tagline as string) || '')
     formData.append('description', data.description as string)
     formData.append('sub_series_data', (data.sub_series_data as string) || '')
-    if (file) formData.append('cover_image', file)
-    if (editingSeries?.cover_image && !file) formData.append('cover_image', editingSeries.cover_image)
+    formData.append('home_image', home_image)
+    if (coverFile) formData.append('cover_image', coverFile)
+    if (editingSeries?.cover_image && !coverFile) formData.append('cover_image', editingSeries.cover_image)
 
     if (editingSeries?.id) {
       await api.put(`/fabrics/admin/series/${editingSeries.id}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
@@ -119,6 +127,7 @@ export default function AdminFabricManager() {
             <thead className="border-b border-white/10 text-accent uppercase">
               <tr>
                 <th className="px-6 py-3">Logo</th>
+                <th className="px-6 py-3">首页卡片图</th>
                 <th className="px-6 py-3">名称</th>
                 <th className="px-6 py-3">Slug</th>
                 <th className="px-6 py-3">描述</th>
@@ -135,6 +144,13 @@ export default function AdminFabricManager() {
                   <td className="px-6 py-4">
                     {s.cover_image ? (
                       <img src={s.cover_image} alt={s.name} className="h-8 w-auto object-contain" />
+                    ) : (
+                      <span className="text-accent">-</span>
+                    )}
+                  </td>
+                  <td className="px-6 py-4">
+                    {s.home_image ? (
+                      <img src={s.home_image} alt={s.name} className="h-10 w-16 object-cover" />
                     ) : (
                       <span className="text-accent">-</span>
                     )}
@@ -232,6 +248,16 @@ export default function AdminFabricManager() {
                   </div>
                 )}
                 <input type="file" name="cover_image" accept="image/*,image/svg+xml" className="text-white text-[13px]" />
+              </div>
+              <div>
+                <label className="block text-[12px] text-secondary uppercase mb-1">首页卡片背景图</label>
+                {editingSeries?.home_image && (
+                  <div className="mb-2">
+                    <img src={editingSeries.home_image} alt="当前首页图" className="h-20 w-auto object-cover" />
+                    <p className="text-[11px] text-muted mt-1">当前首页卡片图</p>
+                  </div>
+                )}
+                <input type="file" name="home_image" accept="image/*" className="text-white text-[13px]" />
               </div>
               <SaveCancelButtons onCancel={() => setShowSeriesForm(false)} />
             </form>

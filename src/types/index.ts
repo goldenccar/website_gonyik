@@ -1,3 +1,29 @@
+export interface HomeFeature {
+  icon: string
+  title: string
+  subtitle: string
+}
+
+export interface HomePlatformCard {
+  icon: string
+  title: string
+  subtitle: string
+  description: string
+  footer: string
+}
+
+export interface HomeScenario {
+  icon: string
+  label: string
+  link: string
+}
+
+export interface HomeVerification {
+  icon: string
+  title: string
+  subtitle: string
+}
+
 export interface HomeConfig {
   id: number
   hero_tag: string
@@ -8,6 +34,23 @@ export interface HomeConfig {
   primary_btn_link: string
   secondary_btn_text: string
   secondary_btn_link: string
+  hero_features: HomeFeature[]
+  platform_section_title: string
+  platform_section_subtitle: string
+  platform_section_link_text: string
+  platform_section_link: string
+  platform_cards: HomePlatformCard[]
+  series_section_title: string
+  series_section_subtitle: string
+  series_section_link_text: string
+  series_section_link: string
+  scenarios_section_title: string
+  scenarios: HomeScenario[]
+  verification_section_title: string
+  verification_section_subtitle: string
+  verification_section_link_text: string
+  verification_section_link: string
+  verifications: HomeVerification[]
 }
 
 export interface PageConfig {
@@ -52,6 +95,7 @@ export interface FabricSeries {
   tagline: string
   sub_series_data: string | null // JSON: [{slug, name, subtitle, description, accent_color, link}]
   cover_image: string | null
+  home_image: string | null
   order_index: number
 }
 
