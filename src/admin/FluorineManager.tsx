@@ -203,7 +203,6 @@ export default function AdminFluorineManager() {
                   {cropTarget && cropTarget.sectionId === section.id ? (
                     <ImageCropper
                       src={cropTarget.src}
-                      aspect={16 / 9}
                       previewMode="section"
                       previewTitle={section.title}
                       previewSubtitle={section.subtitle}

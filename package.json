@@ -26,7 +26,7 @@
     "nodemailer": "^8.0.7",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
-    "react-easy-crop": "^6.0.2",
+    "react-image-crop": "^11.0.10",
     "react-pdf": "^9.2.1",
     "react-router-dom": "^7.14.2"
   },
