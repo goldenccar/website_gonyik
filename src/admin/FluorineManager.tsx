@@ -189,7 +189,11 @@ export default function AdminFluorineManager() {
                     ].map((opt) => (
                       <button
                         key={opt.value}
-                        onClick={() => setSections((prev) => prev.map((s) => s.id === section.id ? { ...s, image_fit: opt.value } : s))}
+                        onClick={() => {
+                          const updated = { ...section, image_fit: opt.value }
+                          setSections((prev) => prev.map((s) => s.id === section.id ? updated : s))
+                          saveSection(updated)
+                        }}
                         className={`text-[11px] px-2.5 py-1 border transition-colors ${
                           section.image_fit === opt.value
                             ? 'bg-accentWarm text-white border-accentWarm'
