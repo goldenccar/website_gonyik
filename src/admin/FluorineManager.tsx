@@ -5,6 +5,7 @@ import api, { getFluorineSections, getFluorineValueChain, uploadFile } from '@/a
 import Dashboard from './Dashboard'
 import SaveButton from './components/SaveButton'
 import PrimaryButton from './components/PrimaryButton'
+import ImageCropper from './ImageCropper'
 
 interface ValueChainColumn {
   tag: string
@@ -27,6 +28,7 @@ export default function AdminFluorineManager() {
   const [sections, setSections] = useState<any[]>([])
   const [saveMessages, setSaveMessages] = useState<Record<number, string>>({})
   const [uploadingId, setUploadingId] = useState<number | null>(null)
+  const [cropTarget, setCropTarget] = useState<{ sectionId: number; src: string } | null>(null)
   const [valueChain, setValueChain] = useState<ValueChainData | null>(null)
   const [vcMessage, setVcMessage] = useState('')
 
@@ -64,9 +66,20 @@ export default function AdminFluorineManager() {
     load()
   }
 
-  const handleImageUpload = async (sectionId: number, file: File) => {
+  const startCrop = (sectionId: number, file: File) => {
+    setCropTarget({ sectionId, src: URL.createObjectURL(file) })
+  }
+
+  const cancelCrop = () => {
+    if (!cropTarget) return
+    URL.revokeObjectURL(cropTarget.src)
+    setCropTarget(null)
+  }
+
+  const applyCrop = async (sectionId: number, blob: Blob) => {
     setUploadingId(sectionId)
     try {
+      const file = new File([blob], `section-${sectionId}-cropped.jpg`, { type: 'image/jpeg' })
       const res = await uploadFile(file)
       const url = res.data.url || res.data.data?.url
       setSections((prev) => prev.map((s) => s.id === sectionId ? { ...s, image_url: url } : s))
@@ -75,6 +88,7 @@ export default function AdminFluorineManager() {
       showSectionMessage(sectionId, '图片上传失败', 3000)
     } finally {
       setUploadingId(null)
+      cancelCrop()
     }
   }
 
@@ -167,7 +181,7 @@ export default function AdminFluorineManager() {
                 <div>
                   <label className="block text-[12px] text-secondary uppercase mb-1">配图</label>
                   <div className="flex items-center gap-3 mb-3">
-                    <label className="text-[12px] text-accent">显示模式：</label>
+                    <span className="text-[12px] text-accent">显示模式：</span>
                     {[
                       { value: 'cover', label: '填满裁剪' },
                       { value: 'contain', label: '完整显示' },
@@ -186,7 +200,14 @@ export default function AdminFluorineManager() {
                       </button>
                     ))}
                   </div>
-                  {section.image_url ? (
+                  {cropTarget && cropTarget.sectionId === section.id ? (
+                    <ImageCropper
+                      src={cropTarget.src}
+                      aspect={16 / 9}
+                      onComplete={(blob) => applyCrop(section.id, blob)}
+                      onCancel={cancelCrop}
+                    />
+                  ) : section.image_url ? (
                     <div className="relative mb-3">
                       <img
                         src={section.image_url}
@@ -217,7 +238,7 @@ export default function AdminFluorineManager() {
                     className="hidden"
                     onChange={(e) => {
                       const file = e.target.files?.[0]
-                      if (file) handleImageUpload(section.id, file)
+                      if (file) startCrop(section.id, file)
                       e.currentTarget.value = ''
                     }}
                   />
@@ -231,7 +252,7 @@ export default function AdminFluorineManager() {
                       className="flex-1 bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none"
                       placeholder="或手动输入图片 URL"
                     />
-                    {!section.image_url && (
+                    {!cropTarget && (
                       <PrimaryButton onClick={() => document.getElementById(`file-${section.id}`)?.click()} size="sm" icon={<Upload size={14} />}>上传</PrimaryButton>
                     )}
                   </div>
