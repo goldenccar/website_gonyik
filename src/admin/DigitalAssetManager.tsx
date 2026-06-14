@@ -6,6 +6,7 @@ import AdminHeader from './components/AdminHeader'
 import Modal from './components/Modal'
 import FormField from './components/FormField'
 import SaveCancelButtons from './components/SaveCancelButtons'
+import PrimaryButton from './components/PrimaryButton'
 
 interface DigitalAsset {
   id: number
@@ -82,13 +83,7 @@ export default function AdminDigitalAssetManager() {
         <AdminHeader
           title="数字资产管理"
           action={(
-            <button
-              onClick={() => setShowForm(true)}
-              className="flex items-center gap-2 bg-white text-primary px-4 py-2 text-[13px] font-medium hover:bg-bg"
-            >
-              <Plus size={16} />
-              上传资产
-            </button>
+            <PrimaryButton onClick={() => setShowForm(true)} icon={<Plus size={16} />}>上传资产</PrimaryButton>
           )}
         />
 

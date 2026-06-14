@@ -53,7 +53,7 @@ export default function AdminLogin() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-white text-primary py-3.5 text-[14px] font-medium hover:bg-bg transition-colors disabled:opacity-50"
+            className="w-full bg-accentWarm text-white py-3.5 text-[14px] font-medium rounded shadow-sm hover:bg-accentWarm/90 active:scale-[0.98] transition-all disabled:opacity-50"
           >
             {loading ? '登录中...' : '登录'}
           </button>

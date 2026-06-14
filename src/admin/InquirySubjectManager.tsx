@@ -5,6 +5,7 @@ import { getInquirySubjects, updateInquirySubjects } from '@/api/client'
 import type { InquirySubject } from '@/types'
 import Dashboard from './Dashboard'
 import SaveButton from './components/SaveButton'
+import PrimaryButton from './components/PrimaryButton'
 
 export default function AdminInquirySubjectManager() {
   const navigate = useNavigate()
@@ -93,13 +94,7 @@ export default function AdminInquirySubjectManager() {
           ))}
         </div>
 
-        <button
-          onClick={addItem}
-          className="flex items-center gap-2 text-[13px] text-accent hover:text-white transition-colors"
-        >
-          <Plus size={16} />
-          添加主题
-        </button>
+        <PrimaryButton onClick={addItem} icon={<Plus size={16} />}>添加主题</PrimaryButton>
       </div>
     </Dashboard>
   )

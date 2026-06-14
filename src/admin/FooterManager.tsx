@@ -144,12 +144,7 @@ export default function AdminFooterManager() {
                       onChange={(e) => updateSocialAccount(s.platform, e.target.value)}
                       className="flex-1 bg-white/5 border border-borderDark text-white px-4 py-3 text-[14px] focus:border-white focus:outline-none"
                     />
-                    <button
-                      onClick={() => saveSocialAccount(s.platform)}
-                      className="bg-white/10 text-white px-4 py-2 text-[13px] hover:bg-white/20 transition-colors"
-                    >
-                      保存账号
-                    </button>
+                    <SaveButton onClick={() => saveSocialAccount(s.platform)} size="sm">保存账号</SaveButton>
                   </div>
                 </div>
 
@@ -161,9 +156,9 @@ export default function AdminFooterManager() {
                       <img src={s.qrcode_url} alt="QR" className="w-[120px] h-[120px] object-contain bg-white p-1" />
                     </div>
                   )}
-                  <label className="flex items-center gap-2 bg-white/5 border border-borderDark px-4 py-3 cursor-pointer hover:bg-white/10 transition-colors w-fit">
-                    <Upload size={16} className="text-accent" />
-                    <span className="text-[13px] text-white">{s.qrcode_url ? '更换二维码' : '上传二维码'}</span>
+                  <label className="inline-flex items-center gap-2 bg-accentWarm text-white px-4 py-2 text-[13px] font-medium rounded shadow-sm hover:bg-accentWarm/90 cursor-pointer transition-colors">
+                    <Upload size={16} />
+                    <span>{s.qrcode_url ? '更换二维码' : '上传二维码'}</span>
                     <input
                       type="file"
                       accept="image/*"

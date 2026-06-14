@@ -7,6 +7,7 @@ import Modal from './components/Modal'
 import FormField from './components/FormField'
 import SaveCancelButtons from './components/SaveCancelButtons'
 import SaveButton from './components/SaveButton'
+import PrimaryButton from './components/PrimaryButton'
 
 export default function AdminServiceManager() {
   const [activeTab, setActiveTab] = useState<'about' | 'care' | 'faq' | 'fluorine'>('about')
@@ -115,7 +116,7 @@ export default function AdminServiceManager() {
 
         <div className="flex gap-4 mb-6 border-b border-white/10">
           {[{ key: 'about', label: '关于我们' }, { key: 'care', label: '洗护指南' }, { key: 'faq', label: 'FAQs' }, { key: 'fluorine', label: 'RPO材料平台' }].map((t) => (
-            <button key={t.key} onClick={() => setActiveTab(t.key as any)} className={`pb-3 text-[13px] font-medium border-b-2 transition-colors ${activeTab === t.key ? 'text-white border-white' : 'text-accent border-transparent hover:text-white'}`}>{t.label}</button>
+            <button key={t.key} onClick={() => setActiveTab(t.key as any)} className={`pb-3 text-[13px] font-medium border-b-2 transition-colors ${activeTab === t.key ? 'text-accentWarm border-accentWarm' : 'text-accent border-transparent hover:text-white'}`}>{t.label}</button>
           ))}
         </div>
 
@@ -134,7 +135,7 @@ export default function AdminServiceManager() {
             <div className="bg-dark p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-white font-bold">理念</h3>
-                <button onClick={() => { setEditing(null); setShowForm(true) }} className="flex items-center gap-1 bg-white text-primary px-3 py-1.5 text-[12px] font-medium hover:bg-bg"><Plus size={14} /> 新增</button>
+                <PrimaryButton onClick={() => { setEditing(null); setShowForm(true) }} size="sm" icon={<Plus size={14} />}>新增</PrimaryButton>
               </div>
               <div className="space-y-3">
                 {philosophies.map((p) => (
@@ -152,7 +153,7 @@ export default function AdminServiceManager() {
             <div className="bg-dark p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-white font-bold">里程碑</h3>
-                <button onClick={() => { setEditing({ type: 'milestone' }); setShowForm(true) }} className="flex items-center gap-1 bg-white text-primary px-3 py-1.5 text-[12px] font-medium hover:bg-bg"><Plus size={14} /> 新增</button>
+                <PrimaryButton onClick={() => { setEditing({ type: 'milestone' }); setShowForm(true) }} size="sm" icon={<Plus size={14} />}>新增</PrimaryButton>
               </div>
               <div className="space-y-3">
                 {milestones.map((m, idx) => (
@@ -178,7 +179,7 @@ export default function AdminServiceManager() {
         {activeTab === 'care' && (
           <div className="bg-dark">
             <div className="flex justify-end p-4">
-              <button onClick={() => { setEditing(null); setShowForm(true) }} className="flex items-center gap-2 bg-white text-primary px-4 py-2 text-[13px] font-medium hover:bg-bg"><Plus size={16} /> 新增指南</button>
+              <PrimaryButton onClick={() => { setEditing(null); setShowForm(true) }} icon={<Plus size={16} />}>新增指南</PrimaryButton>
             </div>
             <table className="w-full text-left text-[13px]">
               <thead className="border-b border-white/10 text-accent uppercase"><tr><th className="px-6 py-3">图标</th><th className="px-6 py-3">标题</th><th className="px-6 py-3 text-right">操作</th></tr></thead>
@@ -201,7 +202,7 @@ export default function AdminServiceManager() {
         {activeTab === 'faq' && (
           <div className="bg-dark">
             <div className="flex justify-end p-4">
-              <button onClick={() => { setEditing(null); setShowForm(true) }} className="flex items-center gap-2 bg-white text-primary px-4 py-2 text-[13px] font-medium hover:bg-bg"><Plus size={16} /> 新增 FAQ</button>
+              <PrimaryButton onClick={() => { setEditing(null); setShowForm(true) }} icon={<Plus size={16} />}>新增 FAQ</PrimaryButton>
             </div>
             <table className="w-full text-left text-[13px]">
               <thead className="border-b border-white/10 text-accent uppercase"><tr><th className="px-6 py-3">问题</th><th className="px-6 py-3 text-right">操作</th></tr></thead>

@@ -69,9 +69,9 @@ export default function AdminBrandSettings() {
               <img src={form.logo_url} alt="Logo" className="h-10 w-auto" />
             </div>
           )}
-          <label className="flex items-center gap-2 bg-white/5 border border-borderDark px-4 py-3 cursor-pointer hover:bg-white/10 transition-colors w-fit">
-            <Upload size={16} className="text-accent" />
-            <span className="text-[13px] text-white">{form.logo_url ? '更换 Logo' : '上传 Logo'}</span>
+          <label className="inline-flex items-center gap-2 bg-accentWarm text-white px-4 py-2 text-[13px] font-medium rounded shadow-sm hover:bg-accentWarm/90 cursor-pointer transition-colors">
+            <Upload size={16} />
+            <span>{form.logo_url ? '更换 Logo' : '上传 Logo'}</span>
             <input type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" />
           </label>
           <p className="text-[12px] text-muted mt-2">建议尺寸 120×40px，支持 PNG / SVG / WebP</p>
@@ -97,9 +97,9 @@ export default function AdminBrandSettings() {
               <img src={form.favicon_url} alt="Favicon" className="h-8 w-8" />
             </div>
           )}
-          <label className="flex items-center gap-2 bg-white/5 border border-borderDark px-4 py-3 cursor-pointer hover:bg-white/10 transition-colors w-fit">
-            <Upload size={16} className="text-accent" />
-            <span className="text-[13px] text-white">{form.favicon_url ? '更换 Favicon' : '上传 Favicon'}</span>
+          <label className="inline-flex items-center gap-2 bg-accentWarm text-white px-4 py-2 text-[13px] font-medium rounded shadow-sm hover:bg-accentWarm/90 cursor-pointer transition-colors">
+            <Upload size={16} />
+            <span>{form.favicon_url ? '更换 Favicon' : '上传 Favicon'}</span>
             <input type="file" accept="image/*" onChange={handleFaviconUpload} className="hidden" />
           </label>
           <p className="text-[12px] text-muted mt-2">建议尺寸 32×32px，支持 ICO / PNG</p>

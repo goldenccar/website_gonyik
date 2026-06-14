@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import Cropper from 'react-easy-crop'
 import type { Area, Point } from 'react-easy-crop'
 import 'react-easy-crop/react-easy-crop.css'
+import PrimaryButton from './components/PrimaryButton'
 
 interface ImageCropperProps {
   src: string
@@ -129,13 +130,7 @@ export default function ImageCropper({ src, aspect = 16 / 9, onComplete, onCance
         >
           取消
         </button>
-        <button
-          type="button"
-          onClick={handleConfirm}
-          className="px-4 py-2 text-[13px] bg-accentWarm text-white hover:bg-accentWarm/90 transition-colors"
-        >
-          确认裁切
-        </button>
+        <PrimaryButton type="button" onClick={handleConfirm}>确认裁切</PrimaryButton>
       </div>
     </div>
   )

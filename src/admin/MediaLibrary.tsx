@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, Trash2, Copy, Upload, Edit2, X, Image, FileText, Film, Music, File } from 'lucide-react'
 import api from '@/api/client'
 import Dashboard from './Dashboard'
+import PrimaryButton from './components/PrimaryButton'
 
 const CATEGORIES = [
   { key: 'all', label: '全部' },
@@ -117,12 +118,7 @@ export default function AdminMediaLibrary() {
             <button onClick={() => navigate('/admin/dashboard')} className="text-accent hover:text-white"><ArrowLeft size={20} /></button>
             <h1 className="text-h3 text-white">多媒体资源库</h1>
           </div>
-          <button
-            onClick={() => setShowUpload(true)}
-            className="flex items-center gap-2 bg-white text-primary px-4 py-2 text-[13px] font-medium hover:bg-bg"
-          >
-            <Upload size={16} /> 上传文件
-          </button>
+          <PrimaryButton onClick={() => setShowUpload(true)} icon={<Upload size={16} />}>上传文件</PrimaryButton>
         </div>
 
         {message && <p className="text-success text-[13px] mb-4">{message}</p>}
@@ -137,8 +133,8 @@ export default function AdminMediaLibrary() {
                 onClick={() => setActiveCategory(cat.key)}
                 className={`px-3 py-1.5 text-[12px] border transition-colors ${
                   activeCategory === cat.key
-                    ? 'bg-white text-primary border-white'
-                    : 'text-accent border-white/10 hover:border-white/30 hover:text-white'
+                    ? 'bg-accentWarm text-white border-accentWarm'
+                    : 'bg-white/5 text-accent border-white/10 hover:border-white/30 hover:text-white'
                 }`}
               >
                 {cat.label} <span className="text-muted ml-1">({count})</span>
@@ -220,7 +216,7 @@ export default function AdminMediaLibrary() {
                 </div>
               </div>
               <div className="flex gap-3 mt-6">
-                <button type="submit" className="flex-1 inline-flex items-center justify-center gap-2 bg-accentWarm text-white py-2.5 text-[14px] font-medium rounded shadow-sm hover:bg-accentWarm/90 active:scale-[0.98] transition-all disabled:opacity-50">上传</button>
+                <PrimaryButton type="submit" className="flex-1">上传</PrimaryButton>
                 <button type="button" onClick={() => setShowUpload(false)} className="flex-1 border border-white/20 text-white py-2.5 text-[13px] hover:bg-white/5">取消</button>
               </div>
             </form>
@@ -252,7 +248,7 @@ export default function AdminMediaLibrary() {
                 </div>
               </div>
               <div className="flex gap-3 mt-6">
-                <button type="submit" className="flex-1 inline-flex items-center justify-center gap-2 bg-accentWarm text-white py-2.5 text-[14px] font-medium rounded shadow-sm hover:bg-accentWarm/90 active:scale-[0.98] transition-all disabled:opacity-50">保存</button>
+                <PrimaryButton type="submit" className="flex-1">保存</PrimaryButton>
                 <button type="button" onClick={() => setEditing(null)} className="flex-1 border border-white/20 text-white py-2.5 text-[13px] hover:bg-white/5">取消</button>
               </div>
             </form>

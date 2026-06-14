@@ -1,3 +1,5 @@
+import PrimaryButton from './PrimaryButton'
+
 interface SaveCancelButtonsProps {
   onCancel: () => void
   submitLabel?: string
@@ -13,13 +15,9 @@ export default function SaveCancelButtons({
 }: SaveCancelButtonsProps) {
   return (
     <div className="flex gap-3 mt-6">
-      <button
-        type="submit"
-        disabled={loading}
-        className="flex-1 inline-flex items-center justify-center gap-2 bg-accentWarm text-white py-2.5 text-[14px] font-medium rounded shadow-sm hover:bg-accentWarm/90 active:scale-[0.98] transition-all disabled:opacity-50"
-      >
-        {loading ? '保存中...' : submitLabel}
-      </button>
+      <PrimaryButton type="submit" loading={loading} className="flex-1">
+        {submitLabel}
+      </PrimaryButton>
       <button
         type="button"
         onClick={onCancel}

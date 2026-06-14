@@ -6,6 +6,7 @@ import AdminHeader from './components/AdminHeader'
 import Modal from './components/Modal'
 import FormField from './components/FormField'
 import SaveCancelButtons from './components/SaveCancelButtons'
+import PrimaryButton from './components/PrimaryButton'
 
 export default function AdminEquipmentManager() {
   const [categories, setCategories] = useState<any[]>([])
@@ -88,9 +89,7 @@ export default function AdminEquipmentManager() {
         <AdminHeader
           title="终端装备管理"
           action={(
-            <button onClick={() => { setEditingCategory(null); setShowCatForm(true) }} className="flex items-center gap-2 bg-white text-primary px-4 py-2 text-[13px] font-medium hover:bg-bg">
-              <Plus size={16} /> 新增品类
-            </button>
+            <PrimaryButton onClick={() => { setEditingCategory(null); setShowCatForm(true) }} icon={<Plus size={16} />}>新增品类</PrimaryButton>
           )}
         />
         {message && <p className="text-success text-[13px] mb-4">{message}</p>}
@@ -118,7 +117,7 @@ export default function AdminEquipmentManager() {
           <div>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-h4 text-white">{categories.find((c) => c.id === selectedCategory)?.name} - 产品管理</h2>
-              <button onClick={() => { setEditingProduct(null); setShowProdForm(true) }} className="flex items-center gap-2 bg-white text-primary px-4 py-2 text-[13px] font-medium hover:bg-bg"><Plus size={16} /> 新增产品</button>
+              <PrimaryButton onClick={() => { setEditingProduct(null); setShowProdForm(true) }} icon={<Plus size={16} />}>新增产品</PrimaryButton>
             </div>
             <div className="bg-dark">
               <table className="w-full text-left text-[13px]">

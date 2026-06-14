@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Home, Layers, Shirt, MapPin, Award } from 'lucide-react'
+import { ArrowLeft, Home, Layers, Shirt, MapPin, Award, Plus, Upload } from 'lucide-react'
 import api, { getHomeConfig, getFabricSeries, uploadFile } from '@/api/client'
 import Dashboard from './Dashboard'
 import SaveButton from './components/SaveButton'
+import PrimaryButton from './components/PrimaryButton'
 import ImageCropper from './ImageCropper'
 
 const TABS = [
@@ -239,13 +240,7 @@ export default function AdminHomeEditor() {
             {cropBlob && (
               <div className="flex items-center gap-3 mt-3">
                 <span className="text-[13px] text-accentWarm">已生成裁切预览</span>
-                <button
-                  type="button"
-                  onClick={handleCropUpload}
-                  className="px-4 py-2 text-[13px] bg-accentWarm text-white hover:bg-accentWarm/90 transition-colors"
-                >
-                  上传并应用
-                </button>
+                <PrimaryButton type="button" onClick={handleCropUpload} icon={<Upload size={16} />}>上传并应用</PrimaryButton>
                 <button
                   type="button"
                   onClick={() => { setCropBlob(null); setCropPreview(null) }}
@@ -269,12 +264,7 @@ export default function AdminHomeEditor() {
       <div>
         <div className="flex items-center justify-between mb-4">
           <label className="text-[12px] text-secondary uppercase">底部图标特性</label>
-          <button
-            onClick={() => addArrayItem('hero_features', { icon: 'Circle', title: '', subtitle: '' })}
-            className="text-[12px] text-accentWarm hover:text-white"
-          >
-            + 新增
-          </button>
+          <PrimaryButton onClick={() => addArrayItem('hero_features', { icon: 'Circle', title: '', subtitle: '' })} size="sm" icon={<Plus size={14} />}>新增</PrimaryButton>
         </div>
         <div className="space-y-3">
           {ensureArray(form.hero_features).map((item: any, idx: number) => (
@@ -325,20 +315,7 @@ export default function AdminHomeEditor() {
       <div>
         <div className="flex items-center justify-between mb-4">
           <label className="text-[12px] text-secondary uppercase">平台卡片</label>
-          <button
-            onClick={() =>
-              addArrayItem('platform_cards', {
-                icon: 'Circle',
-                title: '',
-                subtitle: '',
-                description: '',
-                footer: '',
-              })
-            }
-            className="text-[12px] text-accentWarm hover:text-white"
-          >
-            + 新增卡片
-          </button>
+          <PrimaryButton onClick={() => addArrayItem('platform_cards', { icon: 'Circle', title: '', subtitle: '', description: '', footer: '' })} size="sm" icon={<Plus size={14} />}>新增卡片</PrimaryButton>
         </div>
         <div className="space-y-4">
           {ensureArray(form.platform_cards).map((item: any, idx: number) => (
@@ -435,12 +412,7 @@ export default function AdminHomeEditor() {
       <div>
         <div className="flex items-center justify-between mb-4">
           <label className="text-[12px] text-secondary uppercase">应用场景标签</label>
-          <button
-            onClick={() => addArrayItem('scenarios', { icon: 'Circle', label: '', link: '' })}
-            className="text-[12px] text-accentWarm hover:text-white"
-          >
-            + 新增
-          </button>
+          <PrimaryButton onClick={() => addArrayItem('scenarios', { icon: 'Circle', label: '', link: '' })} size="sm" icon={<Plus size={14} />}>新增</PrimaryButton>
         </div>
         <div className="space-y-3">
           {ensureArray(form.scenarios).map((item: any, idx: number) => (
@@ -491,12 +463,7 @@ export default function AdminHomeEditor() {
       <div>
         <div className="flex items-center justify-between mb-4">
           <label className="text-[12px] text-secondary uppercase">验证条目</label>
-          <button
-            onClick={() => addArrayItem('verifications', { icon: 'Circle', title: '', subtitle: '' })}
-            className="text-[12px] text-accentWarm hover:text-white"
-          >
-            + 新增
-          </button>
+          <PrimaryButton onClick={() => addArrayItem('verifications', { icon: 'Circle', title: '', subtitle: '' })} size="sm" icon={<Plus size={14} />}>新增</PrimaryButton>
         </div>
         <div className="space-y-3">
           {ensureArray(form.verifications).map((item: any, idx: number) => (
@@ -566,7 +533,7 @@ export default function AdminHomeEditor() {
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
                 className={`flex items-center gap-2 px-4 py-3 text-[13px] whitespace-nowrap transition-colors ${
-                  activeTab === tab.key ? 'text-white bg-white/10' : 'text-accent hover:text-white hover:bg-white/5'
+                  activeTab === tab.key ? 'text-white bg-accentWarm' : 'text-accent hover:text-white hover:bg-white/5'
                 }`}
               >
                 <Icon size={15} />

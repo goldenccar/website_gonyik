@@ -5,6 +5,7 @@ import Dashboard from './Dashboard'
 import AdminHeader from './components/AdminHeader'
 import Modal from './components/Modal'
 import SaveCancelButtons from './components/SaveCancelButtons'
+import PrimaryButton from './components/PrimaryButton'
 
 interface Scene {
   id: number
@@ -82,13 +83,7 @@ export default function AdminSceneManager() {
         <AdminHeader
           title="场景管理"
           action={(
-            <button
-              onClick={() => { setEditing(null); setShowForm(true) }}
-              className="flex items-center gap-2 bg-white text-primary px-4 py-2 text-[13px] font-medium hover:bg-bg"
-            >
-              <Plus size={16} />
-              新增场景
-            </button>
+            <PrimaryButton onClick={() => { setEditing(null); setShowForm(true) }} icon={<Plus size={16} />}>新增场景</PrimaryButton>
           )}
         />
 

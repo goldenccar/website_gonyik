@@ -6,6 +6,7 @@ import AdminHeader from './components/AdminHeader'
 import Modal from './components/Modal'
 import FormField from './components/FormField'
 import SaveCancelButtons from './components/SaveCancelButtons'
+import PrimaryButton from './components/PrimaryButton'
 
 export default function AdminFabricManager() {
   const [series, setSeries] = useState<any[]>([])
@@ -105,13 +106,7 @@ export default function AdminFabricManager() {
   }
 
   const seriesAction = (
-    <button
-      onClick={() => { setEditingSeries(null); setShowSeriesForm(true) }}
-      className="flex items-center gap-2 bg-white text-primary px-4 py-2 text-[13px] font-medium hover:bg-bg"
-    >
-      <Plus size={16} />
-      新增系列
-    </button>
+    <PrimaryButton onClick={() => { setEditingSeries(null); setShowSeriesForm(true) }} icon={<Plus size={16} />}>新增系列</PrimaryButton>
   )
 
   return (
@@ -182,13 +177,7 @@ export default function AdminFabricManager() {
               <h2 className="text-h4 text-white">
                 {series.find((s) => s.id === selectedSeries)?.name} - SKU 管理
               </h2>
-              <button
-                onClick={() => { setEditingSku(null); setShowSkuForm(true) }}
-                className="flex items-center gap-2 bg-white text-primary px-4 py-2 text-[13px] font-medium hover:bg-bg"
-              >
-                <Plus size={16} />
-                新增 SKU
-              </button>
+              <PrimaryButton onClick={() => { setEditingSku(null); setShowSkuForm(true) }} icon={<Plus size={16} />}>新增 SKU</PrimaryButton>
             </div>
             <div className="bg-dark">
               <table className="w-full text-left text-[13px]">

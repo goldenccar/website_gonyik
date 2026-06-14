@@ -6,6 +6,7 @@ import AdminHeader from './components/AdminHeader'
 import Modal from './components/Modal'
 import FormField from './components/FormField'
 import SaveCancelButtons from './components/SaveCancelButtons'
+import PrimaryButton from './components/PrimaryButton'
 
 export default function AdminReportManager() {
   const [reports, setReports] = useState<any[]>([])
@@ -53,9 +54,7 @@ export default function AdminReportManager() {
         <AdminHeader
           title="测试报告管理"
           action={(
-            <button onClick={() => { setEditing(null); setShowForm(true) }} className="flex items-center gap-2 bg-white text-primary px-4 py-2 text-[13px] font-medium hover:bg-bg">
-              <Plus size={16} /> 上传报告
-            </button>
+            <PrimaryButton onClick={() => { setEditing(null); setShowForm(true) }} icon={<Plus size={16} />}>上传报告</PrimaryButton>
           )}
         />
         {message && <p className="text-success text-[13px] mb-4">{message}</p>}

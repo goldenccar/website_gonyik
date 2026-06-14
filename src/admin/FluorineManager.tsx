@@ -4,6 +4,7 @@ import { ArrowLeft, Upload, X, Image } from 'lucide-react'
 import api, { getFluorineSections, getFluorineValueChain, uploadFile } from '@/api/client'
 import Dashboard from './Dashboard'
 import SaveButton from './components/SaveButton'
+import PrimaryButton from './components/PrimaryButton'
 
 interface ValueChainColumn {
   tag: string
@@ -175,10 +176,10 @@ export default function AdminFluorineManager() {
                       <button
                         key={opt.value}
                         onClick={() => setSections((prev) => prev.map((s) => s.id === section.id ? { ...s, image_fit: opt.value } : s))}
-                        className={`text-[11px] px-2.5 py-1 transition-colors ${
+                        className={`text-[11px] px-2.5 py-1 border transition-colors ${
                           section.image_fit === opt.value
-                            ? 'bg-white text-primary'
-                            : 'bg-white/10 text-accent hover:text-white'
+                            ? 'bg-accentWarm text-white border-accentWarm'
+                            : 'bg-white/5 text-accent border-white/10 hover:border-white/30 hover:text-white'
                         }`}
                       >
                         {opt.label}
@@ -231,13 +232,7 @@ export default function AdminFluorineManager() {
                       placeholder="或手动输入图片 URL"
                     />
                     {!section.image_url && (
-                      <button
-                        onClick={() => document.getElementById(`file-${section.id}`)?.click()}
-                        className="flex items-center gap-1.5 bg-white/10 text-white px-3 py-2 text-[12px] hover:bg-white/20 transition-colors"
-                      >
-                        <Upload size={14} />
-                        上传
-                      </button>
+                      <PrimaryButton onClick={() => document.getElementById(`file-${section.id}`)?.click()} size="sm" icon={<Upload size={14} />}>上传</PrimaryButton>
                     )}
                   </div>
                 </div>
