@@ -7,6 +7,11 @@ import PrimaryButton from './components/PrimaryButton'
 interface ImageCropperProps {
   src: string
   aspect?: number
+  previewMode?: 'hero' | 'section'
+  previewTitle?: string
+  previewSubtitle?: string
+  previewIndex?: number
+  imageFit?: 'cover' | 'contain' | 'original' | string
   onComplete: (blob: Blob, previewUrl: string) => void
   onCancel: () => void
 }
@@ -21,7 +26,17 @@ function getCroppedBlob(image: HTMLImageElement, area: Area, mimeType: string): 
   return new Promise((resolve) => canvas.toBlob(resolve, mimeType, 0.95))
 }
 
-export default function ImageCropper({ src, aspect = 16 / 9, onComplete, onCancel }: ImageCropperProps) {
+export default function ImageCropper({
+  src,
+  aspect = 16 / 9,
+  previewMode = 'hero',
+  previewTitle,
+  previewSubtitle,
+  previewIndex = 0,
+  imageFit = 'cover',
+  onComplete,
+  onCancel,
+}: ImageCropperProps) {
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0 })
   const [zoom, setZoom] = useState(1)
   const [area, setArea] = useState<Area | null>(null)
@@ -108,13 +123,41 @@ export default function ImageCropper({ src, aspect = 16 / 9, onComplete, onCance
               原图 {imgSize.width} × {imgSize.height}px
             </p>
           </div>
-          <div className="relative aspect-video overflow-hidden rounded border border-white/10 bg-darker">
-            <canvas ref={previewRef} className="absolute inset-0 w-full h-full object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-r from-black via-black/90 via-[40%] to-transparent to-[100%]" />
-            <div className="relative z-10 h-full flex flex-col justify-center px-5">
-              <p className="text-[10px] text-accentWarm uppercase tracking-wider mb-1">TAG</p>
-              <h3 className="text-[22px] font-bold text-white leading-tight">主标题</h3>
-            </div>
+          <div className={`relative overflow-hidden rounded border border-white/10 bg-darker ${previewMode === 'section' ? 'min-h-[280px]' : 'aspect-video'}`}>
+            {previewMode === 'section' ? (
+              <div className="relative h-full flex flex-col lg:flex-row gap-5 p-5">
+                <div className="flex-1 min-w-0">
+                  <p className="text-[10px] text-accent uppercase tracking-wider mb-1">
+                    {String(previewIndex + 1).padStart(2, '0')}
+                  </p>
+                  <h3 className="text-[18px] font-bold text-white leading-tight mb-2 line-clamp-2">
+                    {previewTitle || '标题'}
+                  </h3>
+                  <p className="text-[12px] text-accent line-clamp-3">{previewSubtitle || '摘要'}</p>
+                </div>
+                <div className={`lg:w-[42%] shrink-0 ${imageFit === 'original' ? '' : 'aspect-[4/5]'} bg-darker overflow-hidden`}>
+                  <canvas
+                    ref={previewRef}
+                    className={`w-full transition-opacity duration-500 ${
+                      imageFit === 'original'
+                        ? 'h-auto max-h-[280px] object-contain mx-auto'
+                        : imageFit === 'contain'
+                        ? 'h-full object-contain'
+                        : 'h-full object-cover'
+                    }`}
+                  />
+                </div>
+              </div>
+            ) : (
+              <>
+                <canvas ref={previewRef} className="absolute inset-0 w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-r from-black via-black/90 via-[40%] to-transparent to-[100%]" />
+                <div className="relative z-10 h-full flex flex-col justify-center px-5">
+                  <p className="text-[10px] text-accentWarm uppercase tracking-wider mb-1">TAG</p>
+                  <h3 className="text-[22px] font-bold text-white leading-tight">主标题</h3>
+                </div>
+              </>
+            )}
           </div>
           <p className="text-[12px] text-muted mt-2">
             提示：拖动图片调整位置，滚动或拖动选区边缘调整大小，右侧会实时显示裁切后的效果。

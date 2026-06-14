@@ -148,7 +148,7 @@ export default function AdminFluorineManager() {
 
         {/* Sections */}
         <div className="space-y-6 mb-10">
-          {sections.map((section) => (
+          {sections.map((section, idx) => (
             <div key={section.id} className="bg-dark p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-white font-bold">{section.title}</h3>
@@ -204,6 +204,11 @@ export default function AdminFluorineManager() {
                     <ImageCropper
                       src={cropTarget.src}
                       aspect={16 / 9}
+                      previewMode="section"
+                      previewTitle={section.title}
+                      previewSubtitle={section.subtitle}
+                      previewIndex={idx}
+                      imageFit={section.image_fit}
                       onComplete={(blob) => applyCrop(section.id, blob)}
                       onCancel={cancelCrop}
                     />
