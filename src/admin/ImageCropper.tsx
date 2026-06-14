@@ -5,6 +5,7 @@ import ReactCrop, {
   type PercentCrop,
   centerCrop,
   makeAspectCrop,
+  convertToPixelCrop,
 } from 'react-image-crop'
 import 'react-image-crop/dist/ReactCrop.css'
 import PrimaryButton from './components/PrimaryButton'
@@ -120,9 +121,15 @@ export default function ImageCropper({
   )
 
   const handleCropComplete = useCallback(
-    (pixelCrop: PixelCrop, _percentCrop: PercentCrop) => {
-      setCompletedCrop(pixelCrop)
-      drawPreview(pixelCrop)
+    (_pixelCrop: PixelCrop, percentCrop: PercentCrop) => {
+      if (!imgRef.current) return
+      const naturalCrop = convertToPixelCrop(
+        percentCrop,
+        imgRef.current.naturalWidth,
+        imgRef.current.naturalHeight
+      )
+      setCompletedCrop(naturalCrop)
+      drawPreview(naturalCrop)
     },
     [drawPreview]
   )
