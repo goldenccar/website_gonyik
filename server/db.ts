@@ -134,6 +134,13 @@ function createDefaultDb(): Database {
     ],
     footer_config: {
       id: 1,
+      brand_tag: 'GONYIK',
+      brand_title: '港翼科技',
+      brand_description: '专注无氟高性能面料与专业防护材料，围绕膜技术、面料复合、功能整理与测试验证，为日常户外及特种专业场景提供材料解决方案。',
+      material_title: '材料与应用',
+      support_title: '服务与支持',
+      contact_title: '联系',
+      contact_subtitle: '材料与合作咨询',
       copyright: '© 2026 港翼科技 GONYIK 版权所有',
       privacy_policy_link: '/privacy-policy',
       icp_number: '粤ICP备2026056006号-1',
@@ -586,6 +593,21 @@ export function initDatabase() {
     if (db.footer_config && !db.footer_config.police_number) {
       db.footer_config.police_number = '粤公网安备44011502001610号'
       db.footer_config.police_link = 'https://beian.mps.gov.cn/#/query/webSearch?code=44011502001610'
+      saveDb()
+    }
+    if (db.footer_config) {
+      const footerDefaults = {
+        brand_tag: 'GONYIK',
+        brand_title: '港翼科技',
+        brand_description: '专注无氟高性能面料与专业防护材料，围绕膜技术、面料复合、功能整理与测试验证，为日常户外及特种专业场景提供材料解决方案。',
+        material_title: '材料与应用',
+        support_title: '服务与支持',
+        contact_title: '联系',
+        contact_subtitle: '材料与合作咨询',
+      }
+      for (const [key, value] of Object.entries(footerDefaults)) {
+        if (db.footer_config[key] === undefined) db.footer_config[key] = value
+      }
       saveDb()
     }
     // Backward compatibility: ensure image_fit exists on equipment_categories

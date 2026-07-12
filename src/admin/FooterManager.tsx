@@ -115,7 +115,19 @@ export default function AdminFooterManager() {
 
         {/* Footer 信息 */}
         <div className="mb-10">
-          <h2 className="text-[14px] text-white font-medium mb-6 pb-2 border-b border-borderDark">底部信息</h2>
+          <h2 className="text-[14px] text-white font-medium mb-6 pb-2 border-b border-borderDark">底栏内容</h2>
+          {field('品牌小标题', 'brand_tag')}
+          {field('品牌标题', 'brand_title')}
+          {field('品牌说明', 'brand_description', true)}
+          <div className="grid grid-cols-2 gap-x-6">
+            {field('材料栏目标题', 'material_title')}
+            {field('支持栏目标题', 'support_title')}
+            {field('联系栏目标题', 'contact_title')}
+            {field('联系栏目说明', 'contact_subtitle')}
+          </div>
+          <p className="-mt-2 mb-8 text-[12px] text-secondary">栏目链接复用“顶栏管理”的名称、地址和顺序；联系邮箱复用“联系我们”配置。</p>
+
+          <h2 className="text-[14px] text-white font-medium mb-6 pb-2 border-b border-borderDark">法律与备案信息</h2>
           {field('版权文字', 'copyright')}
           {field('ICP 备案号', 'icp_number')}
           {field('ICP 链接', 'icp_link')}

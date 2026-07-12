@@ -58,6 +58,13 @@ export interface NavItem {
 
 export interface FooterConfig {
   id: number
+  brand_tag: string
+  brand_title: string
+  brand_description: string
+  material_title: string
+  support_title: string
+  contact_title: string
+  contact_subtitle: string
   copyright: string
   privacy_policy_link: string
   icp_number: string
