@@ -12,7 +12,7 @@ router.get('/categories', (_req, res) => {
 router.get('/categories/:slug/products', (req, res) => {
   const cat = db.equipment_categories.find((c) => c.slug === req.params.slug)
   if (!cat) { res.status(404).json({ error: 'Category not found' }); return }
-  const products = db.equipment_products.filter((p) => p.category_id === cat.id).sort(sortByOrderIndex)
+  const products = db.equipment_products.filter((p) => p.category_id === cat.id && p.visibility !== 'hidden' && p.status !== 'archived').sort(sortByOrderIndex)
   res.json({ data: { ...cat, products } })
 })
 
@@ -69,7 +69,7 @@ router.get('/admin/products', authMiddleware, (req, res) => {
 })
 
 router.post('/admin/products', authMiddleware, upload.single('image'), (req: AuthRequest, res) => {
-  const { category_id, name, features } = req.body
+  const { category_id, name, features, card_summary, visibility, status } = req.body
   const image = req.file ? uploadUrl(req.file) : null
   const newProd = {
     id: getNextId(db.equipment_products),
@@ -77,6 +77,9 @@ router.post('/admin/products', authMiddleware, upload.single('image'), (req: Aut
     name,
     image,
     features,
+    card_summary: card_summary || '',
+    visibility: visibility || 'public',
+    status: status || 'active',
     order_index: nextOrderIndex(db.equipment_products),
   }
   db.equipment_products.push(newProd)
@@ -84,17 +87,28 @@ router.post('/admin/products', authMiddleware, upload.single('image'), (req: Aut
   res.json({ success: true, id: newProd.id })
 })
 
+router.put('/admin/product-order', authMiddleware, (req: AuthRequest, res) => {
+  const ids = Array.isArray(req.body.ordered_ids) ? req.body.ordered_ids.map(Number) : []
+  ids.forEach((id: number, order_index: number) => updateById(db.equipment_products, id, { order_index }))
+  saveDb()
+  res.json({ success: true })
+})
+
 router.put('/admin/products/:id', authMiddleware, upload.single('image'), (req: AuthRequest, res) => {
   const id = Number(req.params.id)
   const existing = db.equipment_products.find((p) => p.id === id)
   if (!existing) { res.status(404).json({ error: 'Not found' }); return }
-  const { category_id, name, features } = req.body
+  const { category_id, name, features, card_summary, visibility, status, order_index } = req.body
   const image = req.file ? uploadUrl(req.file) : (req.body.image || existing.image)
   updateById(db.equipment_products, id, {
     category_id: category_id ? Number(category_id) : existing.category_id,
     name: name ?? existing.name,
     image,
     features: features ?? existing.features,
+    card_summary: card_summary ?? existing.card_summary,
+    visibility: visibility ?? existing.visibility,
+    status: status ?? existing.status,
+    order_index: order_index === undefined ? existing.order_index : Number(order_index),
   })
   saveDb()
   res.json({ success: true })

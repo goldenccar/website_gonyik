@@ -34,7 +34,7 @@ export default {
         'h3': ['28px', { lineHeight: '1.3', fontWeight: '700' }],
         'h4': ['22px', { lineHeight: '1.4', fontWeight: '700' }],
         'h5': ['18px', { lineHeight: '1.4', fontWeight: '700' }],
-        'body': ['15px', { lineHeight: '1.8' }],
+        'body': ['16px', { lineHeight: '1.5' }],
         'label': ['11px', { lineHeight: '1.4', letterSpacing: '2px', fontWeight: '500' }],
       },
       spacing: {

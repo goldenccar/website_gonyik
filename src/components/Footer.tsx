@@ -55,7 +55,7 @@ export default function Footer() {
 
   return (
     <>
-      <footer className="relative flex items-center bg-darker border-t border-white/[0.08] px-6 lg:px-12 py-3 md:py-2">
+      <footer className="relative flex items-center bg-darker border-t border-white/[0.08] px-6 py-3 md:py-2">
         <div className="max-w-[1440px] mx-auto w-full flex flex-col md:flex-row justify-between items-center gap-2">
           {/* Left */}
           <div className="md:h-[16px] flex items-center gap-2 flex-wrap justify-center md:justify-start text-[12px] text-muted leading-none">
@@ -71,7 +71,7 @@ export default function Footer() {
               rel="noopener noreferrer"
               className="hover:text-accent transition-colors"
             >
-              {footer?.icp_number || 'ICP备案号（占位）'}
+              {footer?.icp_number || '粤ICP备2026056006号-1'}
             </a>
             {footer?.police_number && (
               <>
@@ -150,11 +150,11 @@ export default function Footer() {
               >
                 <DouyinIcon className="w-[16px] h-[16px]" />
               </button>
-              <div className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 transition-all duration-200 ${activeSocial === 'douyin' ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
+              <div className={`absolute bottom-full right-0 mb-2 transition-all duration-200 ${activeSocial === 'douyin' ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
                 <div className="bg-dark rounded-lg px-3 py-2 whitespace-nowrap">
                   <p className="text-[12px] text-white">{douyin?.account || '@港翼科技GONYIK'}</p>
                 </div>
-                <div className="w-2 h-2 bg-dark rotate-45 absolute left-1/2 -translate-x-1/2 -bottom-1" />
+                <div className="absolute -bottom-1 right-1 h-2 w-2 rotate-45 bg-dark" />
               </div>
             </div>
           </div>

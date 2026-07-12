@@ -1,313 +1,89 @@
-import { lazy, Suspense, useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Link, useSearchParams } from 'react-router-dom'
-import {
-  ArrowRight, FileText, X, Shield, Sun, Droplets, Footprints
-} from 'lucide-react'
-import SceneSelector from '@/components/SceneSelector'
+import { useEffect, useRef, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
+import { getFabricSeries, getFabricSeriesDetail, getPageConfig } from '@/api/client'
+import HorizontalRail from '@/components/HorizontalRail'
+import PageHero from '@/components/PageHero'
+import { PageSection, PageShell } from '@/components/PageLayout'
 import SkuCard from '@/components/SkuCard'
-import { getPageConfig, getFabricSeries, getFabricSeriesDetail, getTestReports, getFabricScenes } from '@/api/client'
-const FileViewer = lazy(() => import('@/components/FileViewer'))
-import type { FabricSeries, FabricSku, FabricScene, PageConfig, TestReport } from '@/types'
+import type { FabricSeries, FabricSku, PageConfig } from '@/types'
 
-const SERIES_META: Record<string, { accent: string; icon: any; tagline: string }> = {
-  otter: { accent: '#1B2A44', icon: Droplets, tagline: '新一代无氟防护 · 高性能复合' },
-  kais: { accent: '#8B3A3A', icon: Shield, tagline: '专业防护平台 · 防刺/防火/防化' },
-  rayo: { accent: '#C48A4D', icon: Sun, tagline: '原生防晒 · 导湿凉感' },
-  tread: { accent: '#666666', icon: Footprints, tagline: '鞋材级 · 耐磨抗撕裂' },
+function parseSpecs(value: string) {
+  try { return JSON.parse(value) as Record<string, string> } catch { return {} }
 }
 
-const DEFAULT_SCENES: FabricScene[] = [
-  { id: 1, category: '都市生活', label: '日常通勤', series_slug: 'rayo', order_index: 0 },
-  { id: 2, category: '都市生活', label: '商务差旅', series_slug: 'otter', order_index: 1 },
-  { id: 3, category: '都市生活', label: '城市轻户外', series_slug: 'rayo', order_index: 2 },
-  { id: 4, category: '轻户外', label: '徒步旅行', series_slug: 'otter', order_index: 3 },
-  { id: 5, category: '轻户外', label: '露营休闲', series_slug: 'otter', order_index: 4 },
-  { id: 6, category: '轻户外', label: '城市骑行', series_slug: 'rayo', order_index: 5 },
-  { id: 7, category: '专业运动', label: '滑雪登山', series_slug: 'otter', order_index: 6 },
-  { id: 8, category: '专业运动', label: '水域活动', series_slug: 'otter', order_index: 7 },
-  { id: 9, category: '专业运动', label: '越野跑步', series_slug: 'rayo', order_index: 8 },
-  { id: 10, category: '特种防护', label: '战术防护', series_slug: 'kais', order_index: 9 },
-  { id: 11, category: '特种防护', label: '阻燃工装', series_slug: 'kais', order_index: 10 },
-  { id: 12, category: '特种防护', label: '工业安全', series_slug: 'kais', order_index: 11 },
-  { id: 13, category: '特种防护', label: '鞋材应用', series_slug: 'tread', order_index: 12 },
-].filter((s) => s.series_slug !== 'tread' && !s.series_slug.startsWith('tread'))
-
 export default function FabricDatabase() {
-  const [searchParams, setSearchParams] = useSearchParams()
-  const [pageConfig, setPageConfig] = useState<PageConfig | null>(null)
-  const [seriesList, setSeriesList] = useState<FabricSeries[]>([])
-  const [selectedSeries, setSelectedSeries] = useState<string | null>(null)
-  const [seriesDetail, setSeriesDetail] = useState<(FabricSeries & { skus: FabricSku[] }) | null>(null)
-  const [reports, setReports] = useState<TestReport[]>([])
-  const [scenes, setScenes] = useState<FabricScene[]>([])
-  const [viewerOpen, setViewerOpen] = useState(false)
-  const [viewerData, setViewerData] = useState<{ url: string; type: string; title: string } | null>(null)
-
+  const [params] = useSearchParams()
+  const [page, setPage] = useState<PageConfig | null>(null)
+  const [series, setSeries] = useState<FabricSeries[]>([])
+  const [active, setActive] = useState(params.get('series') || 'otter')
+  const [detail, setDetail] = useState<(FabricSeries & { skus: FabricSku[] }) | null>(null)
+  const [selectedSku, setSelectedSku] = useState<FabricSku | null>(null)
+  const skuDetailRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
-    getPageConfig('fabrics').then((res) => setPageConfig(res.data.data))
-    getFabricSeries().then((res) => setSeriesList(res.data.data || []))
-    getTestReports().then((res) => setReports(res.data.data || []))
-    getFabricScenes().then((res) => setScenes(res.data.data || []))
+    Promise.all([getPageConfig('fabrics'), getFabricSeries()]).then(([config, list]) => {
+      setPage(config.data.data)
+      setSeries(list.data.data || [])
+    })
   }, [])
 
-  // Auto-expand series from query param
   useEffect(() => {
-    const slug = searchParams.get('series')
-    if (!slug || seriesList.length === 0) return
-    // Remove query param after handling to keep URL clean
-    setSearchParams({}, { replace: true })
-    activateSeries(slug)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [seriesList])
+    setSelectedSku(null)
+    getFabricSeriesDetail(active).then((res) => setDetail(res.data.data))
+  }, [active])
 
-  const activateSeries = (slug: string) => {
-    setSelectedSeries(slug)
-    getFabricSeriesDetail(slug).then((res) => {
-      setSeriesDetail(res.data.data)
-      scrollToSeriesSection()
-    })
-  }
-
-  useEffect(() => {
-    if (selectedSeries) {
-      getFabricSeriesDetail(selectedSeries).then((res) => {
-        setSeriesDetail(res.data.data)
-      })
-    } else {
-      setSeriesDetail(null)
+  const activeSeries = series.find((item) => item.slug === active)
+  const isSpecial = active === 'kais'
+  const openSku = (sku: FabricSku) => {
+    if (selectedSku?.id === sku.id) {
+      setSelectedSku(null)
+      return
     }
-  }, [selectedSeries])
-
-  const openViewer = (report: TestReport) => {
-    setViewerData({ url: report.file_url, type: report.file_type, title: report.title })
-    setViewerOpen(true)
-  }
-
-  const handleSceneClick = (series: string) => {
-    activateSeries(series)
-  }
-
-  const seriesCardRef = (slug: string) => {
-    return selectedSeries === slug
-  }
-
-  const scrollToSeriesSection = () => {
-    setTimeout(() => {
-      const el = document.getElementById('series-section')
-      if (el) {
-        const top = el.getBoundingClientRect().top + window.scrollY - 60
-        window.scrollTo({ top, behavior: 'smooth' })
-      }
-    }, 150)
+    setSelectedSku(sku)
+    window.setTimeout(() => skuDetailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50)
   }
 
   return (
-    <div>
-      {/* Hero + Scene Selector — side by side */}
-      <section className="bg-darker px-6 lg:px-12 pt-[60px] pb-16">
-        <div className="max-w-[1440px] mx-auto w-full flex flex-col lg:flex-row lg:items-start lg:justify-between gap-10 lg:gap-16">
-          {/* Left: Hero text */}
-          <div className="py-8 shrink-0">
-            <p className="text-label text-accent uppercase mb-4">{pageConfig?.page_tag || 'MATERIAL PLATFORMS'}</p>
-            <h1 className="text-h1 text-white mb-4">{pageConfig?.page_title || '高性能功能面料技术平台'}</h1>
-            <p className="text-body text-accent max-w-[600px]">
-              {pageConfig?.page_subtitle || '四大核心技术系列，从仿生防水到专业防护，覆盖户外、工装与运动全场景'}
-            </p>
-          </div>
-          {/* Right: Scene Selector */}
-          <SceneSelector
-            items={(scenes.length > 0 ? scenes : DEFAULT_SCENES).map((s) => ({
-              id: s.id,
-              category: s.category,
-              label: s.label,
-              value: s.series_slug,
-            }))}
-            activeValue={selectedSeries}
-            onSelect={handleSceneClick}
-          />
-        </div>
-      </section>
+    <PageShell>
+      <PageHero tag={page?.page_tag || 'FABRIC DATABASE'} title={page?.page_title || '按使用环境，找到合适的材料'} subtitle={page?.page_subtitle || '从日常与户外使用到特种专业场景，查看材料系列、具体型号与验证依据。'} image={page?.hero_background} imageAlt="复合面料与膜层结构微距" />
 
-      {/* Series Cards */}
-      <section id="series-section" className="bg-bg px-6 lg:px-12 py-16">
-        <div className="max-w-[1440px] mx-auto">
-          <h2 className="text-h4 text-primary mb-8">面料系列</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {seriesList.map((series, idx) => {
-              const meta = SERIES_META[series.slug] || SERIES_META['otter']
-              const Icon = meta.icon
-              const isActive = seriesCardRef(series.slug)
-              return (
-                <motion.div
-                  key={series.id}
-                  initial={{ opacity: 0, y: 24 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: idx * 0.1 }}
-                  className={`bg-white cursor-pointer transition-all duration-300 hover:scale-[1.01] group relative overflow-hidden flex flex-col ${
-                    isActive ? 'ring-1 ring-primary shadow-lg' : ''
-                  }`}
-                  style={{ borderLeft: `3px solid ${meta.accent}` }}
-                  onClick={() => {
-                    const next = selectedSeries === series.slug ? null : series.slug
-                    setSelectedSeries(next)
-                    if (next) {
-                      getFabricSeriesDetail(next).then((res) => {
-                        setSeriesDetail(res.data.data)
-                        scrollToSeriesSection()
-                      })
-                    } else {
-                      setSeriesDetail(null)
-                    }
-                  }}
-                >
-                  <div className="p-8 flex flex-col flex-1">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-3">
-                        <Icon size={20} style={{ color: meta.accent }} />
-                        <h3 className="text-h4 text-primary">{series.name}</h3>
-                      </div>
-                      {series.cover_image && (
-                        <img src={series.cover_image} alt={series.name} className="h-8 w-auto object-contain" />
-                      )}
-                    </div>
-                    <p className="text-[13px] text-muted leading-relaxed flex-1">{series.description}</p>
-                    <div className="flex items-center justify-between mt-auto pt-4">
-                      <span className="text-label text-secondary">{series.tagline || '查看详情'}</span>
-                      <ArrowRight size={16} className="text-primary group-hover:translate-x-1 transition-transform" />
-                    </div>
-                  </div>
-                </motion.div>
-              )
+      <PageSection tone="white" className="!py-8">
+        <nav aria-label="面料系列" className="flex flex-wrap items-center gap-x-3 gap-y-4 text-[14px]">
+          <span className="mr-1 text-secondary">日常与户外使用</span>
+          {['otter', 'rayo'].map((slug) => <button key={slug} onClick={() => setActive(slug)} className={`px-3 py-2 uppercase ${active === slug ? 'bg-dark text-white' : 'border border-border text-primary'}`}>{slug}</button>)}
+          <span className="mx-2 text-border">|</span>
+          <span className="text-secondary">特种场景</span>
+          <button onClick={() => setActive('kais')} className={`px-3 py-2 uppercase ${active === 'kais' ? 'bg-dark text-white' : 'border border-border text-primary'}`}>kais</button>
+        </nav>
+      </PageSection>
+
+      <PageSection id="series-content">
+        <div className="mb-10 max-w-[760px]">
+          <p className="-ml-px text-label uppercase text-secondary">{activeSeries?.name || active}</p>
+          <h2 className="mt-3 text-[32px] font-bold leading-tight text-primary md:text-[40px]">{activeSeries?.tagline || (isSpecial ? '面向明确任务的专业防护' : '面向真实使用环境的功能材料')}</h2>
+          <p className="mt-4 text-body text-secondary">{activeSeries?.description}</p>
+        </div>
+
+        {detail?.skus?.length ? (
+          <HorizontalRail label={`${detail.name} 面料型号`}>
+            {detail.skus.map((sku) => {
+              return <SkuCard key={`${sku.series_id}-${sku.id}`} sku={sku} seriesName={detail.name} seriesTagline={sku.name || detail.tagline} expanded={selectedSku?.id === sku.id} onClick={() => openSku(sku)} />
             })}
-          </div>
+            {page?.rail_end_card_visible !== false && <article className="flex min-h-full snap-start items-end bg-white p-7"><div><p className="text-label text-secondary">IN DEVELOPMENT</p><h3 className="mt-3 text-h4 text-primary">{page?.rail_end_card_title || '新面料开发中'}</h3><p className="mt-3 text-body text-secondary">{page?.rail_end_card_description || '针对新的使用环境与性能目标持续开发。'}</p>{page?.rail_end_card_cta_label && <a href={page.rail_end_card_cta_href || '/contact'} className="mt-6 inline-block text-[14px] underline underline-offset-4">{page.rail_end_card_cta_label} →</a>}</div></article>}
+          </HorizontalRail>
+        ) : <p className="border-t border-border py-8 text-body text-secondary">该系列具体型号正在整理中。</p>}
 
-          {/* Scroll anchor for expanded detail */}
-          <div id="series-detail-anchor" />
-
-          {/* Series Detail / SKU Shelf */}
-          <AnimatePresence>
-            {seriesDetail && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                className="overflow-hidden mt-8"
-              >
-                <div className="bg-white p-6">
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-4">
-                      {seriesDetail.cover_image && (
-                        <img src={seriesDetail.cover_image} alt={seriesDetail.name} className="h-12 w-auto object-contain" />
-                      )}
-                      <div>
-                        <h3 className="text-h3 text-primary">{seriesDetail.name} 系列</h3>
-                        <p className="text-body text-muted mt-1">{seriesDetail.description}</p>
-                      </div>
-                    </div>
-                    <button onClick={() => setSelectedSeries(null)} className="p-2 hover:bg-bg transition-colors">
-                      <X size={20} />
-                    </button>
-                  </div>
-
-                  {(() => {
-                    const meta = SERIES_META[seriesDetail.slug] || SERIES_META['otter']
-                    return (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        {seriesDetail.skus?.map((sku) => (
-                          <SkuCard
-                            key={sku.id}
-                            sku={sku}
-                            seriesName={seriesDetail.name}
-                            seriesIcon={meta.icon}
-                            seriesAccent={meta.accent}
-                            seriesTagline={seriesDetail.tagline || meta.tagline}
-                          />
-                        ))}
-                      </div>
-                    )
-                  })()}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </section>
-
-      {/* Test Reports */}
-      <section className="bg-white px-6 lg:px-12 py-20">
-        <div className="max-w-[1440px] mx-auto">
-          <div className="mb-10">
-            <h2 className="text-h3 text-primary mb-2">性能测试与认证</h2>
-            <p className="text-body text-muted">我们的每一款面料均通过严格的国际标准测试</p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {reports.map((report, idx) => (
-              <motion.div
-                key={report.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: idx * 0.08 }}
-                className="cursor-pointer group"
-                onClick={() => openViewer(report)}
-              >
-                <div className="aspect-[3/4] bg-bg mb-4 relative overflow-hidden flex items-center justify-center group-hover:bg-[var(--gray-4)] transition-colors">
-                  {report.file_type === 'pdf' ? (
-                    <div className="flex flex-col items-center gap-3">
-                      <FileText size={48} className="text-muted" />
-                      <span className="text-[11px] uppercase tracking-wider text-secondary bg-white px-3 py-1">PDF</span>
-                    </div>
-                  ) : ['png', 'jpg', 'jpeg', 'webp'].includes(report.file_type) ? (
-                    <img src={report.file_url} alt={report.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  ) : report.file_type === 'svg' ? (
-                    <img src={report.file_url} alt={report.title} className="w-2/3 h-2/3 object-contain" />
-                  ) : (
-                    <FileText size={48} className="text-muted" />
-                  )}
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-                    <span className="opacity-0 group-hover:opacity-100 text-white text-sm font-medium bg-black/60 px-3 py-1.5 transition-opacity">点击预览</span>
-                  </div>
-                </div>
-                <h4 className="text-[16px] font-bold text-primary mb-1 group-hover:underline">{report.title}</h4>
-                <div className="flex items-center gap-2">
-                  <span className="text-[11px] uppercase tracking-wider bg-bg px-2 py-0.5 text-secondary">{report.file_type}</span>
-                  {report.category && (
-                    <span className="text-[11px] uppercase tracking-wider bg-bg px-2 py-0.5 text-secondary">{report.category}</span>
-                  )}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="bg-darker px-6 lg:px-12 py-20">
-        <div className="max-w-[800px] mx-auto text-center">
-          <h2 className="text-h3 text-white mb-3">找到适合你产品的面料方案？</h2>
-          <p className="text-body text-accent mb-8">申请免费面料小样，附带完整技术规格书</p>
-          <Link
-            to="/contact"
-            className="inline-block px-8 py-3.5 bg-white text-primary text-[14px] font-medium hover:bg-bg transition-all duration-250 hover:scale-[1.02] active:scale-[0.98]"
-          >
-            申请面料样品
-          </Link>
-        </div>
-      </section>
-
-      {/* File Viewer Modal */}
-      <AnimatePresence>
-        {viewerOpen && viewerData && (
-          <Suspense fallback={null}>
-            <FileViewer url={viewerData.url} fileType={viewerData.type} title={viewerData.title} onClose={() => setViewerOpen(false)} />
-          </Suspense>
+        {selectedSku && (
+          <section ref={skuDetailRef} className="mt-10 scroll-mt-[84px] border-t border-primary pt-9" aria-live="polite">
+            <p className="text-label uppercase text-secondary">{detail?.name} {selectedSku.sku_code.replace(/^GY-[A-Z]+-/, '')}</p>
+            <h3 className="mt-3 text-[30px] font-bold text-primary">经验证的性能</h3>
+            <div className="mt-8 grid gap-x-8 gap-y-6 md:grid-cols-3">
+              {Object.entries(parseSpecs(selectedSku.specifications)).slice(0, 3).map(([label, value]) => <div key={label} className="border-t border-border pt-4"><p className="text-[13px] font-medium text-secondary">{label}</p><p className="mt-2 text-[18px] font-medium text-primary">{value}</p></div>)}
+            </div>
+            <p className="mt-7 max-w-[720px] text-[13px] text-secondary">页面仅展示该型号已有的结构与性能资料；测试方法、适用条件和第三方验证以对应资料为准。</p>
+          </section>
         )}
-      </AnimatePresence>
-    </div>
+      </PageSection>
+    </PageShell>
   )
 }

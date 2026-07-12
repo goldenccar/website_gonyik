@@ -1,25 +1,10 @@
-export interface HomeFeature {
-  icon: string
-  title: string
-  subtitle: string
-}
-
 export interface HomePlatformCard {
-  icon: string
   title: string
   subtitle: string
-  description: string
-  footer: string
-}
-
-export interface HomeScenario {
-  icon: string
-  label: string
-  link: string
+  description?: string
 }
 
 export interface HomeVerification {
-  icon: string
   title: string
   subtitle: string
 }
@@ -34,7 +19,6 @@ export interface HomeConfig {
   primary_btn_link: string
   secondary_btn_text: string
   secondary_btn_link: string
-  hero_features: HomeFeature[]
   platform_section_title: string
   platform_section_subtitle: string
   platform_section_link_text: string
@@ -44,8 +28,6 @@ export interface HomeConfig {
   series_section_subtitle: string
   series_section_link_text: string
   series_section_link: string
-  scenarios_section_title: string
-  scenarios: HomeScenario[]
   verification_section_title: string
   verification_section_subtitle: string
   verification_section_link_text: string
@@ -60,6 +42,11 @@ export interface PageConfig {
   page_title: string
   page_subtitle: string
   hero_background: string | null
+  rail_end_card_visible?: boolean
+  rail_end_card_title?: string
+  rail_end_card_description?: string
+  rail_end_card_cta_label?: string
+  rail_end_card_cta_href?: string
 }
 
 export interface NavItem {
@@ -124,6 +111,10 @@ export interface FabricSku {
   image: string | null
   features: string // JSON
   specifications: string // JSON
+  card_summary?: string
+  visibility?: 'public' | 'hidden'
+  status?: 'active' | 'archived'
+  order_index: number
 }
 
 export interface TestReport {
@@ -149,41 +140,14 @@ export interface EquipmentProduct {
   name: string
   image: string | null
   features: string // JSON
-}
-
-export interface AboutUs {
-  id: number
-  positioning_title: string
-  positioning_content: string
-  slogan_text: string
-}
-
-export interface Philosophy {
-  id: number
-  number: number
-  title: string
-  description: string
-}
-
-export interface Milestone {
-  id: number
-  year: string
-  event: string
-}
-
-export interface NewsItem {
-  id: number
-  title: string
-  cover_image: string | null
-  content: string
-  images: string | null
-  status: string
-  published_at: string
+  card_summary?: string
+  visibility?: 'public' | 'hidden'
+  status?: 'active' | 'archived'
+  order_index: number
 }
 
 export interface CareGuide {
   id: number
-  icon: string
   title: string
   content: string
 }

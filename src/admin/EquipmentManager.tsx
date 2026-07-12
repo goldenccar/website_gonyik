@@ -1,12 +1,16 @@
 import { useState, useEffect } from 'react'
 import { Plus, Trash2, Edit2 } from 'lucide-react'
-import api from '@/api/client'
+import api, { getPageConfig, updatePageConfig } from '@/api/client'
+import ApplicationCard from '@/components/ApplicationCard'
 import Dashboard from './Dashboard'
 import AdminHeader from './components/AdminHeader'
 import Modal from './components/Modal'
 import FormField from './components/FormField'
 import SaveCancelButtons from './components/SaveCancelButtons'
 import PrimaryButton from './components/PrimaryButton'
+import ContentRailEditor, { type RailEndCardConfig } from './components/ContentRailEditor'
+
+const DEFAULT_RAIL: RailEndCardConfig = { rail_end_card_visible: true, rail_end_card_title: '新应用开发中', rail_end_card_description: '围绕新的任务与穿着环境持续开发。', rail_end_card_cta_label: '', rail_end_card_cta_href: '/contact' }
 
 export default function AdminEquipmentManager() {
   const [categories, setCategories] = useState<any[]>([])
@@ -17,6 +21,7 @@ export default function AdminEquipmentManager() {
   const [showCatForm, setShowCatForm] = useState(false)
   const [showProdForm, setShowProdForm] = useState(false)
   const [message, setMessage] = useState('')
+  const [rail, setRail] = useState<RailEndCardConfig>(DEFAULT_RAIL)
 
   const loadData = async () => {
     const cRes = await api.get('/equipment/admin/categories')
@@ -28,19 +33,16 @@ export default function AdminEquipmentManager() {
   }
 
   useEffect(() => { loadData() }, [selectedCategory])
+  useEffect(() => { getPageConfig('equipment').then((res) => setRail({ ...DEFAULT_RAIL, ...res.data.data })) }, [])
 
   const handleSaveCategory = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const fd = new FormData(e.currentTarget)
     const data = Object.fromEntries(fd)
-    const file = (e.currentTarget as any).bg_image.files[0]
     const formData = new FormData()
     formData.append('name', data.name as string)
     formData.append('slug', data.slug as string)
     formData.append('description', data.description as string)
-    formData.append('image_fit', data.image_fit as string)
-    if (file) formData.append('bg_image', file)
-    if (editingCategory?.bg_image && !file) formData.append('bg_image', editingCategory.bg_image)
 
     if (editingCategory?.id) {
       await api.put(`/equipment/admin/categories/${editingCategory.id}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
@@ -60,6 +62,9 @@ export default function AdminEquipmentManager() {
     formData.append('category_id', String(selectedCategory))
     formData.append('name', data.name as string)
     formData.append('features', JSON.stringify((data.features as string).split(',').map((f) => f.trim())))
+    formData.append('card_summary', (data.card_summary as string) || '')
+    formData.append('visibility', (data.visibility as string) || 'public')
+    formData.append('status', (data.status as string) || 'active')
     if (file) formData.append('image', file)
     if (editingProduct?.image && !file) formData.append('image', editingProduct.image)
 
@@ -81,6 +86,31 @@ export default function AdminEquipmentManager() {
     if (!confirm('确定删除？')) return
     await api.delete(`/equipment/admin/products/${id}`)
     loadData()
+  }
+
+  const moveProduct = async (index: number, direction: -1 | 1) => {
+    const target = index + direction
+    if (target < 0 || target >= products.length) return
+    const next = [...products]
+    ;[next[index], next[target]] = [next[target], next[index]]
+    setProducts(next)
+    try {
+      await api.put('/equipment/admin/product-order', { ordered_ids: next.map((item) => item.id) })
+    } catch {
+      setProducts(products)
+      setMessage('排序保存失败')
+    }
+  }
+
+  const toggleProductVisibility = async (product: any) => {
+    await api.put(`/equipment/admin/products/${product.id}`, { visibility: product.visibility === 'hidden' ? 'public' : 'hidden' })
+    loadData()
+  }
+
+  const saveRail = async () => {
+    await updatePageConfig('equipment', rail)
+    setMessage('卡片组保存成功')
+    setTimeout(() => setMessage(''), 2000)
   }
 
   return (
@@ -137,6 +167,7 @@ export default function AdminEquipmentManager() {
               </table>
               {products.length === 0 && <p className="text-accent text-center py-8">暂无产品</p>}
             </div>
+            <ContentRailEditor label="终端应用横向轨道" items={products} renderCard={(product) => <ApplicationCard key={product.id} product={product} categoryName={categories.find((item) => item.id === selectedCategory)?.name} />} onEdit={(product) => { setEditingProduct(product); setShowProdForm(true) }} onMove={moveProduct} onVisibility={toggleProductVisibility} endCard={rail} onEndCardChange={(patch) => setRail({ ...rail, ...patch })} onSaveEndCard={saveRail} />
           </div>
         )}
 
@@ -146,21 +177,6 @@ export default function AdminEquipmentManager() {
               <FormField label="名称" name="name" defaultValue={editingCategory?.name} required />
               <FormField label="Slug" name="slug" defaultValue={editingCategory?.slug} required />
               <FormField label="描述" name="description" defaultValue={editingCategory?.description} textarea />
-              <FormField
-                label="图片适配"
-                name="image_fit"
-                select
-                defaultValue={editingCategory?.image_fit || 'cover'}
-                options={[
-                  { value: 'cover', label: 'Cover（铺满裁剪）' },
-                  { value: 'contain', label: 'Contain（完整显示）' },
-                  { value: 'original', label: 'Original（原始尺寸）' },
-                ]}
-              />
-              <div>
-                <label className="block text-[12px] text-secondary uppercase mb-1">背景图</label>
-                <input type="file" name="bg_image" accept="image/*" className="text-white text-[13px]" />
-              </div>
               <SaveCancelButtons onCancel={() => setShowCatForm(false)} />
             </form>
           </Modal>
@@ -175,8 +191,11 @@ export default function AdminEquipmentManager() {
                 name="features"
                 defaultValue={editingProduct?.features ? (Array.isArray(editingProduct.features) ? editingProduct.features : JSON.parse(editingProduct.features)).join(', ') : ''}
               />
+              <FormField label="卡片核心收益" name="card_summary" defaultValue={editingProduct?.card_summary} placeholder="一句话说明应用价值" />
+              <div className="grid grid-cols-2 gap-3"><FormField label="前台显示" name="visibility" select defaultValue={editingProduct?.visibility || 'public'} options={[{ value: 'public', label: '显示' }, { value: 'hidden', label: '隐藏' }]} /><FormField label="内容状态" name="status" select defaultValue={editingProduct?.status || 'active'} options={[{ value: 'active', label: '正常' }, { value: 'archived', label: '归档' }]} /></div>
               <div>
                 <label className="block text-[12px] text-secondary uppercase mb-1">产品图</label>
+                {editingProduct?.image && <img src={editingProduct.image} alt="当前应用卡片图" className="mb-2 aspect-video w-full object-cover" />}
                 <input type="file" name="image" accept="image/*" className="text-white text-[13px]" />
               </div>
               <SaveCancelButtons onCancel={() => setShowProdForm(false)} />

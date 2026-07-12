@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-labelledby="title desc">
+  <title id="title">GONYIK OTTER 双线成品织唛</title>
+  <desc id="desc">蓝底横向双线织唛，包含母品牌、OTTER 系列名和层流线符号</desc>
+  <defs>
+    <pattern id="weave" width="3" height="3" patternUnits="userSpaceOnUse" patternTransform="rotate(35)">
+      <path d="M0 0V3" stroke="#FFFFFF" stroke-opacity=".055" stroke-width=".55"/>
+    </pattern>
+  </defs>
+  <g>
+    <rect x="2" y="23" width="96" height="54" rx="1.5" fill="#154F7B" stroke="#E6EDF1" stroke-width="1.5"/>
+    <rect x="5" y="26" width="90" height="48" rx=".5" fill="none" stroke="#E6EDF1" stroke-width=".65" stroke-dasharray="1.4 1.1"/>
+    <rect x="3" y="24" width="94" height="52" fill="url(#weave)"/>
+    <path d="M5 41H95" stroke="#E6EDF1" stroke-opacity=".72" stroke-width=".55"/>
+    <text x="10" y="35.5" fill="#FFFFFF" font-family="Arial,sans-serif" font-size="5.2" font-weight="700" letter-spacing="1.65">GONYIK</text>
+    <g fill="none" stroke="#69B2C1" stroke-width="1.15" stroke-linecap="square">
+      <path d="M78 30.5h11"/><path d="M81 34h8"/><path d="M84 37.5h5"/>
+    </g>
+    <text x="9" y="60" fill="#FFFFFF" font-family="Arial,sans-serif" font-size="16.5" font-weight="700" letter-spacing="2.4">OTTER</text>
+    <text x="77.5" y="57.2" fill="#FFFFFF" font-family="Arial,sans-serif" font-size="3.6" letter-spacing=".4">TM</text>
+    <path d="M10 65H90" stroke="#69B2C1" stroke-width=".7"/>
+    <text x="10" y="70.5" fill="#FFFFFF" fill-opacity=".78" font-family="Arial,sans-serif" font-size="3.2" letter-spacing="1.05">PERFORMANCE MATERIALS</text>
+  </g>
+</svg>

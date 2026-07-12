@@ -24,6 +24,8 @@ api.interceptors.request.use((config) => {
       // Return cached data by rejecting with a custom flag
       return Promise.reject({ __cached: true, data: cached.data, config })
     }
+  } else {
+    cache.clear()
   }
   return config
 })
@@ -64,18 +66,8 @@ export const getSocial = () => api.get('/social')
 
 export const getFabricSeries = () => api.get('/fabrics/series')
 export const getFabricSeriesDetail = (slug: string) => api.get(`/fabrics/series/${slug}`)
-export const getFabricScenes = () => api.get('/fabrics/scenes')
-export const getDigitalAssets = (seriesSlug?: string) => api.get('/fabrics/digital-assets' + (seriesSlug ? `?series_slug=${seriesSlug}` : ''))
-
 export const getEquipmentCategories = () => api.get('/equipment/categories')
 export const getCategoryProducts = (slug: string) => api.get(`/equipment/categories/${slug}/products`)
-export const getEquipmentScenes = () => api.get('/equipment/scenes')
-
-export const getTestReports = () => api.get('/reports')
-
-export const getAboutUs = () => api.get('/services/about')
-export const getNews = () => api.get('/services/news')
-export const getNewsDetail = (id: number) => api.get(`/services/news/${id}`)
 export const getCareGuides = () => api.get('/services/care-guides')
 export const getFaqs = () => api.get('/services/faqs')
 
@@ -83,8 +75,6 @@ export const getContactConfig = () => api.get('/contact-config')
 
 export const getFluorineSections = () => api.get('/fluorine-sections')
 export const updateFluorineSection = (id: number, data: any) => api.put(`/admin/fluorine-sections/${id}`, data)
-export const getFluorineValueChain = () => api.get('/fluorine-value-chain')
-export const updateFluorineValueChain = (data: any) => api.put('/admin/fluorine-value-chain', data)
 
 export const getInquirySubjects = () => api.get('/inquiry-subjects')
 export const updateInquirySubjects = (data: { items: any[] }) => api.put('/admin/inquiry-subjects', data)

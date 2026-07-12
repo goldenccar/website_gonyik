@@ -1,27 +1,12 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, Upload, X, Image } from 'lucide-react'
-import api, { getFluorineSections, getFluorineValueChain, uploadFile } from '@/api/client'
+import api, { getFluorineSections, uploadFile } from '@/api/client'
 import Dashboard from './Dashboard'
 import SaveButton from './components/SaveButton'
 import PrimaryButton from './components/PrimaryButton'
 import ImageCropper from './ImageCropper'
-
-interface ValueChainColumn {
-  tag: string
-  tag_cn: string
-  title: string
-  description: string
-  items: string[]
-}
-
-interface ValueChainData {
-  id: number
-  module_tag: string
-  title: string
-  subtitle: string
-  columns: ValueChainColumn[]
-}
+import TechnologyDetail from '@/components/TechnologyDetail'
 
 export default function AdminFluorineManager() {
   const navigate = useNavigate()
@@ -29,16 +14,10 @@ export default function AdminFluorineManager() {
   const [saveMessages, setSaveMessages] = useState<Record<number, string>>({})
   const [uploadingId, setUploadingId] = useState<number | null>(null)
   const [cropTarget, setCropTarget] = useState<{ sectionId: number; src: string } | null>(null)
-  const [valueChain, setValueChain] = useState<ValueChainData | null>(null)
-  const [vcMessage, setVcMessage] = useState('')
 
   const load = async () => {
-    const [sRes, vcRes] = await Promise.all([
-      getFluorineSections(),
-      getFluorineValueChain(),
-    ])
+    const sRes = await getFluorineSections()
     setSections(sRes.data.data || [])
-    setValueChain(vcRes.data.data)
   }
 
   useEffect(() => { load() }, [])
@@ -82,8 +61,10 @@ export default function AdminFluorineManager() {
       const file = new File([blob], `section-${sectionId}-cropped.jpg`, { type: 'image/jpeg' })
       const res = await uploadFile(file)
       const url = res.data.url || res.data.data?.url
+      const section = sections.find((item) => item.id === sectionId)
+      if (section) await api.put(`/admin/fluorine-sections/${sectionId}`, { ...section, image_url: url })
       setSections((prev) => prev.map((s) => s.id === sectionId ? { ...s, image_url: url } : s))
-      showSectionMessage(sectionId, '图片上传成功')
+      showSectionMessage(sectionId, '图片已上传并保存')
     } catch {
       showSectionMessage(sectionId, '图片上传失败', 3000)
     } finally {
@@ -96,33 +77,6 @@ export default function AdminFluorineManager() {
     setSections((prev) => prev.map((s) => s.id === sectionId ? { ...s, image_url: '' } : s))
   }
 
-  const saveValueChain = async () => {
-    if (!valueChain) return
-    try {
-      await api.put('/admin/fluorine-value-chain', {
-        module_tag: valueChain.module_tag,
-        title: valueChain.title,
-        subtitle: valueChain.subtitle,
-        columns: valueChain.columns.map((c) => ({
-          ...c,
-          items: c.items.filter((s: string) => s.trim()),
-        })),
-      })
-      setVcMessage('保存成功')
-      setTimeout(() => setVcMessage(''), 2000)
-    } catch {
-      setVcMessage('保存失败')
-      setTimeout(() => setVcMessage(''), 2000)
-    }
-  }
-
-  const updateVcColumn = (index: number, field: keyof ValueChainColumn, value: string | string[]) => {
-    if (!valueChain) return
-    const newColumns = [...valueChain.columns]
-    newColumns[index] = { ...newColumns[index], [field]: value }
-    setValueChain({ ...valueChain, columns: newColumns })
-  }
-
   return (
     <Dashboard>
       <div>
@@ -131,7 +85,7 @@ export default function AdminFluorineManager() {
             <button onClick={() => navigate('/admin/dashboard')} className="text-accent hover:text-white">
               <ArrowLeft size={20} />
             </button>
-            <h1 className="text-h3 text-white">RPO材料平台管理</h1>
+            <h1 className="text-h3 text-white">技术创新内容管理</h1>
           </div>
         </div>
 
@@ -185,7 +139,6 @@ export default function AdminFluorineManager() {
                     {[
                       { value: 'cover', label: '填满裁剪' },
                       { value: 'contain', label: '完整显示' },
-                      { value: 'original', label: '原始尺寸' },
                     ].map((opt) => (
                       <button
                         key={opt.value}
@@ -207,11 +160,6 @@ export default function AdminFluorineManager() {
                   {cropTarget && cropTarget.sectionId === section.id ? (
                     <ImageCropper
                       src={cropTarget.src}
-                      previewMode="section"
-                      previewTitle={section.title}
-                      previewSubtitle={section.subtitle}
-                      previewIndex={idx}
-                      imageFit={section.image_fit}
                       onComplete={(blob) => applyCrop(section.id, blob)}
                       onCancel={cancelCrop}
                     />
@@ -274,95 +222,12 @@ export default function AdminFluorineManager() {
                     className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none font-mono"
                   />
                 </div>
+                <div><label className="mb-2 block text-[12px] uppercase text-secondary">真实前台组件预览</label><div className="public-preview bg-bg p-6"><TechnologyDetail section={section} index={idx} /></div></div>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Value Chain */}
-        {valueChain && (
-          <div className="bg-dark p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-white font-bold">产业链全景图</h3>
-              <div className="flex items-center gap-3">
-                {vcMessage && <span className="text-[12px] text-success">{vcMessage}</span>}
-                <SaveButton onClick={saveValueChain} size="sm">
-                  保存
-                </SaveButton>
-              </div>
-            </div>
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-[12px] text-secondary uppercase mb-1">标题</label>
-                  <input
-                    value={valueChain.title}
-                    onChange={(e) => setValueChain({ ...valueChain, title: e.target.value })}
-                    className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[12px] text-secondary uppercase mb-1">副标题（Slogan）</label>
-                  <input
-                    value={valueChain.subtitle}
-                    onChange={(e) => setValueChain({ ...valueChain, subtitle: e.target.value })}
-                    className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none"
-                  />
-                </div>
-              </div>
-              <div className="space-y-4">
-                {valueChain.columns.map((col, idx) => (
-                  <div key={idx} className="bg-white/5 p-4 border border-borderDark">
-                    <h4 className="text-white text-[14px] font-medium mb-3">第 {idx + 1} 列 — {col.tag_cn}</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-[11px] text-secondary uppercase mb-1">英文标签</label>
-                        <input
-                          value={col.tag}
-                          onChange={(e) => updateVcColumn(idx, 'tag', e.target.value)}
-                          className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[11px] text-secondary uppercase mb-1">中文标签</label>
-                        <input
-                          value={col.tag_cn}
-                          onChange={(e) => updateVcColumn(idx, 'tag_cn', e.target.value)}
-                          className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none"
-                        />
-                      </div>
-                      <div className="md:col-span-2">
-                        <label className="block text-[11px] text-secondary uppercase mb-1">标题</label>
-                        <input
-                          value={col.title}
-                          onChange={(e) => updateVcColumn(idx, 'title', e.target.value)}
-                          className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none"
-                        />
-                      </div>
-                      <div className="md:col-span-2">
-                        <label className="block text-[11px] text-secondary uppercase mb-1">描述</label>
-                        <input
-                          value={col.description}
-                          onChange={(e) => updateVcColumn(idx, 'description', e.target.value)}
-                          className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none"
-                        />
-                      </div>
-                      <div className="md:col-span-2">
-                        <label className="block text-[11px] text-secondary uppercase mb-1">列表项（每行一个）</label>
-                        <textarea
-                          value={col.items.join('\n')}
-                          onChange={(e) => updateVcColumn(idx, 'items', e.target.value.split('\n'))}
-                          rows={4}
-                          className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none font-mono"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </Dashboard>
   )

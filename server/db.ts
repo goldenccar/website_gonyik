@@ -50,7 +50,7 @@ function createDefaultDb(): Database {
       primary_btn_text: '探索材料平台',
       primary_btn_link: '/fabrics',
       secondary_btn_text: '了解无氟未来',
-      secondary_btn_link: '/fluorine-free',
+      secondary_btn_link: '/pfas-free-innovation',
       hero_features: [
         { icon: 'ShieldCheck', title: '100% PFAS-FREE', subtitle: '全系无氟' },
         { icon: 'Droplets', title: '防水透湿', subtitle: '平衡舒适' },
@@ -60,7 +60,7 @@ function createDefaultDb(): Database {
       platform_section_title: '技术来源与材料平台',
       platform_section_subtitle: '源自科研，成就可靠材料解决方案。',
       platform_section_link_text: '了解更多',
-      platform_section_link: '/fluorine-free',
+      platform_section_link: '/pfas-free-innovation',
       platform_cards: [
         {
           icon: 'Building2',
@@ -119,15 +119,16 @@ function createDefaultDb(): Database {
       favicon_url: null,
     },
     page_configs: [
-      { id: 1, page_key: 'fabrics', page_tag: 'FABRIC DATABASE', page_title: '面料数据库', page_subtitle: '四大核心系列，覆盖户外、运动、工装全场景', hero_background: null },
-      { id: 2, page_key: 'equipment', page_tag: 'END USE & EQUIPMENT', page_title: '终端装备', page_subtitle: '四大品类，覆盖全场景功能需求', hero_background: null },
-      { id: 3, page_key: 'fluorine-free', page_tag: 'RPO MATERIAL PLATFORM', page_title: 'RPO材料平台 · 探索无氟未来', page_subtitle: '以科技创新推动可持续发展，告别 PFAS，拥抱绿色未来', hero_background: null },
-      { id: 4, page_key: 'services', page_tag: 'SERVICES & SUPPORT', page_title: '服务与支持', page_subtitle: '全方位服务体系，助力您的每一个项目', hero_background: null },
+      { id: 1, page_key: 'fabrics', page_tag: 'FABRIC DATABASE', page_title: '按使用环境，找到合适的材料', page_subtitle: '从日常与户外使用到特种专业场景，查看材料系列、具体型号与验证依据。', hero_background: null },
+      { id: 2, page_key: 'equipment', page_tag: 'END-USE APPLICATIONS', page_title: '从面料到真实应用', page_subtitle: '查看不同装备采用的港翼面料，以及材料如何构成完整的穿着体验。', hero_background: null },
+      { id: 3, page_key: 'pfas-free-innovation', page_tag: 'TECHNOLOGY INNOVATION', page_title: '技术，从材料开始', page_subtitle: '探索膜技术、面料复合、无氟供应链与测试验证。', hero_background: null },
+      { id: 4, page_key: 'services', page_tag: 'CARE & SUPPORT', page_title: '服务与支持', page_subtitle: '从洗涤保养到常见问题，为材料使用与项目沟通提供支持。', hero_background: null },
+      { id: 5, page_key: 'contact', page_tag: 'CONTACT US', page_title: '联系我们', page_subtitle: '如有材料需求或合作意向，欢迎与我们取得联系。', hero_background: null },
     ],
     navigation: [
       { id: 2, label: '面料数据库', link: '/fabrics', order_index: 0 },
       { id: 3, label: '终端装备', link: '/equipment', order_index: 1 },
-      { id: 4, label: '探索无氟未来', link: '/fluorine-free', order_index: 2 },
+      { id: 4, label: '技术创新', link: '/pfas-free-innovation', order_index: 2 },
       { id: 5, label: '服务与支持', link: '/services', order_index: 3 },
       { id: 6, label: '联系我们', link: '/contact', order_index: 4 },
     ],
@@ -135,9 +136,9 @@ function createDefaultDb(): Database {
       id: 1,
       copyright: '© 2026 港翼科技 GONYIK 版权所有',
       privacy_policy_link: '/privacy-policy',
-      icp_number: 'ICP备案号（占位）',
-      icp_link: '#',
-      police_number: '',
+      icp_number: '粤ICP备2026056006号-1',
+      icp_link: 'https://beian.miit.gov.cn/',
+      police_number: '粤公网安备44011502001610号',
       police_link: 'https://beian.mps.gov.cn/#/query/webSearch?code=44011502001610',
       privacy_policy_content: '<h2>隐私政策</h2><p>港翼科技（GONYIK）重视您的隐私保护。本政策说明我们如何收集、使用和保护您的个人信息。</p><h3>信息收集</h3><p>我们可能收集您在使用我们服务时自愿提供的信息，包括但不限于姓名、联系方式、公司名称等。</p><h3>信息使用</h3><p>我们仅将收集的信息用于提供和改善服务、回复您的咨询、发送相关产品信息等目的。</p><h3>信息保护</h3><p>我们采用行业标准的安全措施保护您的个人信息，防止未经授权的访问、使用或泄露。</p><h3>联系我们</h3><p>如您对隐私政策有任何疑问，请通过网站联系方式与我们取得联系。</p>',
     },
@@ -163,7 +164,7 @@ function createDefaultDb(): Database {
     fluorine_sections: [
       {
         id: 1,
-        page_key: 'fluorine-free',
+        page_key: 'pfas-free-innovation',
         order_index: 0,
         title: '什么是 RPO 材料技术平台？',
         subtitle: '阻断"永久化学品"，重构 PFAS-free 性能基盘',
@@ -173,7 +174,7 @@ function createDefaultDb(): Database {
       },
       {
         id: 2,
-        page_key: 'fluorine-free',
+        page_key: 'pfas-free-innovation',
         order_index: 1,
         title: '超微孔纳米薄膜',
         subtitle: '极致微孔结构与力学稳定性',
@@ -183,7 +184,7 @@ function createDefaultDb(): Database {
       },
       {
         id: 3,
-        page_key: 'fluorine-free',
+        page_key: 'pfas-free-innovation',
         order_index: 2,
         title: '无氟科技纱线',
         subtitle: '一维 RPO 骨架与多维基材共融织造体系',
@@ -193,7 +194,7 @@ function createDefaultDb(): Database {
       },
       {
         id: 4,
-        page_key: 'fluorine-free',
+        page_key: 'pfas-free-innovation',
         order_index: 3,
         title: '无氟界面粘接',
         subtitle: '突破低表面能复合难题',
@@ -203,7 +204,7 @@ function createDefaultDb(): Database {
       },
       {
         id: 5,
-        page_key: 'fluorine-free',
+        page_key: 'pfas-free-innovation',
         order_index: 4,
         title: '无氟科技助剂',
         subtitle: '系统级防护',
@@ -214,7 +215,7 @@ function createDefaultDb(): Database {
     ],
     fluorine_value_chain: {
       id: 1,
-      page_key: 'fluorine-free',
+        page_key: 'pfas-free-innovation',
       module_tag: 'MODULE 01 · VALUE CHAIN',
       title: '无氟产业链全景图',
       subtitle: '从原料端到终端装备，每一个环节严格无氟，构建完整的绿色材料闭环。',
@@ -279,20 +280,17 @@ function createDefaultDb(): Database {
     ],
     test_reports: [],
     equipment_categories: [
-      { id: 1, name: 'Latent', slug: 'latent', description: '隐形防护层，日常通勤与商务场景的低调选择', bg_image: null, image_fit: 'cover', order_index: 0 },
-      { id: 2, name: 'U-Line', slug: 'u-line', description: '城市机能线，都市探索者的功能美学', bg_image: null, image_fit: 'cover', order_index: 1 },
-      { id: 3, name: 'P-Line', slug: 'p-line', description: '专业性能线，为极限环境打造的旗舰装备', bg_image: null, image_fit: 'cover', order_index: 2 },
-      { id: 4, name: 'A-Line', slug: 'a-line', description: '全天候适应线，一件应对多变气候', bg_image: null, image_fit: 'cover', order_index: 3 },
+      { id: 1, name: '日常休闲', slug: 'daily', description: '面向通勤与日常穿着的舒适、防风雨和轻量应用。', bg_image: null, image_fit: 'cover', order_index: 0 },
+      { id: 2, name: '户外运动', slug: 'outdoor', description: '面向徒步、骑行和多变天气的功能装备应用。', bg_image: null, image_fit: 'cover', order_index: 1 },
+      { id: 3, name: '特种专业', slug: 'special', description: '面向防刺与消防等明确任务的专业装备应用。', bg_image: null, image_fit: 'cover', order_index: 2 },
     ],
     equipment_products: [
-      { id: 1, category_id: 1, name: 'Latent Pro 1', image: null, features: '["轻量化","防风","透气"]', order_index: 0 },
-      { id: 2, category_id: 1, name: 'Latent Pro 2', image: null, features: '["轻量化","防风","透气"]', order_index: 1 },
-      { id: 3, category_id: 2, name: 'U-Line Pro 1', image: null, features: '["城市机能","防水","透气"]', order_index: 0 },
-      { id: 4, category_id: 2, name: 'U-Line Pro 2', image: null, features: '["城市机能","防水","透气"]', order_index: 1 },
-      { id: 5, category_id: 3, name: 'P-Line Pro 1', image: null, features: '["专业性能","耐磨","保暖"]', order_index: 0 },
-      { id: 6, category_id: 3, name: 'P-Line Pro 2', image: null, features: '["专业性能","耐磨","保暖"]', order_index: 1 },
-      { id: 7, category_id: 4, name: 'A-Line Pro 1', image: null, features: '["全天候","防水","透气"]', order_index: 0 },
-      { id: 8, category_id: 4, name: 'A-Line Pro 2', image: null, features: '["全天候","防水","透气"]', order_index: 1 },
+      { id: 1, category_id: 1, name: '通勤防护外套', image: null, features: '["日常风雨","舒适穿着","Otter"]', order_index: 0 },
+      { id: 2, category_id: 1, name: '夏季轻量外层', image: null, features: '["防晒","导湿","Rayo"]', order_index: 1 },
+      { id: 3, category_id: 2, name: '风雨户外服装', image: null, features: '["防水透湿","耐用","Otter"]', order_index: 0 },
+      { id: 4, category_id: 2, name: '运动防晒服装', image: null, features: '["轻量","导湿","Rayo"]', order_index: 1 },
+      { id: 5, category_id: 3, name: '防刺装备', image: null, features: '["明确任务","防刺内层","Kais"]', order_index: 0 },
+      { id: 6, category_id: 3, name: '消防装备', image: null, features: '["消防场景","专业防护","Kais"]', order_index: 1 },
     ],
     equipment_scenes: [
       { id: 1, category: '都市生活', label: '日常通勤', equipment_slug: 'latent', order_index: 0 },
@@ -369,7 +367,7 @@ export function initDatabase() {
     if (!db.fluorine_value_chain) {
       db.fluorine_value_chain = {
         id: 1,
-        page_key: 'fluorine-free',
+        page_key: 'pfas-free-innovation',
         module_tag: 'MODULE 01 · VALUE CHAIN',
         title: '无氟产业链全景图',
         subtitle: '从原料端到终端装备，每一个环节严格无氟，构建完整的绿色材料闭环。',
@@ -441,13 +439,50 @@ export function initDatabase() {
     }
     if (!db.page_configs) {
       db.page_configs = [
-        { id: 1, page_key: 'fabrics', page_tag: 'FABRIC DATABASE', page_title: '面料数据库', page_subtitle: '四大核心系列，覆盖户外、运动、工装全场景', hero_background: null },
+        { id: 1, page_key: 'fabrics', page_tag: 'FABRIC DATABASE', page_title: '按使用环境，找到合适的材料', page_subtitle: '从日常与户外使用到特种专业场景，查看材料系列、具体型号与验证依据。', hero_background: null },
         { id: 2, page_key: 'equipment', page_tag: 'END USE & EQUIPMENT', page_title: '终端装备', page_subtitle: '四大品类，覆盖全场景功能需求', hero_background: null },
-        { id: 3, page_key: 'fluorine-free', page_tag: 'RPO MATERIAL PLATFORM', page_title: 'RPO材料平台 · 探索无氟未来', page_subtitle: '以科技创新推动可持续发展，告别 PFAS，拥抱绿色未来', hero_background: null },
-        { id: 4, page_key: 'services', page_tag: 'SERVICES & SUPPORT', page_title: '服务与支持', page_subtitle: '全方位服务体系，助力您的每一个项目', hero_background: null },
+        { id: 3, page_key: 'pfas-free-innovation', page_tag: 'RPO MATERIAL PLATFORM', page_title: 'RPO材料平台 · 探索无氟未来', page_subtitle: '以科技创新推动可持续发展，告别 PFAS，拥抱绿色未来', hero_background: null },
+        { id: 4, page_key: 'services', page_tag: 'CARE & SUPPORT', page_title: '服务与支持', page_subtitle: '从洗涤保养到常见问题，为材料使用与项目沟通提供支持。', hero_background: null },
+        { id: 5, page_key: 'contact', page_tag: 'CONTACT US', page_title: '联系我们', page_subtitle: '如有材料需求或合作意向，欢迎与我们取得联系。', hero_background: null },
       ]
       saveDb()
     }
+    db.page_configs = db.page_configs.map((page: any) => page.page_key === 'fluorine-free' ? { ...page, page_key: 'pfas-free-innovation' } : page)
+    db.fluorine_sections = (db.fluorine_sections || []).map((section: any) => section.page_key === 'fluorine-free' ? { ...section, page_key: 'pfas-free-innovation' } : section)
+    db.navigation = db.navigation.map((item: any) => item.link === '/fluorine-free' ? { ...item, link: '/pfas-free-innovation' } : item)
+    if (db.home_config?.secondary_btn_link === '/fluorine-free') db.home_config.secondary_btn_link = '/pfas-free-innovation'
+    if (db.home_config?.platform_section_link === '/fluorine-free') db.home_config.platform_section_link = '/pfas-free-innovation'
+    const pageDefaults = [
+      { id: 1, page_key: 'fabrics', page_tag: 'FABRIC DATABASE', page_title: '按使用环境，找到合适的材料', page_subtitle: '从日常与户外使用到特种专业场景，查看材料系列、具体型号与验证依据。', hero_background: null },
+      { id: 2, page_key: 'equipment', page_tag: 'END-USE APPLICATIONS', page_title: '从面料到真实应用', page_subtitle: '查看不同装备采用的港翼面料，以及材料如何构成完整的穿着体验。', hero_background: null },
+      { id: 3, page_key: 'pfas-free-innovation', page_tag: 'TECHNOLOGY INNOVATION', page_title: '技术，从材料开始', page_subtitle: '探索膜技术、面料复合、无氟供应链与测试验证。', hero_background: null },
+      { id: 4, page_key: 'services', page_tag: 'CARE & SUPPORT', page_title: '服务与支持', page_subtitle: '从洗涤保养到常见问题，为材料使用与项目沟通提供支持。', hero_background: null },
+      { id: 5, page_key: 'contact', page_tag: 'CONTACT US', page_title: '联系我们', page_subtitle: '如有材料需求或合作意向，欢迎与我们取得联系。', hero_background: null },
+    ]
+    for (const item of pageDefaults) if (!db.page_configs.some((page: any) => page.page_key === item.page_key)) db.page_configs.push(item)
+    const fabricsPage = db.page_configs.find((page: any) => page.page_key === 'fabrics')
+    if (fabricsPage?.page_title === '面料数据库' && fabricsPage?.page_subtitle === '四大核心系列，覆盖户外、运动、工装全场景') Object.assign(fabricsPage, pageDefaults[0])
+    const servicesPage = db.page_configs.find((page: any) => page.page_key === 'services')
+    if (servicesPage?.page_subtitle === '全方位服务体系，助力您的每一个项目') Object.assign(servicesPage, pageDefaults[3])
+    const fabricsRail = db.page_configs.find((page: any) => page.page_key === 'fabrics')
+    if (fabricsRail) Object.assign(fabricsRail, {
+      rail_end_card_visible: fabricsRail.rail_end_card_visible ?? true,
+      rail_end_card_title: fabricsRail.rail_end_card_title ?? '新面料开发中',
+      rail_end_card_description: fabricsRail.rail_end_card_description ?? '针对新的使用环境与性能目标持续开发。',
+      rail_end_card_cta_label: fabricsRail.rail_end_card_cta_label ?? '提交需求',
+      rail_end_card_cta_href: fabricsRail.rail_end_card_cta_href ?? '/contact',
+    })
+    const equipmentRail = db.page_configs.find((page: any) => page.page_key === 'equipment')
+    if (equipmentRail) Object.assign(equipmentRail, {
+      rail_end_card_visible: equipmentRail.rail_end_card_visible ?? true,
+      rail_end_card_title: equipmentRail.rail_end_card_title ?? '新应用开发中',
+      rail_end_card_description: equipmentRail.rail_end_card_description ?? '围绕新的任务与穿着环境持续开发。',
+      rail_end_card_cta_label: equipmentRail.rail_end_card_cta_label ?? '',
+      rail_end_card_cta_href: equipmentRail.rail_end_card_cta_href ?? '/contact',
+    })
+    db.fabric_sku = db.fabric_sku.map((item: any) => ({ ...item, card_summary: item.card_summary ?? '', visibility: item.visibility ?? 'public', status: item.status ?? 'active' }))
+    db.equipment_products = db.equipment_products.map((item: any) => ({ ...item, card_summary: item.card_summary ?? '', visibility: item.visibility ?? 'public', status: item.status ?? 'active' }))
+    saveDb()
     if (!db.contact_messages) db.contact_messages = []
     // Backward compatibility: ensure new home_config fields exist
     if (db.home_config) {
@@ -461,7 +496,7 @@ export function initDatabase() {
         platform_section_title: '技术来源与材料平台',
         platform_section_subtitle: '源自科研，成就可靠材料解决方案。',
         platform_section_link_text: '了解更多',
-        platform_section_link: '/fluorine-free',
+        platform_section_link: '/pfas-free-innovation',
         platform_cards: [
           { icon: 'Building2', title: '科研来源', subtitle: '香港科技大学（广州）科创成果转化', description: '先进材料与工程研究基础\n创新驱动，工程化商落地', footer: 'HKUST(GZ) Origin' },
           { icon: 'Atom', title: '固纳 RPO', subtitle: 'GONYIK 专有无氟材料平台', description: '以配方与工艺创新\n实现高性能与可持续的平衡', footer: 'GONYIK Proprietary Platform' },
@@ -509,7 +544,7 @@ export function initDatabase() {
         db.home_config.primary_btn_text = '探索材料平台'
         db.home_config.primary_btn_link = '/fabrics'
         db.home_config.secondary_btn_text = '了解无氟未来'
-        db.home_config.secondary_btn_link = '/fluorine-free'
+        db.home_config.secondary_btn_link = '/pfas-free-innovation'
         homeChanged = true
       }
       if (homeChanged) saveDb()
@@ -542,9 +577,80 @@ export function initDatabase() {
       db.footer_config = { ...db.footer_config, police_number: '', police_link: 'https://www.beian.gov.cn/portal/registerSystemInfo' }
       saveDb()
     }
+    // Replace the original footer placeholders with the completed filing records.
+    if (db.footer_config && ['ICP备案号（占位）', '', undefined].includes(db.footer_config.icp_number)) {
+      db.footer_config.icp_number = '粤ICP备2026056006号-1'
+      db.footer_config.icp_link = 'https://beian.miit.gov.cn/'
+      saveDb()
+    }
+    if (db.footer_config && !db.footer_config.police_number) {
+      db.footer_config.police_number = '粤公网安备44011502001610号'
+      db.footer_config.police_link = 'https://beian.mps.gov.cn/#/query/webSearch?code=44011502001610'
+      saveDb()
+    }
     // Backward compatibility: ensure image_fit exists on equipment_categories
     if (db.equipment_categories.length > 0 && db.equipment_categories[0].image_fit === undefined) {
       db.equipment_categories = db.equipment_categories.map((c: any) => ({ ...c, image_fit: 'cover' }))
+      saveDb()
+    }
+    // Replace the retired line-name taxonomy with the public application taxonomy.
+    if (db.equipment_categories.some((c: any) => ['latent', 'u-line', 'p-line', 'a-line'].includes(c.slug))) {
+      db.equipment_categories = [
+        { id: 1, name: '日常休闲', slug: 'daily', description: '面向通勤与日常穿着的舒适、防风雨和轻量应用。', bg_image: null, image_fit: 'cover', order_index: 0 },
+        { id: 2, name: '户外运动', slug: 'outdoor', description: '面向徒步、骑行和多变天气的功能装备应用。', bg_image: null, image_fit: 'cover', order_index: 1 },
+        { id: 3, name: '特种专业', slug: 'special', description: '面向防刺与消防等明确任务的专业装备应用。', bg_image: null, image_fit: 'cover', order_index: 2 },
+      ]
+      const names = ['通勤防护外套', '夏季轻量外层', '风雨户外服装', '运动防晒服装', '防刺装备', '消防装备']
+      db.equipment_products = db.equipment_products.slice(0, 6).map((p: any, index: number) => ({
+        ...p,
+        category_id: index < 2 ? 1 : index < 4 ? 2 : 3,
+        name: names[index],
+      }))
+      const equipmentPage = db.page_configs.find((p: any) => p.page_key === 'equipment')
+      if (equipmentPage) Object.assign(equipmentPage, { page_tag: 'END-USE APPLICATIONS', page_title: '从面料到真实应用', page_subtitle: '查看不同装备采用的港翼面料，以及材料如何构成完整的穿着体验。' })
+      const technologyPage = db.page_configs.find((p: any) => p.page_key === 'pfas-free-innovation')
+      if (technologyPage) Object.assign(technologyPage, { page_tag: 'TECHNOLOGY INNOVATION', page_title: '技术，从材料开始', page_subtitle: '探索膜技术、面料复合、无氟供应链与测试验证。' })
+      const technologyNav = db.navigation.find((item: any) => item.link === '/pfas-free-innovation')
+      if (technologyNav) technologyNav.label = '技术创新'
+      saveDb()
+    }
+    if (db.fluorine_sections?.[0]?.title === '什么是 RPO 材料技术平台？') {
+      const technologyContent = [
+        { title: '膜技术', subtitle: 'RPO-TEX 无氟纳米膜', content: 'RPO-TEX 是固纳体系内的膜产品，用作特定复合面料的功能层，承担防水、透湿及相关防护作用。它只关联实际采用该膜的 SKU，不代表港翼全部材料技术。' },
+        { title: '面料复合技术', subtitle: '从单层材料到复合性能', content: '通过面层、胶层、功能层和内层的协同设计，将不同材料复合成可直接用于服装与装备的完整面料。复合方式、基布选择和层间结合共同影响防护、手感、透湿与耐久。' },
+        { title: '无氟染整与功能整理', subtitle: '不依赖 RPO 膜的功能面料路径', content: '用于 Rayo 等非膜结构功能面料，通过无氟防泼、导湿、速干、防晒或凉感整理，使功能直接作用于基布。具体能力以对应 SKU 和测试结果为准。' },
+        { title: '材料与供应链管理', subtitle: '让技术能够稳定地被生产', content: '围绕膜、胶水、基布、染整、复合和批次资料进行协同管理，使材料方案能够被打样、追溯、验证和交付。官网不公开配方、供应商名单或客户机密。' },
+        { title: '测试与验证', subtitle: '从内部验证到独立第三方检测', content: '内部测试用于材料筛选、样品对比、耐久检查和应用适配；关键项目再由 SGS、中纺标等独立第三方机构检测。展示结果时同时标明样品、方法、条件和适用范围。' },
+      ]
+      db.fluorine_sections = db.fluorine_sections.slice(0, 5).map((section: any, index: number) => ({ ...section, ...technologyContent[index], order_index: index }))
+      saveDb()
+    }
+    if (db.home_config?.platform_section_title === '技术来源与材料平台') {
+      Object.assign(db.home_config, {
+        platform_section_title: '技术，从材料开始',
+        platform_section_subtitle: '围绕膜材料、复合结构与功能整理，建立能够进入真实产品的材料技术体系。',
+        platform_section_link_text: '探索技术',
+        platform_section_link: '/pfas-free-innovation',
+        platform_cards: [
+          { icon: 'Layers', title: '膜技术', subtitle: 'RPO-TEX 用于特定复合面料的功能层', description: '承担防水、透湿及相关防护作用', footer: 'MEMBRANE' },
+          { icon: 'Hexagon', title: '面料复合', subtitle: '让面层、功能层与内层形成完整材料', description: '协同防护、手感与耐久表现', footer: 'LAMINATION' },
+          { icon: 'Droplets', title: '无氟染整', subtitle: '服务 Rayo 等非膜结构功能面料', description: '实现防晒、导湿、速干等具体功能', footer: 'FINISHING' },
+        ],
+        series_section_title: '三条材料路径，服务不同场景',
+        series_section_subtitle: 'OTTER 与 RAYO 面向日常及户外，KAIS 独立服务特种专业场景。',
+        verification_section_title: '验证不是口号',
+        verification_section_subtitle: '内部验证用于研发与过程控制，关键结果由独立第三方检测提供依据。',
+        verification_section_link_text: '查看材料与验证信息',
+        verifications: [
+          { icon: 'Microscope', title: '内部测试与应用验证', subtitle: '用于材料筛选、样品对比、耐久检查和应用适配。' },
+          { icon: 'Award', title: '独立第三方检测', subtitle: '由 SGS、中纺标等机构对具体样品和项目提供检测依据。' },
+        ],
+      })
+      saveDb()
+    }
+    if (db.home_config?.series_section_title === '三条材料路径，服务不同场景') {
+      db.home_config.series_section_title = '三大面料平台'
+      db.home_config.series_section_subtitle = '蓝标 OTTER 与银标 RAYO 面向日常及户外，红标 KAIS 独立服务特种专业场景。'
       saveDb()
     }
     // Backward compatibility: ensure cooperation_type exists on existing messages

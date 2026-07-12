@@ -18,7 +18,7 @@
 | 首页 | `/` | ✅ 全屏动态背景 + 双 CTA |
 | 面料数据库 | `/fabrics` | ✅ 4 系列 + SKU 货架 + 测试报告浏览器 |
 | 终端装备 | `/equipment` | ✅ 4 品类横条卡片 + Tab + 产品货架 |
-| 探索无氟未来 | `/fluorine-free` | ✅ 占位页 |
+| 技术创新 | `/pfas-free-innovation` | ✅ 已实现；旧路由兼容跳转 |
 | 服务与支持 | `/services` | ✅ 5 子模块（侧栏/Tab） |
 | 后台管理 | `/admin` | ✅ 完整 CMS |
 

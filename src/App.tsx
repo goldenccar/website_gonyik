@@ -1,8 +1,9 @@
 import { Suspense, lazy, useEffect } from 'react'
-import { Routes, Route, Outlet } from 'react-router-dom'
+import { Routes, Route, Outlet, Navigate } from 'react-router-dom'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import { getSiteConfig } from './api/client'
+import Home from './pages/Home'
 
 function PublicLayout() {
   return (
@@ -25,7 +26,6 @@ function PageLoader() {
 }
 
 // Public pages
-const Home = lazy(() => import('./pages/Home'))
 const FabricDatabase = lazy(() => import('./pages/FabricDatabase'))
 
 const EndUseEquipment = lazy(() => import('./pages/EndUseEquipment'))
@@ -40,12 +40,8 @@ const AdminLogin = lazy(() => import('./admin/Login'))
 const AdminDashboard = lazy(() => import('./admin/Dashboard'))
 const AdminHomeEditor = lazy(() => import('./admin/HomeEditor'))
 const AdminFabricManager = lazy(() => import('./admin/FabricManager'))
-const AdminSceneManager = lazy(() => import('./admin/SceneManager'))
-const AdminDigitalAssetManager = lazy(() => import('./admin/DigitalAssetManager'))
 const AdminEquipmentManager = lazy(() => import('./admin/EquipmentManager'))
-const AdminReportManager = lazy(() => import('./admin/ReportManager'))
 const AdminServiceManager = lazy(() => import('./admin/ServiceManager'))
-const AdminNewsManager = lazy(() => import('./admin/NewsManager'))
 const AdminMediaLibrary = lazy(() => import('./admin/MediaLibrary'))
 const AdminBrandSettings = lazy(() => import('./admin/BrandSettings'))
 const AdminFooterManager = lazy(() => import('./admin/FooterManager'))
@@ -54,7 +50,6 @@ const AdminContactConfig = lazy(() => import('./admin/ContactConfig'))
 const AdminInquirySubjectManager = lazy(() => import('./admin/InquirySubjectManager'))
 const AdminContactMessageManager = lazy(() => import('./admin/ContactMessageManager'))
 const AdminFluorineManager = lazy(() => import('./admin/FluorineManager'))
-const AdminEquipmentSceneManager = lazy(() => import('./admin/EquipmentSceneManager'))
 const AdminPageConfigManager = lazy(() => import('./admin/PageConfigManager'))
 
 function App() {
@@ -82,12 +77,8 @@ function App() {
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/home" element={<AdminHomeEditor />} />
           <Route path="/admin/fabrics" element={<AdminFabricManager />} />
-          <Route path="/admin/scenes" element={<AdminSceneManager />} />
-          <Route path="/admin/digital-assets" element={<AdminDigitalAssetManager />} />
           <Route path="/admin/equipment" element={<AdminEquipmentManager />} />
-          <Route path="/admin/reports" element={<AdminReportManager />} />
           <Route path="/admin/services" element={<AdminServiceManager />} />
-          <Route path="/admin/news" element={<AdminNewsManager />} />
           <Route path="/admin/media" element={<AdminMediaLibrary />} />
           <Route path="/admin/brand" element={<AdminBrandSettings />} />
           <Route path="/admin/footer" element={<AdminFooterManager />} />
@@ -96,10 +87,9 @@ function App() {
           <Route path="/admin/inquiry-subjects" element={<AdminInquirySubjectManager />} />
           <Route path="/admin/contact-messages" element={<AdminContactMessageManager />} />
           <Route path="/admin/fluorine" element={<AdminFluorineManager />} />
-          <Route path="/admin/equipment-scenes" element={<AdminEquipmentSceneManager />} />
           <Route path="/admin/fabrics/config" element={<AdminPageConfigManager pageKey="fabrics" />} />
           <Route path="/admin/equipment/config" element={<AdminPageConfigManager pageKey="equipment" />} />
-          <Route path="/admin/fluorine/config" element={<AdminPageConfigManager pageKey="fluorine-free" />} />
+          <Route path="/admin/fluorine/config" element={<AdminPageConfigManager pageKey="pfas-free-innovation" />} />
           <Route path="/admin/services/config" element={<AdminPageConfigManager pageKey="services" />} />
           <Route path="/admin/contact/config" element={<AdminPageConfigManager pageKey="contact" />} />
 
@@ -109,7 +99,8 @@ function App() {
             <Route path="/fabrics" element={<FabricDatabase />} />
 
             <Route path="/equipment" element={<EndUseEquipment />} />
-            <Route path="/fluorine-free" element={<FluorineFreeFuture />} />
+            <Route path="/pfas-free-innovation" element={<FluorineFreeFuture />} />
+            <Route path="/fluorine-free" element={<Navigate to="/pfas-free-innovation" replace />} />
             <Route path="/services" element={<ServicesSupport />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/contact" element={<Contact />} />

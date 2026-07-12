@@ -62,7 +62,7 @@ router.put('/admin/contact-config', authMiddleware, (req: AuthRequest, res) => {
 })
 
 router.get('/fluorine-sections', (_req, res) => {
-  res.json({ data: db.fluorine_sections.filter((s) => s.page_key === 'fluorine-free').sort(sortByOrderIndex) })
+  res.json({ data: db.fluorine_sections.filter((s) => s.page_key === 'pfas-free-innovation').sort(sortByOrderIndex) })
 })
 
 router.put('/admin/fluorine-sections/:id', authMiddleware, (req: AuthRequest, res) => {

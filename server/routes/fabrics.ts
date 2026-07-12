@@ -36,7 +36,7 @@ router.get('/series/:slug', (req, res) => {
     }
   }
   if (!series) { res.status(404).json({ error: 'Series not found' }); return }
-  const skus = db.fabric_sku.filter((k) => k.series_id === series.id).sort(sortByOrderIndex)
+  const skus = db.fabric_sku.filter((k) => k.series_id === series.id && k.visibility !== 'hidden' && k.status !== 'archived').sort(sortByOrderIndex)
   res.json({ data: { ...series, skus } })
 })
 
@@ -112,7 +112,7 @@ router.get('/admin/sku', authMiddleware, (req, res) => {
 })
 
 router.post('/admin/sku', authMiddleware, upload.single('image'), (req: AuthRequest, res) => {
-  const { series_id, name, sku_code, features, specifications } = req.body
+  const { series_id, name, sku_code, features, specifications, card_summary, visibility, status } = req.body
   const image = req.file ? uploadUrl(req.file) : null
   const newSku = {
     id: getNextId(db.fabric_sku),
@@ -122,6 +122,9 @@ router.post('/admin/sku', authMiddleware, upload.single('image'), (req: AuthRequ
     image,
     features,
     specifications,
+    card_summary: card_summary || '',
+    visibility: visibility || 'public',
+    status: status || 'active',
     order_index: nextOrderIndex(db.fabric_sku),
   }
   db.fabric_sku.push(newSku)
@@ -129,11 +132,18 @@ router.post('/admin/sku', authMiddleware, upload.single('image'), (req: AuthRequ
   res.json({ success: true, id: newSku.id })
 })
 
+router.put('/admin/sku-order', authMiddleware, (req: AuthRequest, res) => {
+  const ids = Array.isArray(req.body.ordered_ids) ? req.body.ordered_ids.map(Number) : []
+  ids.forEach((id: number, order_index: number) => updateById(db.fabric_sku, id, { order_index }))
+  saveDb()
+  res.json({ success: true })
+})
+
 router.put('/admin/sku/:id', authMiddleware, upload.single('image'), (req: AuthRequest, res) => {
   const id = Number(req.params.id)
   const existing = db.fabric_sku.find((k) => k.id === id)
   if (!existing) { res.status(404).json({ error: 'Not found' }); return }
-  const { series_id, name, sku_code, features, specifications } = req.body
+  const { series_id, name, sku_code, features, specifications, card_summary, visibility, status, order_index } = req.body
   const image = req.file ? uploadUrl(req.file) : (req.body.image || existing.image)
   updateById(db.fabric_sku, id, {
     series_id: series_id ? Number(series_id) : existing.series_id,
@@ -142,6 +152,10 @@ router.put('/admin/sku/:id', authMiddleware, upload.single('image'), (req: AuthR
     image,
     features: features ?? existing.features,
     specifications: specifications ?? existing.specifications,
+    card_summary: card_summary ?? existing.card_summary,
+    visibility: visibility ?? existing.visibility,
+    status: status ?? existing.status,
+    order_index: order_index === undefined ? existing.order_index : Number(order_index),
   })
   saveDb()
   res.json({ success: true })

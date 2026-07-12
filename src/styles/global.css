@@ -15,17 +15,17 @@
 
 @layer base {
   :root {
-    --color-bg: var(--gray-3);
-    --color-border: var(--gray-4);
-    --color-light: var(--gray-7);
-    --color-accent: var(--gray-8);
-    --color-accent-warm: var(--sage-9);
-    --color-secondary: var(--gray-9);
-    --color-muted: var(--gray-11);
-    --color-primary: var(--gray-12);
-    --color-dark: #0D0F12;
-    --color-darker: #090B0E;
-    --color-border-dark: #333333;
+    --color-bg: #F4F7F9;
+    --color-border: #D7E1E8;
+    --color-light: #D7E1E8;
+    --color-accent: #69B2C1;
+    --color-accent-warm: #69B2C1;
+    --color-secondary: #627789;
+    --color-muted: #627789;
+    --color-primary: #102333;
+    --color-dark: #082F55;
+    --color-darker: #041F38;
+    --color-border-dark: #28465F;
     --color-success: var(--grass-9);
     --color-error: var(--red-9);
     --color-warning: var(--amber-9);
@@ -51,12 +51,36 @@
     overflow-y: scroll;
   }
 
-  body {
+body {
     font-family: 'Inter', 'Alibaba PuHuiTi 2.0', 'PingFang SC', 'Microsoft YaHei', sans-serif;
     color: var(--color-primary);
     background-color: var(--color-bg);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  .public-preview {
+    --color-bg: #F4F7F9;
+    --color-border: #D7E1E8;
+    --color-light: #D7E1E8;
+    --color-accent: #69B2C1;
+    --color-accent-warm: #69B2C1;
+    --color-secondary: #627789;
+    --color-muted: #627789;
+    --color-primary: #102333;
+    --color-dark: #082F55;
+    --color-darker: #041F38;
+    --color-border-dark: #28465F;
+  }
+
+  .gonyik-page {
+    font-feature-settings: 'kern' 1, 'liga' 1;
+  }
+
+  .gonyik-page h1,
+  .gonyik-page h2,
+  .gonyik-page h3 {
+    letter-spacing: -0.02em;
   }
 }
 
@@ -79,6 +103,30 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-secondary);
+}
+
+.gonyik-rail {
+  scroll-snap-type: x proximity;
+  scrollbar-color: var(--color-secondary) var(--color-border);
+  scrollbar-width: auto;
+  scrollbar-gutter: stable;
+}
+
+.gonyik-rail::-webkit-scrollbar { height: 8px; }
+.gonyik-rail::-webkit-scrollbar-track { background: var(--color-border); }
+.gonyik-rail::-webkit-scrollbar-thumb { background: var(--color-secondary); border-radius: 0; }
+
+.gonyik-material-placeholder {
+  background:
+    linear-gradient(140deg, transparent 0 42%, rgba(105,178,193,.24) 42% 44%, transparent 44%),
+    repeating-linear-gradient(12deg, #e7edf1 0 3px, #f8fafb 3px 9px);
+}
+
+.gonyik-fabric-placeholder {
+  background:
+    radial-gradient(circle at 28% 34%, rgba(255,255,255,.8) 0 2px, transparent 3px),
+    radial-gradient(circle at 62% 55%, rgba(255,255,255,.55) 0 3px, transparent 4px),
+    repeating-linear-gradient(35deg, #183d5d 0 2px, #102f4a 2px 6px);
 }
 
 /* PDF viewer override */

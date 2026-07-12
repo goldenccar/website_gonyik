@@ -1,1772 +1,2378 @@
-# GONYIK 高性能防护材料品牌官网 — 产品需求文档 & 视觉/内容策略 v2
+# GONYIK 港翼科技官网产品需求文档
+
+> 版本：v4.0
+>
+> 日期：2026-07-11
+>
+> 状态：唯一有效的产品、内容、架构、UI 与技术实施基准
+
+本文档是官网升级的唯一需求来源。历史 PRD、研究报告、融资 BP 和竞品资料只作为形成本文档的输入，不再作为并行开发依据。出现冲突时，以本文档为准；具体性能、认证和技术声明仍须以有效测试报告、合同及内部审批资料为准。
 
 ---
 
-## 1. 项目概述
+## 1. 产品定义
 
-### 1.1 项目背景
-港怡科技面料品牌官网是面向 B2B 与 B2C 双端用户的品牌数字门户。全站所有展示内容（文字、图片、多媒体、产品数据）均通过内置后台管理系统维护，无需改动代码即可更新。系统启动时自动注入默认数据，用户通过后台维护后，所有数据即时生效。
+### 1.1 一句话定位
 
-### 1.2 目标用户画像
-| 用户类型 | 关注点 | 典型行为 |
-|---------|--------|---------|
-| 品牌采购经理 | 面料参数、环保认证、价格区间 | 浏览面料系列，下载测试报告 |
-| 产品设计师 | 手感、色彩、应用场景 | 浏览终端装备品类，查看产品特点 |
-| 终端消费者 | 功能性、可持续性故事 | 阅读关于我们、洗护指南 |
-| 内容管理员 | 内容更新效率、多媒体管理 | 通过后台 CMS 维护全站文案与素材 |
+GONYIK 港翼科技从 RPO 纳米膜与无氟材料技术出发，分别面向民用户外/日常功能场景与特种场景，提供高性能面料、复合工艺及柔性供应链解决方案。
 
-### 1.3 设计原则
+对外核心表达：
 
-1. **高性能材料品牌感**：视觉语言接近 GORE-TEX / eVent / Arc'teryx 材料技术页，强调真实材料质感、户外应用场景、膜层结构与测试验证；
-2. **内容即配置**：所有展示层内容抽离为数据库配置，后台修改即时生效，零代码更新；
-3. **智能兜底**：未配置数据时，系统自动生成符合品牌定位的默认内容（Logo、背景图、产品数据等）；
-4. **物理对象优先**：首屏与关键区块必须使用真实面料、膜层、测试场景等物理对象，禁止纯抽象科技背景；
-5. **中英双语预留**：数据结构支持多语言扩展，首期仅展示中文。
+> 从一片 RPO 纳米膜开始，以高科技带动高性能、高体验。
 
-> **参考风格**：GORE-TEX / eVent / Arc'teryx 材料技术页 — 真实材料质感、户外应用场景、膜层结构、测试验证与品牌级克制排版。
----
+品牌方向：
 
-## 2. 技术栈
+> 无氟户外面料与特种场景材料解决方案专家。
 
-### 2.1 前端
-| 层级 | 技术选型 | 说明 |
-|------|---------|------|
-| 框架 | React 19 + TypeScript 5.x | 类型安全，组件化开发 |
-| 构建工具 | Vite 6.x | 快速冷启动 |
-| 样式 | Tailwind CSS 4.x | 原子化工具类 |
-| 路由 | React Router v7 | 多页路由，懒加载 |
-| 动画 | Framer Motion | 交互动画 |
-| 图标 | Lucide React | 统一图标体系 |
-| 字体 | Inter (Google Fonts) | 英文标题与正文 |
-| 状态管理 | Zustand | 轻量全局状态 |
-| PDF 渲染 | react-pdf + pdfjs-dist | 测试报告 PDF 翻页浏览 |
-| HTTP 客户端 | Axios | API 请求 |
+### 1.2 官网任务
 
-### 2.2 后端（一体化极简方案）
-| 技术 | 说明 |
-|------|------|
-| Express.js 4.x | 轻量 Web 框架 |
-| better-sqlite3 | 高性能 SQLite 驱动，零配置单文件数据库 |
-| multer | 文件上传处理 |
-| bcryptjs | 密码哈希 |
-| jsonwebtoken | JWT 认证 |
-| sharp | 图片处理（缩略图生成） |
-| pdf-lib / pdf-poppler | PDF 第一页缩略图生成 |
+访客应在较短时间内完成五个判断：
 
-### 2.3 架构特点（傻瓜式部署）
-```
-project/
-├── web/                    # 前端 + 后端同仓库
-│   ├── src/                # React 前端代码
-│   ├── server/             # Express 后端代码
-│   ├── public/uploads/     # 上传文件存储目录
-│   └── db.sqlite           # 单文件数据库
-```
-- **单仓库**：前端和后端代码在一起，一条命令同时启动；
-- **单文件数据库**：`db.sqlite`，无需安装 MySQL/PostgreSQL；
-- **本地文件存储**：上传的图片/PDF 直接存 `public/uploads/`，通过 CDN 或 Nginx 可快速切换为云存储；
-- **默认数据自动注入**：首次启动检测到空表时，自动插入完整的默认数据；
-- **部署**：一条 `npm run build && npm start` 即可运行。
+1. 港翼做的是高性能科技面料；
+2. RPO-TEX 是固纳体系内的无氟纳米膜产品；
+3. 港翼负责把材料、胶水、复合工艺、功能基布与供应链转化为面料方案；
+4. Otter/Rayo 属于民用户外与日常功能场景，Kais 独立服务特种场景；
+5. 产品性能有测试、报告、样品和应用边界支持。
+
+### 1.3 产品目标
+
+- 建立“无氟纳米科技面料”的第一认知；
+- 同时保留户外感、材料科技感和专业任务感；
+- 清楚分开民用与特种场景，避免被理解为价格等级；
+- 帮助采购、设计与研发人员找到材料、证据和合作入口；
+- 提升样品申请、技术咨询和联合开发询盘。
+
+### 1.4 非目标
+
+- 不做纯户外服装零售站；
+- 不做科研成果陈列馆；
+- 不用抽象动画替代真实材料和应用；
+- 不将 Kais 做成 Otter 的“更贵、更强版本”；
+- 不展示未经验证的绝对性参数、认证或特种能力；
+- 不在第一阶段建设多语言、复杂内容中心或低代码页面搭建器。
 
 ---
 
-## 3. 默认数据生成策略
+# 第一部分：内容规划
 
-> **核心原则**：所有展示内容在数据库为空时，系统自动生成美观的默认数据。一旦管理员在后台修改并保存，立即以后台数据为准。
+## 2. 品牌、技术与产品口径
 
-### 3.1 Logo 默认生成
-- **未上传 Logo 时**：前端用 SVG 动态渲染"港怡科技"四字作为文字 Logo；
-- 字体：Inter + PingFang SC，font-weight: 700，白色；
-- 尺寸自适应，支持缩放；
-- 后台上传 Logo 后，立即替换为上传文件。
+### 2.1 技术与品牌层级
 
-### 3.2 首页背景图默认生成
+```text
+技术研究积累
+香港科技大学高分子材料与分子流变学研究
+↓
+材料平台
+固纳 RPO 高性能材料平台
+↓
+膜产品
+RPO-TEX 无氟纳米膜
+↓
+产业化转化
+港翼：胶水体系、复合工艺、功能基布、测试与柔性供应链
+↓
+产品标签
+Otter / Rayo / Kais
+```
 
-- **未上传背景图时**：前端使用真实面料/雨水微距占位图或视频，确保首屏第一判断是“高性能材料品牌”；
-- 背景图为深色、低饱和、材料细节清晰，禁止使用抽象科技纹理、网格线、漂浮光斑粒子；
-- 后台上传背景图/视频/GIF 后，立即替换。
-### 3.3 面料系列默认数据
+对外规则：
 
-| 系列名 | 默认描述 | 默认 SKU 数量 |
-|--------|---------|--------------|
-| Otter | PFAS-free waterproof-breathable laminated fabrics：全流程无氟防水透湿复合体系 | 6 款 |
-| Kais | Protective textile composites：高强防护复合体系，面向防刺、防切割、抗冲击场景 | 6 款 |
-| Rayo | Sun-protective moisture-management fabrics：高防晒、高导湿、轻量舒适的功能织物体系 | 6 款 |
+- GONYIK 是客户识别、合作和交付的品牌主体；
+- RPO-TEX 是固纳体系内的膜产品名；
+- SOTEX 是历史名称，官网、CMS 默认内容和新销售资料停止使用；
+- RPO-TEX 是否用于某个产品，必须标注到具体 SKU，不在系列层自动继承；
+- 港翼不只是销售膜，而是把适用材料转化为可开发、可验证、可交付的面料方案。
 
-每个 SKU 生成默认参数（静水压、透湿、剥离强力、克重、UPF 等），用程序随机生成合理数值。
+### 2.2 三个技术价值
 
-> **命名过渡说明**：旧版系列名 Osmo / Kinetic / Lumix / Tread 已统一替换为 Otter / Kais / Rayo。如 CMS 中仍有旧数据，后台可直接重命名或替换。
-### 3.4 终端装备品类默认数据
-| 品类名 | 默认描述 | 默认产品数量 |
-|--------|---------|------------|
-| Latent | 隐形防护层，日常通勤与商务场景的低调选择 | 4 款 |
-| U-Line | 城市机能线，都市探索者的功能美学 | 4 款 |
-| P-Line | 专业性能线，为极限环境打造的旗舰装备 | 4 款 |
-| A-Line | 全天候适应线，一件应对多变气候 | 4 款 |
+1. **新的材料体系**：以无氟聚烯烃体系降低对 PFAS 的依赖；
+2. **新的结构方案**：通过膜、胶水、基布和复合工艺建立防水透湿等性能平衡；
+3. **新的体验标准**：在标准参数之外关注磨损、环境变化和长期使用中的稳定表现。
 
-### 3.5 社交媒体默认数据
-| 平台 | 默认展示 |
-|------|---------|
-| 微信 | hover 显示"请关注港怡科技公众号"文字占位 |
-| 小红书 | hover 显示"@港怡科技"占位 |
-| 抖音 | hover 显示"@港怡科技"占位 |
+“体验标准”不能替代参数和测试，而是标准化测试之外的补充证明。
 
-后台上传二维码和填写账号后，立即替换。
+### 2.3 两类场景、三条产品标签
 
-### 3.6 其他默认数据
-- **关于我们**：生成默认公司定位、Slogan、理念文本；
-- **里程碑**：生成 5 个默认里程碑（2020-2026）；
-- **新闻**：生成 3 条默认新闻；
-- **洗护指南**：生成 5 条默认指南；
-- **FAQs**：生成 6 条默认问答；
-- **测试报告**：生成 2 条默认测试报告占位记录（提示"请上传真实报告"）。
+```text
+GONYIK
+├─ 民用户外与日常功能场景
+│  ├─ 蓝标 Otter：全天候防护 · 持久干爽
+│  └─ 银标 Rayo：轻盈透爽 · 自在随行
+└─ 特种场景
+   └─ 赤标 Kais：应险而生 · 灵活防护
+```
+
+| 系列 | 定位 | 当前场景 | 内容重点 |
+|---|---|---|---|
+| Otter | 无氟防水透湿复合面料 | 行政夹克、通勤外套、户外壳层 | 防水、透湿、防风、耐久、无氟检测 |
+| Rayo | 夏季轻量舒适科技面料 | 防晒服、夏季团服、通勤衬衫、日常运动 | UPF、导湿、速干、克重；凉感按实际 Qmax 发布 |
+| Kais | 与民用产品分开的特种场景材料 | 当前官网只展示防刺、消防 | 标准、等级、材料层、适用装备、当前状态和使用边界 |
+
+Kais 不是价格层级。防刺内胆、消防材料不会被普通消费者当作日常外套功能选购，其用户、风险、验证标准和采购方式均与民用产品不同。
+
+### 2.4 Kais 公开范围
+
+当前公共页面只设置：
+
+- 防刺；
+- 消防。
+
+防化、军警综合防护及其他方向：
+
+- 默认不进入产品页；
+- 有明确对外需要时，只能标为“联合开发中”；
+- 不得显示为可立即采购的成熟产品；
+- `internal` 和 `hidden` 内容不得由公共 API 返回。
+
+### 2.5 内容状态
+
+所有技术、系列和 SKU 使用统一状态：
+
+```text
+已商业化 commercialized
+已完成 completed
+验证中 validating
+联合开发中 co_developing
+技术储备 reserved
+```
+
+状态不是 SKU 卡片的首层信息，只在详情区、报告区和后台显示。
+
+## 3. 文案规则
+
+### 3.1 内容结构
+
+核心内容统一采用：
+
+```text
+一句用户收益
+＋ 适用场景
+＋ 技术解释
+＋ 参数/测试证据
+＋ 适用边界
+```
+
+### 3.2 写作原则
+
+- 标题先讲用户能获得什么；
+- 正文解释材料和结构如何实现；
+- 参数与报告负责证明；
+- 民用内容强调环境和体感；
+- 特种内容强调任务、风险、标准和边界；
+- 英文只做分类标签，不承担核心解释。
+
+### 3.3 禁用表达
+
+- 科技赋能；
+- 定义未来；
+- 颠覆行业；
+- 全球领先；
+- 极致性能；
+- 全场景覆盖；
+- 绝对安全；
+- 未经证明的“军工级、航天级、零污染”。
+
+“军工级无氟户外防护专家”只能作为融资愿景，完成对应标准验证和合规审查前，不作为官网产品声明。
+
+### 3.4 关键主张上线要求
+
+| 主张 | 上线要求 |
+|---|---|
+| RPO-TEX 膜厚度、强度、孔径 | 说明样品、方法、方向、批次和报告 |
+| SGS PFAS-Free | 说明送检样品、方法、检出限和日期，不扩展为未经验证的全系承诺 |
+| SGS 综合性能 | 使用报告的准确名称，不把单次测试写成体系认证 |
+| 优于或媲美 ePTFE/ePE | 必须基于同类样品、相同条件和完整数据 |
+| Kais 防刺/消防 | 必须说明标准、等级、材料层、状态及终端适用范围 |
+| 全球最薄、量产、奖项 | 必须有论文、专利、证书、主体授权或交付证明 |
+
+PFAS 健康风险内容引用政府、国际组织或同行评议研究，使用“相关性、潜在风险、特定暴露条件”等准确措辞，不把复杂证据简化成确定因果关系。
+
+### 3.5 对外语言与内部规则分离
+
+PRD 同时包含对外内容、产品规则和技术实现。只有明确放在 Hero、标题、正文、按钮、FAQ 或示例卡片中的成稿文案可以进入官网；数据字段、筛选条件、权限规则和维护说明不得被组件直接渲染。
+
+以下内容属于内部语言，严禁出现在公共页面：
+
+- `uses_rpo_tex=true`、`technology_tags`、`care_slug`、`series_slug` 等字段名；
+- `public / internal / hidden / published / archived` 等内部状态值；
+- “只显示满足某字段的 SKU”“公共 API 过滤”“后台关联”“默认继承”等实现说明；
+- “Rayo 当前不属于某分支”“证据不足时不能使用某主张”等内部纠错语句；
+- “第一阶段、首期、后续实现、维护成本、CMS、query”等项目管理或开发语言；
+- “真实报告”“可靠第三方”等自我判断式描述，改为可核对的机构、项目、标准、日期和适用范围。
+
+内部规则必须转译成用户语言，或完全不显示：
+
+| 内部规则 | 公共页面表达 |
+|---|---|
+| `uses_rpo_tex=true` 的 SKU | “应用该技术的面料” |
+| Rayo 不使用 RPO-TEX | 不在膜技术下展示 Rayo；在无氟染整技术中正常介绍 Rayo |
+| 报告只对关联 SKU 有效 | “适用于：Otter T31” |
+| 仅返回 published | 页面只出现可公开内容，不解释发布状态 |
+| archived 后隐藏 | 直接不展示，不出现“已归档”提示 |
+| 内部验证不是认证 | “材料筛选与应用验证”，并列出具体测试项目 |
+| SGS/中纺标第三方检测 | “检测机构 / 项目 / 标准 / 日期”，不写“可靠”或自行升级为认证 |
+| care_slug 继承 | 用户只看到对应系列或产品的洗护入口 |
+| 供应链主张范围受限 | 只描述已执行的材料选择、工艺协同和批次资料管理 |
+
+页面文案自检：如果一句话主要在解释“系统为什么这样显示”“我们不能说什么”或“后台如何关联”，它就不属于官网文案。
 
 ---
 
-## 4. 全局组件规范
+# 第二部分：信息架构
 
-### 4.1 Header（导航栏）
+## 4. 导航与页面体系
 
-> **参考风格**：GORE-TEX 官网 header — 纯黑背景、极简、logo + 导航 + 图标，无多余装饰。
+### 4.1 一级导航
 
-**布局与行为**
-- 固定定位，`top: 0`，z-index: 50，宽度 100%；
-- 高度：60px（桌面）/ 56px（移动端）；
-- 背景色：始终 `#0D0D0D`，下边框 1px `rgba(255,255,255,0.08)`；
-- 页面水平内边距：48px（桌面）/ 24px（移动端）；
-- 最大内容宽度：1440px，居中；
-- Flex 布局：`justify-content: space-between`，三栏结构。
-
-**三栏结构**
-```
-[左栏: Logo]        [中栏: 导航链接]              [右栏: 功能图标]
-港怡科技             首页  面料数据库  终端装备      🌐  🔍
-                     探索无氟未来  服务与支持
+```text
+首页
+材料系列
+应用方案
+技术创新
+服务与支持
+联系我们
 ```
 
-**Logo**
-- 未上传时：显示 SVG 文字 Logo"港怡科技"，高 28px，白色；
-- 上传后：显示图片 Logo，高 28px，宽度自适应；
-- 点击返回首页 `/`。
+- “材料系列”回答有什么；
+- “应用方案”回答用在哪里；
+- “技术创新”分开展示膜、复合、无氟染整、材料与供应链、测试与验证；
+- “服务与支持”回答客户如何从需求进入选材、打样、验证和交付；
+- “联系我们”收集可以直接进入项目判断的结构化需求；
+- 搜索和语言未实现前隐藏或降低视觉权重。
 
-**导航链接**
-- 字体：13px，font-weight: 500，`#AAAAAA`；
-- 间距：gap: 32px；
-- Hover：`#FFFFFF`，过渡 0.25s；
-- 当前页面：`#FFFFFF`，底部 1px 白色下划线（opacity: 0.6）；
-- 导航项由后台 `navigation` 表配置，默认 5 项。
+### 4.2 页面与路由
 
-**功能图标（右栏）**
-- 地球图标（`Globe`，语言切换）+ 搜索图标（`Search`），20px，`#AAAAAA`；
-- Hover：`#FFFFFF`；
-- 先占位，二期实现功能。
+- `/`：品牌和业务总入口；
+- `/fabrics`：Otter、Rayo、Kais 与 SKU；
+- `/equipment`：按终端品类和场景选择材料；
+- `/pfas-free-innovation`：技术创新正式路由；`/fluorine-free` 只保留兼容重定向；
+- `/services`：选材、样品、复合开发、测试验证、数字资产与交付支持；
+- `/contact`：结构化项目询盘和合作；
+- `/admin`：内容管理。
 
-**移动端**
-- 汉堡菜单图标，点击展开全屏黑色遮罩；
-- 菜单项纵向排列，22px，`#FFFFFF`，行高 2.5。
+不新增 Otter、Rayo、Kais 三套独立 React 页面，也不新增 Kais 专用网站或后台。
 
-**动效**
-- 页面加载时：导航栏从上方滑入（`y: -100% → 0`，0.5s，delay 0.2s）。
+## 5. 首页内容顺序
 
-### 4.2 Footer（页脚）
-
-**布局**
-- 背景色：`#0D0D0D`；
-- 上边框：1px `rgba(255,255,255,0.08)`；
-- 页面水平内边距：48px（桌面）/ 24px（移动端）；
-- 上内边距：40px，下内边距：32px；
-- 最大内容宽度：1440px，居中；
-- Flex：`justify-content: space-between`，桌面单行，移动端换行。
-
-**内容结构**
-```
-[左栏]                              [右栏: 社交媒体]
-© 2026 港怡科技 版权所有             [微信] [小红书] [抖音]
-隐私政策 | ICP备案号（占位）
+```text
+Hero：港翼是什么
+→ 技术产业化路径
+→ 三个技术价值
+→ 民用/特种双入口
+→ Otter/Rayo/Kais
+→ 测试证据
+→ 样品与技术需求 CTA
 ```
 
-**左栏**
-- 版权文字：12px，`#666666`；
-- 链接：隐私政策、ICP 备案号，12px，`#666666`，hover `#AAAAAA`；
-- 内容由 `footer_config` 表维护。
-
-**右栏：社交媒体**
-- 图标：微信（自定义 SVG）、小红书（自定义 SVG）、抖音（自定义 SVG），22px，`#666666`；
-- 微信 hover：向上弹出二维码浮层（200×200px，白色背景，圆角 8px，阴影）；
-  - 未上传二维码时：浮层显示"请关注港怡科技公众号"文字；
-- 小红书/抖音 hover：向上弹出账号信息浮层（背景 `#1A1A1A`，文字 `#FFFFFF`）；
-- 浮层动画：`opacity 0.2s, transform 0.2s`。
-
-**后台管理入口（隐蔽）**
-- 位置：footer 内部最右侧（社交媒体图标右侧），或作为 `position: fixed` 悬浮于右下角；
-- 图标：`Settings`（齿轮），16px；
-- 颜色：`#333333`（几乎不可见），hover `#666666`；
-- 点击跳转 `/admin`。
-
----
-
-## 5. 页面模块详细设计
-
----
-
-### 5.1 首页 (Home) — 高性能防护材料品牌入口
-
-> **参考风格**：GORE-TEX / eVent / Arc'teryx 材料技术页 — 真实面料、膜层结构、户外应用场景、克制排版。
-
-#### Hero Section
-
-**布局**
-- 全屏高度（`100vh` / `100dvh`），全屏宽度；
-- 背景层：
-  - 有数据时：CMS 配置的图片/视频，`object-fit: cover`；
-  - 无数据时：使用深色真实面料微距/雨水视频占位（或静态图），而非抽象科技纹理；
-- 背景叠加层：线性渐变 `rgba(0,0,0,0.4)` → `rgba(0,0,0,0.65)`，确保文字可读；
-- 内容层：绝对定位居中，`text-align: center`。
-
-**内容**
-```
-[标签 — 10px，uppercase，letter-spacing: 3px，Technical Green 薄荷绿]
-PFAS-FREE PERFORMANCE MATERIALS
-
-[主标题 — 48px–56px，font-weight: 700，#FFFFFF，行高 1.15]
-UHMWPE 微孔膜
-构建下一代无氟防护面料
-
-[副标题 — 18px–20px，font-weight: 400，#CCCCCC，行高 1.6，max-width: 560px]
-以超薄 UHMWPE 微孔膜、无氟复合体系与功能织物结构为核心，为户外、通勤、防护与运动装备提供轻量、防水透湿、高强度的材料解决方案。
-
-[按钮组 — flex，gap: 16px，margin-top: 40px]
-[查看材料体系]    [申请样品测试]
-```
-
-**按钮样式**
-
-| 按钮 | 样式 |
-|------|------|
-| **查看材料体系（主按钮）** | 背景 `#FFFFFF`，文字 `#1A1A1A`，padding: 14px 36px，font: 14px/500，无圆角。Hover：背景 `#EDEDED`，`scale(1.02)`。 |
-| **申请样品测试（次按钮）** | 背景 `rgba(255,255,255,0.12)`，文字 `#FFFFFF`，边框 1px `rgba(255,255,255,0.25)`，padding: 14px 36px，font: 14px/500，无圆角。Hover：背景 `rgba(255,255,255,0.2)`。 |
-
-**动效**
-- 背景：从 `scale(1.08) opacity: 0` → `scale(1) opacity: 1`，1.2s；
-- 内容依次入场（stagger 0.15s），缓动 `cubic-bezier(0.22, 1, 0.36, 1)`。
-
-**CMS 字段**
-| 字段 | 类型 | 默认值 |
-|------|------|--------|
-| hero_tag | string | "PFAS-FREE PERFORMANCE MATERIALS" |
-| hero_title | string | "UHMWPE 微孔膜\n构建下一代无氟防护面料" |
-| hero_slogan | string | "以超薄 UHMWPE 微孔膜、无氟复合体系与功能织物结构为核心，为真实装备提供可测试、可复合、可导入的材料解决方案。" |
-| hero_background | media | 真实面料/雨水微距占位 |
-| primary_btn_text | string | "查看材料体系" |
-| primary_btn_link | string | "/fabrics" |
-| secondary_btn_text | string | "申请样品测试" |
-| secondary_btn_link | string | "/contact?sample=1" |
-
-#### 首页其它区块
-
-首页后续区块结构按《视觉与文案策略 v2》执行：
-
-- **Block 2 — Material System**：从膜到面料的无氟防护体系（外层织物 / UHMWPE 微孔膜 / 复合胶层 / 内层织物）
-- **Block 3 — Product Platforms**：三大材料平台（Otter / Kais / Rayo）
-- **Block 4 — Verified by Testing**：性能测试验证（静水压、透湿、剥离强力、洗后耐久等）
-- **Block 5 — Applications**：真实装备应用场景（户外硬壳、城市通勤、防护装备、鞋材与装备）
-- **Block 6 — Sample Request**：申请样品，进入测试
----
-
-### 5.2 面料数据库 (FabricDatabase)
-
-#### 5.2.1 页面结构
-
-```
-[页面标题区 — 深黑背景]
-  标签: PERFORMANCE MATERIAL SYSTEMS
-  标题: 材料体系
-  描述: 三大核心平台，覆盖防水透湿、防护复合与高防晒导湿应用
-
-[材料平台展示 — 卡片网格]
-  Otter 平台卡片 → 点击展开系列详情
-  Kais 平台卡片
-  Rayo 平台卡片
-
-[性能测试与认证 — 独立区块]
-  测试报告列表（PDF/图片）
-  点击打开文件浏览器（支持翻页）
-```
-
-#### 5.2.2 页面标题区
-- 背景：`#0D0D0D`，高度 35vh（最小 240px）；
-- 标签、标题、描述居中或左对齐（80px 内边距）；
-- **CMS 字段**：`page_tag`, `page_title`, `page_subtitle`。
-
-#### 5.2.3 材料平台卡片网格
-
-**布局**
-- 背景：`#EDEDED`；
-- 内边距：80px 48px；
-- 网格：3 列（桌面）/ 1 列（移动端），gap: 24px。
-
-**平台卡片样式**
-- 背景：`#FFFFFF`；
-- 宽高比：4:3 或 16:10；
-- 无圆角；
-- 内边距：32px；
-- 内容：
-  - 平台名称：28px，bold，`#1A1A1A`；
-  - 平台副标题（英文）：12px，uppercase，`#888888`；
-  - 平台描述：14px，`#666666`，2 行截断；
-  - 底部箭头：→，hover 右移 4px。
-- hover：`translateY(-4px)`，过渡 0.3s，左侧出现 4px Technical Green 竖条装饰。
-
-**点击交互**
-- 点击卡片 → 在当前页展开/或路由到系列详情；
-- 系列详情页/抽屉：
-  - 顶部：系列大图 + 系列名称 + 系列描述；
-  - 下方：该系列所有 SKU 的货架卡片网格；
-  - SKU 卡片：产品图（1:1 或 3:4）、SKU 名称、产品特点关键词标签。
-
-**默认数据**
-- 3 个平台（Otter / Kais / Rayo）
-- 每个平台 6 个 SKU，参数随机生成合理值。
-
-**CMS 维护**
-- 系列/平台：增删改查（名称、slug、描述、封面图、排序）；
-- SKU：增删改查（名称、SKU 编码、所属系列、图片、特点标签 JSON、参数 JSON）。
-
-#### 5.2.4 性能测试与认证
-
-**布局**
-- 背景：`#FFFFFF`；
-- 上下内边距：80px；
-- 标题：性能测试与认证（28px，bold）；
-- 副标题：我们的每一款面料均通过严格的国际标准测试（14px，`#666666`）。
-
-**测试报告列表**
-- 网格：3 列（桌面）/ 2 列（平板）/ 1 列（移动端），gap: 24px；
-- 报告卡片：
-  - 缩略图区：宽高比 3:4，背景 `#F5F5F5`；
-    - 图片文件：直接显示图片；
-    - PDF 文件：显示第一页缩略图（后端生成）；
-    - 无文件：灰色占位 + 文档图标；
-  - 报告名称：16px，bold；
-  - 文件类型标签：11px，uppercase，背景 `#EDEDED`，padding: 4px 8px；
-  - 上传日期：13px，`#888888`。
-
-**文件浏览器（点击报告卡片后）**
-- 在当前页打开，使用模态层/全屏覆盖；
-- 背景：`#0D0D0D`（95% 不透明遮罩）；
-- 内容区：
-  - **图片文件**：居中展示，最大宽度 90vw，最大高度 80vh，支持缩放拖拽；
-    - 如有多张图片：底部缩略图条 + 左右箭头翻页；
-  - **PDF 文件**：使用 `react-pdf` 渲染，页面居中；
-    - 顶部工具栏：当前页码 / 总页码、上一页、下一页、放大、缩小、下载；
-    - 键盘支持：← → 翻页，ESC 关闭；
-    - 触摸支持：滑动翻页；
-  - **SVG 文件**：直接嵌入，可缩放；
-- 关闭按钮：右上角 ×，40px，白色。
----
-
-### 5.3 终端装备 (EndUseEquipment)
-
-#### 5.3.1 页面结构
-
-```
-[页面标题区 — 深黑背景]
-
-[Tab 导航栏 — 粘性定位]
-  [All] [Latent] [U-Line] [P-Line] [A-Line]
-
-[品类卡片列表 — 横条卡片]
-  Latent 卡片 → 点击展开产品货架
-  U-Line 卡片
-  P-Line 卡片
-  A-Line 卡片
-
-[产品货架浮层/展开区]
-  品类名称
-  产品卡片网格（产品图 + 名称 + 特点标签）
-```
-
-#### 5.3.2 页面标题区
-- 背景：`#0D0D0D`，高度 35vh；
-- 标签：END USE & EQUIPMENT；
-- 标题：终端装备；
-- 描述：四大品类，覆盖全场景功能需求；
-- **CMS 字段**：`page_tag`, `page_title`, `page_subtitle`。
-
-#### 5.3.3 Tab 导航栏
-
-**布局**
-- 背景：`#FFFFFF`；
-- 粘性定位（`top: 60px`），z-index: 40；
-- 下边框：1px `#E8E8E8`；
-- 内容居中或左对齐（48px 内边距）。
-
-**Tab 选项**
-- All / Latent / U-Line / P-Line / A-Line；
-- 字体：13px，font-weight: 500；
-- 未选中：`#888888`；
-- 选中：`#1A1A1A`，底部 2px 粗线；
-- 切换：内容区淡入淡出（0.3s）。
-
-**数据**
-- Tab 名称由 `equipment_categories` 表维护。
-
-#### 5.3.4 品类横条卡片
-
-**布局**
-- 每个品类一个横条卡片，全宽；
-- 高度：200px（桌面）/ 160px（移动端）；
-- 卡片间距：16px；
-- 点击展开该品类的产品货架。
-
-**卡片视觉效果（核心设计）**
-```
-┌────────────────────────────────────────────────────────────────┐
-│                                                                │
-│  [白色区域 30%]                    [渐变过渡区]     [无色区域]   │
-│                                                                │
-│   Latent                        渐变白→透明      （透出页面背景）│
-│   隐形防护层，日常通勤与商务                     或显示背景图    │
-│   场景的低调选择                                                │
-│                                                                │
-└────────────────────────────────────────────────────────────────┘
-```
-
-**具体样式**
-- 卡片容器：`position: relative`，`overflow: hidden`；
-- 默认状态：
-  - 左侧 30%：纯白色背景 `#FFFFFF`；
-  - 中间：线性渐变 `linear-gradient(to right, #FFFFFF 30%, rgba(255,255,255,0) 70%)`；
-  - 右侧：透明，透出下方页面背景（`#EDEDED`）；
-  - 左侧文字区：padding: 40px；
-- Hover 状态：
-  - 背景图淡入显示（`opacity: 0 → 1`），图片 `object-fit: cover`，覆盖整个卡片；
-  - 叠加一层从左到右的渐变遮罩：`linear-gradient(to right, rgba(255,255,255,0.95) 25%, rgba(255,255,255,0.4) 60%, rgba(0,0,0,0.3) 100%)`，确保左侧文字始终可读；
-  - 左侧文字：品类名 `scale(1.02)`，描述文字 opacity 提升；
-  - 整体：`translateX(8px)` 或轻微放大，过渡 0.4s `cubic-bezier(0.22, 1, 0.36, 1)`；
-- 无背景图时：
-  - Hover 背景变为 `#E8E8E8`（左侧白色区域过渡到灰色）；
-  - 右侧显示微妙的几何纹理（CSS pattern）。
-
-**左侧文字区**
-- 品类名：24px，bold，`#1A1A1A`；
-- 品类描述：14px，`#666666`，max-width: 280px，2-3 行；
-- 产品数量：11px，uppercase，`#888888`，"4 款产品"。
-
-**点击交互**
-- 点击卡片 → 在该卡片下方展开产品货架区（手风琴效果）；
-- 展开动画：`height: 0 → auto`，`opacity: 0 → 1`，0.4s；
-- 再次点击 → 收起；
-- 同时只能展开一个品类（或允许多个，根据体验决定，推荐单个）。
-
-#### 5.3.5 产品货架区
-
-**布局**
-- 展开后显示在对应品类卡片下方；
-- 背景：`#FFFFFF`；
-- 内边距：48px；
-- 顶部显示品类名称 + 关闭按钮。
-
-**产品卡片网格**
-- 网格：4 列（桌面）/ 2 列（平板）/ 1 列（移动端），gap: 20px；
-- 产品卡片：
-  - 背景：`#F9F9F9`；
-  - 无圆角；
-  - 图片区：1:1 比例，背景 `#EDEDED`；
-  - 内容区：padding: 20px；
-  - 产品名：16px，bold；
-  - 特点标签：flex wrap，gap: 8px；
-    - 每个标签：11px，uppercase，背景 `#EDEDED`，padding: 4px 10px；
-  - hover：图片 `scale(1.05)`，卡片 `translateY(-4px)`。
-
-**CMS 维护**
-- 品类：增删改查（名称、slug、描述、背景图、排序）；
-- 产品：增删改查（名称、所属品类、图片、特点标签 JSON、排序）。
-
-**默认数据**
-- 4 个品类（Latent / U-Line / P-Line / A-Line）
-- 每个品类 4 个产品，名称和特点随机生成。
-
----
-
-### 5.4 探索无氟未来 (FluorineFreeFuture)
-
-#### 页面说明
-- 目前为**空页面占位**，预留科技展示页框架；
-- 背景：`#0D0D0D`；
-- 居中显示：
-  - 标签：FLUORINE FREE FUTURE
-  - 标题：探索无氟未来
-  - 描述：页面建设中，敬请期待
-  - 返回首页按钮
-- **CMS 字段**：`page_tag`, `page_title`, `page_subtitle`, `is_under_construction`（布尔值）。
-
----
-
-### 5.5 服务与支持 (ServicesSupport)
-
-#### 5.5.1 页面结构
-
-```
-[页面标题区 — 深黑背景]
-
-[双栏布局]
-  [左侧：侧栏导航 — 固定/粘性]
-    关于我们
-    新闻中心
-    开发者支持
-    洗护指南
-    FAQs
-
-  [右侧：内容区 — Tab 切换]
-    ├─ 关于我们
-    │   ├─ 公司定位
-    │   ├─ Slogan
-    │   ├─ 公司理念
-    │   └─ 发展里程碑（可视化时间线）
-    │
-    ├─ 新闻中心
-    │   └─ 新闻卡片网格
-    │
-    ├─ 开发者支持
-    │   └─ 占位页面
-    │
-    ├─ 洗护指南
-    │   └─ 图标+文本列表
-    │
-    └─ FAQs
-        └─ 手风琴问答
-```
-
-#### 5.5.2 页面标题区
-- 背景：`#0D0D0D`，高度 35vh；
-- 标签：SERVICES & SUPPORT；
-- 标题：服务与支持；
-- 描述：全方位服务体系，助力您的每一个项目；
-- **CMS 字段**：`page_tag`, `page_title`, `page_subtitle`。
-
-#### 5.5.3 侧栏导航
-
-**布局**
-- 左侧固定宽度：240px（桌面）；
-- 移动端：横向滚动 Tab 或下拉选择；
-- 背景：`#FFFFFF`（内容区背景为 `#EDEDED`）；
-- 内边距：24px 0。
-
-**导航项**
-| 项 | 图标 |
-|----|------|
-| 关于我们 | Building2 |
-| 新闻中心 | Newspaper |
-| 开发者支持 | Code2 |
-| 洗护指南 | Droplets |
-| FAQs | HelpCircle |
-
-**样式**
-- 导航项：padding: 14px 24px，14px，font-weight: 500；
-- 未选中：`#888888`；
-- 选中：`#1A1A1A`，左侧 3px `#1A1A1A` 竖条，背景 `#F5F5F5`；
-- hover：背景 `#F9F9F9`；
-- 过渡：0.2s。
-
-#### 5.5.4 关于我们模块
-
-**布局**
-- 背景：`#EDEDED`；
-- 内边距：48px；
-- 各区块垂直排列，间距 60px。
-
-**公司定位**
-- 标签：POSITIONING（10px）；
-- 标题：公司定位（28px，bold）；
-- 内容：大段文本（15px，`#666666`，line-height: 1.8）；
-- **CMS 字段**：`positioning_title`, `positioning_content`。
-
-**Slogan**
-- 背景：`#111111`；
-- 内边距：60px 48px；
-- 文字居中：
-  - 引号装饰：大号 `"` 符号，`#333333`，绝对定位；
-  - Slogan 文本：28px，font-weight: 700，`#FFFFFF`，italic；
-- **CMS 字段**：`slogan_text`。
-
-**公司理念**
-- 三列网格（桌面）/ 单列（移动端），gap: 24px；
-- 每个理念卡片：
-  - 背景：`#FFFFFF`；
-  - 内边距：32px；
-  - 编号：48px，font-weight: 900，`#EDEDED`；
-  - 理念标题：18px，bold；
-  - 理念描述：14px，`#666666`；
-- **CMS 字段**：理念列表 JSON（编号、标题、描述）。
-
-**发展里程碑（可视化时间线）**
-- 垂直时间线，居中轴线（2px `#E8E8E8`）；
-- 左右交替排列（桌面），单侧排列（移动端）；
-- 每个节点：
-  - 圆点：12px，`#1A1A1A`，边框 3px `#FFFFFF`；
-  - 年份：18px，bold；
-  - 事件：14px，`#666666`；
-  - 卡片背景：`#FFFFFF`，padding: 24px，无圆角；
-- 入场动画：滚动到视口时，节点从对应方向滑入；
-- **CMS 字段**：里程碑列表（年份、事件、排序）。
-
-#### 5.5.5 新闻中心模块
-
-**布局**
-- 背景：`#EDEDED`；
-- 内边距：48px。
-
-**新闻卡片网格**
-- 网格：3 列（桌面）/ 2 列（平板）/ 1 列（移动端），gap: 24px；
-- 新闻卡片：
-  - 背景：`#FFFFFF`；
-  - 头图区：16:10 比例，背景 `#F5F5F5`；
-  - 内容区：padding: 24px；
-  - 日期：11px，uppercase，`#888888`；
-  - 标题：18px，bold，2 行截断；
-  - 摘要：14px，`#666666`，3 行截断；
-  - hover：图片 `scale(1.05)`，卡片 `translateY(-4px)`。
-
-**新闻详情**
-- 点击卡片 → 在当前页右侧滑出抽屉 / 或展开全文；
-- 抽屉内容：头图、标题、日期、正文（富文本 HTML）、插图网格；
-- **CMS 字段**：标题、封面图、正文 HTML、插图列表、发布日期。
-
-**后台编辑器**
-- 富文本编辑器：TipTap 或 React Quill；
-- 支持：加粗、斜体、标题、列表、链接、图片插入（从媒体库选择）、引用；
-- 图片上传：直接调用媒体库 API。
-
-#### 5.5.6 开发者支持模块
-
-- 目前为**占位页面**；
-- 显示：开发者文档与 API 即将开放，敬请期待；
-- 提供一个邮箱联系入口。
-
-#### 5.5.7 洗护指南模块
-
-**布局**
-- 背景：`#FFFFFF`；
-- 内边距：48px；
-- 网格：2 列（桌面）/ 1 列（移动端），gap: 24px。
-
-**指南项**
-- 每个指南：
-  - 图标：40px，`#1A1A1A`（Lucide 图标，如 `Droplets`, `Sun`, `Wind`, `Ban` 等）；
-  - 标题：18px，bold；
-  - 内容：14px，`#666666`，line-height: 1.8；
-  - 分隔：底部 1px `#E8E8E8`。
-- **CMS 字段**：图标名、标题、内容、排序。
-
-#### 5.5.8 FAQs 模块
-
-**布局**
-- 背景：`#EDEDED`；
-- 内边距：48px；
-- 最大宽度：800px。
-
-**手风琴列表**
-- 每个问答：
-  - 问题：16px，bold，`#1A1A1A`，padding: 20px 0；
-  - 下边框：1px `#E8E8E8`；
-  - 右侧：+ / - 图标；
-  - 回答：14px，`#666666`，展开时淡入；
-- 同时只展开一项（或允许多项）；
-- **CMS 字段**：问题、答案、分类、排序。
-
----
-
-## 6. 后台管理系统 (Admin)
-
-### 6.1 入口与登录
-
-- **入口**：Footer 右下角齿轮图标 → `/admin`；
-- **登录页**：
-  - 背景：`#0D0D0D`；
-  - 居中卡片：背景 `#1A1A1A`，padding: 48px，宽 400px；
-  - 标题：管理后台（24px，bold，`#FFFFFF`）；
-  - 字段：用户名、密码；
-  - 输入框：背景 `rgba(255,255,255,0.05)`，边框 `#333333`，文字 `#FFFFFF`；
-  - 提交按钮：背景 `#FFFFFF`，文字 `#1A1A1A`，width: 100%；
-  - 首次启动默认账号：`admin / admin123`（强制首次登录后修改密码）。
-- **认证**：JWT Token 存 `localStorage`，API 请求头携带 `Authorization: Bearer <token>`；
-- **路由守卫**：未登录访问 `/admin/*` 重定向到 `/admin/login`。
-
-### 6.2 Admin Dashboard
-
-**布局**
-- 左侧固定侧边栏（宽 240px，背景 `#1A1A1A`）；
-- 右侧内容区（背景 `#0D0D0D`，padding: 40px）；
-- 顶部栏：页面标题 + 管理员名称 + 退出按钮。
-
-**侧边栏导航**
-```
-📊 概览
-─────────────────
-📝 首页管理
-🧵 面料系列管理
-📄 测试报告管理
-🏔️ 终端装备管理
-🌱 无氟未来管理
-🛠️ 服务与支持管理
-📰 新闻管理
-🖼️ 多媒体资源库
-⚙️ 系统设置
-```
-
-### 6.3 各管理模块功能
-
-#### 6.3.1 首页管理
-- 表单编辑：hero_tag, hero_title, hero_slogan, hero_background（图片上传/选择）, 主/次按钮文案与链接；
-- 实时预览按钮：新开窗口带 `?preview=true`。
-
-#### 6.3.2 面料系列管理
-- **系列列表**：表格展示（名称、SKU 数量、排序、操作）；
-- **系列编辑/新增**：名称、slug、描述、封面图；
-- **SKU 管理（嵌套在系列内）**：
-  - 表格：SKU 名称、编码、图片、操作；
-  - 编辑：名称、编码、图片上传、特点标签（逗号分隔或标签输入）、参数 JSON 编辑（可视化表单）；
-  - 支持拖拽排序。
-
-#### 6.3.3 测试报告管理
-- 列表：缩略图、标题、文件类型、上传日期、操作；
-- 新增：标题、文件上传（PDF/PNG/JPG/JPEG/SVG）、分类；
-- 上传后后端自动生成缩略图；
-- 支持替换文件。
-
-#### 6.3.4 终端装备管理
-- **品类列表**：名称、slug、描述、背景图、产品数量、排序；
-- **品类编辑**：名称、slug、描述、背景图上传、排序；
-- **产品管理（嵌套在品类内）**：
-  - 表格：产品名、图片、特点标签、操作；
-  - 编辑：名称、图片、特点标签（标签输入组件）；
-  - 支持拖拽排序。
-
-#### 6.3.5 无氟未来管理
-- 目前简单：是否显示"建设中"开关、页面文案编辑；
-- 预留扩展字段。
-
-#### 6.3.6 服务与支持管理
-- **关于我们**：公司定位、Slogan、理念列表（动态增删）、里程碑列表（动态增删）；
-- **洗护指南**：图标选择器（Lucide 图标下拉）、标题、内容、排序；
-- **FAQs**：问题、答案、分类、排序，支持批量增删；
-- **开发者支持**：占位文案编辑。
-
-#### 6.3.7 新闻管理
-- 列表：封面缩略图、标题、发布日期、操作；
-- 编辑：
-  - 标题、封面图上传；
-  - 富文本编辑器（TipTap）：支持格式、链接、图片插入；
-  - 插图管理：从媒体库选择或上传；
-  - 发布日期选择器；
-- 支持草稿/已发布状态。
-
-#### 6.3.8 多媒体资源库
-- **网格展示**：缩略图、文件名、尺寸、上传时间、引用状态；
-- **上传**：拖拽上传或多选上传，支持图片/GIF/PDF；
-- **操作**：预览、复制链接、删除（被引用时提示警告）、替换；
-- **搜索**：按文件名过滤；
-- **筛选**：按类型（图片/PDF/全部）。
-
-#### 6.3.9 系统设置
-- **导航配置**：拖拽排序导航项，编辑名称和链接；
-- **页脚配置**：版权文字、隐私政策链接、ICP 信息；
-- **社交媒体**：上传微信二维码、填写各平台账号；
-- **Logo 上传**：替换网站 Logo；
-- **管理员密码修改**：当前密码、新密码、确认密码。
-
-### 6.4 通用编辑界面规范
-
-```
-[页面标题]                    [保存按钮] [预览按钮]
-
-┌─────────────────────────────────────────────────────────┐
-│ 表单区域                                                 │
-│                                                         │
-│  标题              [输入框 ▓▓▓▓▓▓▓▓▓▓▓▓▓▓]              │
-│  Slogan            [文本域 ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓]        │
-│  背景图片          [缩略图] [更换] [删除]                │
-│  按钮文案 1        [输入框]                              │
-│  按钮链接 1        [输入框]                              │
-│                                                         │
-└─────────────────────────────────────────────────────────┘
-```
-
-- 未保存字段用黄色边框 `#FFAA00` 高亮；
-- 保存成功后 Toast 提示，2s 自动消失；
-- 所有列表支持分页（每页 20 条）。
-
----
-
-## 7. 数据库设计（SQLite）
-
-```sql
--- 首页配置
-CREATE TABLE home_config (
-  id INTEGER PRIMARY KEY CHECK (id = 1),
-  hero_tag TEXT DEFAULT 'TECHNOLOGY FABRIC',
-  hero_title TEXT DEFAULT '科技面料\n定义未来',
-  hero_slogan TEXT DEFAULT '以创新材料科技，重塑户外与运动的边界',
-  hero_background TEXT,
-  primary_btn_text TEXT DEFAULT '探索无氟科技面料',
-  primary_btn_link TEXT DEFAULT '/fluorine-free',
-  secondary_btn_text TEXT DEFAULT '探索终端装备',
-  secondary_btn_link TEXT DEFAULT '/equipment',
-  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-
--- 页面通用配置
-CREATE TABLE page_configs (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  page_key TEXT UNIQUE NOT NULL, -- home, fabrics, equipment, fluorine-free, services
-  page_tag TEXT,
-  page_title TEXT,
-  page_subtitle TEXT,
-  hero_background TEXT,
-  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-
--- 导航
-CREATE TABLE navigation (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  label TEXT NOT NULL,
-  link TEXT NOT NULL,
-  order_index INTEGER DEFAULT 0
-);
-
--- 页脚配置
-CREATE TABLE footer_config (
-  id INTEGER PRIMARY KEY CHECK (id = 1),
-  copyright TEXT DEFAULT '© 2026 港怡科技 版权所有',
-  privacy_policy_link TEXT DEFAULT '#',
-  icp_number TEXT DEFAULT 'ICP备案号（占位）',
-  icp_link TEXT DEFAULT '#',
-  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-
--- 社交媒体
-CREATE TABLE social_media (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  platform TEXT UNIQUE NOT NULL, -- wechat, xiaohongshu, douyin
-  account TEXT,
-  qrcode_url TEXT
-);
-
--- 面料系列
-CREATE TABLE fabric_series (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  name TEXT NOT NULL,
-  slug TEXT UNIQUE NOT NULL,
-  description TEXT,
-  cover_image TEXT,
-  order_index INTEGER DEFAULT 0,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-
--- 面料 SKU
-CREATE TABLE fabric_sku (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  series_id INTEGER NOT NULL,
-  name TEXT NOT NULL,
-  sku_code TEXT,
-  image TEXT,
-  features TEXT, -- JSON ["防水透气", "无氟"]
-  specifications TEXT, -- JSON {"waterproof": "20000mm", ...}
-  order_index INTEGER DEFAULT 0,
-  FOREIGN KEY (series_id) REFERENCES fabric_series(id) ON DELETE CASCADE
-);
-
--- 测试报告
-CREATE TABLE test_reports (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  title TEXT NOT NULL,
-  file_url TEXT NOT NULL,
-  file_type TEXT, -- pdf, png, jpg, jpeg, svg
-  thumbnail_url TEXT,
-  category TEXT,
-  order_index INTEGER DEFAULT 0,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-
--- 终端装备品类
-CREATE TABLE equipment_categories (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  name TEXT NOT NULL,
-  slug TEXT UNIQUE NOT NULL,
-  description TEXT,
-  bg_image TEXT,
-  order_index INTEGER DEFAULT 0,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-
--- 终端装备产品
-CREATE TABLE equipment_products (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  category_id INTEGER NOT NULL,
-  name TEXT NOT NULL,
-  image TEXT,
-  features TEXT, -- JSON ["轻量化", "防风"]
-  order_index INTEGER DEFAULT 0,
-  FOREIGN KEY (category_id) REFERENCES equipment_categories(id) ON DELETE CASCADE
-);
-
--- 关于我们
-CREATE TABLE about_us (
-  id INTEGER PRIMARY KEY CHECK (id = 1),
-  positioning_title TEXT DEFAULT '公司定位',
-  positioning_content TEXT,
-  slogan_text TEXT,
-  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-
--- 理念
-CREATE TABLE philosophies (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  number INTEGER,
-  title TEXT NOT NULL,
-  description TEXT,
-  order_index INTEGER DEFAULT 0
-);
-
--- 里程碑
-CREATE TABLE milestones (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  year TEXT NOT NULL,
-  event TEXT NOT NULL,
-  order_index INTEGER DEFAULT 0
-);
-
--- 新闻
-CREATE TABLE news (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  title TEXT NOT NULL,
-  cover_image TEXT,
-  content TEXT, -- HTML
-  images TEXT, -- JSON ["url1", "url2"]
-  status TEXT DEFAULT 'published', -- draft, published
-  published_at DATETIME,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-
--- 洗护指南
-CREATE TABLE care_guides (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  icon TEXT, -- Lucide icon name
-  title TEXT NOT NULL,
-  content TEXT,
-  order_index INTEGER DEFAULT 0
-);
-
--- FAQs
-CREATE TABLE faqs (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  question TEXT NOT NULL,
-  answer TEXT NOT NULL,
-  category TEXT,
-  order_index INTEGER DEFAULT 0
-);
-
--- 管理员
-CREATE TABLE users (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  username TEXT UNIQUE NOT NULL,
-  password_hash TEXT NOT NULL,
-  must_change_password INTEGER DEFAULT 0,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-```
-
----
-
-## 8. API 设计（RESTful）
-
-### 8.1 公共 API（无需认证）
-
-```
-GET  /api/config/home              → 首页配置
-GET  /api/config/page/:pageKey     → 页面通用配置
-GET  /api/config/navigation        → 导航列表
-GET  /api/config/footer            → 页脚配置
-GET  /api/config/social            → 社交媒体
-
-GET  /api/fabric-series            → 面料系列列表
-GET  /api/fabric-series/:slug      → 系列详情（含 SKU）
-GET  /api/fabric-sku/:id           → SKU 详情
-
-GET  /api/test-reports             → 测试报告列表
-GET  /api/test-reports/:id         → 报告详情（含文件 URL）
-
-GET  /api/equipment-categories     → 装备品类列表
-GET  /api/equipment-categories/:slug/products → 品类产品列表
-
-GET  /api/about-us                 → 关于我们完整数据
-GET  /api/news                     → 新闻列表
-GET  /api/news/:id                 → 新闻详情
-GET  /api/care-guides              → 洗护指南列表
-GET  /api/faqs                     → FAQs 列表
-```
-
-### 8.2 管理 API（需 JWT）
-
-所有管理 API 前缀 `/api/admin`，需 Header: `Authorization: Bearer <token>`
-
-```
-POST /api/admin/login              → 登录，返回 JWT
-POST /api/admin/logout             → 登出
-
--- 首页管理
-PUT  /api/admin/config/home        → 更新首页配置
-
--- 面料管理
-GET    /api/admin/fabric-series
-POST   /api/admin/fabric-series
-PUT    /api/admin/fabric-series/:id
-DELETE /api/admin/fabric-series/:id
-
-GET    /api/admin/fabric-sku?series_id=
-POST   /api/admin/fabric-sku
-PUT    /api/admin/fabric-sku/:id
-DELETE /api/admin/fabric-sku/:id
-
--- 测试报告管理
-GET    /api/admin/test-reports
-POST   /api/admin/test-reports     → 支持 multipart 文件上传
-DELETE /api/admin/test-reports/:id
-
--- 终端装备管理
-GET    /api/admin/equipment-categories
-POST   /api/admin/equipment-categories
-PUT    /api/admin/equipment-categories/:id
-DELETE /api/admin/equipment-categories/:id
-
-GET    /api/admin/equipment-products?category_id=
-POST   /api/admin/equipment-products
-PUT    /api/admin/equipment-products/:id
-DELETE /api/admin/equipment-products/:id
-
--- 关于我们 / 新闻 / 洗护指南 / FAQs / 里程碑 / 理念
-类似的 CRUD...
-
--- 系统设置
-PUT  /api/admin/config/navigation
-PUT  /api/admin/config/footer
-PUT  /api/admin/config/social
-PUT  /api/admin/config/logo       → Logo 上传
-PUT  /api/admin/users/password    → 修改密码
-
--- 文件上传
-POST /api/admin/upload            → 通用文件上传，返回 URL
-GET  /api/admin/media             → 媒体库列表
-DELETE /api/admin/media/:filename → 删除文件
-```
-
----
-
-## 9. 响应式断点
-
-| 断点 | 宽度 | 关键变化 |
-|------|------|---------|
-| 桌面大屏 | ≥1440px | 页面内边距 48px，最大内容宽度 1280px |
-| 桌面 | 1024px–1439px | 页面内边距 48px |
-| 平板 | 768px–1023px | 页面内边距 32px，网格降为 2 列 |
-| 移动端 | <768px | 页面内边距 24px，单列，汉堡菜单，侧栏变顶部 Tab |
-
----
-
-## 10. UI 设计规范
-
-### 10.1 色彩系统
-
-**主色（占 85%–90%）**
-
-| 名称 | 色值 | 用途 |
-|------|------|------|
-| Graphite Black / 石墨黑 | `#0D0D0D` | Hero 背景、Header/Footer 背景 |
-| Deep Charcoal / 深炭灰 | `#1A1A1A` | 主文字、深区块背景 |
-| Mist White / 雾白 | `#F5F5F5` | 浅背景、内容区 |
-| Cool Silver / 冷银灰 | `#EDEDED` / `#CCCCCC` | 主背景、分割线、次要信息 |
-| 纯白 | `#FFFFFF` | 按钮、卡片、高对比文字 |
-
-**点缀色（占 5%–10%，仅作局部强调）**
-
-| 名称 | 色值 | 用途 |
-|------|------|------|
-| Technical Green / 技术薄荷绿 | `#2DD4A0` 或类似低饱和薄荷绿 | 技术标签、参数高亮、按钮 hover、局部线条、图表重点 |
-
-**功能色**
-
-| 用途 | 色值 |
-|------|------|
-| 成功 | `#22AA66` |
-| 错误 | `#FF4444` |
-| 警告 | `#FFAA00` |
-
-**使用规则**
-
-- 薄荷绿只能用于技术标签、参数高亮、按钮 hover、局部线条、图表重点数据；
-- 禁止大面积铺满薄荷绿，避免页面看起来像环保公益或软件仪表盘；
-- 深色背景用于 Hero 与头部/底部，浅灰内容区形成节奏。
-### 10.2 字体规范
-
-- **英文**：Inter（Google Fonts）
-- **中文**：PingFang SC / Microsoft YaHei
-- **字体栈**：`'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif`
-- **标题**：短句、重量感，不使用夸张营销语；避免“未来”“颠覆”“重新定义”等泛化表达；
-  - 一级：48px–56px / font-weight: 700
-  - 二级：32px–36px / font-weight: 700
-  - 三级：28px / font-weight: 700
-  - 四级：22px / font-weight: 700
-  - 五级：18px / font-weight: 700
-- **正文**：每段只讲一个物理事实或应用价值，优先使用材料、结构、测试、应用场景相关词汇；
-  - 字号：13px–16px（line-height: 1.7–1.9）
-- **标签**：10px–11px（letter-spacing: 2px–3px，uppercase）
-
-**推荐表达**
-
-UHMWPE microporous film、PFAS-free laminated system、waterproof-breathable composite、hydrostatic pressure、moisture vapor transmission、peel strength、wash durability、fabric construction、field-ready material solution。
-
-**减少表达**
-
-科技赋能、定义未来、颠覆传统、智能材料生态、打造边界、全场景解决方案、革命性创新。
-### 10.3 间距规范
-
-- **页面水平内边距**：48px（桌面）/ 32px（平板）/ 24px（移动端）
-- **区块垂直间距**：80px / 60px / 48px
-- **卡片内边距**：24px–40px
-- **网格间距**：16px–24px
-
-### 10.4 圆角与阴影
-
-- **卡片/按钮**：无圆角（`0px`）
-- **例外**：二维码浮层圆角 8px，阴影 `0 8px 32px rgba(0,0,0,0.4)`
-
----
-
-## 11. 交互与动效规范
-
-### 11.1 通用过渡
-
-| 场景 | 参数 |
-|------|------|
-| 颜色 | `transition: color 0.25s ease` |
-| 背景 | `transition: background-color 0.25s ease` |
-| 位移 | `transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1)` |
-| 透明度 | `transition: opacity 0.3s ease` |
-
-### 11.2 页面动效
-
-- **淡入上移**：`opacity: 0 → 1`，`translateY(24px) → 0`，0.6s；
-- **数字滚动**：统计数字从 0 到目标值，1.5s；
-- **交错入场**：stagger 0.08s–0.12s；
-- **首页背景**：`scale(1.08) → scale(1)`，1.2s；
-- **终端装备卡片 hover**：`translateX(8px)`，背景图淡入 0.4s。
-
-### 11.3 按钮状态
-
-| 状态 | 样式 |
-|------|------|
-| Hover | 背景色变化 + `scale(1.02)` |
-| Active | `scale(0.98)` |
-| 禁用 | `opacity: 0.4` |
-
----
-
-## 12. 性能与可访问性
-
-- 首屏 < 2s，图片懒加载，WebP 格式；
-- 路由级代码分割；
-- 语义化 HTML，alt 文本必填；
-- 对比度 ≥ 4.5:1；
-- 键盘导航，focus 可见；
-- `prefers-reduced-motion` 支持。
-
----
-
-## 13. 项目结构
-
-```
-web-gangyi/
-├── src/
-│   ├── components/           # 全局组件
-│   │   ├── Header.tsx
-│   │   ├── Footer.tsx
-│   │   ├── SideNav.tsx       # 服务与支持侧栏
-│   │   ├── FabricCard.tsx
-│   │   ├── EquipmentCard.tsx # 终端装备横条卡片
-│   │   ├── ProductShelf.tsx  # 产品货架
-│   │   ├── FileViewer.tsx    # PDF/图片文件浏览器
-│   │   ├── AnimatedCounter.tsx
-│   │   └── Toast.tsx
-│   ├── pages/                # 官网页面
-│   │   ├── Home.tsx
-│   │   ├── FabricDatabase.tsx
-│   │   ├── EndUseEquipment.tsx
-│   │   ├── FluorineFreeFuture.tsx
-│   │   └── ServicesSupport.tsx
-│   ├── admin/                # 后台管理
-│   │   ├── Login.tsx
-│   │   ├── Dashboard.tsx
-│   │   ├── HomeEditor.tsx
-│   │   ├── FabricManager.tsx
-│   │   ├── EquipmentManager.tsx
-│   │   ├── ReportManager.tsx
-│   │   ├── NewsEditor.tsx
-│   │   ├── MediaLibrary.tsx
-│   │   └── Settings.tsx
-│   ├── hooks/
-│   ├── api/                  # 前端 API 封装
-│   ├── types/
-│   └── styles/
-├── server/                   # Express 后端
-│   ├── index.ts              # 入口
-│   ├── db.ts                 # SQLite 初始化 + 默认数据
-│   ├── middleware/
-│   │   ├── auth.ts           # JWT 验证
-│   │   └── upload.ts         # 文件上传
-│   └── routes/
-│       ├── config.ts
-│       ├── fabrics.ts
-│       ├── equipment.ts
-│       ├── reports.ts
-│       ├── services.ts
-│       ├── news.ts
-│       ├── media.ts
-│       └── admin.ts
-├── public/uploads/           # 上传文件目录
-├── db.sqlite                 # 数据库文件（gitignore）
-├── package.json
-├── vite.config.ts
-└── tailwind.config.ts
-```
-
----
-
-## 14. 待确认事项
-
-| 序号 | 事项 | 状态 |
-|------|------|------|
-| 1 | CMS 方案：Express + SQLite 单文件数据库，一条命令启动，是否接受？ | 待确认 |
-| 2 | 首页背景图：未上传时前端 Canvas 生成科技纹理，是否接受？ | 待确认 |
-| 3 | 面料系列默认 SKU 数量：每个系列 6 款，是否足够？ | 待确认 |
-| 4 | 终端装备品类默认产品数量：每个品类 4 款，是否足够？ | 待确认 |
-| 5 | 测试报告 PDF 缩略图：后端生成第一页 PNG，是否接受？ | 待确认 |
-| 6 | 首次登录默认账号：admin / admin123，首次登录强制改密，是否接受？ | 待确认 |
-
----
-
-*文档版本：v3.0*  
-*更新日期：2026-04-28*  
-*技术栈：React 19 + TypeScript + Vite + Tailwind CSS + Express + SQLite*
-
----
-
-# 附录 A：GONYIK Website Visual Style & Copy Strategy v2（完整策略原文）
-
-# GONYIK Website Visual Style & Copy Strategy v2
-
-> 目标：把 GONYIK 官网从“科技软件感”调整为“高性能防护材料品牌感”。  
-> 核心判断：GONYIK 不是 SaaS，不是 AI 平台，也不是普通纺织厂；GONYIK 是以 UHMWPE 微孔膜、复合面料和功能性织物结构为核心的高性能防护材料品牌。
-
----
-
-## 1. 品牌视觉定位
-
-GONYIK 的官网视觉应该接近：
-
-- 高性能材料品牌
-- 户外功能面料 ingredient brand
-- 防水透湿 / 防护 / 防晒材料解决方案
-- 可被品牌、面料厂、成衣厂、鞋材厂采用的技术平台
-
-不应该接近：
-
-- SaaS 软件官网
-- AI 科技平台
-- 区块链 / 半导体 / 数字基础设施官网
-- 抽象未来科技展示页
-
-视觉关键词：
-
-膜、面料、雨水、风、雪、织物纹理、复合层、实验室测试、样布、膜卷、成衣应用、户外环境、材料剖面、真实验证。
-
-避免关键词：
-
-发光粒子、抽象网格、漂浮卡片、玻璃拟态、渐变光球、软件仪表盘、过度动效、无实体对象的科技背景。
-
----
-
-## 2. 首页首屏方向
-
-### 当前问题
-
-原首页方向是：
-
-- TECHNOLOGY FABRIC
-- 科技面料
-- 定义未来
-- 以创新材料科技，重塑户外与运动的边界
-
-这组文案过于泛化。它可以用于任何科技纺织、AI 面料、软件平台、设计工作室，不能立刻建立 GONYIK 的材料身份。
-
-### 新首页首屏文案
+### 5.1 Hero
 
 标签：
 
-PFAS-FREE PERFORMANCE MATERIALS
-
-主标题：
-
-UHMWPE 微孔膜  
-构建下一代无氟防护面料
-
-副标题：
-
-以超薄 UHMWPE 微孔膜、无氟复合体系与功能织物结构为核心，为户外、通勤、防护与运动装备提供轻量、防水透湿、高强度的材料解决方案。
-
-主按钮：
-
-查看材料体系
-
-副按钮：
-
-申请样品测试
-
-英文备用版本：
-
-PFAS-Free Protection, Engineered from UHMWPE Microporous Film.
-
-副标题英文备用：
-
-A material platform for lightweight waterproof-breathable fabrics, protective composites, and next-generation performance apparel.
-
----
-
-## 3. 首页视觉要求
-
-首页首屏必须有明确的物理对象，不允许只用抽象科技背景。
-
-优先级从高到低：
-
-1. 雨水打在深色复合面料上的微距视频或图片
-2. UHMWPE 膜卷展开，局部叠加微孔结构
-3. 三层复合面料剖面：外层织物 / UHMWPE 微孔膜 / 内层织物
-4. 冲锋衣、滑雪服、通勤外套等真实成衣应用
-5. 实验室测试场景：静水压、透湿、剥离强力、洗后测试
-
-禁止使用：
-
-- 纯黑背景上的发光线条
-- 蓝绿渐变科技粒子
-- 大面积玻璃拟态卡片
-- 像数据平台一样的 dashboard
-- 没有材料实物的抽象 3D 图形
-
-首页的第一视觉判断必须是：
-
-“这是一个高性能材料和功能面料品牌。”
-
-而不是：
-
-“这是一个科技软件公司。”
-
----
-
-## 4. 色彩方向
-
-主色：
-
-- Graphite Black / 石墨黑
-- Deep Charcoal / 深炭灰
-- Mist White / 雾白
-- Cool Silver / 冷银灰
-- Technical Green / 技术薄荷绿，仅作点缀
-
-色彩比例：
-
-- 黑、灰、白：85%–90%
-- 薄荷绿：5%–10%
-- 其他强调色：不超过 5%
-
-薄荷绿只能用于：
-
-- 技术标签
-- 参数高亮
-- 按钮 hover
-- 局部线条
-- 图表重点数据
-
-不要大面积铺满薄荷绿。大面积高饱和绿会削弱材料的高级感，使页面更像环保公益或软件仪表盘。
-
----
-
-## 5. 字体与版式
-
-整体版式应偏“材料 datasheet + 户外品牌官网”，不是“软件产品 landing page”。
+> PFAS-FREE HIGH-PERFORMANCE TEXTILES
 
 标题：
 
-- 短句
-- 重量感
-- 不使用夸张营销语
-- 避免“未来”“颠覆”“重新定义”泛化表达
-
-正文：
-
-- 每段只讲一个物理事实或应用价值
-- 优先使用材料、结构、测试、应用场景
-- 不堆空泛形容词
-
-推荐表达：
-
-- UHMWPE microporous film
-- PFAS-free laminated system
-- waterproof-breathable composite
-- hydrostatic pressure
-- moisture vapor transmission
-- peel strength
-- wash durability
-- fabric construction
-- field-ready material solution
-
-减少表达：
-
-- 科技赋能
-- 定义未来
-- 颠覆传统
-- 智能材料生态
-- 打造边界
-- 全场景解决方案
-- 革命性创新
-
----
-
-## 6. 首页结构建议
-
-### Block 1 — Hero
-
-目的：3 秒内让访客知道 GONYIK 是做高性能无氟防护材料的。
-
-内容：
-
-- 标签：PFAS-FREE PERFORMANCE MATERIALS
-- 主标题：UHMWPE 微孔膜，构建下一代无氟防护面料
-- 副标题：以超薄 UHMWPE 微孔膜、无氟复合体系与功能织物结构为核心，为户外、通勤、防护与运动装备提供轻量、防水透湿、高强度的材料解决方案。
-- CTA 1：查看材料体系
-- CTA 2：申请样品测试
-
-视觉：
-
-- 深色真实面料微距
-- 雨水滚落
-- 局部膜层剖面
-- 不使用抽象科技粒子背景
-
----
-
-### Block 2 — Material System
-
-标题：
-
-从膜到面料的无氟防护体系
+> 从一片 RPO 纳米膜开始
+>
+> 打造无氟户外面料与特种场景材料
 
 副标题：
 
-GONYIK 不只提供单一面料，而是围绕 UHMWPE 微孔膜、PUR 复合、无氟整理和织物结构设计，形成可打样、可测试、可导入的材料平台。
+> 港翼联合固纳，将 RPO-TEX 膜、复合工艺与功能基布，转化为可测试、可开发、可交付的面料方案。
 
-模块：
+按钮：
 
-1. 外层织物  
-负责耐磨、手感、外观与应用场景适配。
+- 查看材料系列；
+- 提交应用需求。
 
-2. UHMWPE 微孔膜  
-提供防水、透湿、轻量和高强度的核心功能层。
+首屏只保留三项证明：
 
-3. 复合胶层  
-连接膜与织物，影响剥离强力、透湿保持率和洗后耐久。
+- RPO-TEX 无氟膜；
+- 复合工艺与功能基布；
+- 测试与柔性供应链。
 
-4. 内层织物  
-影响穿着舒适性、排湿效率、噪音和整体手感。
+### 5.2 技术体系入口
 
-视觉：
+使用编辑式左右布局，不再使用三张等宽白卡：
 
-- 三层结构剖面图
-- 真实面料切片或工程示意图
-- 每一层用材料语言标注，不做软件图标卡片
+```text
+左侧：MATERIAL SYSTEM / 技术，从材料开始 / 说明 / 探索技术
+右侧：01 膜技术 → 02 面料复合 → 03 无氟染整
+```
 
----
+三条技术入口采用连续横向内容行和细分隔线。科研来源、固纳关系与 RPO-TEX 的归属进入对应技术分支，不在首页作为三个并列平台概念。
 
-### Block 3 — Product Platforms
+### 5.3 三大面料平台
+
+材料系列区使用深海军蓝背景和图片主导的三列布局，固定顺序：
+
+```text
+蓝标 OTTER / 银标 RAYO  |  红标 KAIS
+```
+
+- 每列使用 4:3 材料或应用图片；
+- 图片下显示系列织标、一句定位和入口；三枚标识均采用“GONYIK 母品牌 + 系列名称 + 识别色”的横向织唛结构；
+- KAIS 前使用细分隔线，表达民用与特种场景边界；
+- 没有 CMS 图片时使用统一面料纹理占位，不退化为纯文字大色块。
+- “蓝标 / 银标 / 红标”仅用于首页三平台并列展示，不替代数据库、详情页和正文中的 OTTER、RAYO、KAIS 正式名称；
+- 识别色固定为 OTTER 蓝、RAYO 银灰、KAIS 暗红。不得借用 GORE-TEX 的菱形轮廓、黑白标版式或保证性文案；参考对象仅限于“一眼区分产品平台”的品牌架构方法；
+- 商标注册完成前只可使用 `TM`，不得使用 `®`。品牌标识作为受控静态资产统一引用，不允许编辑人员在 CMS 中自行改字、改色或重新上传变体；CMS 只维护系列图片、定位文案和链接。
+- 首页使用的横向分层标属于屏幕及印刷识别稿；成品织唛采用双线缝标方向，以双层边线、克制的织纹、层流线符号和系列名称构成。细节必须保证小尺寸织造后仍可辨认，不增加渐变、阴影、微型图标或多段说明文字。
+
+### 5.4 验证体系
+
+首页不罗列跨 SKU 的防水、UPF、防刺或 PFAS 结果，只保留两项验证路径：
+
+```text
+01 内部测试与应用验证
+02 独立第三方检测
+```
+
+具体指标、标准、样品和报告范围回到对应 SKU 详情。不得在首页使用“全系无氟”“SGS 认证”等超出证据范围的概括性表述。
+
+### 5.5 首页视觉节奏
+
+三个内容区必须采用不同但协调的表达：技术区为编辑式目录、材料区为图片卡、验证区为两列说明。不得连续使用三段“标题 + 等宽表格”，避免首页呈现为内部汇总表。
+
+### 5.6 合作 CTA
+
+> 告诉我们终端品类、使用环境和目标指标，获取材料建议、样品或联合开发支持。
+
+按钮：
+
+- 申请样品；
+- 提交技术需求。
+
+## 6. 材料与装备浏览页
+
+### 6.1 面料数据库 `/fabrics`
+
+页面顺序固定为：
+
+```text
+PageHero
+→ 分组系列按钮
+→ 场景筛选
+→ 系列与 SKU
+→ 测试证据和数字资产
+```
+
+#### Hero
+
+- Hero 只显示页面标签、标题、说明和材料视觉；
+- 不在 Hero 内放选择器、筛选按钮或产品分类；
+- 页面标题用于解释“可以按场景和材料系列寻找面料”，不在首屏列出全部场景；
+- 使用全站统一 `PageHero variant="section"`。
+
+#### 系列选择
+
+Hero 下方直接使用一行分组系列按钮：
+
+```text
+日常与户外使用：[OTTER] [RAYO]  |  特种场景：[KAIS]
+```
+
+- OTTER、RAYO、KAIS 是可点击按钮，选择后直接切换系列内容；
+- 分组文字只解释使用范围，不增加可点击层级；
+- 默认选择 OTTER；
+- 当前系列写入 `series` query，刷新和分享后状态可恢复；
+- 切换系列时清除不适用于新系列的场景和已展开 SKU；
+- 不再显示“蓝标/银标/赤标”文字，系列颜色只作为克制的选中状态点缀。
+
+#### 二级场景筛选
+
+场景筛选位于 Hero 下方的浅色 PageSection 中，不再与 Hero 左右并排。
+
+场景筛选跟随当前系列变化：
+
+```text
+OTTER：全部 / 通勤与差旅 / 风雨户外
+RAYO：全部 / 夏季防晒 / 运动与出汗
+KAIS：全部 / 防刺 / 消防
+```
+
+规则：
+
+- 场景有自己的 `scene_slug`，不能直接把系列 slug 当场景 value；
+- 一次只高亮一个场景；
+- 多个场景指向同一系列时，点击其中一个不能让其他按钮同时高亮；
+- 场景可以匹配多个系列和多个 SKU；
+- 再次点击当前场景或点击“全部”可清除筛选；
+- active 状态使用 `aria-pressed`；
+- 移动端横向滚动或分组折叠，不把全部按钮纵向塞进 Hero；
+- 分类颜色由数据或 props 提供，不在组件中硬编码。
+
+#### 结果区
+
+- 先显示符合范围与场景的系列，再展示 SKU；
+- 没有结果时显示统一空状态和“清除筛选”；
+- Kais 一级结果只允许防刺、消防；
+- 公共接口过滤 `internal/hidden`；
+- 继续复用现有系列展开、SKU、报告和数字资产功能；
+- 新版 SKU 卡片遵循第 10 节，不在筛选结果卡片堆叠参数和状态。
+
+#### 系列内容头部
+
+- 选中系列后直接显示一句系列利益标题、一句适用环境说明和 SKU 横向轨道；
+- 删除 `OTTER / 蓝标`、`RAYO / 银标`、`KAIS / 赤标`；当前系列已由上方选中按钮表达；
+- 删除“了解系列”链接：当前版本不建设独立系列页，链接没有明确目的地；
+- RPO-TEX、科研来源和完整技术说明进入技术创新页或具体 SKU 详情。
+
+#### SKU 选择与详情展开
+
+- 系列首次出现时只显示系列说明和 SKU 卡片，不默认展开 T31 或任何 SKU 的性能，也不显示“选择一个面料型号”等占位提示；
+- 点击整张 SKU 卡或“了解详情”后，在该系列 SKU 横向轨道正下方展开一个 `SkuDetailPanel`，不是全局弹窗；
+- 同一系列一次只展开一个 SKU，切换 T31/T32/T33 时复用同一个详情面板并替换内容；
+- 再次点击当前 SKU、点击关闭或选择其他系列时收起详情；
+- 面板标题必须明确显示当前型号，例如“Otter T31”；
+- 性能、结构、报告、规格和样品 CTA 全部读取当前选中 SKU，严禁沿用上一个 SKU 数据；
+- T31 的实测结果只在 T31 详情中出现，不适用于 T32、T33 或 Otter 系列整体；
+- 当前 SKU 没有有效报告时，不显示“经验证的性能”，也不借用系列或其他 SKU 的数值；
+- 桌面端使用原位展开，移动端使用同一内容结构的全宽展开区，不另做维护两套数据的弹窗。
+
+#### 页面视觉蓝图
+
+桌面端从上到下固定为：
+
+```text
+60px SiteHeader
+→ 460px 左文右图 PageHero
+→ 分组系列按钮
+→ 单行 SceneFilter
+→ 系列说明头部
+→ 极简 SKU 横向轨道 + 开发中尾卡
+→ 选中 SKU 后展开详情
+→ 经验证的性能与验证摘要
+→ PageCTA
+```
+
+- Hero 不放任何筛选控件，左侧只解释“按使用环境寻找材料”，右侧使用真实面料微距或三层结构视觉；
+- 系列按钮与场景筛选共用一个浅色内容区，但分成上下两行；
+- 系列头部只使用一句利益标题和一句适用环境，不显示标签颜色和无目的地的系列链接；
+- SKU 轨道桌面约显示 3 张完整卡和下一张局部，图片保持 4:3，卡片之间以留白而非边框分隔；
+- 点击卡片后，在当前系列下方展开当前 SKU 详情；初始状态不显示任何 SKU 性能；
+- 性能模块使用紧凑数据行，不使用三张大型数字卡；验证摘要紧随性能，不形成全站报告画廊。
+
+#### 测试内容的层级与位置
+
+测试内容必须跟随用户当前查看的系列或 SKU，不再把全部报告放在页面底部组成一个无差别文件画廊。
+
+页面使用“网页结论可追溯、完整文件受控提供”的证据结构：
+
+```text
+第一层：SKU 详情中的最多 3 项关键结果
+→ 第二层：支撑这些结果的脱敏验证摘要
+→ 第三层：申请完整技术资料
+```
+
+##### 第一层：关键性能摘要
+
+用户打开某个 SKU 详情后，在产品结构和适用场景之后展示“经验证的性能”。
+
+只显示对该 SKU 有真实报告支持的最多 3 项关键指标。例如 Otter 可以选择防水、透湿、剥离；Rayo 可以选择 UPF、导湿/速干、Qmax；Kais 按具体产品选择防刺或消防相关指标。
+
+```text
+防水性能       [实测值与单位]
+透湿性能       [实测值与单位]
+剥离强力       [实测值与单位]
+UPF            [实测值]
+Qmax           [实测值与单位]
+防刺等级       [标准与等级]
+```
+
+首层结果只显示：
+
+- 指标名称；
+- 实测值和单位；
+- 测试标准或必要测试条件；
+- “查看验证摘要”链接。
+
+不同方法不可直接比较的指标，必须在指标旁显示测试标准或关键条件。实验室、日期和报告编号统一放在验证摘要中，不在每个指标下重复显示。
+
+没有报告支持的指标不显示，不使用随机默认值，也不使用“优秀、顶级、军工级”等替代数据。
+
+性能摘要采用一行或两列紧凑列表，不做大型营销数字卡。SKU 没有公开报告时，整个“经验证的性能”模块不显示，不展示空占位。
+
+##### 第二层：脱敏验证摘要
+
+性能摘要下方使用 `EvidenceGrid` 的紧凑模式，只显示当前系列或 SKU 的验证资料：
+
+```text
+验证依据
+
+Otter T31 防水性能验证
+测试标准 · 检测机构 · 日期 · 报告编号
+[查看验证摘要]
+```
+
+默认规则：
+
+- 选中 SKU 时优先显示 `sku_ids` 明确关联的报告；
+- 无 SKU 关联报告时，可以显示系列级报告，但必须标注“系列级资料”；
+- 未选择系列/SKU 时不显示全部报告瀑布流；
+- 点击打开统一验证摘要页或弹层，不默认打开原始 PDF；
+- 验证摘要只展示样品/SKU、项目、标准、结果、必要条件、机构、日期、报告编号、适用范围和可公开的脱敏局部截图；
+- 有公开脱敏文件时显示“查看验证文件”，没有时显示“申请完整技术资料”；
+- 原始报告默认不进入公共接口，只在后台受控保存；完整资料由销售确认需求或按 NDA 流程提供；
+- 认证或公开授权文件可以单独设置为公开文件，普通检测报告默认只公开摘要；
+- 文件预览不等于性能结论，页面必须保留结构化摘要；
+- 报告归档后，对应指标同步停止公开。
+
+这套结构不把完整 PDF 当作网页内容。官网负责说明“测了什么、结果如何、依据是什么、是否可追溯”，原始文件负责保留完整测试条件、批次和结论。
+
+面料数据库不再单独建设大型“测试方法与质量控制”内容区。页面底部只保留一段固定说明和一个服务入口：
+
+> 页面数据仅适用于所标注的测试样品与报告范围。若项目有特定标准、环境或耐久要求，可申请针对性样品测试。
+
+该说明由代码固定，不进入 CMS，避免后续重复维护。
+
+#### 报告分类
+
+为降低后台维护成本，测试资料只分为四类：
+
+```text
+performance   产品性能
+chemical      PFAS/化学检测
+protection    防刺/消防等特种测试
+certificate   认证或授权文件
+```
+
+耐久相关报告归入 `performance`；材料结构和显微表征归入 Digital Assets，不再单独增加报告分类。
+
+“认证文件”和“测试报告”必须区分，不能因为报告上出现实验室 Logo 就称为认证。
+
+#### 数字资产与测试报告分开
+
+- 测试报告进入 EvidenceGrid；
+- 规格书、洗护说明、应用手册和宣传资料进入 Digital Assets；
+- 两类资料可以在同一 SKU 详情中出现，但标题和视觉必须分区；
+- 不把宣传 PDF 放入“测试与报告”。
+
+### 6.2 终端装备 `/equipment`
+
+#### 页面定位
+
+GORE-TEX 民用官网把终端产品按外套、鞋履、手套和活动分类，并将用户导向合作品牌商品；其 Professional 独立站则按行业任务、风险、装备应用、材料技术和联系合作组织内容。港翼当前既不是终端服装零售品牌，也没有必要维护第三方商品商城，因此采用后者的解决方案逻辑。
+
+终端装备页不是“港翼成衣产品目录”，而是“材料如何进入真实装备”的应用证明页。页面回答四个问题：
+
+1. 这是什么装备；
+2. 它面对什么环境或风险；
+3. 这件装备采用哪款港翼面料、带来什么使用价值；
+4. 可以查看哪项验证，或如何发起合作。
+
+页面顺序固定为：
+
+```text
+PageHero
+→ 分组应用分类
+→ 场景图片横向轨道
+→ 选中场景的需求与采用面料
+→ 验证依据
+→ PageCTA
+```
+
+#### Hero
+
+- 删除 Hero 右侧 `SceneSelector`；
+- Hero 只显示页面标签、标题、说明和真实终端应用图片；
+- Hero 右侧使用一张主应用图或两张有明确内容的图片组合，例如日常通勤与户外运动；不使用“装备应用/采用面料/结构性能”等抽象流程方块；
+- 使用统一 `PageHero variant="section"`；
+- 不在 Hero 中承担产品筛选。
+
+#### 唯一主导航
+
+保留并升级现有 sticky 分类导航，作为页面唯一的分类控制。删除没有明确业务含义的 `Latent / U-Line / P-Line / A-Line`，固定为：
+
+```text
+日常休闲
+户外运动
+|
+特种专业
+```
+
+- 日常休闲可以展示通勤防护、夏季防晒等真实应用；
+- 户外运动可以展示徒步风雨、轻量运动等真实应用；
+- 特种专业当前只展示防刺和消防；
+- 暂无真实案例的鞋履、手套和其他 PPE 不创建空分类；
+- `|` 是民用与特种的视觉分隔，不是按钮；
+- 桌面端在“户外运动”和“特种专业”之间使用 1px 浅色竖线与少量额外留白；分隔线只表达民用/特种边界，不增加新的分类层级或强警示色；
+- 默认选择日常休闲。
+
+规则：
+
+- sticky 位置固定在 SiteHeader 下方；
+- 当前项使用统一底线；
+- 点击后更新 `category` query，并滚动到结果区；
+- 移动端横向滚动；
+- 不再用 Hero 场景选择器和 sticky tabs 同时控制 `activeTab`。
+
+#### 场景图片卡
+
+参考 GORE-TEX 的场景图片浏览方式，但补充港翼需要的材料关系。图片卡不复用 SKU 卡；每张卡只维护：
+
+```text
+真实场景/装备图片
+场景名称
+一句使用需求
+采用或推荐的港翼面料
+```
+
+卡片禁止显示价格、尺码、库存、购买按钮和虚构型号，不把港翼呈现成服装品牌。没有终端合作方公开授权时，不展示合作方 Logo 和商品名称。
+
+桌面端使用与 SKU 相同的横向轨道，图片上只叠加场景名称；使用需求和采用面料在图片下方显示，避免像电商商品卡，也避免只有一张图片和一个场景词。
+
+#### 应用详情
+
+点击场景图片后，在网格下方展开应用详情，固定使用以下顺序：
+
+```text
+使用任务/风险
+→ 采用的港翼面料
+→ 这款面料带来的 1-3 项应用价值
+→ 查看面料详情
+→ 申请材料方案/联合开发
+```
+
+- 民用应用以舒适、防护和环境适配为主，不写成硬核特种装备；
+- 防刺只展示防刺内胆、防刺服层结构及相关验证；
+- 消防只展示消防服装中的材料层位、热湿管理或已验证能力；
+- Kais 不与通勤、防晒内容混排在同一视觉叙事中；
+- “开发中”只能作为详情中的项目状态，不能用来填充不存在的产品分类。
+- 终端装备页不展示三合一结构、膜层或单层织物结构模块；这些内容只存在于相应 SKU 详情和技术创新页；
+- 应用详情只复用极简 `SkuCard` 或紧凑面料链接，不复制 `SkuDetailPanel` 的结构与完整性能内容。
+
+#### 页面视觉蓝图
+
+桌面端从上到下固定为：
+
+```text
+60px SiteHeader
+→ 460px 左文右图 PageHero
+→ 日常休闲 / 户外运动 | 特种专业
+→ 场景图片横向轨道 + 开发中尾卡
+→ 选中场景的任务与采用面料
+→ 查看面料详情
+→ PageCTA
+```
+
+- Hero 使用真实终端场景图片，不使用抽象流程方块；
+- 民用与特种内容共享页面骨架，但特种专业使用独立任务图片，不与休闲场景同时出现在一个筛选结果中；
+- 场景卡以图片为主，比 GORE-TEX 多一行使用需求和一行关联面料；
+- 应用详情不再展示三合一结构模块，只提供相关面料入口；
+- 防刺和消防分别形成独立内容段，不在一张“特种装备能力”大卡中混合表达。
+
+## 7. 三类核心转化页面
+
+### 7.1 技术创新 `/pfas-free-innovation`
+
+#### 页面任务
+
+页面不再以 RPO-TEX 统领全部技术，也不沿用 BP 的融资叙事。RPO-TEX 只属于膜技术分支；Rayo 当前不使用 RPO 膜，其功能来自无氟染整与功能整理体系，不能被归入 RPO-TEX 应用。
+
+页面像 GORE-TEX 的 Technologies 入口一样，先展示港翼有哪些可以进入面料和终端应用的技术，再分别解释机制、适用产品和验证方式。
+
+#### Hero
+
+标签：
+
+> GONYIK TECHNOLOGIES
 
 标题：
 
-三大材料平台
+> 技术，从材料开始
+>
+> 在真实使用中被验证
 
 副标题：
 
-覆盖防水透湿、防护复合和高防晒导湿三类应用方向。
+> 港翼围绕膜材料、复合结构、功能染整、供应链管理和性能验证，构建面向民用户外与特种场景的功能面料技术体系。
 
-平台一：
+Hero 使用膜、织物表面和测试对象的组合微距，不使用融资时间轴、绿色地球或抽象环保符号。
 
-Otter  
-PFAS-free waterproof-breathable laminated fabrics  
-全流程无氟防水透湿复合体系，面向冲锋衣、通勤外套、滑雪服和户外装备。
+#### 页面顺序
 
-平台二：
+```text
+PageHero
+→ 五项技术入口
+→ 当前选中技术的图文解释
+→ 相关系列与 SKU
+→ 测试与验证体系
+→ 提交技术需求 CTA
+```
 
-Kais  
-Protective textile composites  
-高强防护复合体系，面向防刺、防切割、抗冲击和特种防护场景。
+#### 五项技术入口
 
-平台三：
+##### 1. 膜技术
 
-Rayo  
-Sun-protective moisture-management fabrics  
-高防晒、高导湿、轻量舒适的功能织物体系，面向跑步、骑行、城市运动和夏季通勤。
+标题：`RPO-TEX 无氟纳米膜`
 
-视觉：
+- 说明膜的基本作用、结构特点及如何进入复合面料；
+- 只关联 `uses_rpo_tex=true` 的 SKU；
+- 不自动关联整个 Otter、Rayo 或 Kais 系列；
+- Rayo 当前不出现在该分支的关联产品中；
+- 技术来源、固纳关系和研究背景放在本分支末尾作为补充，不占全页首屏。
 
-- 每个平台一张真实材料或应用图
-- 不用图标代替材料图
-- 不用“软件功能卡片”式排版
+##### 2. 面料复合技术
 
----
+标题：`从单层材料到复合性能`
 
-### Block 4 — Verified by Testing
+- 展示面层、胶层、膜层和底层如何协同；
+- 解释胶水体系、点胶/复合方式、基布选择对防护、透湿、手感和耐久的影响；
+- 不公开配方、工艺窗口、供应商和客户机密；
+- 可以关联 Otter，以及实际采用复合结构的 Kais SKU。
+
+##### 3. 无氟染整与功能整理
+
+标题：`不依赖 RPO 膜的功能面料路径`
+
+- 用于 Rayo 及其他不采用膜结构的功能型面料；
+- 解释无氟防泼、染整、导湿、速干、防晒或凉感整理如何作用于基布；
+- 每项能力必须绑定具体 SKU 和真实检测结果；
+- 不把“无氟染整体系”扩大为整条供应链完全无 PFAS，除非有完整范围与证据。
+
+##### 4. 材料与供应链管理
+
+标题：`让技术能够稳定地被生产`
+
+- 说明港翼对膜、胶水、基布、染整、复合和批次资料的协同管理；
+- 官网使用“材料与工艺的无氟要求管理”或“降低 PFAS 使用的供应链管理”；
+- 在无法证明原料、助剂、设备交叉污染和全流程边界前，不使用绝对的“无氟供应链”；
+- 重点表达可追溯、可打样、可验证和可交付，不展示供应商名单。
+
+##### 5. 测试与验证
+
+标题：`从内部验证到独立第三方检测`
+
+- 内部能力称为“内部测试/应用验证”，除非实验室获得认可，不使用“认证实验室”或“权威检测”；
+- 内部验证用于材料筛选、样品对比、耐久和应用适配；
+- SGS、中纺标等只称为“独立第三方检测机构”，并展示真实报告对应的项目、样品和日期；
+- 不因为第三方出具检测报告就写成“SGS 认证”或“中纺标认证”；
+- 页面可用三层结构说明：材料/结构测试、模拟使用测试、第三方检测。
+
+#### 交互与视觉
+
+- 五项技术入口使用大图与标题组成的编辑式列表，不做五张等权小图标卡；
+- 桌面端可以使用左侧 sticky 技术目录、右侧连续图文内容；移动端改为锚点导航；
+- 每个技术分支固定使用“解决什么问题 → 如何实现 → 用在哪些系列/SKU → 如何验证”；
+- 相关产品继续复用极简 `SkuCard`；验证内容继续复用 `EvidenceGrid`；
+- 页面不再使用单一 `TechnologyPath` 时间轴作为主体。
+
+#### 页面视觉蓝图
+
+```text
+60px SiteHeader
+→ 520px 技术总览 PageHero
+→ 5 项编辑式技术入口
+→ sticky 技术目录 + 连续图文详情
+→ 当前技术关联 SKU
+→ 内部验证 / 第三方检测
+→ PageCTA
+```
+
+### 7.2 服务与支持 `/services`
+
+#### 页面任务
+
+服务页不再承担公司介绍、新闻、研发流程、数字资产门户或完整技术资料库。第一任务是帮助用户正确洗涤和保养采用港翼面料的终端产品；第二任务是快速找到常见问题；第三任务是联系港翼。
+
+“关于我们”不放在服务与支持中。公司背景在首页保留简短品牌介绍即可；在内容规模不足以支撑独立页面前，不新增“关于我们”一级页面。
+
+#### Hero
 
 标题：
 
-性能必须被测试验证
+> 正确保养
+>
+> 让面料保持应有性能
 
 副标题：
 
-高性能面料不应只停留在概念层面。GONYIK 以静水压、透湿、剥离强力、洗后耐久和应用场景测试作为材料开发依据。
+> 根据面料结构和终端产品类型，查看洗涤、干燥、表面处理与使用注意事项。具体操作始终以成衣洗标和品牌说明为优先。
 
-数据模块：
+#### 页面顺序
 
-- Hydrostatic Pressure / 静水压
-- MVTR / 透湿
-- Peel Strength / 剥离强力
-- Wash Durability / 洗后耐久
-- PFAS-free Process / 无氟体系
-- Composite Stability / 复合稳定性
+```text
+PageHero
+→ 洗涤与保养
+→ 常见问题
+→ 联系我们
+```
 
-视觉：
+#### 洗涤与保养
 
-- 实验室照片
-- 测试仪器
-- 测试报告局部
-- 样布编号
-- 数据表格
+洗护内容是页面主体，参考 GORE-TEX 先选择装备类型再查看说明的方式，但港翼必须按自身可负责的范围表达。
 
-版式应类似材料测试报告，不要类似软件 dashboard。
+首期分类：
 
----
+```text
+防水透湿复合面料 / Otter
+防晒与轻量功能面料 / Rayo
+防刺材料 / Kais
+消防材料 / Kais
+```
 
-### Block 5 — Applications
+每类固定回答：
 
-标题：
+1. 洗涤前检查；
+2. 推荐洗涤方式；
+3. 干燥方式；
+4. 是否涉及表面防泼整理恢复；
+5. 禁止事项；
+6. 何时应停止自行处理并联系成衣品牌或港翼。
 
-为真实装备而开发
+规则：
 
-副标题：
+- 官网建议不能覆盖成衣洗标、辅料和结构差异；
+- 未完成洗护验证的 SKU 不发布具体温度、次数或化学品建议；
+- 防刺、消防等特种材料不提供类似普通户外服装的通用家庭洗护承诺；
+- Kais 只给出材料边界和联系专业维护的入口；
+- 洗护内容按系列或结构复用，不为每个 SKU 重复维护一整份正文；
+- SKU 详情可以链接到相应洗护类别并带入 `care_slug`。
 
-从户外硬壳到城市通勤，从鞋材到防护装备，GONYIK 的材料体系面向真实产品导入，而不是概念展示。
+#### 常见问题
 
-场景：
+首期最多 8 条，优先覆盖：
 
-1. Outdoor Shells  
-冲锋衣、滑雪服、登山外套
+- 什么是无氟面料；
+- RPO-TEX 与 Rayo 有什么区别；
+- 防泼水与防水是否相同；
+- 洗涤是否影响防水、透湿、防晒或凉感；
+- 如何查看适用标准和验证摘要；
+- 如何申请样品；
+- 如何判断是否需要联合开发；
+- 特种材料为什么不能按普通服装处理。
 
-2. Urban Commuting  
-行政夹克、城市机能外套、轻量雨衣
+FAQ 使用单列手风琴，不使用侧栏多模块后台式界面。
 
-3. Protective Apparel  
-防刺、防切割、抗冲击复合装备
+#### 联系我们
 
-4. Footwear & Gear  
-鞋面、背包、装备外层和增强部位
+页面底部只保留一个简洁联系区：
 
-视觉：
+> 没有找到对应的洗护说明，或需要确认材料、样品和项目适用范围？
 
-- 真实成衣
-- 真实户外环境
-- 局部细节：拉链、压胶、缝线、水珠、面料折痕
-- 不用过度干净的 3D 渲染图
+按钮：`联系我们`。点击进入 `/contact`，可以带入来源页面、系列/SKU 和问题类型。
 
----
+#### 页面视觉蓝图
 
-### Block 6 — Sample Request
+```text
+60px SiteHeader
+→ 420px 洗护主题 PageHero
+→ 4 类洗护入口
+→ 当前类别的步骤式说明
+→ 单列 FAQ
+→ 联系我们 PageCTA
+```
 
-标题：
+### 7.3 联系我们 `/contact`
 
-申请样品，进入测试
+#### 页面任务
 
-副标题：
+联系页不是普通留言箱，而是项目需求入口。目标是在不让表单过长的前提下，收集足够信息判断应推荐现有 SKU、提供样品，还是进入联合开发。
 
-向我们说明应用场景、目标性能和复合结构需求，GONYIK 可提供面料样品、测试数据和材料导入建议。
+Hero 标题：
 
-CTA：
-
-申请样品测试
-
-辅助 CTA：
-
-联系技术团队
-
----
-
-## 7. 产品系列命名修正
-
-当前网站如继续使用 Osmo / Kinetic / Lumix / Tread，可以作为过渡。但对外建议逐步切换到更贴合项目真实体系的命名：
-
-- Otter：无氟防水透湿复合体系
-- Kais：特种防护复合体系
-- Rayo：高防晒高导湿功能织物体系
-
-命名原则：
-
-1. 系列名可以有品牌感，但副标题必须材料化。
-2. 不要让用户猜系列是什么。
-3. 每个系列都必须回答三个问题：
-   - 这是什么材料体系？
-   - 解决什么性能问题？
-   - 用在哪些产品上？
-
----
-
-## 8. 禁用文案
-
-以下表达不要作为首屏或核心模块标题：
-
-- 科技面料，定义未来
-- 以创新材料科技，重塑户外与运动的边界
-- 未来已来
-- 颠覆传统面料
-- 重新定义一切
-- 打造全场景生态
-- 智能材料平台
-- 赋能户外新体验
-- 科技改变穿着
-
-这些表达过于泛化，容易让网站失去材料行业可信度。
-
----
-
-## 9. 推荐文案库
-
-### 品牌总句
-
-GONYIK develops PFAS-free performance material systems based on UHMWPE microporous film and functional textile construction.
-
-中文：
-
-GONYIK 基于 UHMWPE 微孔膜与功能织物结构，开发全流程无氟的高性能防护材料体系。
-
----
-
-### Otter 系列
-
-标题：
-
-Otter 无氟防水透湿复合体系
+> 告诉我们，产品需要面对什么
 
 副标题：
 
-以 UHMWPE 微孔膜为核心，通过无氟整理、PUR 复合和织物结构设计，实现轻量、防水、透湿与洗后耐久的平衡。
+> 提供终端品类、使用环境和目标要求，我们将据此确认材料建议、样品或联合开发的下一步。
 
-应用：
+页面顺序固定为：
 
-适用于冲锋衣、滑雪服、通勤外套、轻量雨衣和户外装备面料。
+```text
+PageHero
+→ 请求类型选择
+→ 两列项目表单 + 直接联系方式
+→ 提交后会发生什么
+→ 隐私与资料边界
+```
+
+#### 请求类型
+
+页面只设置三个入口，并与服务页完全一致：
+
+```text
+申请现有样品
+提交目标指标
+联合开发
+```
+
+从 SKU、服务页或装备页进入时自动预选类型，并带入 `series_slug`、`sku_id` 或 `application_slug`，用户不重复填写。
+
+#### 表单字段
+
+第一屏必填项控制为：
+
+- 姓名；
+- 公司/机构；
+- 邮箱或电话至少一项；
+- 请求类型；
+- 终端品类；
+- 使用环境/需要解决的问题。
+
+补充字段按请求类型渐进展开：
+
+- 目标指标或适用标准；
+- 当前项目阶段；
+- 预计用量/时间；
+- 已选系列或 SKU；
+- 附件上传。
+
+不得要求用户先理解内部系列体系才能提交需求。附件限制格式、大小并提示不要上传涉密资料。
+
+#### 右侧信息区
+
+只显示后台已经配置且真实可用的邮箱、电话、地址和工作时间；删除 `400-XXX-XXXX`、默认上海地址等占位信息。响应时效只有团队确认能够执行时才公开，不能把默认“3 个工作日”写成未经确认的承诺。
+
+#### 提交反馈
+
+成功后在原位置显示：
+
+```text
+需求已收到
+→ 港翼确认信息与适用范围
+→ 如需补充资料，由团队联系
+→ 确认样品、材料建议或开发下一步
+```
+
+不自动承诺报价、寄样或项目立项。失败时保留用户已填写内容并提供重试。
+
+#### 页面视觉蓝图
+
+```text
+60px SiteHeader
+→ 360px PageHero
+→ 3 个请求类型按钮
+→ 左侧 2/3 项目表单 + 右侧 1/3 联系信息与流程
+→ 移动端先表单、后联系方式
+→ 简短隐私说明
+```
+
+## 8. Kais 内容页
+
+### 8.1 防刺
+
+```text
+适用装备
+→ 材料结构
+→ 防刺等级/标准
+→ 当前状态
+→ 测试证据
+→ 联系开发
+```
+
+使用防刺内胆、防刺服层结构或材料测试视觉，不使用普通通勤外套模特图。
+
+### 8.2 消防
+
+```text
+消防装备中的材料层位
+→ 解决的问题
+→ 标准/验证
+→ 当前状态
+→ 测试证据
+→ 联系开发
+```
+
+不泛化成“防火、防化、全能防护”。
 
 ---
 
-### Kais 系列
+# 第三部分：UI 规范
 
-标题：
+## 9. 视觉方向
 
-Kais 高强防护复合体系
+### 9.1 总体语言
 
-副标题：
+```text
+港翼深海军蓝
++ 大面积白色/冷灰解释区
++ 可识别的膜层、织物、雨水和测试对象
++ 民用户外实景
++ 与民用线分开的防刺/消防任务视觉
+```
 
-基于 UHMWPE 纤维织物与抗冲击膜层的复合设计，面向防刺、防切割、抗冲击等特种防护场景。
+第一感觉是无氟科技面料；第二感觉是民用户外与特种场景两条不同路径。
 
-应用：
+不使用：
 
-适用于防护服、防刺内胆、工业防切割装备、战术防护和增强部位材料。
+- 满屏随机纤维、粒子、网格和光斑；
+- 玻璃拟态和霓虹发光；
+- 每个模块都套同一种卡片；
+- 消防、防刺、通勤和防晒混合场景；
+- 依靠英文堆叠制造国际感。
+
+### 9.2 色彩
+
+| 色彩 | 暂定值 | 用途 |
+|---|---|---|
+| GONYIK Navy | `#082F55` | 主品牌、Header、技术主线；最终从 Logo 源文件取值 |
+| Deep Navy | `#041F38` | 深色技术区和页脚 |
+| Off White | `#F4F7F9` | 主内容背景 |
+| White | `#FFFFFF` | 局部内容区 |
+| Border | `#D7E1E8` | 分隔线 |
+| Primary Text | `#102333` | 标题和正文 |
+| Secondary Text | `#627789` | 辅助信息 |
+| Membrane Cyan | `#69B2C1` | RPO-TEX 和技术路径点缀 |
+| Otter Blue | `#154F7B` | 蓝标局部 |
+| Rayo Silver | `#A9A69C` | 银标局部 |
+| Kais Red | `#7D3934` | 赤标和特种局部 |
+
+### 9.3 栅格与字号
+
+- 最大宽度：1440px；
+- 桌面水平边距：48px；平板 32px；移动端 24px；
+- 桌面 12 列，间距 24px；
+- 区块上下留白：桌面 88-112px，移动端 56-72px；
+- Hero：桌面 56-64px，移动端 34-40px；
+- H2：桌面 36-44px，移动端 28-32px；
+- 正文：桌面 16-17px，移动端 15-16px；
+- 中文正文行宽控制在约 34-38 字。
+
+### 9.4 Header
+
+- 保留 60px 高度；
+- 背景由纯黑改为半透明深海军蓝，滚动后不透明；
+- Logo 固定左侧，桌面导航整体靠右，不在中间平均分布；
+- 非激活项使用高对比度白色文字，当前项使用纯白文字和 3px 青蓝底线；
+- 搜索和语言未实现前不渲染，不保留占位图标；
+- 移动端复用现有菜单逻辑。
+
+### 9.5 Hero
+
+- 桌面左 5 列文字、右 7 列材料视觉；
+- 高度 680-760px，不强制 100vh；
+- 主视觉优先真实膜/复合面料微距；
+- 没有素材时使用静态三层膜/织物 SVG，并标注膜、胶水体系和功能基布；
+- 删除持续运行的 Canvas 随机纤维动画；
+- 移动端文字在上、视觉在下，不把文字压在复杂图像上。
+
+除首页品牌 Hero 外，所有一级内页统一使用 300px 桌面 Hero；移动端按“文字在上、图片在下”自然撑开，不固定高度。联系我们等内容无需继续扩展的页面，桌面端应在一屏内完成；终端装备等短列表页总高度控制在 1.5 屏以内。不得为内页单独恢复 420px 以上 Hero，造成页面间不一致和无意义的纵向滚动。
+
+### 9.6 Snow Peak 排版哲学的港翼化应用
+
+参考 Snow Peak 官网的排版节奏，但不复制其专有字体、零售页面结构或黑白品牌语言。港翼只吸收以下可迁移原则：
+
+- 大标题使用正常至中等字重，不依赖超粗黑体制造层级；中文标题使用现有品牌字体 `600`，行高约 `1.12-1.15`，字距约 `-0.02em`；
+- 英文小标题和主导航保持小字号与明确字距：导航约 `12px / 0.06em`，技术标签约 `11px / 0.14-0.18em`；
+- 正文基准为 `16px / 24px`，优先保证阅读节奏，不用大量 12-13px 正文压缩页面；
+- 桌面公共容器水平 padding 统一为 `24px`，区块上下间距以 `80px` 为基准，重复内容网格间距以 `24px` 为基准；
+- 标题区先建立明确的最大行宽，再与图片和留白形成节奏；避免标题、说明和按钮同时抢夺第一视觉；
+- 控件保持薄边框、低圆角或直角，选中状态主要通过深海军蓝、膜层青色和字重变化表达；
+- 港翼继续使用 `#082F55 / #041F38 / #69B2C1` 品牌色、技术面料微距和材料结构视觉，不引入 Snow Peak 的商品零售氛围；
+- 中英文混排继续使用 Inter、阿里巴巴普惠体、苹方和微软雅黑等现有可部署字体，不直接使用或仿制 Snow Peak 的专有衬线字体。
+
+## 10. SKU 卡片强制规范
+
+### 10.1 设计原则
+
+SKU 卡片采用接近 GORE-TEX 产品技术卡的内容纪律：影像优先、利益点单一、入口明确。卡片只承担“识别产品并进入详情”，不承担完整产品说明。
+
+面料数据库必须采用渐进披露，而不是简单删除信息：
+
+```text
+系列头部：解释这个系列解决什么问题
+→ SKU 卡片：帮助用户快速识别和选择
+→ SKU 详情层：承接结构、参数、场景、测试和文件
+```
+
+只有三层同时实现，新版卡片才能覆盖现有信息需求。
+
+### 10.2 系列头部
+
+当前系列头部同时显示 Logo、系列名和一整行膜层/科研/奖项说明，阅读负担过高。新版固定为：
+
+```text
+全天候防护，持久干爽
+面向风雨、湿冷与多变天气的无氟防水透湿复合面料。
+```
+
+系列头部只保留：
+
+- 系列利益句；
+- 一句适用环境说明；
+- 可选系列主视觉。
+
+系列英文名已经由上方 OTTER/RAYO/KAIS 选中按钮表达，不在头部重复；蓝标/银标/赤标文字不进入公共 UI。
+
+系列头部禁止：
+
+- 在主标题旁放重复的 GONYIK/系列 Logo 方块；
+- 罗列膜层全称、学校、奖项和多个技术来源；
+- 在一行中同时出现中英文材料名和科研背书；
+- 把具体 SKU 的结构写成整个系列的统一定义。
+
+RPO-TEX、科研来源和奖项进入具体 SKU 详情或技术创新页，不占系列头部第一层。
+
+固定四层：
+
+```text
+材料/应用图片
+→ 系列名 + SKU 编号
+→ 一句核心收益
+→ 了解详情
+```
+
+Otter T31 示例：
+
+```text
+OTTER
+T31
+全天候防护，持久干爽
+了解详情 →
+```
+
+### 10.3 视觉细节
+
+- 不使用封闭卡片白框、描边和阴影；
+- 图片比例固定 `4:3`，约占 70% 视觉权重；
+- 图片下方直接使用页面背景，不增加独立白色信息面板；
+- 图片直角；整体无大圆角；
+- 系列名：11px、英文大写、字距约 2px；
+- SKU：28-32px、粗体；
+- 核心收益：最多 12-16 个中文字、单行；
+- 整张 SKU 卡是唯一点击入口；底部只显示“查看性能 ↓”作为交互提示，不再设置功能重复的“了解详情”链接；
+- hover：图片轻微放大，“查看性能”提示增强；整卡不悬浮；
+- 系列颜色只体现在 OTTER/RAYO/KAIS 按钮的选中点缀，不在内容头部增加标签文字；
+- Otter、Rayo、Kais 复用同一组件结构。
+
+点击 SKU 后，在当前轨道下方展开详情区，并自动滚动到详情标题完整可见的位置。详情首屏只显示三个核心数据，每项固定为“标题在上、内容在下”；标题和值均由 FabricManager 维护。其余结构、测试方法和文件继续留在后续详情层，不进入首屏数据网格。
+
+### 10.4 卡片禁止信息
+
+- RPO-TEX 标签；
+- 已完成、验证中等状态；
+- 功能词列表；
+- 完整适用场景；
+- 测试参数和认证；
+- 产品全称与系列名重复出现；
+- 状态胶囊、技术胶囊；
+- 独立圆形箭头按钮；
+- 价格、购买和电商信息。
+
+以上内容统一进入 SKU 展开区或详情层。
+
+### 10.5 图片差异
+
+- Otter：雨水、织物表面、全天候应用；
+- Rayo：轻量织物、阳光、空气与夏季应用；
+- Kais 防刺：防刺内胆、材料层和测试；
+- Kais 消防：消防装备材料层和测试场景。
+
+民用和特种只更换图片内容和系列色，不复制组件。
+
+### 10.6 SKU 详情层
+
+整张 SKU 卡均可点击，不再显示一个无功能圆形箭头。点击后在当前系列下方展开详情面板；桌面端使用页面内展开，移动端可使用全屏抽屉。
+
+详情结构固定为：
+
+```text
+SKU 编号 + 一句核心收益
+→ 应用与结构摘要
+→ 最多 4 项核心规格
+→ 最多 3 项实测结果 + 关联报告
+→ 规格书/资料
+→ 申请样品
+```
+
+#### SKU 身份
+
+- 对外显示短编号，如 `T31`；
+- 内部/完整编码 `GY-OTTER-T31` 放在辅助位置；
+- 显示所属系列；
+- 开发状态只在确有必要时显示，例如 Kais 的“联合开发中”；成熟民用 SKU 不重复显示“已完成”。
+
+#### 一句核心收益
+
+与卡片保持一致，例如：
+
+> 全天候防护，持久干爽。
+
+#### 适用场景
+
+使用最多 3 个真实终端场景：
+
+```text
+行政夹克
+通勤外套
+户外壳层
+```
+
+场景来自结构化字段，不从 `specifications` 文本中猜测。
+
+#### 材料与结构
+
+按层级解释，不用一行长句：
+
+```text
+面层
+膜层
+底层
+复合工艺/结构
+```
+
+只有实际使用 RPO-TEX 的 SKU 才显示 RPO-TEX。
+
+#### 核心规格
+
+详情首层最多显示 4 项，包括克重、结构、规格和主要成分。其余完整信息进入规格书，不在网页继续展开成长表格。
+
+#### 经验证的性能与报告
+
+执行第 6.1 节的证据链规则。最多显示 3 项结果，点击“查看验证摘要”进入脱敏摘要；完整报告不默认公开。
+
+#### 数字资产
+
+- 规格书；
+- 可选的洗护/应用说明。
+
+数字资产与测试报告分区显示。
+
+#### 样品申请
+
+CTA 自动带入系列和 SKU：
+
+```text
+申请 Otter T31 样品
+```
+
+### 10.7 当前截图信息迁移表
+
+| 当前信息 | 新位置 |
+|---|---|
+| GONYIK/OTTER 方块标 | 删除或改成系列细线标签 |
+| Otter 系列 | 系列头部 |
+| 长段膜层/学校/奖项说明 | 具体 SKU 技术说明或技术创新页 |
+| GY-OTTER-T31 | 详情辅助编码 |
+| T31 | SKU 卡主标题 |
+| Otter-T31 | 删除重复命名 |
+| 无氟、3L复合、防水透气、RPO膜 | 详情中的结构和性能 |
+| 新一代无氟防护·高性能复合 | 改成一句明确用户收益 |
+| 圆形箭头 | 改为文字链接，整卡可点击 |
+
+## 11. 其他组件
+
+### 11.1 技术路径
+
+- 桌面横向四步，移动端纵向；
+- 箭头表达关系；
+- 只用于首页技术关系摘要；技术创新页改用五个平行技术分支，不复用时间轴完整版；
+- 共用同一数据源。
+
+### 11.2 民用/特种入口
+
+- 民用约 65%，户外/通勤材料与环境图；
+- 特种约 35%，防刺内胆或消防材料局部；
+- 不设计成两个完全相同的普通卡片；
+- 移动端纵向排列，不放进轮播。
+
+### 11.3 报告卡
+
+- 报告使用紧凑文档行或横向卡，不使用当前大面积 `3:4` PDF 占位封面；
+- 默认只显示验证标题、适用 SKU、标准/实验室、日期和“查看验证摘要”；
+- 报告编号进入验证摘要，不占首层卡片字段；
+- 不在报告卡显示状态胶囊；只有已发布报告会出现在公共页面；
+- 不使用泛化认证图标代替报告；
+- 点击复用 FileViewer 的弹层外壳展示结构化摘要；只有允许公开的文件才出现预览入口；
+- 移动端保持报告名、适用 SKU 和查看入口可见，次要字段可折叠。
+
+#### EvidenceGrid 固定模式
+
+```ts
+mode: 'summary' | 'compact' | 'library'
+```
+
+- `summary`：首页最多 3 条；
+- `compact`：系列/SKU 详情中的关联报告；
+- `library`：服务与支持中按系列/SKU 组织的公开资料列表，不包含原始测试报告；
+- 面料数据库不使用无筛选的 `library` 模式。
+
+### 11.4 动效
+
+- 只使用淡入、轻位移、图片轻微放大；
+- 尊重 `prefers-reduced-motion`；
+- 不使用无休止背景动画；
+- 移动端取消视差和复杂滚动。
+
+### 11.5 横向内容轨道
+
+SKU 列表和终端装备场景列表统一使用 `HorizontalRail`，不使用第三方轮播库。
+
+前台规则：
+
+- 容器使用原生 `overflow-x: auto` 和 `scroll-snap`；
+- 桌面端默认同时看见约 3 张完整卡和下一张卡的局部，明确提示仍可继续浏览；
+- 始终显示横向滚动条，不在桌面端隐藏 scrollbar；
+- 支持鼠标滚轮/触控板横向滚动、拖动滚动条和移动端触摸滑动；
+- 卡片宽度固定在组件内，页面不各自设置；
+- 不自动播放、不循环、不复制首尾卡片；
+- 最后一张固定为开发中占位：面料轨道显示“新面料开发中”，终端装备显示“新应用开发中”；
+- 开发中卡没有详情页，不使用虚假参数或图片，可以提供“提交需求”入口；
+- 轨道中只有真实内容项参与数量统计，开发中卡由组件追加，不保存在 SKU 或装备数据表中。
+
+后台规则：
+
+- 面料轨道继续读取现有 `fabric_sku`；装备轨道读取对应场景/应用数据，不建立第二份轨道内容；
+- 使用现有 `order_index` 排序，后台只提供“左移/右移”，不引入拖拽排序库；
+- 左移/右移必须一次提交当前分组的完整 ID 顺序，由服务器单次重写连续 `order_index`；不得用两个并发更新交换位置；
+- 后台可以新增、编辑、隐藏和归档真实内容项；
+- 开发中卡只维护 `visible`、标题和可选 CTA，配置保存在相应页面配置，不单独建表；
+- 后台预览直接渲染前台 `HorizontalRail` 和对应的 `SkuCard/SceneCard`，不复制一套近似样式。
+
+### 11.6 素材最低需求
+
+第一轮只准备：
+
+1. 首页 RPO-TEX 膜/复合面料主视觉 1 张；
+2. Otter 材料或应用图 1 张；
+3. Rayo 材料或应用图 1 张；
+4. Kais 防刺材料/内胆图 1 张；
+5. Kais 消防材料/装备层图 1 张；
+6. RPO-TEX 结构示意 1 张；
+7. 真实测试过程或报告缩略图 2-3 张。
+
+AI 图只能用于品牌气氛和设计占位，不作为膜孔形态、特种能力、实验结果、认证或客户案例的证据。
 
 ---
 
-### Rayo 系列
+# 第四部分：技术方案
 
-标题：
+## 12. 当前技术基线
 
-Rayo 高防晒高导湿织物体系
+- React 19 + TypeScript；
+- Vite 6；
+- Tailwind CSS 3；
+- React Router；
+- Framer Motion；
+- Express；
+- JSON DB：`db.json`；
+- 文件：`public/uploads/`；
+- JWT 后台认证。
 
-副标题：
+当前未使用 Zustand、SQLite 或 Tailwind CSS 4。本轮不迁移技术栈。
 
-通过原纱防晒、导湿纱线和织物结构设计，在轻量面料中实现高 UPF、防晒耐久和快速导湿。
+## 13. 页面骨架组件架构
 
-应用：
+页面必须先使用固定骨架，再组合业务模块。任何公共页面不得自行复制 Header、Footer、页面宽度、首屏顶部偏移或区块间距。
 
-适用于跑步、骑行、夏季通勤、防晒外套和高温环境运动服。
+### 13.1 固定组合关系
+
+```text
+PublicLayout
+├─ SiteHeader
+├─ main
+│  └─ PageShell
+│     ├─ PageHero
+│     ├─ PageSection × N
+│     │  ├─ SectionHeader
+│     │  └─ 页面业务内容
+│     └─ PageCTA（可选，但样式固定）
+└─ SiteFooter
+```
+
+首页同样进入 `PageShell`，只把 `PageHero` 设置为 `variant="home"`，不得另建一套首页 Header、Footer 和容器系统。
+
+### 13.2 PublicLayout
+
+职责：
+
+- 全站唯一 Header/Footer 挂载点；
+- 管理固定顶栏占位；
+- 提供全局主背景；
+- 管理页面切换后的滚动位置；
+- 提供统一错误和加载边界。
+
+强制规则：
+
+- 顶栏高度只在 `PublicLayout` 中补偿一次；
+- 当前 `main pt-[60px]` 与 `PageHero pt-[60px]` 的双重偏移必须消除；
+- 页面组件不得再次添加 Header 高度；
+- Footer 不得由页面条件渲染或复制。
+
+建议接口：
+
+```ts
+interface PublicLayoutProps {
+  headerMode?: 'overlay' | 'solid'
+}
+```
+
+实际路由继续复用 React Router 的 `<Outlet />`，不改变现有路由结构。
+
+### 13.3 SiteHeader
+
+全站只有一个 Header 组件，固定以下结构：
+
+```text
+Logo
+→ 主导航
+→ 可用的全局功能
+→ 移动菜单
+```
+
+固定项：
+
+- 桌面高度 60px；
+- 移动端高度 56px；
+- 内容最大宽度 1440px；
+- 桌面水平边距 48px，移动端 24px；
+- Logo、导航、当前项、移动菜单的尺寸和动效统一；
+- 只有 `overlay` 与 `solid` 两种状态，页面不能自行指定颜色；
+- overlay 用于首页大 Hero，滚动后切换 solid；
+- 内页默认 solid；
+- 搜索、语言未实现时不渲染，不保留无功能图标。
+
+Header 只接受导航和品牌数据，不接受页面传入任意 className。
+
+### 13.4 SiteFooter
+
+全站只有一个 Footer，固定分成两层：
+
+```text
+上层：品牌简介 / 主要导航 / 联系方式或社交入口
+下层：版权 / 隐私 / ICP / 公安备案 / 后台入口
+```
+
+规则：
+
+- 背景统一 Deep Navy；
+- 内容最大宽度、左右边距与 Header/PageSection 一致；
+- 二维码、社交浮层继续复用现有逻辑；
+- 后台入口保留但降低视觉权重；
+- 不允许某个页面使用“紧凑 Footer”、另一个页面使用“大 Footer”；
+- 移动端改为纵向分组，不把全部信息压成一行。
+
+### 13.5 PageShell
+
+`PageShell` 负责页面级背景和 Hero/内容区连接，不承载具体业务。
+
+```ts
+interface PageShellProps {
+  tone?: 'light' | 'navy'
+  children: React.ReactNode
+}
+```
+
+规则：
+
+- 不允许页面最外层再写 `max-w-[1440px]`；
+- 不允许页面自行处理 Header 顶部间距；
+- 页面背景只能从固定 tone 中选择；
+- 页面间的背景过渡由 PageSection 控制。
+
+### 13.6 PageHero
+
+全站使用一个 `PageHero`，只允许三种固定变体：
+
+```ts
+type PageHeroVariant =
+  | 'home'    // 首页品牌 Hero
+  | 'section' // 面料、装备、RPO-TEX、服务等栏目页
+  | 'detail'  // SKU、报告或内容详情
+```
+
+| 变体 | 高度 | 布局 | 使用场景 |
+|---|---:|---|---|
+| home | 680-760px | 左5列文字 + 右7列视觉 | 仅首页 |
+| section | 420-520px | 左6列文字 + 右6列视觉，或全宽背景 | 一级栏目页 |
+| detail | 280-360px | 标题、标签、摘要，可带面包屑 | 详情层 |
+
+统一内容顺序：
+
+```text
+eyebrow
+→ title
+→ subtitle
+→ actions/children（可选）
+```
+
+固定规则：
+
+- Hero 自身不再添加 Header 高度；
+- title、subtitle 最大宽度统一；
+- 背景图统一使用 `MediaFrame` 或内部固定图片层；
+- overlay 只允许 `navy / dark / light`；
+- 图片 fit 只允许 `cover / contain`；
+- CMS 只提供文字、图片和允许的枚举，不提供 Tailwind className；
+- 页面不得复制 Hero JSX；
+- 无图片时显示统一静态降级视觉，不允许每页生成不同抽象背景。
+
+### 13.7 PageSection
+
+所有内容区必须使用 `PageSection`，不得在页面内重复编写容器宽度和响应式 padding。
+
+```ts
+interface PageSectionProps {
+  tone?: 'white' | 'mist' | 'navy' | 'special'
+  spacing?: 'compact' | 'standard' | 'large'
+  width?: 'content' | 'wide' | 'full'
+  divider?: boolean
+  children: React.ReactNode
+}
+```
+
+固定映射：
+
+| spacing | 桌面上下 | 移动端上下 |
+|---|---:|---:|
+| compact | 48px | 36px |
+| standard | 88px | 56px |
+| large | 112px | 72px |
+
+固定宽度：
+
+- `content`：正文和说明，最大 960px；
+- `wide`：卡片、路径和图文，最大 1440px；
+- `full`：仅允许强视觉背景，内部仍需嵌套标准容器。
+
+页面不得用任意 `py-10 / py-12 / px-6` 代替 PageSection spacing。
+
+### 13.8 SectionHeader
+
+所有区块标题使用一个组件：
+
+```ts
+interface SectionHeaderProps {
+  eyebrow?: string
+  title: string
+  description?: string
+  action?: { label: string; href: string }
+  align?: 'left' | 'center'
+  theme?: 'light' | 'dark'
+}
+```
+
+规则：
+
+- 顺序固定为 eyebrow → title → description → action；
+- description 最大宽度固定；
+- 不允许页面自行调整 H2 字号；
+- action 始终使用文字链接，不在标题区混入大按钮；
+- 首页、面料页、服务页的 SectionHeader 必须长得一致。
+
+### 13.9 PageCTA
+
+全站合作和询盘出口使用一个组件：
+
+```ts
+interface PageCTAProps {
+  eyebrow?: string
+  title: string
+  description?: string
+  primaryAction: Action
+  secondaryAction?: Action
+  tone?: 'navy' | 'special'
+}
+```
+
+- `navy` 用于民用、技术和通用页面；
+- `special` 只用于 Kais，布局不变，仅换暗赤点缀；
+- 按钮数量最多两个；
+- 移动端按钮满宽纵向排列；
+- 页面不得自行设计不同 CTA。
+
+### 13.10 MediaFrame
+
+图片、视频和结构示意统一通过 `MediaFrame`：
+
+```ts
+interface MediaFrameProps {
+  src: string
+  alt: string
+  ratio: '16:9' | '4:3' | '1:1'
+  fit?: 'cover' | 'contain'
+  priority?: boolean
+  caption?: string
+}
+```
+
+它统一处理：
+
+- aspect-ratio；
+- object-fit；
+- lazy loading；
+- 加载占位；
+- 图片错误降级；
+- 移动端尺寸；
+- caption 样式。
+
+页面不得直接写不同尺寸和裁切规则的 `<img>`。
+
+### 13.11 AsyncBoundary
+
+所有异步页面使用统一的加载、空数据和错误状态：
+
+```ts
+<AsyncBoundary loading={loading} error={error} empty={isEmpty}>
+  {content}
+</AsyncBoundary>
+```
+
+- 不允许首页一个 spinner、面料页另一个 skeleton、服务页空白；
+- Hero 加载时保持固定高度，避免布局跳动；
+- API 失败时显示统一重试入口；
+- 空报告、空 SKU 和空场景使用对应的标准空状态。
+
+### 13.12 页面模板
+
+#### 首页模板
+
+```tsx
+<PageShell>
+  <PageHero variant="home" />
+  <PageSection>{/* 技术路径 */}</PageSection>
+  <PageSection tone="navy">{/* 三个技术价值 */}</PageSection>
+  <PageSection tone="mist">{/* 民用/特种入口 */}</PageSection>
+  <PageSection>{/* 系列 */}</PageSection>
+  <PageSection tone="mist">{/* 证据 */}</PageSection>
+  <PageCTA />
+</PageShell>
+```
+
+#### 内容栏目页模板
+
+```tsx
+<PageShell>
+  <PageHero variant="section" />
+  <PageSection>{/* 主要内容 */}</PageSection>
+  <PageSection tone="mist">{/* 次要内容/证据 */}</PageSection>
+  <PageCTA />
+</PageShell>
+```
+
+#### 详情模板
+
+```tsx
+<PageShell>
+  <PageHero variant="detail" />
+  <PageSection width="content">{/* 详情 */}</PageSection>
+  <PageSection tone="mist">{/* 报告/相关产品 */}</PageSection>
+  <PageCTA />
+</PageShell>
+```
+
+### 13.13 组件治理规则
+
+- 页面只能组合固定组件，不复制其内部结构；
+- 不向通用组件开放任意 className 覆盖核心布局；
+- 只通过有限枚举产生视觉变体；
+- CMS 管内容，不管理 CSS、类名、间距和布局；
+- 组件默认值集中在组件或 design tokens，不散落在页面；
+- 新页面开发前必须先选择既有模板；
+- 确有新模式时先扩展通用组件，再使用，不在页面内临时实现；
+- Header、Footer、Hero、PageSection、SectionHeader、PageCTA 的视觉调整必须全站同步。
+
+### 13.14 保留并扩展的现有组件
+
+- `PageHero`：所有内页共用；
+- `SceneSelector` 重构为 `SceneFilter`：只用于面料数据库及真正需要场景过滤的页面，不再放入 Hero；
+- `SkuCard`：三条线共用唯一结构；
+- `FileViewer`：报告和数字资产共用；
+- `ReportManager`：管理所有证据；
+- `FabricManager`：管理三条线和 SKU；
+- `PageConfigManager`：继续管理页面 Hero；
+- `FluorineManager`：扩展为技术创新内容管理，分开管理膜、复合、染整、供应链和验证内容。
+
+### 13.15 业务层只新增八个通用组件
+
+1. `TechnologyPath`：仅用于首页技术关系摘要；
+2. `MarketScopeGateway`：仅用于首页民用/特种大入口；
+3. `EvidenceGrid`：首页、技术页、系列和 SKU 共用报告展示；
+4. `SkuDetailPanel`：仅在面料数据库和需要完整 SKU 详情的页面使用；终端装备页只链接到它，不嵌入完整结构；
+5. `RequestTypeChooser`：详情页 CTA 与联系表单共用请求类型；
+6. `GroupedBrowseNav`：面料数据库分组系列按钮与终端装备分组分类共用；
+7. `HorizontalRail`：SKU 与终端装备场景共用原生横向滚动容器和开发中尾卡；
+8. `SceneCard`：终端装备场景使用的图片、需求和关联面料卡。
+
+### 13.16 不新增
+
+- 三条系列独立页面；
+- Kais 专用后台；
+- 首页专用报告表；
+- 第二套媒体库；
+- 图表库；
+- 通用页面搭建器。
+
+## 14. 业务组件接口
+
+页面骨架组件接口以第 13 节为准；本节只定义业务组件，避免重复定义。
+
+### 14.1 SkuCard
+
+```ts
+sku: FabricSku
+seriesName: string
+benefitLine: string
+imageVariant?: 'material' | 'application'
+```
+
+状态、RPO-TEX、参数和报告不传入首层卡片，详情层从同一 SKU 数据读取。
+
+### 14.2 SkuDetailPanel
+
+```ts
+interface SkuDetailPanelProps {
+  sku: FabricSku
+  series: FabricSeries
+  onClose: () => void
+  context?: 'fabric-database' | 'sku-detail'
+}
+```
+
+- 组件只接收当前选中的 SKU，不接收系列默认性能；
+- 结构、最多 4 项规格、最多 3 项验证结果、验证摘要、数字资产和样品入口在一个组件中完成；
+- 面料数据库在 SKU 横向轨道下方原位展开；终端装备应用详情只提供面料链接，不嵌入该组件；
+- SKU 改变时整个面板数据同步改变，不保留上一个 SKU 的异步结果。
+
+### 14.3 TechnologyPath
+
+仅用于首页，不保留只有一个有效值的 `mode` 属性。数据来源使用现有技术关系配置，不保存第二份内容。
+
+### 14.4 EvidenceGrid
+
+```ts
+seriesSlug?: string
+skuId?: number
+limit?: number
+```
+
+数据统一来自 `/api/reports`。
+
+### 14.5 RequestTypeChooser
+
+```ts
+type RequestType = 'sample' | 'target_spec' | 'co_development'
+
+interface RequestTypeChooserProps {
+  value?: RequestType | null
+  onChange?: (value: RequestType) => void
+  mode: 'link' | 'form'
+  context?: { seriesSlug?: string; skuId?: number; applicationSlug?: string }
+}
+```
+
+- `link` 用于各详情页 CTA，点击跳转 `/contact` 并写入 query；
+- `form` 用于联系页，读取 query 后允许用户调整；
+- 三个请求类型名称、说明和 query 值只有一份配置。
+
+### 14.6 SceneFilter
+
+```ts
+interface SceneFilterItem {
+  id: number
+  sceneSlug: string
+  category: string
+  label: string
+  matchedSeriesSlugs: string[]
+  matchedSkuIds?: number[]
+}
+
+interface SceneFilterProps {
+  items: SceneFilterItem[]
+  activeScene?: string | null
+  onChange: (sceneSlug: string | null) => void
+  allLabel?: string
+  categoryColors?: Record<string, string>
+}
+```
+
+实现要求：
+
+- active 状态由 `sceneSlug` 决定，不由系列 slug 决定；
+- 组件内提供“全部/清除”；
+- 按钮输出 `aria-pressed`；
+- 不负责获取数据或滚动页面；
+- 不保存业务页面的 activeTab；
+- 同一组件不能同时承担装备品类 tabs 与面料场景筛选。
+
+### 14.7 GroupedBrowseNav
+
+终端装备使用独立的轻量分类导航，因为它控制的是产品分类，不是场景筛选：
+
+```ts
+interface GroupedBrowseNavProps {
+  groups: Array<{
+    label?: string
+    items: Array<{ slug: string; label: string }>
+  }>
+  activeValue: string
+  onChange: (slug: string) => void
+  sticky?: boolean
+}
+```
+
+该组件复用现有 sticky tabs 逻辑：面料数据库传入“日常与户外使用/特种场景”两组系列；终端装备传入“日常休闲、户外运动/特种专业”两组分类。不与 SceneFilter 合并成一个过度通用组件。
+
+### 14.8 HorizontalRail
+
+```ts
+interface HorizontalRailProps {
+  children: React.ReactNode
+  endCard?: {
+    visible: boolean
+    title: string
+    description?: string
+    action?: { label: string; href: string }
+  }
+  ariaLabel: string
+}
+```
+
+- 组件只负责横向布局、滚动条、scroll-snap、键盘可达和尾卡；
+- 内容卡仍由 `SkuCard` 或 `SceneCard` 渲染，不定义通用万能卡片数据结构；
+- 没有超过容器宽度时不制造空滚动距离，但开发中尾卡仍按配置显示；
+- 后台预览与前台使用同一组件。
+
+### 14.9 SceneCard
+
+```ts
+interface SceneCardProps {
+  title: string
+  need: string
+  fabricLabel: string
+  image: ImagePlacement
+  onOpen?: () => void
+  preview?: boolean
+}
+```
+
+只负责终端应用场景，不与 SkuCard 合并成万能卡片；后台预览通过 `preview=true` 禁止导航。
+
+## 15. 数据模型
+
+### 15.1 共用枚举
+
+```ts
+type MarketScope = 'civil' | 'special'
+
+type DevelopmentStatus =
+  | 'commercialized'
+  | 'completed'
+  | 'validating'
+  | 'co_developing'
+  | 'reserved'
+
+type Visibility = 'public' | 'internal' | 'hidden'
+
+type FabricTechnology =
+  | 'rpo_tex_membrane'
+  | 'lamination'
+  | 'fluorine_free_finishing'
+  | 'functional_finishing'
+```
+
+### 15.2 fabric_series
+
+```ts
+market_scope: MarketScope
+development_status: DevelopmentStatus
+visibility: Visibility
+label_color: 'blue' | 'silver' | 'red'
+benefit_line: string
+care_slug?: string
+```
+
+默认：
+
+- Otter → `civil / blue`；
+- Rayo → `civil / silver`；
+- Kais → `special / red`。
+
+### 15.3 fabric_sku
+
+```ts
+development_status: DevelopmentStatus
+visibility: Visibility
+uses_rpo_tex: boolean
+technology_tags: FabricTechnology[]
+care_slug?: string
+application_type?: 'stab_protection' | 'firefighting' | string
+benefit_line: string
+```
+
+Kais 当前公共 `application_type` 只允许 `stab_protection` 和 `firefighting`。
+
+- `uses_rpo_tex=true` 时 `technology_tags` 必须包含 `rpo_tex_membrane`；
+- Rayo 当前 SKU 不得包含 `rpo_tex_membrane`，根据实际工艺使用 `fluorine_free_finishing` 或 `functional_finishing`；
+- `care_slug` 默认由系列继承，只有确有不同洗护要求时才在 SKU 层覆盖，避免重复维护。
+
+### 15.4 test_reports
+
+```ts
+interface TestMetric {
+  label: string
+  value: string
+  unit?: string
+}
+
+interface TestReport {
+  id: number
+  title: string
+  report_type:
+    | 'performance'
+    | 'chemical'
+    | 'protection'
+    | 'certificate'
+  file_url: string
+  file_type: string
+  standard?: string
+  lab?: string
+  report_date?: string
+  series_slug?: string
+  sku_ids: number[]
+  metrics: TestMetric[]
+  public_summary?: string
+  public_excerpt_images?: string[]
+  public_file_url?: string
+  access_level: 'summary' | 'redacted_file' | 'public_file'
+  status: 'draft' | 'published' | 'archived'
+  order_index: number
+}
+```
+
+JSON DB 阶段使用数组关联，不建立复杂关系表。
+
+维护规则：
+
+- 只有 `status=published` 的报告由公共 API 返回；
+- `archived` 报告和关联指标不再公开；
+- 每份报告最多录入 3 项需要在网页显示的关键指标；
+- 指标只维护名称、值和单位，测试方法统一读取报告级 `standard`；
+- `metrics` 由管理员根据报告录入，不在浏览器端解析 PDF；
+- 一份报告默认关联一个系列、多个 SKU；
+- 系列级报告不得自动证明全部 SKU，未选择 SKU 时只显示为“系列级资料”；
+- `file_url` 保存后台原始文件，不由公共 API 返回；
+- `summary` 只公开结构化摘要，`redacted_file` 可额外公开脱敏文件，`public_file` 只用于允许完整公开的认证或授权文件；
+- 复杂测试条件、批次和完整结论以原始文件为准，不复制进 CMS。
+
+### 15.5 fabric_scenes
+
+现有 `series_slug` 单值不能表达“一个场景匹配多个系列”，也不能正确管理按钮 active 状态。调整为：
+
+```ts
+interface FabricScene {
+  id: number
+  scene_slug: string
+  category: string
+  label: string
+  market_scope: MarketScope
+  matched_series_slugs: string[]
+  matched_sku_ids?: number[]
+  order_index: number
+  visibility: Visibility
+}
+```
+
+规则：
+
+- `scene_slug` 是场景的唯一交互值；
+- `matched_series_slugs` 可以包含多个系列；
+- SKU 级匹配有明确需求时才填写 `matched_sku_ids`；
+- 特种范围首期只建立 `stab-protection` 和 `firefighting`；
+- 页面不能再用 `series_slug` 作为选择器 activeValue。
+
+### 15.6 终端装备应用数据
+
+第一阶段复用现有 `equipment_products`，但前台与后台统一将其解释为“应用案例”，不再并行维护第二套场景数据。
+
+- `category_id` 关联“日常休闲 / 户外运动 / 特种专业”；
+- 每条应用维护标题、使用需求、关联面料、图片、排序与显示状态；
+- 旧 `equipment_scenes` 只作为一次性迁移来源，不再参与前台渲染；
+- 将其中仍有效的内容迁入 `equipment_products` 后，删除 `EquipmentSceneManager` 入口；
+- 在确认旧数据无回退需要前，可以保留底层旧字段，但不再提供双入口维护。
+
+### 15.7 页面轨道与图片配置
+
+不新增独立轮播内容表。真实卡片继续来自现有业务数据，只在页面配置增加：
+
+```ts
+interface RailConfig {
+  end_card_visible: boolean
+  end_card_title: string
+  end_card_description?: string
+  end_card_cta_label?: string
+  end_card_cta_href?: string
+}
+```
+
+面料数据库默认标题为“新面料开发中”，终端装备默认标题为“新应用开发中”；服务器已有配置时不得用默认值覆盖。
+
+需要图片的业务记录增加可选 `image_placement?: ImagePlacement`。旧 `image/image_url/bg_image` 继续保留为兼容字段；有 `image_placement.cropped_url` 时前台优先使用裁剪结果。
+
+### 15.8 迁移
+
+只在 `initDatabase()` 中补缺失字段：
+
+```ts
+field = field ?? defaultValue
+```
+
+不得覆盖服务器已编辑内容，不通过删除 `db.json` 完成升级。
+
+场景数据迁移：
+
+- 为每条旧场景生成稳定 `scene_slug`；
+- 将旧 `series_slug` 转成单元素 `matched_series_slugs`；
+- 相同系列对应多个旧场景时仍保留各自独立 `scene_slug`；
+- 删除默认的战术防护、阻燃工装、工业安全等公共 Kais 场景，改为防刺和消防；
+- 不删除服务器自定义数据，超出公开范围的内容迁移为 `internal`。
+
+## 16. API 与权限
+
+- 公共系列和 SKU 接口只返回 `visibility=public`；
+- Kais 只返回防刺、消防公共数据；
+- `/api/fabrics/scenes` 返回独立 `scene_slug` 和匹配数组；
+- `/api/fabrics/series` 支持 `scope` 与 `scene` query，或由前端基于同一返回结构过滤；首期只选择一种实现，不能前后端各写一套不同规则；
+- `/api/equipment/categories` 使用 category slug，不再读取 Hero 场景状态；
+- `/api/reports` 支持 `series_slug`、`sku_id`、`report_type` 和 `mode` 过滤；
+- 公共报告接口只返回 `status=published` 的结构化摘要和允许公开的脱敏/公开文件，不返回原始 `file_url`；
+- SKU 详情接口返回结构化 `verified_metrics` 和关联报告摘要，避免前端分别请求后自行拼接错误适用范围；
+- 验证摘要继续复用 FileViewer 的弹层外壳；只有 `redacted_file/public_file` 才提供文件预览；
+- 后台继续使用现有 JWT；
+- 管理员可以保存 internal/hidden，但公共前端不能获取；
+- PUT/POST 后清除相关 GET 缓存，避免后台保存后前台 60 秒仍显示旧内容。
+
+## 17. 后台改动
+
+不新增菜单，只补字段：
+
+- FabricManager：范围、状态、可见性、收益句、RPO-TEX、Kais 应用类型；
+- FabricManager 的 SKU 编辑区增加结构化适用场景和完整编码，首层卡片只读取短编号与收益句；
+- ReportManager 首层只维护：标题、资料类型、原始文件、关联系列/SKU、公开级别、状态；
+- 标准、实验室、日期和最多 3 项网页指标放在“补充信息”折叠区，可按需要填写；
+- published 报告必须有原始文件和关联对象；性能报告如需在网页显示结果，至少填写一项指标；公开级别为 `redacted_file/public_file` 时必须填写对应公开文件；
+- 删除改为归档优先，归档后公共页面不再显示；
+- HomeEditor：Hero、技术价值和区块顺序；
+- FluorineManager：分别管理膜技术、面料复合、无氟染整、材料与供应链、测试与验证五个技术分支及依据关联；
+- ServiceManager：删除关于我们、新闻、RPO 内容和开发流程，改为四类洗护说明与 FAQ；
+- ContactConfig：只管理真实联系方式、可选响应说明和隐私提示，不保存占位联系方式；
+- ContactMessageManager：显示请求类型、终端品类、使用环境、目标标准、来源系列/SKU/应用和附件；
+- PageConfigManager：各页 Hero。
+
+默认数据不得随机生成性能参数、虚构认证、客户或公司里程碑。
+
+后台面向内容维护人员，不直接暴露 JSON：
+
+- FabricManager 删除“子系列数据（JSON）”输入；Kais 防刺/消防使用结构化应用类型字段；
+- SKU `features/specifications` 改为可增删的短文本项和“名称/值/单位”规格行；
+- ReportManager 的最多 3 项网页指标使用同一“名称/值/单位”行编辑器；
+- slug、内部状态和数据关联放入折叠的高级设置，普通编辑流程不要求维护人员理解数据库字段。
+
+### 17.1 内容轨道维护模块
+
+新增一个后台复用组件 `ContentRailEditor`，嵌入 FabricManager 和 EquipmentManager，不新增独立“轮播管理”菜单。
+
+固定功能：
+
+- 使用真实前台 `HorizontalRail` 预览；
+- 显示当前分类下的真实卡片和末尾开发中卡；
+- 左移、右移调整 `order_index`；
+- 编辑按钮跳回对应 SKU 或场景表单，不在轨道编辑器重复维护标题、图片和正文；
+- 可切换开发中卡显示状态；
+- 可编辑开发中卡标题和 CTA；
+- 保存前后预览顺序必须一致；
+- 预览宽度提供桌面和移动两档即可，不建设任意响应式画布。
+
+对应关系：
+
+| 前台功能 | 数据来源 | 后台位置 |
+|---|---|---|
+| OTTER/RAYO/KAIS 系列按钮 | `fabric_series` | FabricManager |
+| SKU 横向轨道 | `fabric_sku` | FabricManager 内的 ContentRailEditor |
+| 使用场景筛选 | `fabric_scenes` | SceneManager |
+| 装备分类按钮 | `equipment_categories` | EquipmentManager |
+| 装备应用横向轨道 | `equipment_products`（应用语义） | EquipmentManager 内的 ContentRailEditor |
+| 开发中尾卡 | 页面 `rail_config` | 对应页面配置 |
+
+### 17.2 图片维护模块
+
+项目已安装 `react-image-crop`，并已有 `ImageCropper`、MediaLibrary 和 `/media/upload`。在此基础上扩展，不引入新的裁剪库、媒体库或服务端图片处理依赖。
+
+统一新增后台字段组件 `AdminImageField`，所有 Hero、系列、SKU、装备场景和内容区图片都通过它维护，替换各表单散落的 `<input type="file">`。
+
+固定流程：
+
+```text
+从媒体库选择或上传原图
+→ 选择当前前台槽位
+→ 拖动裁剪区域 / 调整选区大小 / 缩放 / 重置
+→ 查看真实前台组件预览
+→ 保存裁剪结果
+```
+
+功能边界：
+
+- 原图始终保留，裁剪结果作为衍生图片保存，便于重新裁剪；
+- 同一原图可以在 Hero、SKU 卡和场景卡使用不同裁剪，不修改媒体库中的原图；
+- 裁剪比例由前台槽位提供，例如 Hero `16:9`、SKU `4:3`、场景卡 `4:5`，管理员不能输入任意比例破坏布局；
+- 拖动裁剪框调整位置，拖动边角调整范围；缩放使用原生 range；提供“重置居中”；
+- 上传后立即显示原图尺寸、文件大小和格式；
+- JPEG/WebP 默认输出 WebP 或 JPEG；需要透明背景的 PNG 保持 PNG，不能像现有裁剪器一样全部强制转为 JPEG；
+- 预览直接复用 `PageHero`、`SkuCard`、`SceneCard` 或 `MediaFrame`，并同时带入当前标题和文案；
+- 保存前必须看到桌面预览；移动端预览作为一键切换，不另建独立编辑数据；
+- SVG Logo 不进入位图裁剪器，只预览完整显示；
+- PDF、视频继续由 MediaLibrary 管理，不进入图片裁剪流程。
+- 图片正在被页面或内容引用时，媒体库删除前必须提示引用位置并阻止直接删除；先替换引用后才能删除原图和衍生图。
+
+最小数据结构：
+
+```ts
+interface ImagePlacement {
+  source_media_id: number
+  source_url: string
+  cropped_url: string
+  crop: { x: number; y: number; width: number; height: number; unit: '%' }
+  zoom: number
+  slot: 'hero' | 'sku-card' | 'scene-card' | 'section'
+  alt: string
+}
+```
+
+- `source_media_id/source_url` 用于再次编辑；
+- `cropped_url` 供前台直接加载，避免前台实时计算裁剪；
+- 裁剪在浏览器 Canvas 中完成，再通过现有 `/media/upload` 上传衍生文件；
+- 不增加 Sharp、云图片服务或新的图片处理服务器。
+
+### 17.3 前台效果预览原则
+
+- 后台不能维护一套“看起来差不多”的预览 HTML；
+- 页面级预览直接嵌入对应公共路由，使用与正式前台完全相同的组件、CSS、图片和数据接口；不得再维护仿造 Hero 或卡片的后台 JSX；
+- 技术创新分支统一复用 `TechnologyDetail`；裁剪器只负责生成图片，不得内置技术卡、Hero 或其他业务布局预览；裁剪确认后立即保存该分支的 `image_url`；
+- 预览固定以 1440px 桌面宽度等比缩放，避免后台容器宽度触发错误响应式断点；移动端通过新窗口检查；
+- 点击保存后刷新预览。未保存草稿只存在于表单中，不伪装成已经发布的前台内容；
+- 图片裁剪组件可以展示本地裁剪结果，但公共页面预览只展示已上传并保存的资源。
+
+## 18. 性能、可访问性与安全
+
+- 首屏图使用 WebP/AVIF 和响应式尺寸；
+- 非首屏图片懒加载；
+- 移除持续 Canvas 动画；
+- 文字对比度达到 WCAG AA；
+- 键盘焦点清晰；
+- 图片提供准确 alt；装饰图使用空 alt；
+- 后台首次登录强制修改默认密码；
+- 上传校验文件类型、大小和访问权限。
 
 ---
 
-## 10. 图片与视频制作准则
+# 第五部分：实施与验收
 
-必须优先制作：
+## 19. 实施顺序
 
-1. 首页 Hero：雨水落在深色面料上的微距视频或照片
-2. Otter：三层复合结构剖面图
-3. Otter：静水压 / 透湿 / 剥离强力测试照片
-4. Kais：刀尖接触 UHMWPE 织物的防刺示意图
-5. Rayo：纱线截面与导湿路径示意图
-6. 样布平铺图：统一暗灰背景、低反光、带编号标签
-7. 膜卷 / 薄膜实物图：用于建立材料真实性
+### P0：首页和视觉含义
 
-图片风格：
+1. 删除默认 Canvas；
+2. 更新全局颜色、Header 和 Hero；
+3. 增加技术路径；
+4. 将四张平台卡改成三个技术价值；
+5. 增加民用/特种入口；
+6. 按新版规范改系列/SKU 卡；
+7. 接入真实证据区和 CTA。
 
-- 真实
-- 冷静
-- 高对比
-- 低饱和
-- 材料细节清楚
-- 不过度商业广告化
+### P1：数据和面料库
 
-不要使用：
+1. 增加范围、状态、可见性和收益句；
+2. 面料库 Hero 移除选择器；
+3. 面料库增加民用/特种切换和独立 SceneFilter；
+4. 修正场景 activeValue 和多系列匹配；
+5. Kais 只公开防刺、消防；
+6. 终端装备 Hero 移除选择器，只保留 sticky 分类导航；
+7. 装备分类状态写入 URL query；
+8. 报告关联系列和 SKU；
+9. 技术创新页按膜、复合、无氟染整、生产协同、测试验证五个分支统一口径。
 
-- 过度精修的假户外照片
-- 夸张合成光效
-- 纯 AI 生成但没有材料真实感的图
-- 软件官网常见的抽象 3D 背景
+### P2：后台
 
----
+1. FabricManager 补字段；
+2. ReportManager 补齐报告分类、关联系列/SKU、最多 3 项网页指标和发布状态；
+3. 公共 API 过滤并返回 SKU verified_metrics；
+4. 删除页面底部无筛选的报告大画廊；
+5. 删除大型测试方法专区，只保留固定说明和测试服务入口；
+6. 缓存失效；
+7. 扩展现有 ImageCropper 与 MediaLibrary，统一图片选择、裁剪和真实组件预览；
+8. FabricManager 与 EquipmentManager 嵌入 ContentRailEditor；
+9. 内容清理。
 
-## 11. 最终判断标准
+## 20. 文件级改动
 
-每一屏上线前问三个问题：
+### 公共语言泄漏清理
 
-1. 用户能不能在 3 秒内判断这是“材料 / 面料 / 防护体系”？
-2. 这张图里有没有真实物理对象？
-3. 文案是否讲清楚了材料结构、性能或应用，而不是只讲愿景？
+实施时必须同时清理现有页面中的内部或后台式表达：
 
-只要答案有一个是否定，就需要重做。
+- `src/pages/Home.tsx`：删除系列卡中直接渲染的 `{s.slug}`；系列英文名或短编号使用独立公共字段；
+- `src/pages/FluorineFreeFuture.tsx`：删除 BP 式价值链列和内部平台关系展示，改为五项面向访客的技术内容；
+- `src/pages/ServicesSupport.tsx`：删除“关于我们、新闻、开发模块、文件格式/面数/分辨率清单、RPO 内容”等后台资料门户式信息；
+- `src/pages/Contact.tsx`：删除“点击后表单自动选择对应选项”等解释组件行为的文字，直接呈现清楚的请求类型和字段；
+- `src/pages/EndUseEquipment.tsx`：删除 `Latent / U-Line / P-Line / A-Line` 等没有对外含义的分类；
+- 所有公共组件：禁止把 slug、枚举值、字段名、文件权限、发布状态和接口错误原文直接渲染给访客；
+- 空状态和错误状态使用用户可行动的语言，例如“暂未找到符合条件的面料”“重新加载”，不显示接口名、状态码或内部对象名。
 
-原：
-参考风格：Apple 官网首页 — 全屏高质量背景、居中巨型标题、精炼副标题、底部双按钮、大量留白。
+### 必改
 
-改：
-参考风格：GORE-TEX / eVent / Arc'teryx 材料技术页 — 真实材料质感、户外应用场景、膜层结构、测试验证与品牌级克制排版。首页可以保持全屏 Hero，但必须以真实面料、膜层或应用场景作为视觉锚点，不使用纯抽象科技纹理作为主视觉。
+- `src/types/index.ts`；
+- `server/db.ts`；
+- `server/routes/fabrics.ts`；
+- `server/routes/reports.ts`；
+- `src/styles/global.css`；
+- `src/components/PageHero.tsx`；
+- 将 `src/components/SceneSelector.tsx` 重构/更名为 `SceneFilter.tsx`；
+- 新增或提取 `GroupedBrowseNav.tsx`；
+- 新增 `src/components/HorizontalRail.tsx`；
+- 新增 `src/components/SceneCard.tsx`；
+- `src/components/SkuCard.tsx`；
+- 新增 `src/components/SkuDetailPanel.tsx`；
+- 新增 `TechnologyPath.tsx`；
+- 新增 `MarketScopeGateway.tsx`；
+- 新增 `EvidenceGrid.tsx`；
+- 新增 `RequestTypeChooser.tsx`；
+- `src/pages/Home.tsx`；
+- `src/pages/FabricDatabase.tsx`；
+- `src/pages/EndUseEquipment.tsx`；
+- `src/pages/FluorineFreeFuture.tsx`；
+- `src/pages/ServicesSupport.tsx`；
+- `src/pages/Contact.tsx`；
+- `src/admin/FabricManager.tsx`；
+- `src/admin/EquipmentManager.tsx`；
+- `src/admin/MediaLibrary.tsx`；
+- 扩展 `src/admin/ImageCropper.tsx`，不新建第二个裁剪器；
+- 新增 `src/admin/components/AdminImageField.tsx`；
+- 新增 `src/admin/components/ContentRailEditor.tsx`；
+- `server/routes/media.ts`；
+- `src/App.tsx`：保持公共路由结构，只移除废弃后台路由并接入必要页面；
+- `src/admin/Dashboard.tsx`：移除废弃菜单入口；
+- `src/admin/ReportManager.tsx`；
+- `src/admin/ServiceManager.tsx`；
+- `src/admin/ContactConfig.tsx`；
+- `src/admin/ContactMessageManager.tsx`。
 
-原：
-TECHNOLOGY FABRIC  
-科技面料  
-定义未来  
-以创新材料科技，重塑户外与运动的边界
+### 尽量不改
 
-改：
-PFAS-FREE PERFORMANCE MATERIALS  
-UHMWPE 微孔膜  
-构建下一代无氟防护面料  
-以超薄 UHMWPE 微孔膜、无氟复合体系与功能织物结构为核心，为真实装备提供可测试、可复合、可导入的材料解决方案。
+- Footer；
+- server/index.ts；
+- 部署脚本、PM2 和 nginx 配置。
+
+### 完成迁移后删除
+
+- `src/components/SceneSelector.tsx`；
+- `src/components/DynamicIcon.tsx`、`FileViewer.tsx` 等无调用方组件；
+- `src/admin/SceneManager.tsx`、`ReportManager.tsx`、`DigitalAssetManager.tsx` 及对应后台入口；
+- `src/admin/EquipmentSceneManager.tsx` 及对应后台入口；
+- `src/admin/NewsManager.tsx` 及对应后台入口；
+- ServicesSupport 中 about/news/dev/fluorine 旧模块；
+- HomeEditor、FluorineManager 中与真实前台组件重复的预览 JSX；
+- FabricManager 中 `sub_series_data`、系列 Logo 上传、SKU `features` 和 `specifications` 原始 JSON 文本框；核心性能只维护前台实际展示的三组“标题 + 内容”。
+
+### 20.3 CMS 单一来源映射
+
+- 首页：Hero、技术体系、三大面料平台区标题、验证体系均由首页管理维护；系列图片、系列定位和 SKU 内容只在面料系列管理维护；
+- 五个内页：英文标签、标题、副标题和 Hero 图片统一由页面配置维护，公共页面不得再写死覆盖 CMS；
+- 技术创新：只维护前台五个技术分支；删除未渲染的产业链全景图入口；
+- 服务与支持：只维护洗涤保养和常见问题；删除关于我们、新闻和重复技术管理；
+- 前台没有消费者的场景、测试报告、数字资产和装备场景后台入口退出当前 CMS。历史数据可以保留，但不得继续向编辑人员展示无效维护功能。
+
+### 20.4 Ponytail 工程设计哲学
+
+项目在实现阶段吸收 Ponytail 的工程原则，但不把它理解为“少做功能”或牺牲质量：
+
+1. **先判断是否需要存在**：没有明确用户价值、维护责任或验收标准的模块不建设，避免为假设中的未来需求预留复杂系统。
+2. **先复用，再新增**：依次检查现有业务组件、浏览器原生能力、标准库和已安装依赖；只有这些能力确实无法覆盖需求时才增加新组件或依赖。
+3. **共享真实组件**：前台、后台预览和不同页面必须复用同一套 `PageHero`、`PageSection`、`HorizontalRail`、`SkuCard`、`ContentTabs` 等组件，不复制近似 JSX。
+4. **在根因处修改**：公共视觉、布局和交互问题优先修复共享组件，不在每个调用页面增加补丁；业务差异通过有限 props 或数据体现。
+5. **原生能力优先**：横向滚动使用 CSS overflow、scroll snap 和原生滚动条；排序使用现有 `order_index`；不为轮播、拖拽或简单表单额外引入依赖。
+6. **避免万能抽象**：SKU 卡、应用卡和技术内容可以共享容器与交互，但不合并成包含大量可选字段的万能卡片。
+7. **删除重复维护入口**：相同内容只能有一个权威 CMS 来源；发现并行数据表、重复后台或仿造预览时，优先迁移并删除重复入口。
+8. **简化不能损害底线**：输入校验、权限、安全、可访问性、数据保留、错误处理和真实验证依据不能因减少代码而被省略。
+9. **每次简化都要验证**：至少完成 TypeScript 检查、关键交互检查和目标断点视觉检查；“代码更少”本身不构成完成标准。
+
+## 21. 验收标准
+
+### 21.1 用户理解
+
+让不了解港翼的目标用户浏览首页 10 秒后回答：
+
+1. 港翼做什么？
+2. 固纳、RPO-TEX 和港翼是什么关系？
+3. Otter、Rayo、Kais 分别解决什么问题？
+4. 哪些是民用，哪些只用于防刺、消防？
+5. 哪里查看测试证据？
+6. 如何申请样品或提交技术需求？
+
+### 21.2 功能
+
+- 首页保留技术关系摘要；技术创新页按五个独立技术分支组织内容；
+- 同一报告多处展示，不重复上传；
+- SKU 卡严格只有四层信息；
+- 点击 SKU 卡可以打开完整详情层，不存在无功能箭头；
+- 面料数据库初始状态不显示 T31 或任何 SKU 的性能；
+- 面料数据库使用“日常与户外使用：OTTER/RAYO | 特种场景：KAIS”分组系列按钮，不再使用两级范围选择；
+- 系列内容头部不显示蓝标/银标/赤标、“了解系列”或“选择一个面料型号”等冗余信息；
+- SKU 与装备场景使用同一个 HorizontalRail，桌面和移动端均可横向滚动并显示滚动条；
+- 轨道最后固定显示可配置的“新面料开发中/新应用开发中”尾卡；
+- 后台调整顺序、隐藏内容或修改尾卡后，实际前台组件预览立即同步；
+- 选择 T31 后只显示 T31 的结构、性能和报告，切换 T32/T33 后不会残留 T31 数据；
+- 系列头部不再展示膜层、学校和奖项组成的一行长说明；
+- SKU 详情完整承接结构、规格、场景、性能、报告和数字资产；
+- 面料数据库不存在无筛选的全量报告画廊；
+- 选中 SKU 后只显示明确关联的 SKU 报告和适用范围清楚的系列报告；
+- 每个公开性能指标都能定位到有效报告；
+- 归档报告不再支撑公开指标；
+- 宣传PDF不会出现在“测试与报告”分类；
+- 页面不再声明“每一款面料均通过国际标准测试”，除非数据能证明；
+- Kais 公共页只显示防刺、消防；
+- 面料数据库 Hero 中不存在场景选择器；
+- 面料场景按钮一次只高亮一个独立 scene_slug；
+- 多个场景匹配同一系列时不会同时出现选中状态；
+- “全部”可以清除场景筛选；
+- series 和 scene 刷新页面后能够恢复；
+- 终端装备 Hero 中不存在场景选择器；
+- 终端装备只有 sticky 分类导航控制当前分类，不存在第二套 activeTab 控件；
+- 装备分类刷新页面后能够通过 category query 恢复；
+- 终端装备页使用“日常休闲 / 户外运动 | 特种专业”分类；
+- Hero 右侧使用真实应用图片，不出现抽象流程方块；
+- 终端装备页只表达场景需求和采用面料，不显示三合一、膜层或单层结构模块；
+- 技术创新页明确分开膜、复合、无氟染整、材料与供应链、测试与验证五个分支；
+- RPO-TEX 膜技术分支只关联 `uses_rpo_tex=true` 的 SKU，Rayo 不因采用无氟染整而被错误关联；
+- 内部测试不写成认证实验室，SGS/中纺标检测报告不写成体系认证；
+- 服务页不存在关于我们、新闻、开发流程和完整资料门户；
+- 服务页首层是洗涤保养，其后只有 FAQ 和联系我们；
+- 未验证的 SKU 不发布具体洗护温度、次数和化学品建议；
+- Kais 洗护内容明确要求按特种材料边界或专业维护处理；
+- 从 SKU 或应用页进入联系页时能恢复来源上下文，不要求用户重复填写；
+- 联系表单必填字段控制在项目判断所需范围，补充字段按请求类型展开；
+- 联系页不显示占位邮箱、电话、地址和未经确认的响应时效；
+- 表单提交失败保留已填内容，成功后显示确认流程而非自动承诺寄样或报价；
+- Hero、SKU、场景卡和内容图片均通过统一 AdminImageField 选择或上传；
+- 图片支持重新裁剪、移动选区、调整大小、缩放和重置，并保留原图；
+- 同一原图用于不同比例槽位时可以保存不同裁剪结果；
+- 后台图片预览与前台实际 PageHero/SkuCard/SceneCard/MediaFrame 一致；
+- SVG、PDF、视频不会错误进入位图裁剪器；
+- internal/hidden 不出现在公共 API；
+- SOTEX 不出现在新官网和 CMS 默认内容；
+- 旧 db.json 升级后数据不丢失；
+- `npm run build` 通过；
+- 375px 和桌面端关键流程可用。
+
+### 21.3 组件一致性
+
+- Header 和 Footer 在所有公共路由只挂载一次；
+- 所有页面顶部不存在重复 60px 偏移；
+- 首页、面料、装备、RPO-TEX、服务和联系页全部使用同一个 PageHero；
+- 所有 PageHero 只承担页面识别和说明，不嵌入 SceneFilter 或 GroupedBrowseNav；
+- SceneFilter 只出现在 Hero 后的标准 PageSection；
+- GroupedBrowseNav 固定在 Hero 后并位于 SiteHeader 下方；
+- 所有内容区使用 PageSection，页面不自行声明 1440px 容器和左右 padding；
+- 所有 H2 区块标题使用 SectionHeader；
+- 所有页面底部询盘使用 PageCTA；
+- 图片和视频使用 MediaFrame，不在页面中散落不同裁切规则；
+- 异步页面使用统一 loading/error/empty 状态；
+- CMS 不保存 className、Tailwind 类、任意颜色或任意间距；
+- 在 1440×900、768×1024、375×812 三个视口对首页及全部一级页面截图比对；
+- Header、Hero、区块起始线、CTA 和 Footer 的左右边界必须一致；
+- 修改任一骨架组件后，必须回归全部公共路由，不能只检查当前页面。
+
+### 21.4 最终视觉判断
+
+> 第一眼是无氟科技面料，第二眼能分辨民用户外与特种场景；卡片依靠影像、标题和一句收益建立兴趣，技术、状态和参数在详情中完成证明。
