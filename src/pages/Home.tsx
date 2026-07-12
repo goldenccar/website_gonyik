@@ -44,9 +44,9 @@ export default function Home() {
         image={config.hero_background}
         imageAlt="港翼复合面料与膜层微距"
       >
-        <div className="mt-8 flex flex-wrap gap-5">
-          <Link to={config.primary_btn_link || '/fabrics'} className="bg-dark px-6 py-3 text-[14px] font-medium text-white">{config.primary_btn_text || '探索材料'}</Link>
-          <Link to={config.secondary_btn_link || '/pfas-free-innovation'} className="py-3 text-[14px] font-medium text-primary underline underline-offset-4">{config.secondary_btn_text || '探索技术'} →</Link>
+        <div className="mt-8 flex flex-wrap items-center gap-7">
+          <Link to={config.primary_btn_link || '/fabrics'} className="bg-[#0b4f87] px-6 py-3 text-[14px] font-medium text-white transition-colors hover:bg-[#12649f]">{config.primary_btn_text || '探索材料'}</Link>
+          <Link to={config.secondary_btn_link || '/pfas-free-innovation'} className="py-3 text-[14px] font-medium text-white underline decoration-white/60 underline-offset-4 hover:decoration-white">{config.secondary_btn_text || '探索技术'} →</Link>
         </div>
       </PageHero>
 

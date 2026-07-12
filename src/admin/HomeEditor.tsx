@@ -149,6 +149,7 @@ export default function AdminHomeEditor() {
         {cropSrc && (
           <ImageCropper
             src={cropSrc}
+            aspect={12 / 5}
             onComplete={handleCropComplete}
             onCancel={handleCropCancel}
           />
@@ -156,7 +157,7 @@ export default function AdminHomeEditor() {
 
         {!cropSrc && (
           <>
-            {cropPreview && <img src={cropPreview} alt="裁切后的 Hero 图片预览" className="mb-3 aspect-video w-full object-cover" />}
+            {cropPreview && <img src={cropPreview} alt="裁切后的 Hero 图片预览" className="mb-3 aspect-[12/5] w-full object-cover" />}
             <input type="file" accept="image/*,video/mp4,video/webm,video/quicktime" onChange={handleHeroBackgroundSelect} className="text-white text-[13px]" />
             <p className="text-[12px] text-muted mt-2">
               支持 JPG、PNG、GIF、WebP、MP4、WebM、MOV。图片建议宽度 ≥1920px。拖动选区四边或角落可自由调整裁剪框大小，前台会以 object-cover 方式铺满 Hero 区域，核心内容请放在中间偏左。
