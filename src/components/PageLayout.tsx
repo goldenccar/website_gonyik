@@ -12,7 +12,7 @@ export function PageSection({ children, tone = 'light', className = '', id }: {
   id?: string
 }) {
   const toneClass = tone === 'navy' ? 'bg-darker text-white' : tone === 'white' ? 'bg-white' : 'bg-bg'
-  return <section id={id} className={`${toneClass} px-6 py-14 md:py-20 lg:py-20 ${className}`}><div className="mx-auto w-full max-w-[1440px]">{children}</div></section>
+  return <section id={id} className={`${toneClass} px-4 py-14 md:px-6 md:py-20 lg:py-20 ${className}`}><div className="mx-auto w-full max-w-[1600px] px-7 md:px-12 lg:px-16">{children}</div></section>
 }
 
 export function SectionHeader({ tag, title, subtitle, linkText, linkTo, light = false }: {

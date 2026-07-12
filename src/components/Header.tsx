@@ -21,7 +21,7 @@ export default function Header() {
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 h-[60px] border-b border-white/15 bg-[#041F38] px-6">
-      <div className="mx-auto flex h-full w-full max-w-[1440px] items-center">
+      <div className="mx-auto flex h-full w-full max-w-[1600px] items-center px-0 lg:px-10">
         <Link to="/" className="flex shrink-0 items-center" aria-label="港翼科技首页">
           {siteConfig.logo_url ? <img src={siteConfig.logo_url} alt="GONYIK" className="mr-2 h-7 w-auto" /> : <span className="mr-2 grid h-7 w-7 place-items-center bg-white text-[10px] font-bold text-[#041F38]">GY</span>}
           <span className="text-[15px] font-bold text-white">{siteConfig.logo_text || '港翼科技'}</span>
