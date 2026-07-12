@@ -50,7 +50,7 @@ export default function Home() {
         </div>
       </PageHero>
 
-      <PageSection tone="white" className="lg:!py-16">
+      <PageSection className="lg:!py-16">
         <div className="grid gap-10 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-4">
             <p className="text-label text-secondary">MATERIAL SYSTEM</p>
