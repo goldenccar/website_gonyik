@@ -50,7 +50,7 @@ export default function Home() {
         </div>
       </PageHero>
 
-      <PageSection tone="white">
+      <PageSection tone="white" className="lg:!py-16">
         <div className="grid gap-10 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-4">
             <p className="text-label text-secondary">MATERIAL SYSTEM</p>
@@ -58,13 +58,13 @@ export default function Home() {
             <p className="mt-4 max-w-[420px] text-body text-secondary">{config.platform_section_subtitle}</p>
             <Link to={config.platform_section_link} className="mt-8 inline-block text-[14px] underline underline-offset-4">{config.platform_section_link_text} →</Link>
           </div>
-          <div className="border-t border-border lg:col-span-8">
+          <div className="grid border-t border-border md:grid-cols-3 lg:col-span-8">
             {(config.platform_cards || []).slice(0, 3).map((item, index) => (
-              <Link to={config.platform_section_link} key={`${item.title}-${index}`} className="group grid gap-3 border-b border-border py-6 md:grid-cols-[56px_180px_1fr_24px] md:items-center">
+              <Link to={config.platform_section_link} key={`${item.title}-${index}`} className="group flex min-h-[190px] flex-col border-b border-border py-6 md:border-r md:px-7 md:last:border-r-0">
                 <span className="text-label text-secondary">{String(index + 1).padStart(2, '0')}</span>
-                <h3 className="text-[20px] font-semibold text-primary">{item.title}</h3>
-                <p className="text-[14px] leading-6 text-secondary">{item.subtitle || item.description}</p>
-                <span className="text-primary transition-transform group-hover:translate-x-1">→</span>
+                <h3 className="mt-5 text-[20px] font-semibold text-primary">{item.title}</h3>
+                <p className="mt-4 text-[14px] leading-6 text-secondary">{item.subtitle || item.description}</p>
+                <span className="mt-auto self-end pt-5 text-primary transition-transform group-hover:translate-x-1">→</span>
               </Link>
             ))}
           </div>

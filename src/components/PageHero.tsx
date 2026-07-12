@@ -15,7 +15,7 @@ export default function PageHero({ tag, title, subtitle, image, imageAlt = '', v
   if (variant === 'home') {
     return (
       <section className={`min-h-[560px] overflow-hidden bg-bg px-4 md:px-6 lg:h-[620px] ${className}`}>
-        <div className="relative isolate mx-auto flex h-full min-h-[560px] w-full max-w-[1600px] items-center overflow-hidden bg-dark lg:min-h-0">
+        <div className="relative isolate mx-auto flex h-full min-h-[560px] w-full max-w-[1760px] items-center overflow-hidden bg-dark lg:min-h-0">
           {image ? <img src={image} alt={imageAlt} className="absolute inset-0 -z-20 h-full w-full object-cover object-center" /> : <div className="gonyik-material-placeholder absolute inset-0 -z-20" role="img" aria-label={imageAlt || '材料结构示意'} />}
           <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#03182b]/95 via-[#03182b]/55 to-transparent" />
           <div className="w-full max-w-[720px] px-7 py-16 text-white md:px-12 lg:px-16">
@@ -33,7 +33,7 @@ export default function PageHero({ tag, title, subtitle, image, imageAlt = '', v
   if (image) {
     return (
       <section className={`overflow-hidden bg-bg px-4 md:px-6 ${className}`}>
-        <div className={`relative isolate mx-auto flex w-full max-w-[1600px] items-center overflow-hidden bg-dark ${height}`}>
+        <div className={`relative isolate mx-auto flex w-full max-w-[1760px] items-center overflow-hidden bg-dark ${height}`}>
           <img src={image} alt={imageAlt} className="absolute inset-0 -z-20 h-full w-full object-cover object-center" />
           <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#03182b]/90 via-[#03182b]/50 to-transparent" />
           <div className="w-full max-w-[720px] px-7 py-12 text-white md:px-12 lg:px-16">
@@ -49,7 +49,7 @@ export default function PageHero({ tag, title, subtitle, image, imageAlt = '', v
 
   return (
     <section className={`overflow-hidden bg-bg px-4 md:px-6 ${className}`}>
-      <div className={`mx-auto grid w-full min-w-0 max-w-[1600px] items-stretch lg:grid-cols-12 ${height}`}>
+      <div className={`mx-auto grid w-full min-w-0 max-w-[1760px] items-stretch lg:grid-cols-12 ${height}`}>
         <div className="flex min-w-0 flex-col justify-center px-7 py-12 md:px-12 lg:col-span-5 lg:py-16 lg:pl-16 lg:pr-20">
           {tag && <p className="-ml-px mb-4 text-label uppercase text-secondary">{tag}</p>}
           <h1 className="whitespace-pre-line text-[34px] font-semibold leading-[1.12] tracking-[-0.025em] text-primary md:text-[44px]">{title}</h1>

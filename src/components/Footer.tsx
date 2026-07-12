@@ -1,167 +1,74 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-function BeianIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 20 20" fill="none" className={className}>
-      <path d="M10 1L2 4.5V9C2 13.5 5.5 17.5 10 19C14.5 17.5 18 13.5 18 9V4.5L10 1Z" fill="currentColor" opacity="0.85" />
-      <path d="M10 3.5L4.5 6V9.2C4.5 12.5 7 15.5 10 16.5C13 15.5 15.5 12.5 15.5 9.2V6L10 3.5Z" fill="none" stroke="currentColor" strokeWidth="0.8" opacity="0.6" />
-      <path d="M10 6L11.2 8.5H14L11.7 10.2L12.5 13L10 11.3L7.5 13L8.3 10.2L6 8.5H8.8L10 6Z" fill="currentColor" opacity="0.9" />
-    </svg>
-  )
-}
-import { getFooter, getSocial } from '@/api/client'
-import type { FooterConfig, SocialMedia } from '@/types'
+import { getContactConfig, getFooter, getSocial } from '@/api/client'
+import type { ContactConfig, FooterConfig, SocialMedia } from '@/types'
 
-function WechatIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
-      <path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 0 1 .213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 0 0 .167-.054l1.903-1.114a.864.864 0 0 1 .717-.098 10.16 10.16 0 0 0 2.837.403c.276 0 .543-.027.811-.05-.857-2.578.157-4.972 1.932-6.446 1.703-1.415 3.882-1.98 5.853-1.838-.576-3.583-4.196-6.348-8.596-6.348zM5.785 5.991c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178A1.17 1.17 0 0 1 4.623 7.17c0-.651.52-1.18 1.162-1.18zm5.813 0c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178 1.17 1.17 0 0 1-1.162-1.178c0-.651.52-1.18 1.162-1.18zm5.34 2.867c-1.797-.052-3.746.512-5.28 1.786-1.72 1.428-2.687 3.72-1.78 6.22.942 2.453 3.666 4.229 6.884 4.229.826 0 1.622-.12 2.361-.336a.722.722 0 0 1 .598.082l1.584.926a.272.272 0 0 0 .14.045c.134 0 .24-.111.24-.247 0-.06-.023-.12-.038-.177l-.327-1.233a.49.49 0 0 1 .177-.554C23.126 18.199 24 16.58 24 14.786c0-3.26-3.064-5.891-7.062-5.928zm-2.54 2.867c.535 0 .969.44.969.982a.976.976 0 0 1-.969.983.976.976 0 0 1-.969-.983c0-.542.434-.982.97-.982zm4.844 0c.535 0 .969.44.969.982a.976.976 0 0 1-.969.983.976.976 0 0 1-.969-.983c0-.542.434-.982.969-.982z" />
-    </svg>
-  )
-}
+const MATERIAL_LINKS = [
+  ['面料数据库', '/fabrics'],
+  ['终端装备', '/equipment'],
+  ['技术创新', '/pfas-free-innovation'],
+]
 
-function XiaohongshuIcon({ className }: { className?: string }) {
-  return (
-    <img
-      src="/xiaohongshu-icon.png"
-      alt="小红书"
-      className={`${className} grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-200`}
-      style={{ width: 16, height: 16, objectFit: 'contain' }}
-    />
-  )
-}
-
-function DouyinIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
-      <path d="M12.53.02C13.84 0 15.14.01 16.44 0c.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z" />
-    </svg>
-  )
-}
+const SUPPORT_LINKS = [
+  ['洗涤与保养', '/services'],
+  ['常见问题', '/services'],
+  ['联系我们', '/contact'],
+]
 
 export default function Footer() {
   const [footer, setFooter] = useState<FooterConfig | null>(null)
+  const [contact, setContact] = useState<ContactConfig | null>(null)
   const [socials, setSocials] = useState<SocialMedia[]>([])
-  const [activeSocial, setActiveSocial] = useState<string | null>(null)
 
   useEffect(() => {
-    getFooter().then((res) => setFooter(res.data.data))
-    getSocial().then((res) => setSocials(res.data.data || []))
+    Promise.all([getFooter(), getContactConfig(), getSocial()]).then(([footerRes, contactRes, socialRes]) => {
+      setFooter(footerRes.data.data)
+      setContact(contactRes.data.data)
+      setSocials(socialRes.data.data || [])
+    })
   }, [])
 
-  const wechat = socials.find((s) => s.platform === 'wechat')
-  const xiaohongshu = socials.find((s) => s.platform === 'xiaohongshu')
-  const douyin = socials.find((s) => s.platform === 'douyin')
+  const visibleSocials = socials.filter((item) => item.account)
 
   return (
-    <>
-      <footer className="relative flex items-center bg-darker border-t border-white/[0.08] px-6 py-3 md:py-2">
-        <div className="max-w-[1600px] mx-auto w-full flex flex-col md:flex-row justify-between items-center gap-2 lg:px-10">
-          {/* Left */}
-          <div className="md:h-[16px] flex items-center gap-2 flex-wrap justify-center md:justify-start text-[12px] text-muted leading-none">
-            <span>{footer?.copyright || '© 2026 港翼科技 GONYIK 版权所有 [Auto-Deploy v1]'}</span>
-            <span className="text-muted/60">|</span>
-            <Link to={footer?.privacy_policy_link || '/privacy-policy'} className="hover:text-accent transition-colors">
-              隐私政策
-            </Link>
-            <span className="text-muted/60">|</span>
-            <a
-              href={footer?.icp_link || 'https://beian.miit.gov.cn/'}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-accent transition-colors"
-            >
-              {footer?.icp_number || '粤ICP备2026056006号-1'}
-            </a>
-            {footer?.police_number && (
-              <>
-                <span className="text-muted/60">|</span>
-                <a
-                  href={footer?.police_link || 'https://www.beian.gov.cn/portal/registerSystemInfo'}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1 hover:text-accent transition-colors"
-                >
-                  <BeianIcon className="w-[14px] h-[14px]" />
-                  {footer.police_number}
-                </a>
-              </>
-            )}
-            <span className="text-muted/60">|</span>
-            <a
-              href="/admin"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-accent transition-colors"
-            >
-              网站配置
-            </a>
+    <footer className="border-t border-border bg-white px-4 text-primary md:px-6">
+      <div className="mx-auto w-full max-w-[1760px] px-7 pb-6 pt-14 md:px-12 md:pt-16 lg:px-20">
+        <div className="grid gap-12 border-b border-border pb-14 md:grid-cols-2 lg:grid-cols-12 lg:gap-10">
+          <div className="lg:col-span-5">
+            <p className="text-label uppercase tracking-[0.18em] text-secondary">GONYIK</p>
+            <h2 className="mt-5 text-[28px] font-semibold tracking-[-0.02em]">港翼科技</h2>
+            <p className="mt-5 max-w-[520px] text-[14px] leading-7 text-secondary">专注无氟高性能面料与专业防护材料，围绕膜技术、面料复合、功能整理与测试验证，为日常户外及特种专业场景提供材料解决方案。</p>
           </div>
 
-          {/* Right: Social icons */}
-          <div className="flex items-center gap-3">
-            {/* WeChat */}
-            <div className="relative">
-              <button
-                className="flex items-center justify-center h-[16px] p-0 bg-transparent border-none text-muted hover:text-accentWarm transition-colors duration-200"
-                onClick={() => setActiveSocial(activeSocial === 'wechat' ? null : 'wechat')}
-                onMouseEnter={() => setActiveSocial('wechat')}
-                onMouseLeave={() => setActiveSocial(null)}
-              >
-                <WechatIcon className="w-[16px] h-[16px]" />
-              </button>
-              <div className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 transition-all duration-200 ${activeSocial === 'wechat' ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
-                <div className="bg-white rounded-lg shadow-[0_8px_32px_rgba(0,0,0,0.4)] p-2.5 w-[180px]">
-                  {wechat?.qrcode_url ? (
-                    <img src={wechat.qrcode_url} alt="WeChat QR" className="w-full h-auto" />
-                  ) : (
-                    <p className="text-[11px] text-primary text-center py-3">请关注港翼科技公众号</p>
-                  )}
-                </div>
-                <div className="w-2 h-2 bg-white rotate-45 absolute left-1/2 -translate-x-1/2 -bottom-1" />
-              </div>
-            </div>
+          <FooterColumn title="材料与应用" links={MATERIAL_LINKS} />
+          <FooterColumn title="服务与支持" links={SUPPORT_LINKS} />
 
-            {/* Xiaohongshu */}
-            <div className="relative">
-              <button
-                className="flex items-center justify-center h-[16px] p-0 bg-transparent border-none text-muted hover:text-accentWarm transition-colors duration-200"
-                onClick={() => setActiveSocial(activeSocial === 'xiaohongshu' ? null : 'xiaohongshu')}
-                onMouseEnter={() => setActiveSocial('xiaohongshu')}
-                onMouseLeave={() => setActiveSocial(null)}
-              >
-                <XiaohongshuIcon className="w-[16px] h-[16px]" />
-              </button>
-              <div className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 transition-all duration-200 ${activeSocial === 'xiaohongshu' ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
-                <div className="bg-dark rounded-lg px-3 py-2 whitespace-nowrap">
-                  <p className="text-[12px] text-white">{xiaohongshu?.account || '@港翼科技GONYIK'}</p>
-                </div>
-                <div className="w-2 h-2 bg-dark rotate-45 absolute left-1/2 -translate-x-1/2 -bottom-1" />
-              </div>
-            </div>
-
-            {/* Douyin */}
-            <div className="relative">
-              <button
-                className="flex items-center justify-center h-[16px] p-0 bg-transparent border-none text-muted hover:text-accentWarm transition-colors duration-200"
-                onClick={() => setActiveSocial(activeSocial === 'douyin' ? null : 'douyin')}
-                onMouseEnter={() => setActiveSocial('douyin')}
-                onMouseLeave={() => setActiveSocial(null)}
-              >
-                <DouyinIcon className="w-[16px] h-[16px]" />
-              </button>
-              <div className={`absolute bottom-full right-0 mb-2 transition-all duration-200 ${activeSocial === 'douyin' ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
-                <div className="bg-dark rounded-lg px-3 py-2 whitespace-nowrap">
-                  <p className="text-[12px] text-white">{douyin?.account || '@港翼科技GONYIK'}</p>
-                </div>
-                <div className="absolute -bottom-1 right-1 h-2 w-2 rotate-45 bg-dark" />
-              </div>
-            </div>
+          <div className="lg:col-span-3">
+            <p className="border-b border-border pb-4 text-label uppercase tracking-[0.16em] text-secondary">联系</p>
+            <p className="mt-5 text-[13px] text-secondary">材料与合作咨询</p>
+            {contact?.email && <a href={`mailto:${contact.email}`} className="mt-2 block text-[15px] underline decoration-border underline-offset-4 hover:decoration-primary">{contact.email}</a>}
+            {visibleSocials.length > 0 && <div className="mt-7 flex flex-wrap gap-4">{visibleSocials.map((item) => <span key={item.id} className="text-[12px] uppercase tracking-[0.12em] text-secondary">{item.platform}</span>)}</div>}
           </div>
         </div>
 
+        <div className="flex flex-col gap-4 pt-6 text-[11px] leading-5 text-secondary md:flex-row md:items-center md:justify-between">
+          <span>{footer?.copyright || '© 2026 港翼科技 GONYIK 版权所有'}</span>
+          <div className="flex flex-wrap gap-x-5 gap-y-2">
+            <Link to={footer?.privacy_policy_link || '/privacy-policy'} className="hover:text-primary">隐私政策</Link>
+            {footer?.icp_number && <a href={footer.icp_link || 'https://beian.miit.gov.cn/'} target="_blank" rel="noreferrer" className="hover:text-primary">{footer.icp_number}</a>}
+            {footer?.police_number && <a href={footer.police_link || 'https://beian.mps.gov.cn/'} target="_blank" rel="noreferrer" className="hover:text-primary">{footer.police_number}</a>}
+          </div>
+        </div>
+      </div>
+    </footer>
+  )
+}
 
-      </footer>
-    </>
+function FooterColumn({ title, links }: { title: string; links: string[][] }) {
+  return (
+    <div className="lg:col-span-2">
+      <p className="border-b border-border pb-4 text-label uppercase tracking-[0.16em] text-secondary">{title}</p>
+      <nav className="mt-5 flex flex-col gap-4">{links.map(([label, href]) => <Link key={label} to={href} className="w-fit text-[14px] hover:underline hover:underline-offset-4">{label}</Link>)}</nav>
+    </div>
   )
 }
