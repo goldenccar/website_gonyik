@@ -30,6 +30,23 @@ export default function PageHero({ tag, title, subtitle, image, imageAlt = '', v
   }
 
   const height = 'min-h-[260px] lg:h-[300px] lg:min-h-0'
+  if (image) {
+    return (
+      <section className={`overflow-hidden bg-bg px-4 md:px-6 ${className}`}>
+        <div className={`relative isolate mx-auto flex w-full max-w-[1600px] items-center overflow-hidden bg-dark ${height}`}>
+          <img src={image} alt={imageAlt} className="absolute inset-0 -z-20 h-full w-full object-cover object-center" />
+          <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#03182b]/90 via-[#03182b]/50 to-transparent" />
+          <div className="w-full max-w-[720px] px-7 py-12 text-white md:px-12 lg:px-16">
+            {tag && <p className="mb-4 text-label uppercase tracking-[0.2em] text-white/70">{tag}</p>}
+            <h1 className="whitespace-pre-line text-[34px] font-semibold leading-[1.12] tracking-[-0.025em] md:text-[44px]">{title}</h1>
+            {subtitle && <p className="mt-5 max-w-[600px] text-body text-white/80">{subtitle}</p>}
+            {children}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
   return (
     <section className={`overflow-hidden bg-bg px-4 md:px-6 ${className}`}>
       <div className={`mx-auto grid w-full min-w-0 max-w-[1600px] items-stretch lg:grid-cols-12 ${height}`}>
@@ -40,7 +57,7 @@ export default function PageHero({ tag, title, subtitle, image, imageAlt = '', v
           {children}
         </div>
         <div className="relative min-w-0 max-w-full min-h-[220px] overflow-hidden bg-white lg:col-span-7 lg:min-h-0">
-          {image ? <img src={image} alt={imageAlt} className="absolute inset-0 h-full w-full max-w-full object-cover" /> : <div className="gonyik-material-placeholder absolute inset-0" role="img" aria-label={imageAlt || '材料结构示意'} />}
+          <div className="gonyik-material-placeholder absolute inset-0" role="img" aria-label={imageAlt || '材料结构示意'} />
         </div>
       </div>
     </section>

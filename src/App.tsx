@@ -9,7 +9,7 @@ function PublicLayout() {
   return (
     <div className="flex flex-col min-h-[100dvh]">
       <Header />
-      <main className="flex-1 pt-[60px] flex flex-col">
+      <main className="flex flex-1 flex-col">
         <Outlet />
       </main>
       <Footer />
