@@ -63,7 +63,11 @@ export default function AdminHomeEditor() {
   const handleHeroBackgroundSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-    if (/\.(mp4|webm|mov)$/i.test(file.name)) {
+    const preserveOriginal = file.type === 'image/gif'
+      || file.type.startsWith('video/')
+      || /\.(gif|mp4|webm|mov)$/i.test(file.name)
+
+    if (preserveOriginal) {
       const url = await uploadHeroBackground(file, file.name)
       setForm({ ...form, hero_background: url })
       setCropBlob(null)
@@ -161,7 +165,7 @@ export default function AdminHomeEditor() {
             {cropPreview && <img src={cropPreview} alt="裁切后的 Hero 图片预览" className="mb-3 aspect-[12/5] w-full object-cover" />}
             <input type="file" accept="image/*,video/mp4,video/webm,video/quicktime" onChange={handleHeroBackgroundSelect} className="text-white text-[13px]" />
             <p className="text-[12px] text-muted mt-2">
-              支持 JPG、PNG、GIF、WebP、MP4、WebM、MOV。图片建议宽度 ≥1920px。拖动选区四边或角落可自由调整裁剪框大小，前台会以 object-cover 方式铺满 Hero 区域，核心内容请放在中间偏左。
+              支持 JPG、PNG、GIF、WebP、MP4、WebM、MOV。GIF 与视频保留原文件直接上传，其他图片可裁剪。图片建议宽度 ≥1920px，前台会以 object-cover 方式铺满 Hero 区域，核心内容请放在中间偏左。
             </p>
             {cropBlob && (
               <div className="flex items-center gap-3 mt-3">
