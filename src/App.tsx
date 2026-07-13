@@ -74,7 +74,7 @@ function App() {
         <Routes>
           {/* Admin routes */}
           <Route path="/admin" element={<AdminLogin />} />
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/dashboard" element={<Navigate to="/admin/home" replace />} />
           <Route path="/admin/home" element={<AdminHomeEditor />} />
           <Route path="/admin/fabrics" element={<AdminFabricManager />} />
           <Route path="/admin/equipment" element={<AdminEquipmentManager />} />

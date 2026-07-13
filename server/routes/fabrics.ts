@@ -97,6 +97,15 @@ router.put('/admin/series/:id', authMiddleware, upload.single('cover_image'), (r
   res.json({ success: true })
 })
 
+router.delete('/admin/series/:id/home-image', authMiddleware, (req: AuthRequest, res) => {
+  const id = Number(req.params.id)
+  const existing = db.fabric_series.find((s) => s.id === id)
+  if (!existing) { res.status(404).json({ error: 'Not found' }); return }
+  updateById(db.fabric_series, id, { home_image: null })
+  saveDb()
+  res.json({ success: true })
+})
+
 router.delete('/admin/series/:id', authMiddleware, (req: AuthRequest, res) => {
   const id = Number(req.params.id)
   deleteById(db.fabric_series, id)

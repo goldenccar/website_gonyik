@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { Home, Layers, Shirt, Award, Plus, Upload, ExternalLink } from 'lucide-react'
 import api, { getHomeConfig, getFabricSeries } from '@/api/client'
 import Dashboard from './Dashboard'
@@ -7,6 +6,7 @@ import SaveButton from './components/SaveButton'
 import PrimaryButton from './components/PrimaryButton'
 import ImageCropper from './ImageCropper'
 import AdminHeader from './components/AdminHeader'
+import SeriesHomeImageEditor from './components/SeriesHomeImageEditor'
 
 const TABS = [
   { key: 'hero', label: 'Hero', icon: Home },
@@ -20,7 +20,6 @@ function ensureArray(value: any): any[] {
 }
 
 export default function AdminHomeEditor() {
-  const navigate = useNavigate()
   const [form, setForm] = useState<any>({})
   const [series, setSeries] = useState<any[]>([])
   const [saving, setSaving] = useState(false)
@@ -255,17 +254,13 @@ export default function AdminHomeEditor() {
         {textareaField('区块副标题', 'series_section_subtitle')}
 
         <div className="bg-dark border border-white/5 p-4">
-          <div className="mb-4 flex items-center justify-between gap-4"><div><p className="text-[13px] text-white mb-2">前台固定顺序：蓝标 OTTER、银标 RAYO、红标 KAIS</p><p className="text-[12px] text-muted">图片和系列定位在“面料系列管理”维护。</p></div><button onClick={() => navigate('/admin/fabrics')} className="flex items-center gap-2 text-[12px] text-accent hover:text-white">管理图片与文案 <ExternalLink size={14} /></button></div>
+          <div className="mb-4"><p className="text-[13px] text-white mb-2">首页三大面料卡片</p><p className="text-[12px] text-muted">前台固定顺序：蓝标 OTTER、银标 RAYO、红标 KAIS。图片在此处直接上传、替换或移除。</p></div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {displaySeries.map((s) => (
               <div key={s.id} className="bg-white/5 p-3 border border-white/5">
-                <p className="text-[14px] text-white font-medium mb-1">{s.name}</p>
-                {s.home_image ? (
-                  <img src={s.home_image} alt={s.name} className="w-full h-24 object-cover mb-2" />
-                ) : (
-                  <div className="w-full h-24 bg-white/5 flex items-center justify-center text-[12px] text-muted mb-2">未上传首页背景图</div>
-                )}
-                <p className="text-[11px] text-muted truncate">{s.tagline}</p>
+                <p className="mb-1 text-[14px] font-medium text-white">{s.name}</p>
+                <p className="mb-3 truncate text-[11px] text-muted">{s.tagline}</p>
+                <SeriesHomeImageEditor series={s} onChange={(home_image) => setSeries((items) => items.map((item) => item.id === s.id ? { ...item, home_image } : item))} />
               </div>
             ))}
           </div>
@@ -331,7 +326,7 @@ export default function AdminHomeEditor() {
   return (
     <Dashboard>
       <div className="max-w-[1100px]">
-        <AdminHeader title="首页管理" action={<SaveButton onClick={handleSave} loading={saving} />} />
+        <AdminHeader title="首页管理" backPath={null} action={<SaveButton onClick={handleSave} loading={saving} />} />
 
         {message && <p className="text-success text-[13px] mb-4">{message}</p>}
 

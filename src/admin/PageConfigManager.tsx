@@ -36,7 +36,7 @@ export default function PageConfigManager({ pageKey }: PageConfigManagerProps = 
   const [uploading, setUploading] = useState(false)
 
   const targetKey = pageKey || 'fabrics'
-  const meta = PAGE_KEY_MAP[targetKey] || { label: '页面配置', backPath: '/admin/dashboard' }
+  const meta = PAGE_KEY_MAP[targetKey] || { label: '页面配置', backPath: '/admin/home' }
 
   useEffect(() => {
     getPageConfig(targetKey).then((res) => {

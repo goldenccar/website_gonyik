@@ -9,6 +9,7 @@ import FormField from './components/FormField'
 import SaveCancelButtons from './components/SaveCancelButtons'
 import PrimaryButton from './components/PrimaryButton'
 import ContentRailEditor, { type RailEndCardConfig } from './components/ContentRailEditor'
+import SeriesHomeImageEditor from './components/SeriesHomeImageEditor'
 
 const DEFAULT_RAIL: RailEndCardConfig = { rail_end_card_visible: true, rail_end_card_title: '新面料开发中', rail_end_card_description: '针对新的使用环境与性能目标持续开发。', rail_end_card_cta_label: '提交需求', rail_end_card_cta_href: '/contact' }
 
@@ -42,7 +43,8 @@ export default function AdminFabricManager() {
     e.preventDefault()
     const fd = new FormData(e.currentTarget)
     const data = Object.fromEntries(fd)
-    const homeFile = (e.currentTarget as any).home_image.files[0]
+    const homeInput = e.currentTarget.elements.namedItem('home_image') as HTMLInputElement | null
+    const homeFile = homeInput?.files?.[0]
 
     let home_image = editingSeries?.home_image || ''
     if (homeFile) {
@@ -246,13 +248,14 @@ export default function AdminFabricManager() {
               <FormField label="描述" name="description" defaultValue={editingSeries?.description} textarea />
               <div>
                 <label className="block text-[12px] text-secondary uppercase mb-1">首页卡片背景图</label>
-                {editingSeries?.home_image && (
-                  <div className="mb-2">
-                    <img src={editingSeries.home_image} alt="当前首页图" className="h-20 w-auto object-cover" />
-                    <p className="text-[11px] text-muted mt-1">当前首页卡片图</p>
-                  </div>
+                {editingSeries?.id ? (
+                  <SeriesHomeImageEditor series={editingSeries} onChange={(home_image) => {
+                    setEditingSeries({ ...editingSeries, home_image })
+                    setSeries((items) => items.map((item) => item.id === editingSeries.id ? { ...item, home_image } : item))
+                  }} />
+                ) : (
+                  <input type="file" name="home_image" accept="image/*" className="text-white text-[13px]" />
                 )}
-                <input type="file" name="home_image" accept="image/*" className="text-white text-[13px]" />
               </div>
               <SaveCancelButtons onCancel={() => setShowSeriesForm(false)} />
             </form>

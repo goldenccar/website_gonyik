@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { createPortal } from 'react-dom'
 import {
-  LayoutDashboard, Home, Layers, Shirt, HelpCircle, Image, Palette, LogOut, Dock, ChevronDown, Settings, Mail, Sun, MessageSquare, PanelLeftClose, PanelLeft, FileText,
+  Home, Layers, Shirt, HelpCircle, Image, Palette, LogOut, Dock, ChevronDown, Settings, Mail, Sun, MessageSquare, PanelLeftClose, PanelLeft, FileText,
 } from 'lucide-react'
 
 interface MenuItem {
@@ -18,11 +18,6 @@ interface MenuGroup {
 }
 
 const MENU_GROUPS: MenuGroup[] = [
-  {
-    label: '概览',
-    icon: LayoutDashboard,
-    children: [{ label: '概览', icon: LayoutDashboard, path: '/admin/dashboard' }],
-  },
   {
     label: '首页',
     icon: Home,
@@ -85,8 +80,6 @@ const MENU_GROUPS: MenuGroup[] = [
     children: [{ label: '多媒体资源库', icon: Image, path: '/admin/media' }],
   },
 ]
-
-const ALL_ITEMS = MENU_GROUPS.flatMap((g) => g.children)
 
 interface DashboardProps {
   children?: React.ReactNode
@@ -324,26 +317,7 @@ export default function AdminDashboard({ children }: DashboardProps = {}) {
 
       {/* Main */}
       <main className="flex-1 p-10 overflow-y-auto h-screen">
-        {children || (
-          <>
-            <h1 className="text-h2 text-white mb-8">概览</h1>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {ALL_ITEMS.slice(1).map((item) => {
-                const Icon = item.icon
-                return (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    className="bg-dark p-8 hover:bg-white/5 transition-colors group"
-                  >
-                    <Icon size={32} className="text-accent mb-4 group-hover:text-white transition-colors" />
-                    <h3 className="text-white text-[16px] font-medium">{item.label}</h3>
-                  </Link>
-                )
-              })}
-            </div>
-          </>
-        )}
+        {children}
       </main>
     </div>
   )

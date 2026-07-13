@@ -17,7 +17,7 @@ export default function AdminLogin() {
       const res = await api.post('/admin/login', { username, password })
       if (res.data.success) {
         localStorage.setItem('admin_token', res.data.token)
-        navigate('/admin/dashboard')
+        navigate('/admin/home')
       }
     } catch (err: any) {
       setError(err.response?.data?.error || '登录失败')
