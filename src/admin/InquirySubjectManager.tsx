@@ -1,14 +1,13 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Plus, Trash2, ArrowUp, ArrowDown } from 'lucide-react'
+import { Plus, Trash2, ArrowUp, ArrowDown } from 'lucide-react'
 import { getInquirySubjects, updateInquirySubjects } from '@/api/client'
 import type { InquirySubject } from '@/types'
 import Dashboard from './Dashboard'
 import SaveButton from './components/SaveButton'
 import PrimaryButton from './components/PrimaryButton'
+import AdminHeader from './components/AdminHeader'
 
 export default function AdminInquirySubjectManager() {
-  const navigate = useNavigate()
   const [items, setItems] = useState<InquirySubject[]>([])
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
@@ -55,15 +54,7 @@ export default function AdminInquirySubjectManager() {
   return (
     <Dashboard>
       <div className="max-w-[800px]">
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
-            <button onClick={() => navigate('/admin/dashboard')} className="text-accent hover:text-white">
-              <ArrowLeft size={20} />
-            </button>
-            <h1 className="text-h3 text-white">咨询主题管理</h1>
-          </div>
-          <SaveButton onClick={handleSave} loading={saving} />
-        </div>
+        <AdminHeader title="咨询主题管理" action={<SaveButton onClick={handleSave} loading={saving} />} />
 
         {message && <p className="text-success text-[13px] mb-4">{message}</p>}
 

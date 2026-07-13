@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { type AxiosResponse } from 'axios'
 
 const api = axios.create({
   baseURL: '/api',
@@ -7,43 +7,51 @@ const api = axios.create({
   },
 })
 
-// Simple in-memory cache for GET requests
-const cache = new Map<string, { data: any; expiry: number }>()
+const responseCache = new Map<string, { response: AxiosResponse; expiry: number }>()
+const inFlightGets = new Map<string, Promise<AxiosResponse>>()
 const CACHE_TTL = 60_000 // 60 seconds
+let cacheGeneration = 0
+
+function cachedGet<T = any>(url: string, params?: Record<string, unknown>): Promise<AxiosResponse<T>> {
+  const key = `${url}:${JSON.stringify(params || {})}`
+  const cached = responseCache.get(key)
+
+  if (cached && cached.expiry > Date.now()) {
+    return Promise.resolve(cached.response as AxiosResponse<T>)
+  }
+
+  const pending = inFlightGets.get(key)
+  if (pending) return pending as Promise<AxiosResponse<T>>
+
+  const requestGeneration = cacheGeneration
+  const request = api.get<T>(url, { params })
+    .then((response) => {
+      if (requestGeneration === cacheGeneration) {
+        responseCache.set(key, { response, expiry: Date.now() + CACHE_TTL })
+      }
+      return response
+    })
+    .finally(() => inFlightGets.delete(key))
+
+  inFlightGets.set(key, request)
+  return request
+}
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('admin_token')
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
   }
-  // Use cache for GET requests
-  if (config.method === 'get') {
-    const key = config.url + JSON.stringify(config.params || {})
-    const cached = cache.get(key)
-    if (cached && cached.expiry > Date.now()) {
-      // Return cached data by rejecting with a custom flag
-      return Promise.reject({ __cached: true, data: cached.data, config })
-    }
-  } else {
-    cache.clear()
+  if (config.method !== 'get') {
+    cacheGeneration += 1
+    responseCache.clear()
   }
   return config
 })
 
 api.interceptors.response.use(
-  (response) => {
-    // Cache GET responses
-    if (response.config.method === 'get') {
-      const key = response.config.url + JSON.stringify(response.config.params || {})
-      cache.set(key, { data: response.data, expiry: Date.now() + CACHE_TTL })
-    }
-    return response
-  },
+  (response) => response,
   (error) => {
-    // Return cached data
-    if (error.__cached) {
-      return Promise.resolve({ data: error.data, config: error.config, status: 200, statusText: 'OK', headers: {} })
-    }
     if (error.response?.status === 401) {
       localStorage.removeItem('admin_token')
       if (window.location.pathname.startsWith('/admin')) {
@@ -56,27 +64,27 @@ api.interceptors.response.use(
 
 export default api
 
-export const getHomeConfig = () => api.get('/home')
-export const getSiteConfig = () => api.get('/site-config')
-export const getPageConfig = (key: string) => api.get(`/page/${key}`)
+export const getHomeConfig = () => cachedGet('/home')
+export const getSiteConfig = () => cachedGet('/site-config')
+export const getPageConfig = (key: string) => cachedGet(`/page/${key}`)
 export const updatePageConfig = (key: string, data: any) => api.put(`/admin/page/${key}`, data)
-export const getNavigation = () => api.get('/navigation')
-export const getFooter = () => api.get('/footer')
-export const getSocial = () => api.get('/social')
+export const getNavigation = () => cachedGet('/navigation')
+export const getFooter = () => cachedGet('/footer')
+export const getSocial = () => cachedGet('/social')
 
-export const getFabricSeries = () => api.get('/fabrics/series')
-export const getFabricSeriesDetail = (slug: string) => api.get(`/fabrics/series/${slug}`)
-export const getEquipmentCategories = () => api.get('/equipment/categories')
-export const getCategoryProducts = (slug: string) => api.get(`/equipment/categories/${slug}/products`)
-export const getCareGuides = () => api.get('/services/care-guides')
-export const getFaqs = () => api.get('/services/faqs')
+export const getFabricSeries = () => cachedGet('/fabrics/series')
+export const getFabricSeriesDetail = (slug: string) => cachedGet(`/fabrics/series/${slug}`)
+export const getEquipmentCategories = () => cachedGet('/equipment/categories')
+export const getCategoryProducts = (slug: string) => cachedGet(`/equipment/categories/${slug}/products`)
+export const getCareGuides = () => cachedGet('/services/care-guides')
+export const getFaqs = () => cachedGet('/services/faqs')
 
-export const getContactConfig = () => api.get('/contact-config')
+export const getContactConfig = () => cachedGet('/contact-config')
 
-export const getFluorineSections = () => api.get('/fluorine-sections')
+export const getFluorineSections = () => cachedGet('/fluorine-sections')
 export const updateFluorineSection = (id: number, data: any) => api.put(`/admin/fluorine-sections/${id}`, data)
 
-export const getInquirySubjects = () => api.get('/inquiry-subjects')
+export const getInquirySubjects = () => cachedGet('/inquiry-subjects')
 export const updateInquirySubjects = (data: { items: any[] }) => api.put('/admin/inquiry-subjects', data)
 
 export const submitContactForm = (data: { name: string; company?: string; position?: string; email: string; phone?: string; subject: string; cooperation_type?: string; message: string }) => api.post('/contact', data)

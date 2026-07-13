@@ -7,7 +7,10 @@ import { upload } from '../middleware/upload'
 const router = Router()
 
 router.get('/home', (_req, res) => {
-  res.json({ data: db.home_config })
+  res.json({
+    data: db.home_config,
+    series: [...db.fabric_series].sort(sortByOrderIndex),
+  })
 })
 
 router.get('/site-config', (_req, res) => {

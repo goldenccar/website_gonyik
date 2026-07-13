@@ -121,7 +121,7 @@ function createDefaultDb(): Database {
     page_configs: [
       { id: 1, page_key: 'fabrics', page_tag: 'FABRIC DATABASE', page_title: '按使用环境，找到合适的材料', page_subtitle: '从日常与户外使用到特种专业场景，查看材料系列、具体型号与验证依据。', hero_background: null },
       { id: 2, page_key: 'equipment', page_tag: 'END-USE APPLICATIONS', page_title: '从面料到真实应用', page_subtitle: '查看不同装备采用的港翼面料，以及材料如何构成完整的穿着体验。', hero_background: null },
-      { id: 3, page_key: 'pfas-free-innovation', page_tag: 'TECHNOLOGY INNOVATION', page_title: '技术，从材料开始', page_subtitle: '探索膜技术、面料复合、无氟供应链与测试验证。', hero_background: null },
+      { id: 3, page_key: 'pfas-free-innovation', page_tag: 'TECHNOLOGY INNOVATION', page_title: '技术，从材料开始', page_subtitle: '探索膜、复合、功能整理、供应链与测试验证。', hero_background: null },
       { id: 4, page_key: 'services', page_tag: 'CARE & SUPPORT', page_title: '服务与支持', page_subtitle: '从洗涤保养到常见问题，为材料使用与项目沟通提供支持。', hero_background: null },
       { id: 5, page_key: 'contact', page_tag: 'CONTACT US', page_title: '联系我们', page_subtitle: '如有材料需求或合作意向，欢迎与我们取得联系。', hero_background: null },
     ],
@@ -462,7 +462,7 @@ export function initDatabase() {
     const pageDefaults = [
       { id: 1, page_key: 'fabrics', page_tag: 'FABRIC DATABASE', page_title: '按使用环境，找到合适的材料', page_subtitle: '从日常与户外使用到特种专业场景，查看材料系列、具体型号与验证依据。', hero_background: null },
       { id: 2, page_key: 'equipment', page_tag: 'END-USE APPLICATIONS', page_title: '从面料到真实应用', page_subtitle: '查看不同装备采用的港翼面料，以及材料如何构成完整的穿着体验。', hero_background: null },
-      { id: 3, page_key: 'pfas-free-innovation', page_tag: 'TECHNOLOGY INNOVATION', page_title: '技术，从材料开始', page_subtitle: '探索膜技术、面料复合、无氟供应链与测试验证。', hero_background: null },
+      { id: 3, page_key: 'pfas-free-innovation', page_tag: 'TECHNOLOGY INNOVATION', page_title: '技术，从材料开始', page_subtitle: '探索膜、复合、功能整理、供应链与测试验证。', hero_background: null },
       { id: 4, page_key: 'services', page_tag: 'CARE & SUPPORT', page_title: '服务与支持', page_subtitle: '从洗涤保养到常见问题，为材料使用与项目沟通提供支持。', hero_background: null },
       { id: 5, page_key: 'contact', page_tag: 'CONTACT US', page_title: '联系我们', page_subtitle: '如有材料需求或合作意向，欢迎与我们取得联系。', hero_background: null },
     ]
@@ -631,22 +631,42 @@ export function initDatabase() {
       const equipmentPage = db.page_configs.find((p: any) => p.page_key === 'equipment')
       if (equipmentPage) Object.assign(equipmentPage, { page_tag: 'END-USE APPLICATIONS', page_title: '从面料到真实应用', page_subtitle: '查看不同装备采用的港翼面料，以及材料如何构成完整的穿着体验。' })
       const technologyPage = db.page_configs.find((p: any) => p.page_key === 'pfas-free-innovation')
-      if (technologyPage) Object.assign(technologyPage, { page_tag: 'TECHNOLOGY INNOVATION', page_title: '技术，从材料开始', page_subtitle: '探索膜技术、面料复合、无氟供应链与测试验证。' })
+      if (technologyPage) Object.assign(technologyPage, { page_tag: 'TECHNOLOGY INNOVATION', page_title: '技术，从材料开始', page_subtitle: '探索膜、复合、功能整理、供应链与测试验证。' })
       const technologyNav = db.navigation.find((item: any) => item.link === '/pfas-free-innovation')
       if (technologyNav) technologyNav.label = '技术创新'
       saveDb()
     }
     if (db.fluorine_sections?.[0]?.title === '什么是 RPO 材料技术平台？') {
       const technologyContent = [
-        { title: '膜技术', subtitle: 'RPO-TEX 无氟纳米膜', content: 'RPO-TEX 是固纳体系内的膜产品，用作特定复合面料的功能层，承担防水、透湿及相关防护作用。它只关联实际采用该膜的 SKU，不代表港翼全部材料技术。' },
+        { title: '膜技术', subtitle: 'RPO-TEX 无氟纳米膜', content: 'RPO-TEX 是固纳体系内的无氟纳米膜，用作特定复合面料的功能层，承担防水、透湿及相关防护作用。该技术仅关联实际采用 RPO-TEX 的产品。' },
         { title: '面料复合技术', subtitle: '从单层材料到复合性能', content: '通过面层、胶层、功能层和内层的协同设计，将不同材料复合成可直接用于服装与装备的完整面料。复合方式、基布选择和层间结合共同影响防护、手感、透湿与耐久。' },
         { title: '无氟染整与功能整理', subtitle: '不依赖 RPO 膜的功能面料路径', content: '用于 Rayo 等非膜结构功能面料，通过无氟防泼、导湿、速干、防晒或凉感整理，使功能直接作用于基布。具体能力以对应 SKU 和测试结果为准。' },
-        { title: '材料与供应链管理', subtitle: '让技术能够稳定地被生产', content: '围绕膜、胶水、基布、染整、复合和批次资料进行协同管理，使材料方案能够被打样、追溯、验证和交付。官网不公开配方、供应商名单或客户机密。' },
+        { title: '供应链管理', subtitle: '让技术稳定进入产品', content: '港翼严格选择供应链合作伙伴，围绕材料来源、质量稳定性、生产能力和相关资质进行综合评估。从织物、功能材料到复合加工，我们持续管理材料规格、批次信息和工艺要求，使确认过的技术方案能够稳定进入面料并实现交付。' },
         { title: '测试与验证', subtitle: '从内部验证到独立第三方检测', content: '内部测试用于材料筛选、样品对比、耐久检查和应用适配；关键项目再由 SGS、中纺标等独立第三方机构检测。展示结果时同时标明样品、方法、条件和适用范围。' },
       ]
       db.fluorine_sections = db.fluorine_sections.slice(0, 5).map((section: any, index: number) => ({ ...section, ...technologyContent[index], order_index: index }))
       saveDb()
     }
+    const technologyPage = db.page_configs?.find((page: any) => page.page_key === 'pfas-free-innovation')
+    if (technologyPage?.page_subtitle === '探索膜技术、面料复合、无氟供应链与测试验证。') {
+      technologyPage.page_subtitle = '探索膜、复合、功能整理、供应链与测试验证。'
+    }
+    if (technologyPage?.page_subtitle === '探索膜技术、面料复合、功能整理、供应链管理与测试验证。') {
+      technologyPage.page_subtitle = '探索膜、复合、功能整理、供应链与测试验证。'
+    }
+    const membraneSection = db.fluorine_sections?.find((section: any) => section.page_key === 'pfas-free-innovation' && section.title === '膜技术')
+    if (membraneSection?.content === 'RPO-TEX 是固纳体系内的膜产品，用作特定复合面料的功能层，承担防水、透湿及相关防护作用。它只关联实际采用该膜的 SKU，不代表港翼全部材料技术。') {
+      membraneSection.content = 'RPO-TEX 是固纳体系内的无氟纳米膜，用作特定复合面料的功能层，承担防水、透湿及相关防护作用。该技术仅关联实际采用 RPO-TEX 的产品。'
+    }
+    const supplyChainSection = db.fluorine_sections?.find((section: any) => section.page_key === 'pfas-free-innovation' && section.title === '材料与供应链管理')
+    if (supplyChainSection?.content === '围绕膜、胶水、基布、染整、复合和批次资料进行协同管理，使材料方案能够被打样、追溯、验证和交付。官网不公开配方、供应商名单或客户机密。') {
+      Object.assign(supplyChainSection, {
+        title: '供应链管理',
+        subtitle: '让技术稳定进入产品',
+        content: '港翼严格选择供应链合作伙伴，围绕材料来源、质量稳定性、生产能力和相关资质进行综合评估。从织物、功能材料到复合加工，我们持续管理材料规格、批次信息和工艺要求，使确认过的技术方案能够稳定进入面料并实现交付。',
+      })
+    }
+    saveDb()
     if (db.home_config?.platform_section_title === '技术来源与材料平台') {
       Object.assign(db.home_config, {
         platform_section_title: '技术，从材料开始',

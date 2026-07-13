@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { getFabricSeries, getHomeConfig } from '@/api/client'
+import { getHomeConfig } from '@/api/client'
 import PageHero from '@/components/PageHero'
 import { PageSection, PageShell, SectionHeader } from '@/components/PageLayout'
 import type { FabricSeries, HomeConfig } from '@/types'
@@ -28,9 +28,9 @@ export default function Home() {
   const [series, setSeries] = useState<FabricSeries[]>([])
 
   useEffect(() => {
-    Promise.all([getHomeConfig(), getFabricSeries()]).then(([home, fabrics]) => {
-      setConfig(home.data.data || null)
-      setSeries((fabrics.data.data || []).sort((a: FabricSeries, b: FabricSeries) => a.order_index - b.order_index))
+    getHomeConfig().then((home) => {
+      setConfig(home.data.data || DEFAULT_HOME)
+      setSeries((home.data.series || []).sort((a: FabricSeries, b: FabricSeries) => a.order_index - b.order_index))
     })
   }, [])
 
@@ -77,8 +77,8 @@ export default function Home() {
           {['otter', 'rayo', 'kais'].map((slug) => series.find((item) => item.slug === slug)).filter(Boolean).map((item) => {
             const mark = SERIES_LABELS[item!.slug as keyof typeof SERIES_LABELS]
             return <Link key={item!.id} to={`/fabrics?series=${item!.slug}`} className={`group relative flex min-w-0 flex-col ${item!.slug === 'kais' ? 'md:before:absolute md:before:-left-3 md:before:inset-y-0 md:before:w-px md:before:bg-white/20' : ''}`}>
-              <div className="aspect-[4/3] overflow-hidden bg-dark">{item!.home_image ? <img src={item!.home_image} alt={item!.name} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]" /> : <div className="gonyik-fabric-placeholder h-full w-full" />}</div>
-              <div className="mt-5 flex min-h-[64px] items-center justify-between gap-5"><img src={mark.logo} alt={`${mark.label} 系列标识`} className="h-[60px] w-[120px] shrink-0 object-contain object-left" /><p className="text-right text-[11px] tracking-[0.12em] text-white/55">{mark.label}</p></div>
+              <div className="aspect-[4/3] overflow-hidden bg-dark">{item!.home_image ? <img src={item!.home_image} alt={item!.name} loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]" /> : <div className="gonyik-fabric-placeholder h-full w-full" />}</div>
+              <div className="mt-5 flex min-h-[64px] items-center justify-between gap-5"><img src={mark.logo} alt={`${mark.label} 系列标识`} loading="lazy" decoding="async" className="h-[60px] w-[120px] shrink-0 object-contain object-left" /><p className="text-right text-[11px] tracking-[0.12em] text-white/55">{mark.label}</p></div>
               <p className="mt-2 max-w-[360px] text-[14px] leading-6 text-white/65">{item!.tagline}</p>
               <span className="mt-auto inline-block pt-6 text-[14px] text-white underline underline-offset-4">查看系列 →</span>
             </Link>

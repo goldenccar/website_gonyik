@@ -128,9 +128,3 @@ body {
     radial-gradient(circle at 62% 55%, rgba(255,255,255,.55) 0 3px, transparent 4px),
     repeating-linear-gradient(35deg, #183d5d 0 2px, #102f4a 2px 6px);
 }
-
-/* PDF viewer override */
-.react-pdf__Page__canvas {
-  max-width: 100%;
-  height: auto !important;
-}

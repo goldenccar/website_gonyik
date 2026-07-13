@@ -1,9 +1,9 @@
 import { useState, useEffect, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Trash2, Copy, Upload, Edit2, X, Image, FileText, Film, Music, File } from 'lucide-react'
+import { Trash2, Copy, Upload, Edit2, X, Image, FileText, Film, Music, File } from 'lucide-react'
 import api from '@/api/client'
 import Dashboard from './Dashboard'
 import PrimaryButton from './components/PrimaryButton'
+import AdminHeader from './components/AdminHeader'
 
 const CATEGORIES = [
   { key: 'all', label: '全部' },
@@ -56,7 +56,6 @@ interface MediaItem {
 }
 
 export default function AdminMediaLibrary() {
-  const navigate = useNavigate()
   const [items, setItems] = useState<MediaItem[]>([])
   const [activeCategory, setActiveCategory] = useState('all')
   const [message, setMessage] = useState('')
@@ -112,14 +111,7 @@ export default function AdminMediaLibrary() {
   return (
     <Dashboard>
       <div className="max-w-[1200px]">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
-            <button onClick={() => navigate('/admin/dashboard')} className="text-accent hover:text-white"><ArrowLeft size={20} /></button>
-            <h1 className="text-h3 text-white">多媒体资源库</h1>
-          </div>
-          <PrimaryButton onClick={() => setShowUpload(true)} icon={<Upload size={16} />}>上传文件</PrimaryButton>
-        </div>
+        <AdminHeader title="多媒体资源库" action={<PrimaryButton onClick={() => setShowUpload(true)} icon={<Upload size={16} />}>上传文件</PrimaryButton>} />
 
         {message && <p className="text-success text-[13px] mb-4">{message}</p>}
 

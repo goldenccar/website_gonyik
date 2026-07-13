@@ -13,6 +13,7 @@ import PrimaryButton from './components/PrimaryButton'
 interface ImageCropperProps {
   src: string
   aspect?: number
+  maxOutputWidth?: number
   onComplete: (blob: Blob, previewUrl: string) => void
   onCancel: () => void
 }
@@ -20,11 +21,13 @@ interface ImageCropperProps {
 function getCroppedBlob(
   image: HTMLImageElement,
   pixelCrop: PixelCrop,
-  mimeType: string
+  mimeType: string,
+  maxOutputWidth: number
 ): Promise<Blob | null> {
   const canvas = document.createElement('canvas')
-  canvas.width = pixelCrop.width
-  canvas.height = pixelCrop.height
+  const scale = Math.min(1, maxOutputWidth / pixelCrop.width)
+  canvas.width = Math.round(pixelCrop.width * scale)
+  canvas.height = Math.round(pixelCrop.height * scale)
   const ctx = canvas.getContext('2d')
   if (!ctx) return Promise.resolve(null)
   ctx.drawImage(
@@ -38,7 +41,7 @@ function getCroppedBlob(
     canvas.width,
     canvas.height
   )
-  return new Promise((resolve) => canvas.toBlob(resolve, mimeType, 0.95))
+  return new Promise((resolve) => canvas.toBlob(resolve, mimeType, 0.88))
 }
 
 function getInitialCrop(
@@ -63,6 +66,7 @@ function getInitialCrop(
 export default function ImageCropper({
   src,
   aspect,
+  maxOutputWidth = 2560,
   onComplete,
   onCancel,
 }: ImageCropperProps) {
@@ -87,8 +91,9 @@ export default function ImageCropper({
     const canvas = previewRef.current
     const ctx = canvas.getContext('2d')
     if (!ctx) return
-    canvas.width = pixelCrop.width
-    canvas.height = pixelCrop.height
+    const previewScale = Math.min(1, 960 / pixelCrop.width)
+    canvas.width = Math.round(pixelCrop.width * previewScale)
+    canvas.height = Math.round(pixelCrop.height * previewScale)
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     ctx.drawImage(
       imgRef.current,
@@ -126,7 +131,7 @@ export default function ImageCropper({
 
   const handleConfirm = async () => {
     if (!imgRef.current || !completedCrop) return
-    const blob = await getCroppedBlob(imgRef.current, completedCrop, 'image/jpeg')
+    const blob = await getCroppedBlob(imgRef.current, completedCrop, 'image/jpeg', maxOutputWidth)
     if (!blob) return
     const previewUrl = URL.createObjectURL(blob)
     onComplete(blob, previewUrl)

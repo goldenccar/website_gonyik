@@ -93,23 +93,6 @@ export interface FabricSeries {
   order_index: number
 }
 
-export interface FabricScene {
-  id: number
-  category: string
-  label: string
-  series_slug: string
-  order_index: number
-}
-
-export interface DigitalAsset {
-  id: number
-  series_slug: string
-  file_name: string
-  file_url: string
-  file_type: string
-  order_index: number
-}
-
 export interface FabricSku {
   id: number
   series_id: number
@@ -122,14 +105,6 @@ export interface FabricSku {
   visibility?: 'public' | 'hidden'
   status?: 'active' | 'archived'
   order_index: number
-}
-
-export interface TestReport {
-  id: number
-  title: string
-  file_url: string
-  file_type: string
-  category: string
 }
 
 export interface EquipmentCategory {
@@ -193,13 +168,5 @@ export interface FluorineSection {
 export interface InquirySubject {
   id: number
   label: string
-  order_index: number
-}
-
-export interface EquipmentScene {
-  id: number
-  category: string
-  label: string
-  equipment_slug: string
   order_index: number
 }

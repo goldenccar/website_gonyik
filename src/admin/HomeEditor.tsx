@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Home, Layers, Shirt, Award, Plus, Upload, ExternalLink } from 'lucide-react'
+import { Home, Layers, Shirt, Award, Plus, Upload, ExternalLink } from 'lucide-react'
 import api, { getHomeConfig, getFabricSeries } from '@/api/client'
 import Dashboard from './Dashboard'
 import SaveButton from './components/SaveButton'
 import PrimaryButton from './components/PrimaryButton'
 import ImageCropper from './ImageCropper'
+import AdminHeader from './components/AdminHeader'
 
 const TABS = [
   { key: 'hero', label: 'Hero', icon: Home },
@@ -326,15 +327,7 @@ export default function AdminHomeEditor() {
   return (
     <Dashboard>
       <div className="max-w-[1100px]">
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
-            <button onClick={() => navigate('/admin/dashboard')} className="text-accent hover:text-white">
-              <ArrowLeft size={20} />
-            </button>
-            <h1 className="text-h3 text-white">首页管理</h1>
-          </div>
-          <SaveButton onClick={handleSave} loading={saving} />
-        </div>
+        <AdminHeader title="首页管理" action={<SaveButton onClick={handleSave} loading={saving} />} />
 
         {message && <p className="text-success text-[13px] mb-4">{message}</p>}
 

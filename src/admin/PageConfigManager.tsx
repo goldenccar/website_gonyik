@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, ExternalLink } from 'lucide-react'
+import { ExternalLink } from 'lucide-react'
 import { getPageConfig, updatePageConfig, uploadFile } from '@/api/client'
 import Dashboard from './Dashboard'
 import SaveButton from './components/SaveButton'
 import ImageCropper from './ImageCropper'
+import AdminHeader from './components/AdminHeader'
 
 interface PageConfigItem {
   page_key: string
@@ -27,7 +27,6 @@ interface PageConfigManagerProps {
 }
 
 export default function PageConfigManager({ pageKey }: PageConfigManagerProps = {}) {
-  const navigate = useNavigate()
   const [config, setConfig] = useState<PageConfigItem | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -94,17 +93,7 @@ export default function PageConfigManager({ pageKey }: PageConfigManagerProps = 
   return (
     <Dashboard>
       <div className="max-w-[1100px]">
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
-            <button onClick={() => navigate(meta.backPath)} className="text-accent hover:text-white">
-              <ArrowLeft size={20} />
-            </button>
-            <h1 className="text-h3 text-white">{meta.label} — 页面配置</h1>
-          </div>
-          <SaveButton onClick={handleSave} loading={saving} size="sm">
-            保存
-          </SaveButton>
-        </div>
+        <AdminHeader title={`${meta.label} — 页面配置`} backPath={meta.backPath} action={<SaveButton onClick={handleSave} loading={saving} size="sm">保存</SaveButton>} />
 
         {message && <p className="text-success text-[13px] mb-6">{message}</p>}
 

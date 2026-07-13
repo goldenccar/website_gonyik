@@ -1,15 +1,14 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Upload, X, Image } from 'lucide-react'
+import { Upload, X, Image } from 'lucide-react'
 import api, { getFluorineSections, uploadFile } from '@/api/client'
 import Dashboard from './Dashboard'
 import SaveButton from './components/SaveButton'
 import PrimaryButton from './components/PrimaryButton'
 import ImageCropper from './ImageCropper'
 import TechnologyDetail from '@/components/TechnologyDetail'
+import AdminHeader from './components/AdminHeader'
 
 export default function AdminFluorineManager() {
-  const navigate = useNavigate()
   const [sections, setSections] = useState<any[]>([])
   const [saveMessages, setSaveMessages] = useState<Record<number, string>>({})
   const [uploadingId, setUploadingId] = useState<number | null>(null)
@@ -80,14 +79,7 @@ export default function AdminFluorineManager() {
   return (
     <Dashboard>
       <div>
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
-            <button onClick={() => navigate('/admin/dashboard')} className="text-accent hover:text-white">
-              <ArrowLeft size={20} />
-            </button>
-            <h1 className="text-h3 text-white">技术创新内容管理</h1>
-          </div>
-        </div>
+        <AdminHeader title="技术创新内容管理" />
 
         <div className="bg-dark p-4 mb-6">
           <p className="text-[12px] text-accent mb-2">标记语言说明：</p>
@@ -222,7 +214,7 @@ export default function AdminFluorineManager() {
                     className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none font-mono"
                   />
                 </div>
-                <div><label className="mb-2 block text-[12px] uppercase text-secondary">真实前台组件预览</label><div className="public-preview bg-bg p-6"><TechnologyDetail section={section} index={idx} /></div></div>
+                <div><label className="mb-2 block text-[12px] uppercase text-secondary">真实前台组件预览</label><div className="public-preview bg-bg p-6"><TechnologyDetail section={section} /></div></div>
               </div>
             </div>
           ))}

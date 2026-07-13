@@ -6,7 +6,6 @@ import { initDatabase } from './db'
 import configRoutes from './routes/config'
 import fabricRoutes from './routes/fabrics'
 import equipmentRoutes from './routes/equipment'
-import reportRoutes from './routes/reports'
 import serviceRoutes from './routes/services'
 import mediaRoutes from './routes/media'
 import adminRoutes from './routes/admin'
@@ -27,13 +26,15 @@ const uploadsDir = path.resolve(process.cwd(), 'public/uploads')
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true })
 }
-app.use('/uploads', express.static(uploadsDir))
+app.use('/uploads', express.static(uploadsDir, {
+  maxAge: '30d',
+  immutable: true,
+}))
 
 // API Routes
 app.use('/api', configRoutes)
 app.use('/api/fabrics', fabricRoutes)
 app.use('/api/equipment', equipmentRoutes)
-app.use('/api/reports', reportRoutes)
 app.use('/api/services', serviceRoutes)
 app.use('/api/media', mediaRoutes)
 app.use('/api/admin', adminRoutes)
@@ -43,10 +44,20 @@ app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok' })
 })
 
+app.use('/api', (_req, res) => {
+  res.status(404).json({ error: 'API endpoint not found' })
+})
+
 // In production, serve static client files
 const clientDist = path.resolve(process.cwd(), 'dist/client')
 if (fs.existsSync(clientDist)) {
-  app.use(express.static(clientDist))
+  app.use(express.static(clientDist, {
+    setHeaders: (res, filePath) => {
+      if (filePath.includes(`${path.sep}assets${path.sep}`)) {
+        res.setHeader('Cache-Control', 'public, max-age=31536000, immutable')
+      }
+    },
+  }))
   app.get('*', (_req, res) => {
     res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate')
     res.setHeader('Pragma', 'no-cache')

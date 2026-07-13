@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Trash2, Mail, User, Building2, Phone, Clock, MessageSquare, Briefcase } from 'lucide-react'
+import { Trash2, Mail, User, Building2, Phone, Clock, MessageSquare, Briefcase } from 'lucide-react'
 import api from '@/api/client'
 import Dashboard from './Dashboard'
+import AdminHeader from './components/AdminHeader'
 
 interface ContactMessage {
   id: number
@@ -18,7 +18,6 @@ interface ContactMessage {
 }
 
 export default function AdminContactMessageManager() {
-  const navigate = useNavigate()
   const [messages, setMessages] = useState<ContactMessage[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -43,15 +42,7 @@ export default function AdminContactMessageManager() {
   return (
     <Dashboard>
       <div className="max-w-[1200px]">
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
-            <button onClick={() => navigate('/admin/dashboard')} className="text-accent hover:text-white">
-              <ArrowLeft size={20} />
-            </button>
-            <h1 className="text-h3 text-white">留言管理</h1>
-          </div>
-          <span className="text-[13px] text-accent">共 {messages.length} 条留言</span>
-        </div>
+        <AdminHeader title="留言管理" action={<span className="text-[13px] text-accent">共 {messages.length} 条留言</span>} />
 
         {loading ? (
           <div className="text-accent text-[13px]">加载中...</div>

@@ -1,13 +1,11 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { ArrowLeft } from 'lucide-react'
 import api, { getContactConfig } from '@/api/client'
 import Dashboard from './Dashboard'
 import SaveButton from './components/SaveButton'
+import AdminHeader from './components/AdminHeader'
 import type { ContactConfig as ContactConfigType } from '@/types'
 
 export default function ContactConfig() {
-  const navigate = useNavigate()
   const [config, setConfig] = useState<ContactConfigType | null>(null)
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
@@ -45,16 +43,7 @@ export default function ContactConfig() {
   return (
     <Dashboard>
       <div className="max-w-[800px]">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
-            <button onClick={() => navigate('/admin/dashboard')} className="text-accent hover:text-white">
-              <ArrowLeft size={20} />
-            </button>
-            <h1 className="text-h3 text-white">联系配置</h1>
-          </div>
-          <SaveButton onClick={handleSave} loading={saving} />
-        </div>
+        <AdminHeader title="联系配置" action={<SaveButton onClick={handleSave} loading={saving} />} />
 
         {message && <p className="text-success text-[13px] mb-4">{message}</p>}
 

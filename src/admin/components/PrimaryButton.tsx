@@ -5,6 +5,7 @@ interface PrimaryButtonProps {
   onClick?: () => void
   type?: 'button' | 'submit'
   loading?: boolean
+  loadingLabel?: string
   disabled?: boolean
   size?: 'sm' | 'md'
   icon?: React.ReactNode
@@ -16,6 +17,7 @@ export default function PrimaryButton({
   onClick,
   type = 'button',
   loading,
+  loadingLabel = '处理中...',
   disabled,
   size = 'md',
   icon,
@@ -34,7 +36,7 @@ export default function PrimaryButton({
       ].join(' ')}
     >
       {loading ? <Loader2 size={size === 'sm' ? 14 : 16} className="animate-spin" /> : icon}
-      {loading ? '处理中...' : children}
+      {loading ? loadingLabel : children}
     </button>
   )
 }

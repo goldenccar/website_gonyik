@@ -22,10 +22,10 @@ export default function FluorineFreeFuture() {
   return (
     <PageShell>
       <PageHero variant="detail" tag={page?.page_tag || 'TECHNOLOGY INNOVATION'} title={page?.page_title || '技术，从材料开始'} subtitle={page?.page_subtitle} image={page?.hero_background} imageAlt="膜层、复合与测试对象微距" />
-      {current && <PageSection className="!py-10 lg:!py-14">
-        <div className="lg:grid lg:grid-cols-12 lg:gap-12">
-          <div className="lg:col-span-4"><ContentTabs label="技术目录" items={sections.map((item) => ({ id: String(item.id), label: item.title }))} active={String(current.id)} onChange={(id) => setActive(sections.findIndex((item) => String(item.id) === id))} /></div>
-          <div className="lg:col-span-8"><TechnologyDetail section={current} index={active} live /></div>
+      {current && <PageSection className="!py-9 lg:!py-12">
+        <div className="lg:grid lg:grid-cols-12 lg:gap-12 xl:gap-14">
+          <div className="lg:col-span-3"><ContentTabs label="技术目录" items={sections.map((item) => ({ id: String(item.id), label: item.title }))} active={String(current.id)} onChange={(id) => setActive(sections.findIndex((item) => String(item.id) === id))} /></div>
+          <div className="lg:col-span-9"><TechnologyDetail section={current} live /></div>
         </div>
       </PageSection>}
     </PageShell>

@@ -120,41 +120,4 @@ router.delete('/admin/products/:id', authMiddleware, (req: AuthRequest, res) => 
   res.json({ success: true })
 })
 
-// Equipment Scenes (public)
-router.get('/scenes', (_req, res) => {
-  res.json({ data: db.equipment_scenes.sort(sortByOrderIndex) })
-})
-
-// Equipment Scenes (admin)
-router.get('/admin/equipment-scenes', authMiddleware, (_req, res) => {
-  res.json({ data: db.equipment_scenes.sort(sortByOrderIndex) })
-})
-
-router.post('/admin/equipment-scenes', authMiddleware, (req: AuthRequest, res) => {
-  const { category, label, equipment_slug } = req.body
-  const newScene = {
-    id: getNextId(db.equipment_scenes),
-    category,
-    label,
-    equipment_slug,
-    order_index: nextOrderIndex(db.equipment_scenes),
-  }
-  db.equipment_scenes.push(newScene)
-  saveDb()
-  res.json({ success: true, id: newScene.id })
-})
-
-router.put('/admin/equipment-scenes/:id', authMiddleware, (req: AuthRequest, res) => {
-  const ok = updateById(db.equipment_scenes, Number(req.params.id), req.body)
-  if (!ok) { res.status(404).json({ error: 'Not found' }); return }
-  saveDb()
-  res.json({ success: true })
-})
-
-router.delete('/admin/equipment-scenes/:id', authMiddleware, (req: AuthRequest, res) => {
-  deleteById(db.equipment_scenes, Number(req.params.id))
-  saveDb()
-  res.json({ success: true })
-})
-
 export default router
