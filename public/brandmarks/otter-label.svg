@@ -1,12 +1,19 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 144 72" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 80" role="img" aria-labelledby="title desc">
   <title id="title">GONYIK 蓝标 OTTER</title>
-  <desc id="desc">港翼 OTTER 面料平台横向织标</desc>
-  <rect x="1" y="1" width="142" height="70" rx="2" fill="#F4F7F9" stroke="#8EA4B5" stroke-width="2"/>
-  <path d="M1 26H143V71H1Z" fill="#154F7B"/>
-  <text x="12" y="18" fill="#082F55" font-family="Arial,sans-serif" font-size="8" font-weight="700" letter-spacing="2.2">GONYIK</text>
-  <g fill="none" stroke="#69B2C1" stroke-width="1.6"><path d="M116 11h16"/><path d="M120 16h12"/><path d="M124 21h8"/></g>
-  <text x="12" y="51" fill="#FFFFFF" font-family="Arial,sans-serif" font-size="20" font-weight="700" letter-spacing="2">OTTER</text>
-  <text x="113" y="52" fill="#FFFFFF" font-family="Arial,sans-serif" font-size="7">TM</text>
-  <path d="M12 60H132" stroke="#FFFFFF" stroke-opacity=".38"/>
-  <text x="12" y="67" fill="#FFFFFF" fill-opacity=".72" font-family="Arial,sans-serif" font-size="4.8" letter-spacing="1.3">PERFORMANCE FABRIC</text>
+  <desc id="desc">透明画布上的港翼 OTTER 无氟高性能面料徽章</desc>
+  <defs>
+    <clipPath id="badge-clip"><rect x="2" y="2" width="156" height="76" rx="3"/></clipPath>
+  </defs>
+  <g clip-path="url(#badge-clip)">
+    <rect x="2" y="2" width="156" height="29" fill="#F4F7F9"/>
+    <rect x="2" y="31" width="156" height="47" fill="#154F7B"/>
+  </g>
+  <rect x="2" y="2" width="156" height="76" rx="3" fill="none" stroke="#8EA4B5" stroke-width="2"/>
+  <text x="15" y="21" fill="#082F55" font-family="Arial,sans-serif" font-size="9" font-weight="700" letter-spacing="2.8">GONYIK</text>
+  <g fill="none" stroke="#69B2C1" stroke-width="2" stroke-linecap="square">
+    <path d="M130 12h16"/><path d="M134 18h12"/><path d="M138 24h8"/>
+  </g>
+  <text x="15" y="58" fill="#FFFFFF" font-family="Arial,sans-serif" font-size="25" font-weight="700" letter-spacing="2.2">OTTER</text>
+  <path d="M15 64H145" stroke="#FFFFFF" stroke-opacity=".42"/>
+  <text x="15" y="73" fill="#FFFFFF" fill-opacity=".82" font-family="Arial,sans-serif" font-size="5.7" letter-spacing=".55">PFAS Free · High Performance</text>
 </svg>

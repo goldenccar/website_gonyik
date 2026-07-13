@@ -5,11 +5,11 @@ import PageHero from '@/components/PageHero'
 import { PageSection, PageShell, SectionHeader } from '@/components/PageLayout'
 import type { FabricSeries, HomeConfig } from '@/types'
 
-const SERIES_LABELS = {
-  otter: { label: '蓝标 OTTER', logo: '/brandmarks/otter-label.svg' },
-  rayo: { label: '银标 RAYO', logo: '/brandmarks/rayo-label.svg' },
-  kais: { label: '红标 KAIS', logo: '/brandmarks/kais-label.svg' },
-} as const
+const SERIES_TITLES: Record<string, string> = {
+  otter: '蓝标 OTTER',
+  rayo: '银标 RAYO',
+  kais: '红标 KAIS',
+}
 
 const DEFAULT_HOME: HomeConfig = {
   id: 0,
@@ -75,11 +75,13 @@ export default function Home() {
         <SectionHeader tag="FABRIC SERIES" title={config.series_section_title} subtitle={config.series_section_subtitle} linkText={config.series_section_link_text} linkTo={config.series_section_link} light />
         <div className="grid items-stretch gap-x-6 gap-y-10 md:grid-cols-3">
           {['otter', 'rayo', 'kais'].map((slug) => series.find((item) => item.slug === slug)).filter(Boolean).map((item) => {
-            const mark = SERIES_LABELS[item!.slug as keyof typeof SERIES_LABELS]
             return <Link key={item!.id} to={`/fabrics?series=${item!.slug}`} className={`group relative flex min-w-0 flex-col ${item!.slug === 'kais' ? 'md:before:absolute md:before:-left-3 md:before:inset-y-0 md:before:w-px md:before:bg-white/20' : ''}`}>
-              <div className="aspect-[4/3] overflow-hidden bg-dark">{item!.home_image ? <img src={item!.home_image} alt={item!.name} loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]" /> : <div className="gonyik-fabric-placeholder h-full w-full" />}</div>
-              <div className="mt-5 flex min-h-[64px] items-center justify-between gap-5"><img src={mark.logo} alt={`${mark.label} 系列标识`} loading="lazy" decoding="async" className="h-[60px] w-[120px] shrink-0 object-contain object-left" /><p className="text-right text-[11px] tracking-[0.12em] text-white/55">{mark.label}</p></div>
-              <p className="mt-2 max-w-[360px] text-[14px] leading-6 text-white/65">{item!.tagline}</p>
+              <div className="relative aspect-[16/10] overflow-hidden bg-dark md:aspect-[4/3]">
+                {item!.home_image ? <img src={item!.home_image} alt={item!.name} loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]" /> : <div className="gonyik-fabric-placeholder h-full w-full" />}
+                {item!.home_badge_image && <img src={item!.home_badge_image} alt={`${item!.name} 系列徽章`} loading="lazy" decoding="async" className="absolute bottom-4 left-4 z-10 w-[96px] object-contain drop-shadow-[0_3px_8px_rgba(0,0,0,0.28)] md:bottom-5 md:left-5 md:w-[112px]" />}
+              </div>
+              <h3 className="mt-5 text-[20px] font-semibold text-white">{SERIES_TITLES[item!.slug] || item!.name}</h3>
+              <p className="mt-2 max-w-[360px] text-[15px] leading-6 text-white/65">{item!.tagline}</p>
               <span className="mt-auto inline-block pt-6 text-[14px] text-white underline underline-offset-4">查看系列 →</span>
             </Link>
           })}

@@ -249,9 +249,9 @@ export default function AdminFabricManager() {
               <div>
                 <label className="block text-[12px] text-secondary uppercase mb-1">首页卡片背景图</label>
                 {editingSeries?.id ? (
-                  <SeriesHomeImageEditor series={editingSeries} onChange={(home_image) => {
-                    setEditingSeries({ ...editingSeries, home_image })
-                    setSeries((items) => items.map((item) => item.id === editingSeries.id ? { ...item, home_image } : item))
+                  <SeriesHomeImageEditor series={editingSeries} onChange={(patch) => {
+                    setEditingSeries({ ...editingSeries, ...patch })
+                    setSeries((items) => items.map((item) => item.id === editingSeries.id ? { ...item, ...patch } : item))
                   }} />
                 ) : (
                   <input type="file" name="home_image" accept="image/*" className="text-white text-[13px]" />

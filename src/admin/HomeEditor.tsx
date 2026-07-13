@@ -260,7 +260,7 @@ export default function AdminHomeEditor() {
               <div key={s.id} className="bg-white/5 p-3 border border-white/5">
                 <p className="mb-1 text-[14px] font-medium text-white">{s.name}</p>
                 <p className="mb-3 truncate text-[11px] text-muted">{s.tagline}</p>
-                <SeriesHomeImageEditor series={s} onChange={(home_image) => setSeries((items) => items.map((item) => item.id === s.id ? { ...item, home_image } : item))} />
+                <SeriesHomeImageEditor series={s} onChange={(patch) => setSeries((items) => items.map((item) => item.id === s.id ? { ...item, ...patch } : item))} />
               </div>
             ))}
           </div>

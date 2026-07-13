@@ -256,9 +256,9 @@ function createDefaultDb(): Database {
       { id: 3, platform: 'douyin', account: '港翼科技GONYIK', qrcode_url: null },
     ],
     fabric_series: [
-      { id: 1, name: 'Otter', slug: 'otter', description: '无氟高性能复合面料 3L，Solidgood RPO Membrane 中间层，香港科技大学前沿纳米材料 / 日内瓦国际发明展金奖技术', tagline: '新一代无氟防护 · 高性能复合', sub_series_data: null, cover_image: '/uploads/otter-logo.svg', home_image: null, order_index: 0 },
-      { id: 2, name: 'Kais', slug: 'kais', description: '专业防护平台，基于 UHMWPE 纤维基材的防刺/防火/防化解决方案', tagline: '专业防护平台 · 防刺/防火/防化', sub_series_data: null, cover_image: null, home_image: null, order_index: 1 },
-      { id: 3, name: 'Rayo', slug: 'rayo', description: '原生防晒导湿系列，Coolmax + TiO2 原纱处理，UPF 150+', tagline: '原生防晒 · 导湿凉感', sub_series_data: null, cover_image: null, home_image: null, order_index: 2 },
+      { id: 1, name: 'Otter', slug: 'otter', description: '无氟高性能复合面料 3L，Solidgood RPO Membrane 中间层，香港科技大学前沿纳米材料 / 日内瓦国际发明展金奖技术', tagline: '新一代无氟防护', sub_series_data: null, cover_image: '/uploads/otter-logo.svg', home_image: null, home_badge_image: '/brandmarks/otter-label.svg', order_index: 0 },
+      { id: 2, name: 'Kais', slug: 'kais', description: '专业防护平台，基于 UHMWPE 纤维基材的防刺/防火/防化解决方案', tagline: '专业防护平台 · 防刺/防火/防化', sub_series_data: null, cover_image: null, home_image: null, home_badge_image: '/brandmarks/kais-label.svg', order_index: 1 },
+      { id: 3, name: 'Rayo', slug: 'rayo', description: '原生防晒导湿系列，Coolmax + TiO2 原纱处理，UPF 150+', tagline: '原生防晒 · 导湿凉感', sub_series_data: null, cover_image: null, home_image: null, home_badge_image: '/brandmarks/rayo-label.svg', order_index: 2 },
     ],
     fabric_scenes: [
       { id: 1, category: '都市生活', label: '日常通勤', series_slug: 'rayo', order_index: 0 },
@@ -559,6 +559,21 @@ export function initDatabase() {
     // Backward compatibility: ensure home_image exists on fabric_series
     if (db.fabric_series && db.fabric_series.length > 0 && db.fabric_series[0].home_image === undefined) {
       db.fabric_series = db.fabric_series.map((s: any) => ({ ...s, home_image: s.home_image ?? null }))
+      saveDb()
+    }
+    // Backward compatibility: add a separately managed transparent badge for homepage series cards.
+    if (db.fabric_series && db.fabric_series.some((s: any) => s.home_badge_image === undefined)) {
+      db.fabric_series = db.fabric_series.map((s: any) => ({
+        ...s,
+        home_badge_image: s.home_badge_image === undefined && ['otter', 'rayo', 'kais'].includes(s.slug)
+          ? `/brandmarks/${s.slug}-label.svg`
+          : s.home_badge_image ?? null,
+      }))
+      saveDb()
+    }
+    const otterSeries = db.fabric_series?.find((s: any) => s.slug === 'otter')
+    if (otterSeries?.tagline === '新一代无氟防护 · 高性能复合') {
+      otterSeries.tagline = '新一代无氟防护'
       saveDb()
     }
     // Data cleanup: replace corrupted home_image values (literal "undefined" or empty string) with null

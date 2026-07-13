@@ -58,7 +58,7 @@ router.get('/admin/series', authMiddleware, (_req, res) => {
 })
 
 router.post('/admin/series', authMiddleware, upload.single('cover_image'), (req: AuthRequest, res) => {
-  const { name, slug, description, tagline, sub_series_data, home_image } = req.body
+  const { name, slug, description, tagline, sub_series_data, home_image, home_badge_image } = req.body
   const cover_image = req.file ? uploadUrl(req.file) : null
   const normalizedHomeImage = home_image && home_image !== 'undefined' ? home_image : null
   const newSeries = {
@@ -70,6 +70,7 @@ router.post('/admin/series', authMiddleware, upload.single('cover_image'), (req:
     sub_series_data: sub_series_data || null,
     cover_image,
     home_image: normalizedHomeImage,
+    home_badge_image: home_badge_image || null,
     order_index: nextOrderIndex(db.fabric_series),
   }
   db.fabric_series.push(newSeries)
@@ -81,7 +82,7 @@ router.put('/admin/series/:id', authMiddleware, upload.single('cover_image'), (r
   const id = Number(req.params.id)
   const existing = db.fabric_series.find((s) => s.id === id)
   if (!existing) { res.status(404).json({ error: 'Not found' }); return }
-  const { name, slug, description, tagline, sub_series_data, home_image } = req.body
+  const { name, slug, description, tagline, sub_series_data, home_image, home_badge_image } = req.body
   const cover_image = req.file ? uploadUrl(req.file) : (req.body.cover_image || existing.cover_image)
   const normalizedHomeImage = home_image && home_image !== 'undefined' ? home_image : null
   updateById(db.fabric_series, id, {
@@ -92,6 +93,7 @@ router.put('/admin/series/:id', authMiddleware, upload.single('cover_image'), (r
     sub_series_data: sub_series_data ?? existing.sub_series_data,
     cover_image,
     home_image: normalizedHomeImage ?? existing.home_image,
+    home_badge_image: home_badge_image ?? existing.home_badge_image,
   })
   saveDb()
   res.json({ success: true })
@@ -102,6 +104,15 @@ router.delete('/admin/series/:id/home-image', authMiddleware, (req: AuthRequest,
   const existing = db.fabric_series.find((s) => s.id === id)
   if (!existing) { res.status(404).json({ error: 'Not found' }); return }
   updateById(db.fabric_series, id, { home_image: null })
+  saveDb()
+  res.json({ success: true })
+})
+
+router.delete('/admin/series/:id/home-badge', authMiddleware, (req: AuthRequest, res) => {
+  const id = Number(req.params.id)
+  const existing = db.fabric_series.find((s) => s.id === id)
+  if (!existing) { res.status(404).json({ error: 'Not found' }); return }
+  updateById(db.fabric_series, id, { home_badge_image: null })
   saveDb()
   res.json({ success: true })
 })

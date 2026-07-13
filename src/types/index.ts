@@ -90,6 +90,7 @@ export interface FabricSeries {
   sub_series_data: string | null // JSON: [{slug, name, subtitle, description, accent_color, link}]
   cover_image: string | null
   home_image: string | null
+  home_badge_image: string | null
   order_index: number
 }
 
