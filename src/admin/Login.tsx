@@ -27,8 +27,8 @@ export default function AdminLogin() {
   }
 
   return (
-    <div className="min-h-screen bg-darker flex items-center justify-center px-6">
-      <div className="w-full max-w-[400px] bg-dark p-12">
+    <div className="flex min-h-[100dvh] items-center justify-center bg-darker px-4 py-6">
+      <div className="w-full max-w-[400px] bg-dark p-6 sm:p-12">
         <h1 className="text-h3 text-white mb-8 text-center">管理后台</h1>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
@@ -37,7 +37,7 @@ export default function AdminLogin() {
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full bg-white/5 border border-borderDark text-white px-4 py-3 text-[14px] focus:border-white focus:outline-none transition-colors"
+              className="w-full bg-white/5 border border-borderDark text-white px-4 py-3 text-[16px] focus:border-white focus:outline-none transition-colors"
             />
           </div>
           <div>
@@ -46,7 +46,7 @@ export default function AdminLogin() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-white/5 border border-borderDark text-white px-4 py-3 text-[14px] focus:border-white focus:outline-none transition-colors"
+              className="w-full bg-white/5 border border-borderDark text-white px-4 py-3 text-[16px] focus:border-white focus:outline-none transition-colors"
             />
           </div>
           {error && <p className="text-error text-[13px]">{error}</p>}

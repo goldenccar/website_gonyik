@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Home, Layers, Shirt, Award, Plus, Upload, ExternalLink } from 'lucide-react'
+import { Home, Layers, Shirt, Award, Plus, Upload } from 'lucide-react'
 import api, { getHomeConfig, getFabricSeries } from '@/api/client'
 import Dashboard from './Dashboard'
 import SaveButton from './components/SaveButton'
@@ -7,6 +7,7 @@ import PrimaryButton from './components/PrimaryButton'
 import ImageCropper from './ImageCropper'
 import AdminHeader from './components/AdminHeader'
 import SeriesHomeImageEditor from './components/SeriesHomeImageEditor'
+import AdminPagePreview from './components/AdminPagePreview'
 
 const TABS = [
   { key: 'hero', label: 'Hero', icon: Home },
@@ -80,6 +81,16 @@ export default function AdminHomeEditor() {
     e.target.value = ''
   }
 
+  const handleMobileHeroSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const fd = new FormData()
+    fd.append('file', file, file.name)
+    const res = await api.put('/admin/home/mobile-background', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
+    setForm({ ...form, hero_mobile_background: res.data.url })
+    e.target.value = ''
+  }
+
   const handleCropComplete = (blob: Blob, previewUrl: string) => {
     if (cropSrc) URL.revokeObjectURL(cropSrc)
     setCropBlob(blob)
@@ -148,7 +159,7 @@ export default function AdminHomeEditor() {
       {textareaField('副标题 / Slogan', 'hero_slogan', 3)}
 
       <div className="mb-6">
-        <label className="block text-[12px] text-secondary uppercase mb-2">背景媒体</label>
+        <label className="block text-[12px] text-secondary uppercase mb-2">桌面端背景媒体</label>
 
         {cropSrc && (
           <ImageCropper
@@ -183,7 +194,15 @@ export default function AdminHomeEditor() {
         )}
       </div>
 
-      <div className="grid grid-cols-2 gap-6">
+      <div className="mb-6 border-t border-white/10 pt-6">
+        <label className="mb-2 block text-[12px] uppercase text-secondary">移动端背景图片</label>
+        {form.hero_mobile_background && <img src={form.hero_mobile_background} alt="当前移动端 Hero" className="mb-3 aspect-[4/5] w-full max-w-[240px] object-cover" />}
+        <input type="file" accept="image/*" onChange={handleMobileHeroSelect} className="text-[13px] text-white" />
+        <p className="mt-2 text-[12px] text-muted">建议 1200 × 1500px（4:5）。主体放在右侧，左上区域保留给标题；未上传时自动使用桌面媒体。</p>
+        {form.hero_mobile_background && <button type="button" onClick={() => setForm({ ...form, hero_mobile_background: null })} className="mt-3 block text-[13px] text-white/60 hover:text-white">移除移动端图片</button>}
+      </div>
+
+      <div className="grid gap-6 sm:grid-cols-2">
         {textField('主按钮文案', 'primary_btn_text')}
         {textField('主按钮链接', 'primary_btn_link')}
         {textField('次按钮文案', 'secondary_btn_text')}
@@ -195,7 +214,7 @@ export default function AdminHomeEditor() {
 
   const renderPlatformTab = () => (
     <div className="space-y-6">
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid gap-6 sm:grid-cols-2">
         {textField('区块标题', 'platform_section_title')}
         {textField('链接文案', 'platform_section_link_text')}
         {textField('链接地址', 'platform_section_link')}
@@ -210,8 +229,8 @@ export default function AdminHomeEditor() {
         <div className="space-y-4">
           {ensureArray(form.platform_cards).map((item: any, idx: number) => (
             <div key={idx} className="bg-dark p-4 border border-white/5">
-              <div className="grid grid-cols-12 gap-3 items-start">
-                <div className="col-span-5">
+              <div className="grid gap-3 sm:grid-cols-12 sm:items-start">
+                <div className="sm:col-span-5">
                   <label className="block text-[11px] text-muted mb-1">标题</label>
                   <input
                     type="text"
@@ -220,7 +239,7 @@ export default function AdminHomeEditor() {
                     className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none"
                   />
                 </div>
-                <div className="col-span-6">
+                <div className="sm:col-span-6">
                   <label className="block text-[11px] text-muted mb-1">说明</label>
                   <input
                     type="text"
@@ -229,7 +248,7 @@ export default function AdminHomeEditor() {
                     className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none"
                   />
                 </div>
-                <div className="col-span-1 pt-6 text-right">
+                <div className="text-right sm:col-span-1 sm:pt-6">
                   <button onClick={() => removeArrayItem('platform_cards', idx)} className="text-error hover:text-white">
                     ×
                   </button>
@@ -246,7 +265,7 @@ export default function AdminHomeEditor() {
     const displaySeries = ['otter', 'rayo', 'kais'].map((slug) => series.find((item) => item.slug === slug)).filter(Boolean)
     return (
       <div className="space-y-6">
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid gap-6 sm:grid-cols-2">
           {textField('区块标题', 'series_section_title')}
           {textField('链接文案', 'series_section_link_text')}
           {textField('链接地址', 'series_section_link')}
@@ -271,7 +290,7 @@ export default function AdminHomeEditor() {
 
   const renderVerificationTab = () => (
     <div className="space-y-6">
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid gap-6 sm:grid-cols-2">
         {textField('区块标题', 'verification_section_title')}
         {textField('链接文案', 'verification_section_link_text')}
         {textField('链接地址', 'verification_section_link')}
@@ -285,8 +304,8 @@ export default function AdminHomeEditor() {
         </div>
         <div className="space-y-3">
           {ensureArray(form.verifications).map((item: any, idx: number) => (
-            <div key={idx} className="grid grid-cols-12 gap-3 items-start bg-dark p-3 border border-white/5">
-              <div className="col-span-5">
+            <div key={idx} className="grid gap-3 border border-white/5 bg-dark p-3 sm:grid-cols-12 sm:items-start">
+              <div className="sm:col-span-5">
                 <label className="block text-[11px] text-muted mb-1">标题</label>
                 <input
                   type="text"
@@ -295,7 +314,7 @@ export default function AdminHomeEditor() {
                   className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none"
                 />
               </div>
-              <div className="col-span-6">
+              <div className="sm:col-span-6">
                 <label className="block text-[11px] text-muted mb-1">副标题</label>
                 <input
                   type="text"
@@ -304,7 +323,7 @@ export default function AdminHomeEditor() {
                   className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none"
                 />
               </div>
-              <div className="col-span-1 pt-6">
+              <div className="text-right sm:col-span-1 sm:pt-6">
                 <button onClick={() => removeArrayItem('verifications', idx)} className="text-error hover:text-white">
                   ×
                 </button>
@@ -326,15 +345,11 @@ export default function AdminHomeEditor() {
   return (
     <Dashboard>
       <div className="max-w-[1100px]">
-        <AdminHeader title="首页管理" backPath={null} action={<SaveButton onClick={handleSave} loading={saving} />} />
+        <AdminHeader title="首页管理" action={<SaveButton onClick={handleSave} loading={saving} />} />
 
         {message && <p className="text-success text-[13px] mb-4">{message}</p>}
 
-        <div className="mb-8">
-          <div className="mb-2 flex items-center justify-between"><p className="text-[12px] uppercase text-secondary">真实前台预览</p><a href="/" target="_blank" rel="noreferrer" className="flex items-center gap-2 text-[12px] text-accent hover:text-white">新窗口打开 <ExternalLink size={14} /></a></div>
-          <div className="h-[585px] overflow-hidden border border-white/10 bg-white"><iframe key={previewVersion} src={`/?cms-preview=${previewVersion}`} title="首页真实前台预览" style={{ width: 1440, height: 900, transform: 'scale(.65)', transformOrigin: 'top left' }} /></div>
-          <p className="mt-2 text-[12px] text-muted">预览按 1440px 桌面宽度等比缩放；修改内容后点击保存，预览自动刷新。移动端效果请在新窗口检查。</p>
-        </div>
+        <AdminPagePreview publicPath="/" title="首页" version={previewVersion} helpText="修改内容并保存后预览自动刷新；移动端效果请在新窗口检查。" />
 
         <div className="flex gap-1 border-b border-white/10 mb-6 overflow-x-auto">
           {TABS.map((tab) => {

@@ -110,7 +110,7 @@ export default function AdminFooterManager() {
           {field('品牌小标题', 'brand_tag')}
           {field('品牌标题', 'brand_title')}
           {field('品牌说明', 'brand_description', true)}
-          <div className="grid grid-cols-2 gap-x-6">
+          <div className="grid gap-x-6 sm:grid-cols-2">
             {field('材料栏目标题', 'material_title')}
             {field('支持栏目标题', 'support_title')}
             {field('联系栏目标题', 'contact_title')}
@@ -140,7 +140,7 @@ export default function AdminFooterManager() {
                 {/* 账号 */}
                 <div className="mb-4">
                   <label className="block text-[12px] text-secondary uppercase mb-2">账号名称</label>
-                  <div className="flex gap-3">
+                  <div className="flex flex-col gap-3 sm:flex-row">
                     <input
                       type="text"
                       value={s.account}

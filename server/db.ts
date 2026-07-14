@@ -34,6 +34,7 @@ export interface Database {
   contact_config: any
   fluorine_sections: any[]
   technology_sections_version?: number
+  service_sections_version?: number
   inquiry_subjects: any[]
   contact_messages: any[]
   users: any[]
@@ -47,6 +48,7 @@ function createDefaultDb(): Database {
       hero_title: '以固纳 RPO 无氟材料科技\n创造更安全的高性能织物',
       hero_slogan: '固纳 RPO 无氟材料平台，融合先进复合技术与结构设计，赋予面料持久防护、舒适透气与多功能表现。',
       hero_background: null,
+      hero_mobile_background: null,
       primary_btn_text: '探索材料平台',
       primary_btn_link: '/fabrics',
       secondary_btn_text: '了解无氟未来',
@@ -229,8 +231,51 @@ function createDefaultDb(): Database {
         image_url: null,
         image_fit: 'cover',
       },
+      {
+        id: 7,
+        page_key: 'services',
+        section_key: 'care',
+        module_type: 'care',
+        order_index: 0,
+        nav_label: '洗涤保养',
+        eyebrow: 'CARE',
+        title: '洗涤与保养',
+        subtitle: '正确清洗与保养，有助于维持材料的防护和舒适表现。',
+        content: '',
+        image_url: null,
+        image_fit: 'cover',
+      },
+      {
+        id: 8,
+        page_key: 'services',
+        section_key: 'faq',
+        module_type: 'faq',
+        order_index: 1,
+        nav_label: '常见问题',
+        eyebrow: 'Q&A',
+        title: '常见问题',
+        subtitle: '',
+        content: '',
+        image_url: null,
+        image_fit: 'cover',
+      },
+      {
+        id: 9,
+        page_key: 'services',
+        section_key: 'contact',
+        module_type: 'contact',
+        order_index: 2,
+        nav_label: '联系我们',
+        eyebrow: 'CONTACT',
+        title: '材料建议、样品与合作咨询',
+        subtitle: '告诉我们使用环境、目标性能和项目阶段，我们会根据已有材料或开发需求提供对应支持。',
+        content: '',
+        image_url: null,
+        image_fit: 'cover',
+      },
     ],
     technology_sections_version: 4,
+    service_sections_version: 1,
     social_media: [
       { id: 1, platform: 'wechat', account: '港翼科技GONYIK', qrcode_url: null },
       { id: 2, platform: 'xiaohongshu', account: '港翼科技GONYIK', qrcode_url: null },
@@ -360,6 +405,28 @@ export function initDatabase() {
       db.fluorine_sections = db.fluorine_sections.map((s: any) => ({ ...s, image_fit: 'cover' }))
       saveDb()
     }
+    let contentSectionsChanged = false
+    db.fluorine_sections
+      .filter((section: any) => section.page_key === 'pfas-free-innovation')
+      .forEach((section: any) => {
+        if (section.nav_label === undefined) { section.nav_label = section.title; contentSectionsChanged = true }
+        if (section.module_type === undefined) { section.module_type = 'rich'; contentSectionsChanged = true }
+      })
+    if ((db.service_sections_version ?? 0) < 1) {
+      const serviceSectionDefaults = [
+        { section_key: 'care', module_type: 'care', order_index: 0, nav_label: '洗涤保养', eyebrow: 'CARE', title: '洗涤与保养', subtitle: '正确清洗与保养，有助于维持材料的防护和舒适表现。' },
+        { section_key: 'faq', module_type: 'faq', order_index: 1, nav_label: '常见问题', eyebrow: 'Q&A', title: '常见问题', subtitle: '' },
+        { section_key: 'contact', module_type: 'contact', order_index: 2, nav_label: '联系我们', eyebrow: 'CONTACT', title: '材料建议、样品与合作咨询', subtitle: '告诉我们使用环境、目标性能和项目阶段，我们会根据已有材料或开发需求提供对应支持。' },
+      ]
+      for (const item of serviceSectionDefaults) {
+        if (db.fluorine_sections.some((section: any) => section.page_key === 'services' && section.section_key === item.section_key)) continue
+        db.fluorine_sections.push({ id: getNextId(db.fluorine_sections), page_key: 'services', content: '', image_url: null, image_fit: 'cover', ...item })
+        contentSectionsChanged = true
+      }
+      db.service_sections_version = 1
+      contentSectionsChanged = true
+    }
+    if (contentSectionsChanged) saveDb()
     if (!db.fabric_scenes) db.fabric_scenes = []
     if (!db.digital_assets) db.digital_assets = []
     if (!db.media_items) {
@@ -464,6 +531,7 @@ export function initDatabase() {
     // Backward compatibility: ensure new home_config fields exist
     if (db.home_config) {
       const homeDefaults: Record<string, any> = {
+        hero_mobile_background: null,
         hero_features: [
           { icon: 'ShieldCheck', title: '100% PFAS-FREE', subtitle: '全系无氟' },
           { icon: 'Droplets', title: '防水透湿', subtitle: '平衡舒适' },
@@ -761,6 +829,17 @@ export function initDatabase() {
       db.home_config.series_section_subtitle = '蓝标 OTTER 与银标 RAYO 面向日常及户外，红标 KAIS 独立服务特种专业场景。'
       saveDb()
     }
+    let publicCopyChanged = false
+    if (typeof db.home_config?.hero_tag === 'string' && db.home_config.hero_tag.includes('Matertial')) {
+      db.home_config.hero_tag = db.home_config.hero_tag.replace('Matertial', 'Material')
+      publicCopyChanged = true
+    }
+    const rayoSeries = db.fabric_series?.find((series: any) => series.slug === 'rayo')
+    if (rayoSeries && !String(rayoSeries.tagline || '').trim()) {
+      rayoSeries.tagline = '原生防晒 · 导湿凉感'
+      publicCopyChanged = true
+    }
+    if (publicCopyChanged) saveDb()
     // Backward compatibility: ensure cooperation_type exists on existing messages
     if (db.contact_messages.length > 0 && db.contact_messages[0].cooperation_type === undefined) {
       db.contact_messages = db.contact_messages.map((m: any) => ({ ...m, cooperation_type: m.cooperation_type || '' }))

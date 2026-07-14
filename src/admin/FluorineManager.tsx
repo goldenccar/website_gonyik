@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { ArrowDown, ArrowUp, Edit2, Image, Plus, Trash2, Upload, X } from 'lucide-react'
-import api, { getFluorineSections, uploadFile } from '@/api/client'
+import api, { getContentSections, uploadFile } from '@/api/client'
 import type { FluorineSection } from '@/types'
 import TechnologyDetail from '@/components/TechnologyDetail'
 import Dashboard from './Dashboard'
@@ -10,6 +10,7 @@ import FormField from './components/FormField'
 import Modal from './components/Modal'
 import PrimaryButton from './components/PrimaryButton'
 import SaveCancelButtons from './components/SaveCancelButtons'
+import ResponsiveAdminList from './components/ResponsiveAdminList'
 
 type SectionDraft = Pick<FluorineSection, 'title' | 'subtitle' | 'content' | 'image_url' | 'image_fit'> & { id?: number }
 
@@ -33,7 +34,7 @@ export default function AdminFluorineManager() {
   const load = async () => {
     setLoading(true)
     try {
-      const response = await getFluorineSections()
+      const response = await getContentSections('pfas-free-innovation')
       setSections(response.data.data || [])
     } finally {
       setLoading(false)
@@ -60,7 +61,7 @@ export default function AdminFluorineManager() {
         image_url: draft.image_url,
         image_fit: draft.image_fit,
       }
-      await api[draft.id ? 'put' : 'post'](`/admin/fluorine-sections${draft.id ? `/${draft.id}` : ''}`, payload)
+      await api[draft.id ? 'put' : 'post'](`/admin/content-sections/pfas-free-innovation${draft.id ? `/${draft.id}` : ''}`, payload)
       closeEditor()
       setMessage('技术模块已保存')
       await load()
@@ -71,7 +72,7 @@ export default function AdminFluorineManager() {
 
   const remove = async (section: FluorineSection) => {
     if (!confirm(`确定删除“${section.title}”？`)) return
-    await api.delete(`/admin/fluorine-sections/${section.id}`)
+    await api.delete(`/admin/content-sections/pfas-free-innovation/${section.id}`)
     setMessage('技术模块已删除')
     load()
   }
@@ -85,7 +86,7 @@ export default function AdminFluorineManager() {
     next.splice(newIndex, 0, moved)
     setSections(next)
     try {
-      await api.put('/admin/fluorine-section-order', { ordered_ids: next.map((section) => section.id) })
+      await api.put('/admin/content-section-order/pfas-free-innovation', { ordered_ids: next.map((section) => section.id) })
       setMessage('顺序已更新')
     } catch {
       setSections(previous)
@@ -135,28 +136,11 @@ export default function AdminFluorineManager() {
         {message && <p className="mb-4 text-[13px] text-success">{message}</p>}
 
         <div className="overflow-hidden bg-dark">
-          <div className="grid grid-cols-[52px_minmax(0,1fr)_160px] border-b border-white/10 px-5 py-3 text-[12px] uppercase text-accent">
-            <span>顺序</span><span>模块</span><span className="text-right">操作</span>
-          </div>
           {loading ? (
             <p className="p-8 text-center text-[13px] text-accent">加载中...</p>
           ) : sections.length === 0 ? (
             <p className="p-8 text-center text-[13px] text-accent">暂无技术模块</p>
-          ) : sections.map((section, index) => (
-            <div key={section.id} className="grid grid-cols-[52px_minmax(0,1fr)_160px] items-center border-b border-white/5 px-5 py-4 last:border-b-0">
-              <span className="text-[12px] tabular-nums text-accent">{String(index + 1).padStart(2, '0')}</span>
-              <div className="min-w-0 pr-4">
-                <p className="truncate text-[14px] font-medium text-white">{section.title}</p>
-                <p className="mt-1 truncate text-[12px] text-secondary">{section.subtitle || '未填写副标题'}</p>
-              </div>
-              <div className="flex items-center justify-end gap-1">
-                <button type="button" onClick={() => move(index, -1)} disabled={index === 0} title="上移" aria-label={`上移${section.title}`} className="p-2 text-accent hover:text-white disabled:opacity-25"><ArrowUp size={15} /></button>
-                <button type="button" onClick={() => move(index, 1)} disabled={index === sections.length - 1} title="下移" aria-label={`下移${section.title}`} className="p-2 text-accent hover:text-white disabled:opacity-25"><ArrowDown size={15} /></button>
-                <button type="button" onClick={() => setDraft({ ...section })} title="编辑" aria-label={`编辑${section.title}`} className="p-2 text-accent hover:text-white"><Edit2 size={15} /></button>
-                <button type="button" onClick={() => remove(section)} title="删除" aria-label={`删除${section.title}`} className="p-2 text-error hover:text-white"><Trash2 size={15} /></button>
-              </div>
-            </div>
-          ))}
+          ) : <ResponsiveAdminList items={sections} getKey={(section) => section.id} renderTitle={(section) => section.title} renderSubtitle={(section) => section.subtitle || '未填写副标题'} renderActions={(section) => { const index = sections.findIndex((item) => item.id === section.id); return <><button type="button" onClick={() => move(index, -1)} disabled={index === 0} title="上移" aria-label={`上移${section.title}`} className="flex h-11 w-9 items-center justify-center text-accent hover:text-white disabled:opacity-25"><ArrowUp size={15} /></button><button type="button" onClick={() => move(index, 1)} disabled={index === sections.length - 1} title="下移" aria-label={`下移${section.title}`} className="flex h-11 w-9 items-center justify-center text-accent hover:text-white disabled:opacity-25"><ArrowDown size={15} /></button><button type="button" onClick={() => setDraft({ ...section })} title="编辑" aria-label={`编辑${section.title}`} className="flex h-11 w-9 items-center justify-center text-accent hover:text-white"><Edit2 size={15} /></button><button type="button" onClick={() => remove(section)} title="删除" aria-label={`删除${section.title}`} className="flex h-11 w-9 items-center justify-center text-error hover:text-white"><Trash2 size={15} /></button></> }} />}
         </div>
       </div>
 

@@ -46,7 +46,7 @@ type SelectFieldProps = CommonProps & {
 type FormFieldProps = InputFieldProps | TextareaFieldProps | SelectFieldProps
 
 const inputClass =
-  'w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none'
+  'min-h-11 w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[16px] sm:text-[13px] focus:border-white focus:outline-none'
 
 export default function FormField(props: FormFieldProps) {
   const { label, name, required, className = '' } = props

@@ -9,6 +9,7 @@ import FormField from './components/FormField'
 import SaveCancelButtons from './components/SaveCancelButtons'
 import PrimaryButton from './components/PrimaryButton'
 import ContentRailEditor, { type RailEndCardConfig } from './components/ContentRailEditor'
+import ResponsiveAdminList from './components/ResponsiveAdminList'
 
 const DEFAULT_RAIL: RailEndCardConfig = { rail_end_card_visible: true, rail_end_card_title: '新应用开发中', rail_end_card_description: '围绕新的任务与穿着环境持续开发。', rail_end_card_cta_label: '', rail_end_card_cta_href: '/contact' }
 
@@ -124,7 +125,7 @@ export default function AdminEquipmentManager() {
         />
         {message && <p className="text-success text-[13px] mb-4">{message}</p>}
 
-        <div className="bg-dark mb-8">
+        <div className="mb-8 hidden bg-dark md:block">
           <table className="w-full text-left text-[13px]">
             <thead className="border-b border-white/10 text-accent uppercase"><tr><th className="px-6 py-3">名称</th><th className="px-6 py-3">Slug</th><th className="px-6 py-3">描述</th><th className="px-6 py-3 text-right">操作</th></tr></thead>
             <tbody className="text-white">
@@ -142,14 +143,17 @@ export default function AdminEquipmentManager() {
             </tbody>
           </table>
         </div>
+        <div className="mb-8 md:hidden">
+          <ResponsiveAdminList items={categories} getKey={(item) => item.id} onSelect={(item) => setSelectedCategory(item.id)} isSelected={(item) => selectedCategory === item.id} renderTitle={(item) => item.name} renderSubtitle={(item) => `${item.slug}${item.description ? ` · ${item.description}` : ''}`} renderActions={(item) => <><button type="button" onClick={() => { setEditingCategory(item); setShowCatForm(true) }} className="flex h-11 w-11 items-center justify-center text-accent" aria-label={`编辑${item.name}`}><Edit2 size={16} /></button><button type="button" onClick={() => deleteCategory(item.id)} className="flex h-11 w-11 items-center justify-center text-error" aria-label={`删除${item.name}`}><Trash2 size={16} /></button></>} />
+        </div>
 
         {selectedCategory && (
           <div>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-h4 text-white">{categories.find((c) => c.id === selectedCategory)?.name} - 产品管理</h2>
+            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <h2 className="text-[19px] font-bold text-white sm:text-h4">{categories.find((c) => c.id === selectedCategory)?.name} - 产品管理</h2>
               <PrimaryButton onClick={() => { setEditingProduct(null); setShowProdForm(true) }} icon={<Plus size={16} />}>新增产品</PrimaryButton>
             </div>
-            <div className="bg-dark">
+            <div className="hidden bg-dark md:block">
               <table className="w-full text-left text-[13px]">
                 <thead className="border-b border-white/10 text-accent uppercase"><tr><th className="px-6 py-3">产品名</th><th className="px-6 py-3">特点</th><th className="px-6 py-3 text-right">操作</th></tr></thead>
                 <tbody className="text-white">
@@ -166,6 +170,9 @@ export default function AdminEquipmentManager() {
                 </tbody>
               </table>
               {products.length === 0 && <p className="text-accent text-center py-8">暂无产品</p>}
+            </div>
+            <div className="md:hidden">
+              <ResponsiveAdminList items={products} getKey={(item) => item.id} emptyLabel="暂无产品" renderTitle={(item) => item.name} renderSubtitle={(item) => { try { return (Array.isArray(item.features) ? item.features : JSON.parse(item.features || '[]')).join(' · ') } catch { return item.features } }} renderActions={(item) => <><button type="button" onClick={() => { setEditingProduct(item); setShowProdForm(true) }} className="flex h-11 w-11 items-center justify-center text-accent" aria-label={`编辑${item.name}`}><Edit2 size={16} /></button><button type="button" onClick={() => deleteProduct(item.id)} className="flex h-11 w-11 items-center justify-center text-error" aria-label={`删除${item.name}`}><Trash2 size={16} /></button></>} />
             </div>
             <ContentRailEditor label="终端应用横向轨道" items={products} renderCard={(product) => <ApplicationCard key={product.id} product={product} categoryName={categories.find((item) => item.id === selectedCategory)?.name} />} onEdit={(product) => { setEditingProduct(product); setShowProdForm(true) }} onMove={moveProduct} onVisibility={toggleProductVisibility} endCard={rail} onEndCardChange={(patch) => setRail({ ...rail, ...patch })} onSaveEndCard={saveRail} />
           </div>
@@ -192,7 +199,7 @@ export default function AdminEquipmentManager() {
                 defaultValue={editingProduct?.features ? (Array.isArray(editingProduct.features) ? editingProduct.features : JSON.parse(editingProduct.features)).join(', ') : ''}
               />
               <FormField label="卡片核心收益" name="card_summary" defaultValue={editingProduct?.card_summary} placeholder="一句话说明应用价值" />
-              <div className="grid grid-cols-2 gap-3"><FormField label="前台显示" name="visibility" select defaultValue={editingProduct?.visibility || 'public'} options={[{ value: 'public', label: '显示' }, { value: 'hidden', label: '隐藏' }]} /><FormField label="内容状态" name="status" select defaultValue={editingProduct?.status || 'active'} options={[{ value: 'active', label: '正常' }, { value: 'archived', label: '归档' }]} /></div>
+              <div className="grid gap-3 sm:grid-cols-2"><FormField label="前台显示" name="visibility" select defaultValue={editingProduct?.visibility || 'public'} options={[{ value: 'public', label: '显示' }, { value: 'hidden', label: '隐藏' }]} /><FormField label="内容状态" name="status" select defaultValue={editingProduct?.status || 'active'} options={[{ value: 'active', label: '正常' }, { value: 'archived', label: '归档' }]} /></div>
               <div>
                 <label className="block text-[12px] text-secondary uppercase mb-1">产品图</label>
                 {editingProduct?.image && <img src={editingProduct.image} alt="当前应用卡片图" className="mb-2 aspect-video w-full object-cover" />}

@@ -14,7 +14,7 @@ export default function SaveCancelButtons({
   loading,
 }: SaveCancelButtonsProps) {
   return (
-    <div className="flex gap-3 mt-6">
+    <div className="sticky bottom-0 z-10 -mx-4 mt-6 flex gap-3 border-t border-white/10 bg-dark px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 sm:static sm:mx-0 sm:border-0 sm:p-0">
       <PrimaryButton type="submit" loading={loading} className="flex-1">
         {submitLabel}
       </PrimaryButton>

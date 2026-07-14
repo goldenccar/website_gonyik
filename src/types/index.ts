@@ -15,6 +15,7 @@ export interface HomeConfig {
   hero_title: string
   hero_slogan: string
   hero_background: string | null
+  hero_mobile_background: string | null
   primary_btn_text: string
   primary_btn_link: string
   secondary_btn_text: string
@@ -155,16 +156,22 @@ export interface ContactConfig {
   smtp_secure: boolean
 }
 
-export interface FluorineSection {
+export interface ContentSection {
   id: number
   page_key: string
   order_index: number
+  section_key?: string
+  module_type?: string
+  nav_label?: string
+  eyebrow?: string
   title: string
   subtitle: string
   content: string
   image_url: string | null
   image_fit: 'cover' | 'contain' | 'original'
 }
+
+export type FluorineSection = ContentSection
 
 export interface InquirySubject {
   id: number

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 
 interface ContentTab {
   id: string
@@ -14,6 +14,8 @@ export default function ContentTabs({ items, active, onChange, label, variant = 
 }) {
   const navRef = useRef<HTMLElement>(null)
   const buttonRefs = useRef(new Map<string, HTMLButtonElement>())
+  const [indicator, setIndicator] = useState({ top: 0, height: 0 })
+  const itemKey = items.map((item) => `${item.id}:${item.label}`).join('|')
 
   useEffect(() => {
     if (variant !== 'scrollspy' || window.innerWidth >= 1024) return
@@ -27,16 +29,23 @@ export default function ContentTabs({ items, active, onChange, label, variant = 
     })
   }, [active, variant])
 
+  useLayoutEffect(() => {
+    if (variant !== 'scrollspy') return
+    const button = buttonRefs.current.get(active)
+    if (button) setIndicator({ top: button.offsetTop, height: button.offsetHeight })
+  }, [active, itemKey, variant])
+
   const navClass = variant === 'scrollspy'
-    ? 'gonyik-rail sticky top-[60px] z-30 -mx-7 flex overflow-x-auto border-y border-border bg-bg/95 px-7 backdrop-blur lg:top-[84px] lg:z-20 lg:mx-0 lg:mt-12 lg:block lg:self-start lg:overflow-visible lg:border-y-0 lg:bg-transparent lg:px-0 lg:backdrop-blur-none'
+    ? 'gonyik-rail relative sticky top-[60px] z-30 -mx-7 flex overflow-x-auto border-y border-border bg-bg/95 px-7 backdrop-blur lg:top-[84px] lg:z-20 lg:mx-0 lg:mt-12 lg:block lg:self-start lg:overflow-visible lg:border-y-0 lg:bg-transparent lg:px-0 lg:backdrop-blur-none'
     : 'gonyik-rail mb-8 flex gap-3 overflow-x-auto pb-4 lg:sticky lg:top-[84px] lg:mb-0 lg:block lg:self-start lg:overflow-visible lg:pb-0'
 
   return (
     <nav ref={navRef} aria-label={label} className={navClass}>
+      {variant === 'scrollspy' && <span aria-hidden="true" className="absolute left-0 hidden w-[3px] bg-[#69B2C1] transition-[transform,height] duration-[var(--motion-switch)] ease-apple lg:block" style={{ height: indicator.height, transform: `translateY(${indicator.top}px)` }} />}
       {items.map((item, index) => {
         const selected = active === item.id
         const buttonClass = variant === 'scrollspy'
-          ? `shrink-0 border-b-2 px-4 py-3.5 text-left lg:block lg:w-full lg:border-b lg:border-l-[3px] lg:py-4 ${selected ? 'border-b-[#69B2C1] text-primary lg:border-b-border lg:border-l-[#69B2C1] lg:bg-white' : 'border-b-transparent text-secondary hover:text-primary lg:border-b-border lg:border-l-transparent'}`
+          ? `shrink-0 border-b-2 px-4 py-3.5 text-left transition-[color,background-color,border-color] duration-[var(--motion-instant)] lg:block lg:w-full lg:border-b lg:border-l-[3px] lg:py-4 ${selected ? 'border-b-[#69B2C1] text-primary lg:border-b-border lg:border-l-transparent lg:bg-white' : 'border-b-transparent text-secondary hover:text-primary lg:border-b-border lg:border-l-transparent'}`
           : `shrink-0 border-l-[3px] px-4 py-3 text-left lg:block lg:w-full lg:border-b lg:border-b-border lg:py-4 ${selected ? 'border-l-[#69B2C1] bg-white text-primary' : 'border-l-transparent text-secondary hover:text-primary'}`
         return <button
           key={item.id}

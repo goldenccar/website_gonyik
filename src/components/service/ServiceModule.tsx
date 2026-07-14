@@ -1,0 +1,77 @@
+import { Link } from 'react-router-dom'
+import type { ComponentType } from 'react'
+import AnimatedDisclosure from '@/components/AnimatedDisclosure'
+import HorizontalRail from '@/components/HorizontalRail'
+import { isServiceModuleType, type ServiceModuleType } from '@/config/serviceModules'
+import type { CareGuide, ContentSection, FAQ } from '@/types'
+
+interface ServiceModuleProps {
+  section: ContentSection
+  care: CareGuide[]
+  faqs: FAQ[]
+  openFaqId: number | null
+  onToggleFaq: (id: number) => void
+}
+
+function ServiceSectionHeader({ section }: { section: ContentSection }) {
+  return <>
+    {section.eyebrow && <p className="text-label text-secondary">{section.eyebrow}</p>}
+    <h2 className="mt-3 text-[30px] font-bold text-primary sm:text-[34px]">{section.title}</h2>
+    {section.subtitle && <p className="mt-3 max-w-[760px] text-body text-secondary">{section.subtitle}</p>}
+  </>
+}
+
+function CareModule({ section, care }: ServiceModuleProps) {
+  return <div>
+    <ServiceSectionHeader section={section} />
+    <div className="mt-8">
+      <HorizontalRail label={section.nav_label || section.title} mobileStack>
+        {care.map((item, index) => <article key={item.id} className="snap-start border-t border-primary pt-5">
+          <p className="text-label text-secondary">{String(index + 1).padStart(2, '0')}</p>
+          <h3 className="mt-4 text-h5 text-primary">{item.title}</h3>
+          <p className="mt-3 text-[14px] leading-7 text-secondary">{item.content}</p>
+        </article>)}
+      </HorizontalRail>
+    </div>
+  </div>
+}
+
+function FaqModule({ section, faqs, openFaqId, onToggleFaq }: ServiceModuleProps) {
+  return <div>
+    <ServiceSectionHeader section={section} />
+    <div className="mt-7 border-t border-border">
+      {faqs.map((item) => {
+        const isOpen = openFaqId === item.id
+        return <article key={item.id} className="border-b border-border">
+          <button type="button" onClick={() => onToggleFaq(item.id)} aria-expanded={isOpen} className="flex w-full items-center justify-between gap-5 py-5 text-left text-[16px] font-medium text-primary">
+            <span>{item.question}</span><span aria-hidden="true">{isOpen ? '−' : '+'}</span>
+          </button>
+          <AnimatedDisclosure open={isOpen}><p className="max-w-[720px] pb-5 text-body text-secondary">{item.answer}</p></AnimatedDisclosure>
+        </article>
+      })}
+    </div>
+  </div>
+}
+
+function ContactModule({ section }: ServiceModuleProps) {
+  return <div>
+    <ServiceSectionHeader section={section} />
+    <Link to="/contact" className="mt-8 inline-block bg-dark px-6 py-3 text-[14px] font-medium text-white">进入联系页面</Link>
+  </div>
+}
+
+const serviceModuleComponents: Record<ServiceModuleType, ComponentType<ServiceModuleProps>> = {
+  care: CareModule,
+  faq: FaqModule,
+  contact: ContactModule,
+}
+
+export function supportsServiceModule(section: ContentSection) {
+  return isServiceModuleType(section.module_type)
+}
+
+export default function ServiceModule(props: ServiceModuleProps) {
+  if (!isServiceModuleType(props.section.module_type)) return null
+  const Component = serviceModuleComponents[props.section.module_type]
+  return <Component {...props} />
+}

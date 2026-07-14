@@ -52,32 +52,34 @@ export default function Footer() {
 
   return (
     <footer ref={footerRef} className="border-t border-border bg-white px-4 text-primary md:px-6">
-      <div className="mx-auto w-full max-w-[1760px] px-7 pb-6 pt-14 md:px-12 md:pt-16 lg:px-16">
-        <div className="grid gap-12 border-b border-border pb-14 md:grid-cols-2 lg:grid-cols-12 lg:gap-10">
-          <div className="lg:col-span-5">
+      <div className="mx-auto w-full max-w-[1760px] px-3 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-10 md:px-12 md:pb-6 md:pt-16 lg:px-16">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-9 border-b border-border pb-10 md:gap-12 md:pb-14 lg:grid-cols-12 lg:gap-10">
+          <div className="col-span-2 lg:col-span-5">
             <p className="text-label uppercase tracking-[0.18em] text-secondary">{footer?.brand_tag}</p>
-            <h2 className="mt-5 text-[28px] font-semibold tracking-[-0.02em]">{footer?.brand_title}</h2>
-            <p className="mt-5 max-w-[520px] text-[14px] leading-7 text-secondary">{footer?.brand_description}</p>
+            <h2 className="mt-3 text-[24px] font-semibold md:mt-5 md:text-[28px]">{footer?.brand_title}</h2>
+            <p className="mt-5 hidden max-w-[520px] text-[14px] leading-7 text-secondary md:block">{footer?.brand_description}</p>
           </div>
 
           <FooterColumn title={footer?.material_title || '材料与应用'} links={navigation.slice(0, 3)} />
           <FooterColumn title={footer?.support_title || '服务与支持'} links={navigation.slice(3)} />
 
-          <div className="lg:col-span-3">
-            <p className="border-b border-border pb-4 text-label uppercase tracking-[0.16em] text-secondary">{footer?.contact_title}</p>
-            <p className="mt-5 text-[13px] text-secondary">{footer?.contact_subtitle}</p>
+          <div className="col-span-2 lg:col-span-3">
+            <p className="border-b border-border pb-3 text-label uppercase tracking-[0.16em] text-secondary md:pb-4">{footer?.contact_title}</p>
+            <p className="mt-4 text-[13px] text-secondary md:mt-5">{footer?.contact_subtitle}</p>
             {contact?.email && <a href={`mailto:${contact.email}`} className="mt-2 block text-[15px] underline decoration-border underline-offset-4 hover:decoration-primary">{contact.email}</a>}
-            {visibleSocials.length > 0 && <div className="mt-7 flex flex-wrap gap-x-5 gap-y-3">{visibleSocials.map((item) => <SocialLink key={item.id} item={item} />)}</div>}
+            {visibleSocials.length > 0 && <div className="mt-5 flex flex-wrap gap-x-5 gap-y-3 md:mt-7">{visibleSocials.map((item) => <SocialLink key={item.id} item={item} />)}</div>}
           </div>
         </div>
 
-        <div className="flex flex-col gap-4 pt-6 text-[11px] leading-5 text-secondary md:flex-row md:items-center md:justify-between">
-          <span>{footer?.copyright || '© 2026 港翼科技 GONYIK 版权所有'}</span>
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-            <Link to={footer?.privacy_policy_link || '/privacy-policy'} className="hover:text-primary">隐私政策</Link>
-            {footer?.icp_number && <a href={footer.icp_link || 'https://beian.miit.gov.cn/'} target="_blank" rel="noreferrer" className="hover:text-primary">{footer.icp_number}</a>}
-            {footer?.police_number && <a href={footer.police_link || 'https://beian.mps.gov.cn/'} target="_blank" rel="noreferrer" className="hover:text-primary">{footer.police_number}</a>}
-            <Link to="/admin" aria-label="进入 CMS" title="进入 CMS" className="ml-1 inline-flex h-7 w-7 items-center justify-center border-l border-border pl-3 text-secondary hover:text-primary">
+        <div className="pt-6 text-[11px] leading-5 text-secondary md:flex md:items-center md:justify-between">
+          <span className="block">{footer?.copyright || '© 2026 港翼科技 GONYIK 版权所有'}</span>
+          <div className="mt-5 grid grid-cols-[minmax(0,1fr)_28px] items-end gap-x-4 md:mt-0 md:flex md:items-center md:gap-0">
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+              <Link to={footer?.privacy_policy_link || '/privacy-policy'} className="hover:text-primary">隐私政策</Link>
+              {footer?.icp_number && <a href={footer.icp_link || 'https://beian.miit.gov.cn/'} target="_blank" rel="noreferrer" className="hover:text-primary">{footer.icp_number}</a>}
+              {footer?.police_number && <a href={footer.police_link || 'https://beian.mps.gov.cn/'} target="_blank" rel="noreferrer" className="hover:text-primary">{footer.police_number}</a>}
+            </div>
+            <Link to="/admin" aria-label="进入 CMS" title="进入 CMS" className="inline-flex h-7 w-7 items-center justify-center text-secondary hover:text-primary md:ml-4 md:w-11 md:border-l md:border-border md:pl-4">
               <Settings size={14} aria-hidden="true" />
             </Link>
           </div>
@@ -105,9 +107,9 @@ function SocialLink({ item }: { item: SocialMedia }) {
 
 function FooterColumn({ title, links }: { title: string; links: NavItem[] }) {
   return (
-    <div className="lg:col-span-2">
-      <p className="border-b border-border pb-4 text-label uppercase tracking-[0.16em] text-secondary">{title}</p>
-      <nav className="mt-5 flex flex-col gap-4">{links.map((item) => <Link key={item.id} to={item.link} className="w-fit text-[14px] hover:underline hover:underline-offset-4">{item.label}</Link>)}</nav>
+    <div className="min-w-0 lg:col-span-2">
+      <p className="border-b border-border pb-3 text-label uppercase tracking-[0.16em] text-secondary md:pb-4">{title}</p>
+      <nav className="mt-4 flex flex-col gap-3 md:mt-5 md:gap-4">{links.map((item) => <Link key={item.id} to={item.link} className="w-fit text-[13px] hover:underline hover:underline-offset-4 md:text-[14px]">{item.label}</Link>)}</nav>
     </div>
   )
 }

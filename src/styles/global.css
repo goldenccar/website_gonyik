@@ -29,6 +29,11 @@
     --color-success: var(--grass-9);
     --color-error: var(--red-9);
     --color-warning: var(--amber-9);
+    --motion-instant: 180ms;
+    --motion-switch: 260ms;
+    --motion-reveal: 560ms;
+    --motion-media: 420ms;
+    --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .dark {
@@ -49,7 +54,10 @@
   html {
     scroll-behavior: smooth;
     overflow-y: scroll;
+    scrollbar-width: none;
   }
+
+  html::-webkit-scrollbar { display: none; }
 
   @media (prefers-reduced-motion: reduce) {
     html {
@@ -96,31 +104,80 @@ body {
   }
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: var(--color-light);
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-secondary);
-}
-
 .gonyik-rail {
   scroll-snap-type: x proximity;
-  scrollbar-color: var(--color-secondary) var(--color-border);
-  scrollbar-width: auto;
-  scrollbar-gutter: stable;
+  scrollbar-width: none;
+  scrollbar-gutter: auto;
 }
 
-.gonyik-rail::-webkit-scrollbar { height: 8px; }
-.gonyik-rail::-webkit-scrollbar-track { background: var(--color-border); }
-.gonyik-rail::-webkit-scrollbar-thumb { background: var(--color-secondary); border-radius: 0; }
+.gonyik-rail::-webkit-scrollbar { display: none; }
+
+.motion-in-view [data-motion-item] {
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity var(--motion-reveal) var(--motion-ease),
+    transform var(--motion-reveal) var(--motion-ease);
+  transition-delay: var(--motion-delay, 0ms);
+}
+
+.motion-in-view.is-visible [data-motion-item] {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.motion-process-line {
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 700ms var(--motion-ease);
+}
+
+.motion-in-view.is-visible .motion-process-line { transform: scaleX(1); }
+
+.motion-hero-item {
+  animation: gonyik-hero-enter 680ms var(--motion-ease) both;
+  animation-delay: var(--motion-delay, 0ms);
+}
+
+.motion-hero-media { animation: gonyik-hero-media 1200ms var(--motion-ease) both; }
+
+.motion-content-enter { animation: gonyik-content-enter var(--motion-switch) var(--motion-ease) both; }
+
+.motion-section { position: relative; }
+.motion-section::before {
+  position: absolute;
+  top: -1px;
+  right: 0;
+  left: 0;
+  height: 1px;
+  background: var(--color-border);
+  content: '';
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 520ms var(--motion-ease);
+}
+.motion-section:first-child::before { display: none; }
+.motion-section.is-visible::before { transform: scaleX(1); }
+.motion-section img {
+  clip-path: inset(0 4% 0 0);
+  transition: clip-path 620ms var(--motion-ease);
+}
+.motion-section.is-visible img { clip-path: inset(0); }
+
+@keyframes gonyik-hero-enter {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes gonyik-hero-media {
+  from { transform: scale(1.015); }
+  to { transform: scale(1); }
+}
+
+@keyframes gonyik-content-enter {
+  from { opacity: 0; transform: translateY(7px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
 .gonyik-material-placeholder {
   background:
@@ -133,4 +190,25 @@ body {
     radial-gradient(circle at 28% 34%, rgba(255,255,255,.8) 0 2px, transparent 3px),
     radial-gradient(circle at 62% 55%, rgba(255,255,255,.55) 0 3px, transparent 4px),
     repeating-linear-gradient(35deg, #183d5d 0 2px, #102f4a 2px 6px);
+}
+
+@media (max-width: 767px) {
+  .admin-shell input:not([type='file']),
+  .admin-shell select,
+  .admin-shell textarea {
+    font-size: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+  }
+  .motion-in-view [data-motion-item] { opacity: 1; transform: none; }
+  .motion-process-line { transform: scaleX(1); }
+  .motion-section::before { transform: scaleX(1); }
+  .motion-section img { clip-path: none; }
 }

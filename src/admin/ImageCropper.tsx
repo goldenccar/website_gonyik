@@ -138,10 +138,10 @@ export default function ImageCropper({
   }
 
   return (
-    <div className="bg-dark border border-white/10 p-4 mb-4">
+    <div className="mb-4 border border-white/10 bg-dark p-3 sm:p-4">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div>
-          <div className="relative bg-black/50 flex items-center justify-center min-h-[280px]">
+          <div className="relative flex min-h-[220px] items-center justify-center bg-black/50 sm:min-h-[280px]">
             <ReactCrop
               crop={crop}
               onChange={handleCropChange}
@@ -178,15 +178,15 @@ export default function ImageCropper({
         </div>
       </div>
 
-      <div className="flex justify-end gap-3 mt-4">
+      <div className="mt-4 flex gap-3 sm:justify-end">
         <button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 text-[13px] text-white/80 border border-white/20 hover:bg-white/5 transition-colors"
+          className="min-h-11 flex-1 border border-white/20 px-4 py-2 text-[13px] text-white/80 transition-colors hover:bg-white/5 sm:flex-none"
         >
           取消
         </button>
-        <PrimaryButton type="button" onClick={handleConfirm}>
+        <PrimaryButton type="button" onClick={handleConfirm} className="flex-1 sm:flex-none">
           确认裁切
         </PrimaryButton>
       </div>

@@ -73,7 +73,7 @@ export default function AdminInquirySubjectManager() {
                 value={item.label}
                 onChange={(e) => updateLabel(idx, e.target.value)}
                 placeholder="主题名称"
-                className="flex-1 bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none"
+                className="min-h-11 min-w-0 flex-1 border border-borderDark bg-white/5 px-3 py-2 text-[16px] text-white focus:border-white focus:outline-none sm:text-[13px]"
               />
               <button
                 onClick={() => removeItem(idx)}

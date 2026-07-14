@@ -1,9 +1,12 @@
 import { useState, useEffect, useMemo } from 'react'
-import { Trash2, Copy, Upload, Edit2, X, Image, FileText, Film, Music, File } from 'lucide-react'
+import { Trash2, Copy, Upload, Edit2, Image, FileText, Film, Music, File } from 'lucide-react'
 import api from '@/api/client'
 import Dashboard from './Dashboard'
 import PrimaryButton from './components/PrimaryButton'
 import AdminHeader from './components/AdminHeader'
+import Modal from './components/Modal'
+import FormField from './components/FormField'
+import SaveCancelButtons from './components/SaveCancelButtons'
 
 const CATEGORIES = [
   { key: 'all', label: '全部' },
@@ -116,14 +119,14 @@ export default function AdminMediaLibrary() {
         {message && <p className="text-success text-[13px] mb-4">{message}</p>}
 
         {/* Category Tabs */}
-        <div className="flex flex-wrap gap-2 mb-6">
+        <div className="mb-6 flex gap-2 overflow-x-auto pb-1 md:flex-wrap">
           {CATEGORIES.map((cat) => {
             const count = cat.key === 'all' ? items.length : items.filter((i) => i.category === cat.key).length
             return (
               <button
                 key={cat.key}
                 onClick={() => setActiveCategory(cat.key)}
-                className={`px-3 py-1.5 text-[12px] border transition-colors ${
+                className={`min-h-10 shrink-0 border px-3 py-1.5 text-[12px] transition-colors ${
                   activeCategory === cat.key
                     ? 'bg-accentWarm text-white border-accentWarm'
                     : 'bg-white/5 text-accent border-white/10 hover:border-white/30 hover:text-white'
@@ -136,7 +139,7 @@ export default function AdminMediaLibrary() {
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 gap-4 min-[420px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {filtered.map((item) => {
             const Icon = getFileIcon(item.file_type)
             const catLabel = CATEGORIES.find((c) => c.key === item.category)?.label || item.category
@@ -153,7 +156,7 @@ export default function AdminMediaLibrary() {
                       <span className="text-[11px] uppercase text-accent">{item.filename.split('.').pop()}</span>
                     </div>
                   )}
-                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                  <div className="absolute inset-x-0 bottom-0 flex items-center justify-center gap-2 bg-black/70 py-2 opacity-100 transition-opacity md:inset-0 md:py-0 md:opacity-0 md:group-hover:opacity-100">
                     <button onClick={() => copyUrl(item.url)} className="p-2 bg-white/10 hover:bg-white/20 text-white" title="复制链接"><Copy size={14} /></button>
                     <button onClick={() => setEditing(item)} className="p-2 bg-white/10 hover:bg-white/20 text-white" title="编辑信息"><Edit2 size={14} /></button>
                     <button onClick={() => del(item.id)} className="p-2 bg-error/20 hover:bg-error/40 text-error" title="删除"><Trash2 size={14} /></button>
@@ -182,70 +185,32 @@ export default function AdminMediaLibrary() {
 
       {/* Upload Modal */}
       {showUpload && (
-        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-6">
-          <div className="bg-dark w-full max-w-[500px] p-8">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-white text-[18px] font-bold">上传资源</h3>
-              <button onClick={() => setShowUpload(false)} className="text-accent hover:text-white"><X size={18} /></button>
-            </div>
+        <Modal title="上传资源" onClose={() => setShowUpload(false)}>
             <form onSubmit={handleUpload}>
               <div className="space-y-4">
                 <div>
                   <label className="block text-[12px] text-secondary uppercase mb-1">选择文件</label>
-                  <input name="file" type="file" required className="w-full text-[13px] text-white file:mr-4 file:px-3 file:py-2 file:bg-white file:text-primary file:border-0 file:text-[13px]" />
+                  <input name="file" type="file" required className="min-h-11 w-full text-[16px] text-white file:mr-4 file:border-0 file:bg-white file:px-3 file:py-2 file:text-[13px] file:text-primary sm:text-[13px]" />
                 </div>
-                <div>
-                  <label className="block text-[12px] text-secondary uppercase mb-1">所属模块</label>
-                  <select name="category" required className="w-full bg-white/5 border border-borderDark text-white px-3 py-2.5 text-[13px] focus:border-white focus:outline-none">
-                    {CATEGORIES.filter((c) => c.key !== 'all').map((c) => (
-                      <option key={c.key} value={c.key} className="bg-dark">{c.label}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-[12px] text-secondary uppercase mb-1">功能说明</label>
-                  <input name="description" placeholder="如：首页 Hero 背景图" className="w-full bg-white/5 border border-borderDark text-white px-3 py-2.5 text-[13px] focus:border-white focus:outline-none" />
-                </div>
+                <FormField label="所属模块" name="category" select required options={CATEGORIES.filter((category) => category.key !== 'all').map((category) => ({ value: category.key, label: category.label }))} />
+                <FormField label="功能说明" name="description" placeholder="如：首页 Hero 背景图" />
               </div>
-              <div className="flex gap-3 mt-6">
-                <PrimaryButton type="submit" className="flex-1">上传</PrimaryButton>
-                <button type="button" onClick={() => setShowUpload(false)} className="flex-1 border border-white/20 text-white py-2.5 text-[13px] hover:bg-white/5">取消</button>
-              </div>
+              <SaveCancelButtons onCancel={() => setShowUpload(false)} submitLabel="上传" />
             </form>
-          </div>
-        </div>
+        </Modal>
       )}
 
       {/* Edit Modal */}
       {editing && (
-        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-6">
-          <div className="bg-dark w-full max-w-[500px] p-8">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-white text-[18px] font-bold">编辑资源信息</h3>
-              <button onClick={() => setEditing(null)} className="text-accent hover:text-white"><X size={18} /></button>
-            </div>
+        <Modal title="编辑资源信息" onClose={() => setEditing(null)}>
             <form onSubmit={handleUpdate}>
               <div className="space-y-4">
-                <div>
-                  <label className="block text-[12px] text-secondary uppercase mb-1">所属模块</label>
-                  <select name="category" defaultValue={editing.category} required className="w-full bg-white/5 border border-borderDark text-white px-3 py-2.5 text-[13px] focus:border-white focus:outline-none">
-                    {CATEGORIES.filter((c) => c.key !== 'all').map((c) => (
-                      <option key={c.key} value={c.key} className="bg-dark">{c.label}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-[12px] text-secondary uppercase mb-1">功能说明</label>
-                  <input name="description" defaultValue={editing.description} placeholder="如：首页 Hero 背景图" className="w-full bg-white/5 border border-borderDark text-white px-3 py-2.5 text-[13px] focus:border-white focus:outline-none" />
-                </div>
+                <FormField label="所属模块" name="category" select required defaultValue={editing.category} options={CATEGORIES.filter((category) => category.key !== 'all').map((category) => ({ value: category.key, label: category.label }))} />
+                <FormField label="功能说明" name="description" defaultValue={editing.description} placeholder="如：首页 Hero 背景图" />
               </div>
-              <div className="flex gap-3 mt-6">
-                <PrimaryButton type="submit" className="flex-1">保存</PrimaryButton>
-                <button type="button" onClick={() => setEditing(null)} className="flex-1 border border-white/20 text-white py-2.5 text-[13px] hover:bg-white/5">取消</button>
-              </div>
+              <SaveCancelButtons onCancel={() => setEditing(null)} />
             </form>
-          </div>
-        </div>
+        </Modal>
       )}
     </Dashboard>
   )

@@ -64,19 +64,29 @@ router.put('/admin/contact-config', authMiddleware, (req: AuthRequest, res) => {
   res.json({ success: true })
 })
 
-router.get('/fluorine-sections', (_req, res) => {
-  res.json({ data: db.fluorine_sections.filter((s) => s.page_key === 'pfas-free-innovation').sort(sortByOrderIndex) })
+router.get('/content-sections/:pageKey', (req, res) => {
+  res.json({ data: db.fluorine_sections.filter((section) => section.page_key === req.params.pageKey).sort(sortByOrderIndex) })
 })
 
-router.post('/admin/fluorine-sections', authMiddleware, (req: AuthRequest, res) => {
+router.post('/admin/content-sections/:pageKey', authMiddleware, (req: AuthRequest, res) => {
   const title = String(req.body.title || '').trim()
   if (!title) { res.status(400).json({ error: '标题不能为空' }); return }
 
-  const pageSections = db.fluorine_sections.filter((section) => section.page_key === 'pfas-free-innovation')
+  const pageKey = req.params.pageKey
+  const pageSections = db.fluorine_sections.filter((section) => section.page_key === pageKey)
+  const moduleType = String(req.body.module_type || 'rich').trim()
+  if (pageKey === 'services' && pageSections.some((section) => section.module_type === moduleType)) {
+    res.status(409).json({ error: '该服务模块已存在' })
+    return
+  }
   const newSection = {
     id: getNextId(db.fluorine_sections),
-    page_key: 'pfas-free-innovation',
+    page_key: pageKey,
     order_index: nextOrderIndex(pageSections),
+    section_key: String(req.body.section_key || '').trim(),
+    module_type: moduleType,
+    nav_label: String(req.body.nav_label || title).trim(),
+    eyebrow: String(req.body.eyebrow || '').trim(),
     title,
     subtitle: String(req.body.subtitle || '').trim(),
     content: String(req.body.content || ''),
@@ -88,13 +98,15 @@ router.post('/admin/fluorine-sections', authMiddleware, (req: AuthRequest, res) 
   res.json({ success: true, id: newSection.id })
 })
 
-router.put('/admin/fluorine-sections/:id', authMiddleware, (req: AuthRequest, res) => {
+router.put('/admin/content-sections/:pageKey/:id', authMiddleware, (req: AuthRequest, res) => {
   const id = Number(req.params.id)
-  const existing = db.fluorine_sections.find((section) => section.id === id && section.page_key === 'pfas-free-innovation')
+  const existing = db.fluorine_sections.find((section) => section.id === id && section.page_key === req.params.pageKey)
   if (!existing) { res.status(404).json({ error: 'Not found' }); return }
   const title = String(req.body.title ?? existing.title).trim()
   if (!title) { res.status(400).json({ error: '标题不能为空' }); return }
   updateById(db.fluorine_sections, id, {
+    nav_label: String(req.body.nav_label ?? existing.nav_label ?? title).trim(),
+    eyebrow: String(req.body.eyebrow ?? existing.eyebrow ?? '').trim(),
     title,
     subtitle: String(req.body.subtitle ?? existing.subtitle).trim(),
     content: String(req.body.content ?? existing.content),
@@ -105,9 +117,9 @@ router.put('/admin/fluorine-sections/:id', authMiddleware, (req: AuthRequest, re
   res.json({ success: true })
 })
 
-router.put('/admin/fluorine-section-order', authMiddleware, (req: AuthRequest, res) => {
+router.put('/admin/content-section-order/:pageKey', authMiddleware, (req: AuthRequest, res) => {
   const ids = Array.isArray(req.body.ordered_ids) ? req.body.ordered_ids.map(Number) : []
-  const validIds = new Set(db.fluorine_sections.filter((section) => section.page_key === 'pfas-free-innovation').map((section) => section.id))
+  const validIds = new Set(db.fluorine_sections.filter((section) => section.page_key === req.params.pageKey).map((section) => section.id))
   if (ids.length !== validIds.size || ids.some((id: number) => !validIds.has(id))) {
     res.status(400).json({ error: '排序数据无效' })
     return
@@ -117,13 +129,13 @@ router.put('/admin/fluorine-section-order', authMiddleware, (req: AuthRequest, r
   res.json({ success: true })
 })
 
-router.delete('/admin/fluorine-sections/:id', authMiddleware, (req: AuthRequest, res) => {
+router.delete('/admin/content-sections/:pageKey/:id', authMiddleware, (req: AuthRequest, res) => {
   const id = Number(req.params.id)
-  const existing = db.fluorine_sections.find((section) => section.id === id && section.page_key === 'pfas-free-innovation')
+  const existing = db.fluorine_sections.find((section) => section.id === id && section.page_key === req.params.pageKey)
   if (!existing) { res.status(404).json({ error: 'Not found' }); return }
   deleteById(db.fluorine_sections, id)
   db.fluorine_sections
-    .filter((section) => section.page_key === 'pfas-free-innovation')
+    .filter((section) => section.page_key === req.params.pageKey)
     .sort(sortByOrderIndex)
     .forEach((section, order_index) => { section.order_index = order_index })
   saveDb()
@@ -141,6 +153,13 @@ router.put('/admin/home/background', authMiddleware, upload.single('file'), (req
   db.home_config.hero_background = uploadUrl(req.file)
   saveDb()
   res.json({ success: true, url: db.home_config.hero_background })
+})
+
+router.put('/admin/home/mobile-background', authMiddleware, upload.single('file'), (req: AuthRequest, res) => {
+  if (!req.file) { res.status(400).json({ error: 'No file' }); return }
+  db.home_config.hero_mobile_background = uploadUrl(req.file)
+  saveDb()
+  res.json({ success: true, url: db.home_config.hero_mobile_background })
 })
 
 router.put('/admin/page/:pageKey', authMiddleware, (req: AuthRequest, res) => {

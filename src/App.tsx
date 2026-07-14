@@ -1,11 +1,20 @@
 import { Suspense, lazy, useEffect } from 'react'
-import { Routes, Route, Outlet, Navigate } from 'react-router-dom'
+import { Routes, Route, Outlet, Navigate, useLocation } from 'react-router-dom'
 import Header from './components/Header'
 import Footer from './components/Footer'
+import PageScrollProgress from './components/PageScrollProgress'
 import { getSiteConfig } from './api/client'
 import Home from './pages/Home'
 
 function PublicLayout() {
+  const location = useLocation()
+  const { pathname } = location
+
+  useEffect(() => {
+    const smoothScroll = Boolean((location.state as { smoothScroll?: boolean } | null)?.smoothScroll)
+    window.scrollTo({ top: 0, left: 0, behavior: smoothScroll ? 'smooth' : 'auto' })
+  }, [pathname])
+
   return (
     <div className="flex flex-col min-h-[100dvh]">
       <Header />
@@ -70,6 +79,7 @@ function App() {
 
   return (
     <div className="min-h-[100dvh] bg-bg">
+      <PageScrollProgress />
       <Suspense fallback={<PageLoader />}>
         <Routes>
           {/* Admin routes */}

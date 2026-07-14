@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
-import { ExternalLink } from 'lucide-react'
 import { getPageConfig, updatePageConfig, uploadFile } from '@/api/client'
 import Dashboard from './Dashboard'
 import SaveButton from './components/SaveButton'
 import ImageCropper from './ImageCropper'
 import AdminHeader from './components/AdminHeader'
+import FormField from './components/FormField'
+import AdminPagePreview from './components/AdminPagePreview'
 
 interface PageConfigItem {
   page_key: string
@@ -14,12 +15,12 @@ interface PageConfigItem {
   hero_background: string | null
 }
 
-const PAGE_KEY_MAP: Record<string, { label: string; backPath: string; publicPath: string }> = {
-  fabrics: { label: '面料数据库', backPath: '/admin/fabrics', publicPath: '/fabrics' },
-  equipment: { label: '终端装备', backPath: '/admin/equipment', publicPath: '/equipment' },
-  'pfas-free-innovation': { label: '技术创新', backPath: '/admin/fluorine', publicPath: '/pfas-free-innovation' },
-  services: { label: '服务与支持', backPath: '/admin/services', publicPath: '/services' },
-  contact: { label: '联系我们', backPath: '/admin/contact-config', publicPath: '/contact' },
+const PAGE_KEY_MAP: Record<string, { label: string; publicPath: string }> = {
+  fabrics: { label: '面料数据库', publicPath: '/fabrics' },
+  equipment: { label: '终端装备', publicPath: '/equipment' },
+  'pfas-free-innovation': { label: '技术创新', publicPath: '/pfas-free-innovation' },
+  services: { label: '服务与支持', publicPath: '/services' },
+  contact: { label: '联系我们', publicPath: '/contact' },
 }
 
 interface PageConfigManagerProps {
@@ -36,7 +37,7 @@ export default function PageConfigManager({ pageKey }: PageConfigManagerProps = 
   const [uploading, setUploading] = useState(false)
 
   const targetKey = pageKey || 'fabrics'
-  const meta = PAGE_KEY_MAP[targetKey] || { label: '页面配置', backPath: '/admin/home' }
+  const meta = PAGE_KEY_MAP[targetKey] || { label: '页面配置', publicPath: '/' }
 
   useEffect(() => {
     getPageConfig(targetKey).then((res) => {
@@ -93,42 +94,17 @@ export default function PageConfigManager({ pageKey }: PageConfigManagerProps = 
   return (
     <Dashboard>
       <div className="max-w-[1100px]">
-        <AdminHeader title={`${meta.label} — 页面配置`} backPath={meta.backPath} action={<SaveButton onClick={handleSave} loading={saving} size="sm">保存</SaveButton>} />
+        <AdminHeader title={`${meta.label} — 页面配置`} action={<SaveButton onClick={handleSave} loading={saving} size="sm">保存</SaveButton>} />
 
         {message && <p className="text-success text-[13px] mb-6">{message}</p>}
 
-        <div className="mb-8">
-          <div className="mb-2 flex items-center justify-between"><p className="text-[12px] uppercase text-secondary">真实前台预览</p><a href={meta.publicPath} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-[12px] text-accent hover:text-white">新窗口打开 <ExternalLink size={14} /></a></div>
-          <div className="h-[585px] overflow-hidden border border-white/10 bg-white"><iframe key={previewVersion} src={`${meta.publicPath}?cms-preview=${previewVersion}`} title={`${meta.label}真实前台预览`} style={{ width: 1440, height: 900, transform: 'scale(.65)', transformOrigin: 'top left' }} /></div>
-          <p className="mt-2 text-[12px] text-muted">预览按 1440px 桌面宽度等比缩放，并与正式页面使用同一组件；移动端效果请在新窗口检查。</p>
-        </div>
+        <AdminPagePreview publicPath={meta.publicPath} title={meta.label} version={previewVersion} />
 
-        <div className="bg-dark p-6">
+        <div className="bg-dark p-4 sm:p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-[12px] text-secondary uppercase mb-1.5">英文标签</label>
-              <input
-                value={config.page_tag}
-                onChange={(e) => setConfig({ ...config, page_tag: e.target.value })}
-                className="w-full bg-white/5 border border-borderDark text-white px-3 py-2.5 text-[13px] focus:border-white focus:outline-none"
-              />
-            </div>
-            <div>
-              <label className="block text-[12px] text-secondary uppercase mb-1.5">页面标题</label>
-              <input
-                value={config.page_title}
-                onChange={(e) => setConfig({ ...config, page_title: e.target.value })}
-                className="w-full bg-white/5 border border-borderDark text-white px-3 py-2.5 text-[13px] focus:border-white focus:outline-none"
-              />
-            </div>
-            <div className="md:col-span-2">
-              <label className="block text-[12px] text-secondary uppercase mb-1.5">副标题</label>
-              <input
-                value={config.page_subtitle}
-                onChange={(e) => setConfig({ ...config, page_subtitle: e.target.value })}
-                className="w-full bg-white/5 border border-borderDark text-white px-3 py-2.5 text-[13px] focus:border-white focus:outline-none"
-              />
-            </div>
+            <FormField label="英文标签" name="page_tag" value={config.page_tag} onChange={(event) => setConfig({ ...config, page_tag: event.target.value })} />
+            <FormField label="页面标题" name="page_title" value={config.page_title} onChange={(event) => setConfig({ ...config, page_title: event.target.value })} />
+            <FormField className="md:col-span-2" label="副标题" name="page_subtitle" value={config.page_subtitle} onChange={(event) => setConfig({ ...config, page_subtitle: event.target.value })} />
             <div className="md:col-span-2">
               <label className="block text-[12px] text-secondary uppercase mb-1.5">Hero 图片</label>
               {config.hero_background && <img src={config.hero_background} alt="当前 Hero" className="mb-3 aspect-[3/1] w-full object-cover" />}

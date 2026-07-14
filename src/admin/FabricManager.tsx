@@ -10,6 +10,7 @@ import SaveCancelButtons from './components/SaveCancelButtons'
 import PrimaryButton from './components/PrimaryButton'
 import ContentRailEditor, { type RailEndCardConfig } from './components/ContentRailEditor'
 import SeriesHomeImageEditor from './components/SeriesHomeImageEditor'
+import ResponsiveAdminList from './components/ResponsiveAdminList'
 
 const DEFAULT_RAIL: RailEndCardConfig = { rail_end_card_visible: true, rail_end_card_title: '新面料开发中', rail_end_card_description: '针对新的使用环境与性能目标持续开发。', rail_end_card_cta_label: '提交需求', rail_end_card_cta_href: '/contact' }
 
@@ -152,7 +153,7 @@ export default function AdminFabricManager() {
         {message && <p className="text-success text-[13px] mb-4">{message}</p>}
 
         {/* Series List */}
-        <div className="bg-dark mb-8">
+        <div className="mb-8 hidden bg-dark md:block">
           <table className="w-full text-left text-[13px]">
             <thead className="border-b border-white/10 text-accent uppercase">
               <tr>
@@ -196,17 +197,29 @@ export default function AdminFabricManager() {
             </tbody>
           </table>
         </div>
+        <div className="mb-8 md:hidden">
+          <ResponsiveAdminList
+            items={series}
+            getKey={(item) => item.id}
+            onSelect={(item) => setSelectedSeries(item.id)}
+            isSelected={(item) => selectedSeries === item.id}
+            renderMedia={(item) => item.home_image ? <img src={item.home_image} alt="" className="h-12 w-16 object-cover" /> : <div className="h-12 w-16 bg-white/5" />}
+            renderTitle={(item) => item.name}
+            renderSubtitle={(item) => `${item.slug}${item.tagline || item.description ? ` · ${item.tagline || item.description}` : ''}`}
+            renderActions={(item) => <><button type="button" onClick={() => { setEditingSeries(item); setShowSeriesForm(true) }} className="flex h-11 w-11 items-center justify-center text-accent" aria-label={`编辑${item.name}`}><Edit2 size={16} /></button><button type="button" onClick={() => deleteSeries(item.id)} className="flex h-11 w-11 items-center justify-center text-error" aria-label={`删除${item.name}`}><Trash2 size={16} /></button></>}
+          />
+        </div>
 
         {/* SKU Section */}
         {selectedSeries && (
           <div>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-h4 text-white">
+            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <h2 className="text-[19px] font-bold text-white sm:text-h4">
                 {series.find((s) => s.id === selectedSeries)?.name} - SKU 管理
               </h2>
               <PrimaryButton onClick={() => { setEditingSku(null); setShowSkuForm(true) }} icon={<Plus size={16} />}>新增 SKU</PrimaryButton>
             </div>
-            <div className="bg-dark">
+            <div className="hidden bg-dark md:block">
               <table className="w-full text-left text-[13px]">
                 <thead className="border-b border-white/10 text-accent uppercase">
                   <tr>
@@ -233,6 +246,9 @@ export default function AdminFabricManager() {
                 </tbody>
               </table>
               {skus.length === 0 && <p className="text-accent text-center py-8">暂无 SKU</p>}
+            </div>
+            <div className="md:hidden">
+              <ResponsiveAdminList items={skus} getKey={(item) => item.id} emptyLabel="暂无 SKU" renderTitle={(item) => item.name} renderSubtitle={(item) => item.sku_code || '未填写编码'} renderActions={(item) => <><button type="button" onClick={() => { setEditingSku(item); setShowSkuForm(true) }} className="flex h-11 w-11 items-center justify-center text-accent" aria-label={`编辑${item.name}`}><Edit2 size={16} /></button><button type="button" onClick={() => deleteSku(item.id)} className="flex h-11 w-11 items-center justify-center text-error" aria-label={`删除${item.name}`}><Trash2 size={16} /></button></>} />
             </div>
             <ContentRailEditor label="SKU 横向轨道" items={skus} renderCard={(sku) => <SkuCard key={sku.id} sku={sku} seriesName={series.find((item) => item.id === selectedSeries)?.name} seriesTagline={sku.name} />} onEdit={(sku) => { setEditingSku(sku); setShowSkuForm(true) }} onMove={moveSku} onVisibility={toggleSkuVisibility} endCard={rail} onEndCardChange={(patch) => setRail({ ...rail, ...patch })} onSaveEndCard={saveRail} />
           </div>
@@ -269,14 +285,14 @@ export default function AdminFabricManager() {
               <FormField label="SKU 名称" name="name" defaultValue={editingSku?.name} required />
               <FormField label="编码" name="sku_code" defaultValue={editingSku?.sku_code} />
               <FormField label="卡片核心收益" name="card_summary" defaultValue={editingSku?.card_summary} placeholder="最多 12-16 个中文字" />
-              <div className="grid grid-cols-2 gap-3"><FormField label="前台显示" name="visibility" select defaultValue={editingSku?.visibility || 'public'} options={[{ value: 'public', label: '显示' }, { value: 'hidden', label: '隐藏' }]} /><FormField label="内容状态" name="status" select defaultValue={editingSku?.status || 'active'} options={[{ value: 'active', label: '正常' }, { value: 'archived', label: '归档' }]} /></div>
+              <div className="grid gap-3 sm:grid-cols-2"><FormField label="前台显示" name="visibility" select defaultValue={editingSku?.visibility || 'public'} options={[{ value: 'public', label: '显示' }, { value: 'hidden', label: '隐藏' }]} /><FormField label="内容状态" name="status" select defaultValue={editingSku?.status || 'active'} options={[{ value: 'active', label: '正常' }, { value: 'archived', label: '归档' }]} /></div>
               <div>
                 <label className="mb-2 block text-[12px] uppercase text-secondary">前台核心数据（最多三项）</label>
                 <p className="mb-3 text-[12px] text-muted">标题和值都会显示在 SKU 展开区；其他已有参数会保留，但不进入首层展示。</p>
                 {[0, 1, 2].map((index) => {
                   let entries: [string, string][] = []
                   try { entries = Object.entries(JSON.parse(editingSku?.specifications || '{}')) as [string, string][] } catch { entries = [] }
-                  return <div key={index} className="mb-3 grid grid-cols-2 gap-3"><FormField label={`数据 ${index + 1} 标题`} name={`metric_label_${index}`} defaultValue={entries[index]?.[0] || ''} /><FormField label={`数据 ${index + 1} 内容`} name={`metric_value_${index}`} defaultValue={entries[index]?.[1] || ''} /></div>
+                  return <div key={index} className="mb-3 grid gap-3 sm:grid-cols-2"><FormField label={`数据 ${index + 1} 标题`} name={`metric_label_${index}`} defaultValue={entries[index]?.[0] || ''} /><FormField label={`数据 ${index + 1} 内容`} name={`metric_value_${index}`} defaultValue={entries[index]?.[1] || ''} /></div>
                 })}
               </div>
               <div>
