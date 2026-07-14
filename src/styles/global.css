@@ -51,6 +51,12 @@
     overflow-y: scroll;
   }
 
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
 body {
     font-family: 'Inter', 'Alibaba PuHuiTi 2.0', 'PingFang SC', 'Microsoft YaHei', sans-serif;
     color: var(--color-primary);
