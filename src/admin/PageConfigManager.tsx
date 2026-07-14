@@ -13,6 +13,7 @@ interface PageConfigItem {
   page_title: string
   page_subtitle: string
   hero_background: string | null
+  core_performance_title?: string
 }
 
 const PAGE_KEY_MAP: Record<string, { label: string; publicPath: string }> = {
@@ -55,6 +56,7 @@ export default function PageConfigManager({ pageKey }: PageConfigManagerProps = 
         page_title: config.page_title,
         page_subtitle: config.page_subtitle,
         hero_background: config.hero_background,
+        ...(targetKey === 'fabrics' ? { core_performance_title: config.core_performance_title || '核心性能' } : {}),
       })
       setPreviewVersion((value) => value + 1)
       setMessage('保存成功')
@@ -105,6 +107,7 @@ export default function PageConfigManager({ pageKey }: PageConfigManagerProps = 
             <FormField label="英文标签" name="page_tag" markup="inline" value={config.page_tag} onChange={(event) => setConfig({ ...config, page_tag: event.target.value })} />
             <FormField label="页面标题" name="page_title" markup="inline" value={config.page_title} onChange={(event) => setConfig({ ...config, page_title: event.target.value })} />
             <FormField className="md:col-span-2" label="副标题" name="page_subtitle" markup="inline" value={config.page_subtitle} onChange={(event) => setConfig({ ...config, page_subtitle: event.target.value })} />
+            {targetKey === 'fabrics' && <FormField className="md:col-span-2" label="SKU 性能区标题" name="core_performance_title" markup="inline" value={config.core_performance_title || '核心性能'} onChange={(event) => setConfig({ ...config, core_performance_title: event.target.value })} />}
             <div className="md:col-span-2">
               <label className="block text-[12px] text-secondary uppercase mb-1.5">Hero 图片</label>
               {config.hero_background && <img src={config.hero_background} alt="当前 Hero" className="mb-3 aspect-[3/1] w-full object-cover" />}

@@ -48,6 +48,7 @@ export interface PageConfig {
   rail_end_card_description?: string
   rail_end_card_cta_label?: string
   rail_end_card_cta_href?: string
+  core_performance_title?: string
 }
 
 export interface NavItem {

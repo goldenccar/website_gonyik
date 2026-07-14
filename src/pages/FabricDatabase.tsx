@@ -100,8 +100,8 @@ export default function FabricDatabase() {
         <div className="min-h-[260px]">
         {detailLoading ? <div className="motion-content-enter border-t border-border py-8 text-body text-secondary">正在加载该系列资料…</div> : detail?.skus?.length ? (
           <HorizontalRail label={`${detail.name} 面料型号`} mobileStack>
-            {detail.skus.map((sku, index) => {
-              return <SkuCard key={`${sku.series_id}-${sku.id}`} sku={sku} seriesName={detail.name} sequence={index + 1} expanded={skuOpen && selectedSku?.id === sku.id} onClick={() => openSku(sku)} />
+            {detail.skus.map((sku) => {
+              return <SkuCard key={`${sku.series_id}-${sku.id}`} sku={sku} seriesName={detail.name} expanded={skuOpen && selectedSku?.id === sku.id} onClick={() => openSku(sku)} />
             })}
             {page?.rail_end_card_visible !== false && <article className="flex min-h-[180px] snap-start items-end bg-white p-7 sm:min-h-full"><div><p className="text-label text-secondary">IN DEVELOPMENT</p><h3 className="mt-3 text-h4 text-primary"><InlineMarkup text={page?.rail_end_card_title || '新面料开发中'} /></h3><p className="mt-3 text-body text-secondary"><InlineMarkup text={page?.rail_end_card_description || '针对新的使用环境与性能目标持续开发。'} /></p>{page?.rail_end_card_cta_label && <a href={page.rail_end_card_cta_href || '/contact'} className="mt-6 inline-block text-[14px] underline underline-offset-4"><InlineMarkup text={page.rail_end_card_cta_label} /> →</a>}</div></article>}
           </HorizontalRail>
@@ -111,7 +111,7 @@ export default function FabricDatabase() {
         <AnimatedDisclosure open={skuOpen && Boolean(selectedSku)} className="mt-10">
         {selectedSku && <section ref={skuDetailRef} className="scroll-mt-[84px] pt-5" aria-live="polite">
             <p className="text-label uppercase text-secondary"><InlineMarkup text={detail?.name} /> / {getSkuDisplayCode(selectedSku.sku_code, detail?.name)}</p>
-            <h3 className="mt-3 text-[30px] font-bold text-primary">经验证的性能</h3>
+            <h3 className="mt-3 text-[30px] font-bold text-primary"><InlineMarkup text={page?.core_performance_title || '核心性能'} /></h3>
             <div className="mt-8 grid gap-x-8 gap-y-6 md:grid-cols-3">
               {Object.entries(parseSpecs(selectedSku.specifications)).slice(0, 3).map(([label, value]) => <div key={label} className="border-t border-border pt-4"><p className="text-[13px] font-medium text-secondary"><InlineMarkup text={label} /></p><p className="mt-2 text-[18px] font-medium text-primary"><InlineMarkup text={value} /></p></div>)}
             </div>

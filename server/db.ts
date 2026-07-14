@@ -121,7 +121,7 @@ function createDefaultDb(): Database {
       favicon_url: null,
     },
     page_configs: [
-      { id: 1, page_key: 'fabrics', page_tag: 'FABRIC DATABASE', page_title: '按使用环境，找到合适的材料', page_subtitle: '从日常与户外使用到特种专业场景，查看材料系列、具体型号与验证依据。', hero_background: null },
+      { id: 1, page_key: 'fabrics', page_tag: 'FABRIC DATABASE', page_title: '按使用环境，找到合适的材料', page_subtitle: '从日常与户外使用到特种专业场景，查看材料系列、具体型号与验证依据。', hero_background: null, core_performance_title: '核心性能' },
       { id: 2, page_key: 'equipment', page_tag: 'END-USE APPLICATIONS', page_title: '从面料到真实应用', page_subtitle: '查看不同装备采用的港翼面料，以及材料如何构成完整的穿着体验。', hero_background: null },
       { id: 3, page_key: 'pfas-free-innovation', page_tag: 'TECHNOLOGY INNOVATION', page_title: '技术，从材料开始', page_subtitle: '探索膜、复合、功能整理、供应链与测试验证。', hero_background: null },
       { id: 4, page_key: 'services', page_tag: 'CARE & SUPPORT', page_title: '服务与支持', page_subtitle: '从洗涤保养到常见问题，为材料使用与项目沟通提供支持。', hero_background: null },
@@ -510,6 +510,7 @@ export function initDatabase() {
     if (servicesPage?.page_subtitle === '全方位服务体系，助力您的每一个项目') Object.assign(servicesPage, pageDefaults[3])
     const fabricsRail = db.page_configs.find((page: any) => page.page_key === 'fabrics')
     if (fabricsRail) Object.assign(fabricsRail, {
+      core_performance_title: fabricsRail.core_performance_title ?? '核心性能',
       rail_end_card_visible: fabricsRail.rail_end_card_visible ?? true,
       rail_end_card_title: fabricsRail.rail_end_card_title ?? '新面料开发中',
       rail_end_card_description: fabricsRail.rail_end_card_description ?? '针对新的使用环境与性能目标持续开发。',

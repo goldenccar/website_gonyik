@@ -11,6 +11,7 @@ import PrimaryButton from './components/PrimaryButton'
 import ContentRailEditor, { type RailEndCardConfig } from './components/ContentRailEditor'
 import SeriesHomeImageEditor from './components/SeriesHomeImageEditor'
 import ResponsiveAdminList from './components/ResponsiveAdminList'
+import { FabricCapabilitySelector } from '@/components/FabricCapabilities'
 
 const DEFAULT_RAIL: RailEndCardConfig = { rail_end_card_visible: true, rail_end_card_title: '新面料开发中', rail_end_card_description: '针对新的使用环境与性能目标持续开发。', rail_end_card_cta_label: '提交需求', rail_end_card_cta_href: '/contact' }
 
@@ -82,7 +83,8 @@ export default function AdminFabricManager() {
     formData.append('series_id', String(selectedSeries))
     formData.append('name', data.name as string)
     formData.append('sku_code', data.sku_code as string)
-    formData.append('card_summary', (data.card_summary as string) || '')
+    formData.append('features', JSON.stringify(fd.getAll('capabilities')))
+    formData.append('card_summary', editingSku?.card_summary || '')
     formData.append('visibility', (data.visibility as string) || 'public')
     formData.append('status', (data.status as string) || 'active')
     const existingSpecs = (() => { try { return JSON.parse(editingSku?.specifications || '{}') as Record<string, string> } catch { return {} } })()
@@ -284,7 +286,7 @@ export default function AdminFabricManager() {
             <form onSubmit={handleSaveSku} className="space-y-4">
               <FormField label="内部名称" name="name" markup="inline" defaultValue={editingSku?.name} required />
               <FormField label="产品代码（可修改）" name="sku_code" defaultValue={editingSku?.sku_code} placeholder="例如 GY-OTTER-T31 或 T31" />
-              <FormField label="卡片核心收益" name="card_summary" markup="inline" defaultValue={editingSku?.card_summary} placeholder="最多 12-16 个中文字" />
+              <FabricCapabilitySelector key={editingSku?.id || 'new'} features={editingSku?.features} legacySummary={editingSku?.card_summary} />
               <div className="grid gap-3 sm:grid-cols-2"><FormField label="前台显示" name="visibility" select defaultValue={editingSku?.visibility || 'public'} options={[{ value: 'public', label: '显示' }, { value: 'hidden', label: '隐藏' }]} /><FormField label="内容状态" name="status" select defaultValue={editingSku?.status || 'active'} options={[{ value: 'active', label: '正常' }, { value: 'archived', label: '归档' }]} /></div>
               <div>
                 <label className="mb-2 block text-[12px] uppercase text-secondary">前台核心数据（最多三项）</label>
