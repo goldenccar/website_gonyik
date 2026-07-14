@@ -82,7 +82,6 @@ export const getFaqs = () => cachedGet('/services/faqs')
 export const getContactConfig = () => cachedGet('/contact-config')
 
 export const getFluorineSections = () => cachedGet('/fluorine-sections')
-export const updateFluorineSection = (id: number, data: any) => api.put(`/admin/fluorine-sections/${id}`, data)
 
 export const getInquirySubjects = () => cachedGet('/inquiry-subjects')
 export const updateInquirySubjects = (data: { items: any[] }) => api.put('/admin/inquiry-subjects', data)

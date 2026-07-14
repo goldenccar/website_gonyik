@@ -1,226 +1,216 @@
-import { useState, useEffect } from 'react'
-import { Upload, X, Image } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { ArrowDown, ArrowUp, Edit2, Image, Plus, Trash2, Upload, X } from 'lucide-react'
 import api, { getFluorineSections, uploadFile } from '@/api/client'
-import Dashboard from './Dashboard'
-import SaveButton from './components/SaveButton'
-import PrimaryButton from './components/PrimaryButton'
-import ImageCropper from './ImageCropper'
+import type { FluorineSection } from '@/types'
 import TechnologyDetail from '@/components/TechnologyDetail'
+import Dashboard from './Dashboard'
+import ImageCropper from './ImageCropper'
 import AdminHeader from './components/AdminHeader'
+import FormField from './components/FormField'
+import Modal from './components/Modal'
+import PrimaryButton from './components/PrimaryButton'
+import SaveCancelButtons from './components/SaveCancelButtons'
+
+type SectionDraft = Pick<FluorineSection, 'title' | 'subtitle' | 'content' | 'image_url' | 'image_fit'> & { id?: number }
+
+const EMPTY_SECTION: SectionDraft = {
+  title: '',
+  subtitle: '',
+  content: '',
+  image_url: null,
+  image_fit: 'cover',
+}
 
 export default function AdminFluorineManager() {
-  const [sections, setSections] = useState<any[]>([])
-  const [saveMessages, setSaveMessages] = useState<Record<number, string>>({})
-  const [uploadingId, setUploadingId] = useState<number | null>(null)
-  const [cropTarget, setCropTarget] = useState<{ sectionId: number; src: string } | null>(null)
+  const [sections, setSections] = useState<FluorineSection[]>([])
+  const [draft, setDraft] = useState<SectionDraft | null>(null)
+  const [cropSource, setCropSource] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [uploading, setUploading] = useState(false)
+  const [message, setMessage] = useState('')
 
   const load = async () => {
-    const sRes = await getFluorineSections()
-    setSections(sRes.data.data || [])
+    setLoading(true)
+    try {
+      const response = await getFluorineSections()
+      setSections(response.data.data || [])
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => { load() }, [])
 
-  const showSectionMessage = (id: number, msg: string, duration = 2000) => {
-    setSaveMessages((prev) => ({ ...prev, [id]: msg }))
-    setTimeout(() => {
-      setSaveMessages((prev) => {
-        const next = { ...prev }
-        delete next[id]
-        return next
-      })
-    }, duration)
+  const closeEditor = () => {
+    if (cropSource) URL.revokeObjectURL(cropSource)
+    setCropSource(null)
+    setDraft(null)
   }
 
-  const saveSection = async (section: any) => {
-    await api.put(`/admin/fluorine-sections/${section.id}`, {
-      title: section.title,
-      subtitle: section.subtitle,
-      content: section.content,
-      image_url: section.image_url,
-      image_fit: section.image_fit || 'cover',
-    })
-    showSectionMessage(section.id, '保存成功')
+  const submit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    if (!draft?.title.trim()) return
+    setSaving(true)
+    try {
+      const payload = {
+        title: draft.title.trim(),
+        subtitle: draft.subtitle.trim(),
+        content: draft.content,
+        image_url: draft.image_url,
+        image_fit: draft.image_fit,
+      }
+      await api[draft.id ? 'put' : 'post'](`/admin/fluorine-sections${draft.id ? `/${draft.id}` : ''}`, payload)
+      closeEditor()
+      setMessage('技术模块已保存')
+      await load()
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const remove = async (section: FluorineSection) => {
+    if (!confirm(`确定删除“${section.title}”？`)) return
+    await api.delete(`/admin/fluorine-sections/${section.id}`)
+    setMessage('技术模块已删除')
     load()
   }
 
-  const startCrop = (sectionId: number, file: File) => {
-    setCropTarget({ sectionId, src: URL.createObjectURL(file) })
+  const move = async (index: number, direction: -1 | 1) => {
+    const newIndex = index + direction
+    if (newIndex < 0 || newIndex >= sections.length) return
+    const previous = sections
+    const next = [...sections]
+    const [moved] = next.splice(index, 1)
+    next.splice(newIndex, 0, moved)
+    setSections(next)
+    try {
+      await api.put('/admin/fluorine-section-order', { ordered_ids: next.map((section) => section.id) })
+      setMessage('顺序已更新')
+    } catch {
+      setSections(previous)
+      setMessage('排序失败，请重试')
+    }
+  }
+
+  const startCrop = (file: File) => {
+    if (cropSource) URL.revokeObjectURL(cropSource)
+    setCropSource(URL.createObjectURL(file))
   }
 
   const cancelCrop = () => {
-    if (!cropTarget) return
-    URL.revokeObjectURL(cropTarget.src)
-    setCropTarget(null)
+    if (cropSource) URL.revokeObjectURL(cropSource)
+    setCropSource(null)
   }
 
-  const applyCrop = async (sectionId: number, blob: Blob) => {
-    setUploadingId(sectionId)
+  const applyCrop = async (blob: Blob) => {
+    if (!draft) return
+    setUploading(true)
     try {
-      const file = new File([blob], `section-${sectionId}-cropped.jpg`, { type: 'image/jpeg' })
-      const res = await uploadFile(file)
-      const url = res.data.url || res.data.data?.url
-      const section = sections.find((item) => item.id === sectionId)
-      if (section) await api.put(`/admin/fluorine-sections/${sectionId}`, { ...section, image_url: url })
-      setSections((prev) => prev.map((s) => s.id === sectionId ? { ...s, image_url: url } : s))
-      showSectionMessage(sectionId, '图片已上传并保存')
-    } catch {
-      showSectionMessage(sectionId, '图片上传失败', 3000)
+      const file = new File([blob], `technology-${Date.now()}.jpg`, { type: 'image/jpeg' })
+      const response = await uploadFile(file)
+      const url = response.data.url || response.data.data?.url
+      setDraft({ ...draft, image_url: url })
     } finally {
-      setUploadingId(null)
+      setUploading(false)
       cancelCrop()
     }
   }
 
-  const clearImage = (sectionId: number) => {
-    setSections((prev) => prev.map((s) => s.id === sectionId ? { ...s, image_url: '' } : s))
-  }
+  const previewSection: FluorineSection | null = draft ? {
+    id: draft.id || 0,
+    page_key: 'pfas-free-innovation',
+    order_index: 0,
+    ...draft,
+  } : null
 
   return (
     <Dashboard>
-      <div>
-        <AdminHeader title="技术创新内容管理" />
+      <div className="max-w-[1200px]">
+        <AdminHeader
+          title="技术创新内容管理"
+          action={<PrimaryButton onClick={() => setDraft({ ...EMPTY_SECTION })} icon={<Plus size={16} />}>新增模块</PrimaryButton>}
+        />
 
-        <div className="bg-dark p-4 mb-6">
-          <p className="text-[12px] text-accent mb-2">标记语言说明：</p>
-          <div className="text-[12px] text-muted space-y-1">
-            <p><code className="text-accent">&lt;b&gt;...&lt;/b&gt;</code> → 粗体高亮</p>
-            <p><code className="text-accent">&lt;i&gt;...&lt;/i&gt;</code> → 引用（斜体灰色）</p>
-            <p><code className="text-accent">&lt;note&gt;...&lt;/note&gt;</code> → 备注小字</p>
-            <p><code className="text-accent">&lt;t&gt;...&lt;/t&gt;</code> → 翻译（默认隐藏，点击展开）</p>
-            <p><code className="text-accent">/h</code> → 换行分段</p>
+        {message && <p className="mb-4 text-[13px] text-success">{message}</p>}
+
+        <div className="overflow-hidden bg-dark">
+          <div className="grid grid-cols-[52px_minmax(0,1fr)_160px] border-b border-white/10 px-5 py-3 text-[12px] uppercase text-accent">
+            <span>顺序</span><span>模块</span><span className="text-right">操作</span>
           </div>
-        </div>
-
-        {/* Sections */}
-        <div className="space-y-6 mb-10">
-          {sections.map((section, idx) => (
-            <div key={section.id} className="bg-dark p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-white font-bold">{section.title}</h3>
-                <div className="flex items-center gap-3">
-                  {saveMessages[section.id] && (
-                    <span className="text-[12px] text-success">{saveMessages[section.id]}</span>
-                  )}
-                  <SaveButton onClick={() => saveSection(section)} size="sm">
-                    保存
-                  </SaveButton>
-                </div>
+          {loading ? (
+            <p className="p-8 text-center text-[13px] text-accent">加载中...</p>
+          ) : sections.length === 0 ? (
+            <p className="p-8 text-center text-[13px] text-accent">暂无技术模块</p>
+          ) : sections.map((section, index) => (
+            <div key={section.id} className="grid grid-cols-[52px_minmax(0,1fr)_160px] items-center border-b border-white/5 px-5 py-4 last:border-b-0">
+              <span className="text-[12px] tabular-nums text-accent">{String(index + 1).padStart(2, '0')}</span>
+              <div className="min-w-0 pr-4">
+                <p className="truncate text-[14px] font-medium text-white">{section.title}</p>
+                <p className="mt-1 truncate text-[12px] text-secondary">{section.subtitle || '未填写副标题'}</p>
               </div>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-[12px] text-secondary uppercase mb-1">标题</label>
-                  <input
-                    value={section.title || ''}
-                    onChange={(e) => setSections((prev) => prev.map((s) => s.id === section.id ? { ...s, title: e.target.value } : s))}
-                    className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[12px] text-secondary uppercase mb-1">摘要</label>
-                  <input
-                    value={section.subtitle || ''}
-                    onChange={(e) => setSections((prev) => prev.map((s) => s.id === section.id ? { ...s, subtitle: e.target.value } : s))}
-                    className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[12px] text-secondary uppercase mb-1">配图</label>
-                  <div className="flex items-center gap-3 mb-3">
-                    <span className="text-[12px] text-accent">显示模式：</span>
-                    {[
-                      { value: 'cover', label: '填满裁剪' },
-                      { value: 'contain', label: '完整显示' },
-                    ].map((opt) => (
-                      <button
-                        key={opt.value}
-                        onClick={() => {
-                          const updated = { ...section, image_fit: opt.value }
-                          setSections((prev) => prev.map((s) => s.id === section.id ? updated : s))
-                          saveSection(updated)
-                        }}
-                        className={`text-[11px] px-2.5 py-1 border transition-colors ${
-                          section.image_fit === opt.value
-                            ? 'bg-accentWarm text-white border-accentWarm'
-                            : 'bg-white/5 text-accent border-white/10 hover:border-white/30 hover:text-white'
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
-                  {cropTarget && cropTarget.sectionId === section.id ? (
-                    <ImageCropper
-                      src={cropTarget.src}
-                      onComplete={(blob) => applyCrop(section.id, blob)}
-                      onCancel={cancelCrop}
-                    />
-                  ) : section.image_url ? (
-                    <div className="relative mb-3">
-                      <img
-                        src={section.image_url}
-                        alt={section.title}
-                        className="w-full max-h-[300px] object-cover bg-white/5"
-                      />
-                      <button
-                        onClick={() => clearImage(section.id)}
-                        className="absolute top-2 right-2 bg-black/60 text-white p-1.5 hover:bg-black/80 transition-colors"
-                      >
-                        <X size={14} />
-                      </button>
-                    </div>
-                  ) : (
-                    <div
-                      className="border border-dashed border-borderDark p-8 text-center mb-3 cursor-pointer hover:border-white/30 transition-colors"
-                      onClick={() => document.getElementById(`file-${section.id}`)?.click()}
-                    >
-                      <Image size={32} className="mx-auto text-accent mb-2" />
-                      <p className="text-[13px] text-accent">点击或拖拽上传图片</p>
-                      <p className="text-[11px] text-muted mt-1">支持 JPG、PNG、WebP</p>
-                    </div>
-                  )}
-                  <input
-                    id={`file-${section.id}`}
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0]
-                      if (file) startCrop(section.id, file)
-                      e.currentTarget.value = ''
-                    }}
-                  />
-                  {uploadingId === section.id && (
-                    <p className="text-[12px] text-accent mb-2">上传中...</p>
-                  )}
-                  <div className="flex items-center gap-2">
-                    <input
-                      value={section.image_url || ''}
-                      onChange={(e) => setSections((prev) => prev.map((s) => s.id === section.id ? { ...s, image_url: e.target.value } : s))}
-                      className="flex-1 bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none"
-                      placeholder="或手动输入图片 URL"
-                    />
-                    {!cropTarget && (
-                      <PrimaryButton onClick={() => document.getElementById(`file-${section.id}`)?.click()} size="sm" icon={<Upload size={14} />}>上传</PrimaryButton>
-                    )}
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-[12px] text-secondary uppercase mb-1">正文内容</label>
-                  <textarea
-                    value={section.content || ''}
-                    onChange={(e) => setSections((prev) => prev.map((s) => s.id === section.id ? { ...s, content: e.target.value } : s))}
-                    rows={10}
-                    className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none font-mono"
-                  />
-                </div>
-                <div><label className="mb-2 block text-[12px] uppercase text-secondary">真实前台组件预览</label><div className="public-preview bg-bg p-6"><TechnologyDetail section={section} /></div></div>
+              <div className="flex items-center justify-end gap-1">
+                <button type="button" onClick={() => move(index, -1)} disabled={index === 0} title="上移" aria-label={`上移${section.title}`} className="p-2 text-accent hover:text-white disabled:opacity-25"><ArrowUp size={15} /></button>
+                <button type="button" onClick={() => move(index, 1)} disabled={index === sections.length - 1} title="下移" aria-label={`下移${section.title}`} className="p-2 text-accent hover:text-white disabled:opacity-25"><ArrowDown size={15} /></button>
+                <button type="button" onClick={() => setDraft({ ...section })} title="编辑" aria-label={`编辑${section.title}`} className="p-2 text-accent hover:text-white"><Edit2 size={15} /></button>
+                <button type="button" onClick={() => remove(section)} title="删除" aria-label={`删除${section.title}`} className="p-2 text-error hover:text-white"><Trash2 size={15} /></button>
               </div>
             </div>
           ))}
         </div>
-
       </div>
+
+      {draft && previewSection && (
+        <Modal title={draft.id ? '编辑技术模块' : '新增技术模块'} onClose={closeEditor} maxWidth="max-w-[1100px]">
+          <form onSubmit={submit} className="space-y-5">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <FormField label="标题" name="title" required value={draft.title} onChange={(event) => setDraft({ ...draft, title: event.target.value })} />
+              <FormField label="副标题" name="subtitle" value={draft.subtitle} onChange={(event) => setDraft({ ...draft, subtitle: event.target.value })} />
+            </div>
+
+            <FormField label="正文内容" name="content" textarea rows={7} value={draft.content} onChange={(event) => setDraft({ ...draft, content: event.target.value })}>
+              <p className="mt-1.5 text-[11px] leading-5 text-muted">支持 &lt;b&gt;重点&lt;/b&gt;、&lt;i&gt;引用&lt;/i&gt;、&lt;note&gt;备注&lt;/note&gt; 和 /h 分段。</p>
+            </FormField>
+
+            <div>
+              <div className="mb-2 flex items-center justify-between gap-4">
+                <label className="text-[12px] uppercase text-secondary">配图</label>
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] text-muted">显示模式</span>
+                  <select value={draft.image_fit} onChange={(event) => setDraft({ ...draft, image_fit: event.target.value as 'cover' | 'contain' })} className="border border-borderDark bg-dark px-2 py-1 text-[12px] text-white outline-none">
+                    <option value="cover">填满裁剪</option>
+                    <option value="contain">完整显示</option>
+                  </select>
+                </div>
+              </div>
+
+              {cropSource ? (
+                <ImageCropper src={cropSource} onComplete={applyCrop} onCancel={cancelCrop} />
+              ) : draft.image_url ? (
+                <div className="relative h-[220px] overflow-hidden bg-white/5">
+                  <img src={draft.image_url} alt="技术模块预览" className={`h-full w-full ${draft.image_fit === 'contain' ? 'object-contain' : 'object-cover'}`} />
+                  <button type="button" onClick={() => setDraft({ ...draft, image_url: null })} title="移除图片" aria-label="移除图片" className="absolute right-2 top-2 bg-black/70 p-2 text-white hover:bg-black"><X size={15} /></button>
+                </div>
+              ) : (
+                <button type="button" onClick={() => document.getElementById('technology-image-file')?.click()} className="flex h-[150px] w-full flex-col items-center justify-center border border-dashed border-borderDark text-accent hover:border-white/30 hover:text-white">
+                  <Image size={28} /><span className="mt-2 text-[12px]">上传模块配图</span>
+                </button>
+              )}
+
+              <input id="technology-image-file" type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={(event) => { const file = event.target.files?.[0]; if (file) startCrop(file); event.currentTarget.value = '' }} />
+              {!cropSource && <div className="mt-3 flex justify-end"><PrimaryButton onClick={() => document.getElementById('technology-image-file')?.click()} size="sm" loading={uploading} icon={<Upload size={14} />}>{draft.image_url ? '更换图片' : '上传图片'}</PrimaryButton></div>}
+              <FormField className="mt-3" label="图片 URL" name="image_url" value={draft.image_url || ''} onChange={(event) => setDraft({ ...draft, image_url: event.target.value || null })} placeholder="也可以直接填写媒体库图片地址" />
+            </div>
+
+            <div>
+              <label className="mb-2 block text-[12px] uppercase text-secondary">前台预览</label>
+              <div className="public-preview bg-bg p-6"><TechnologyDetail section={previewSection} /></div>
+            </div>
+
+            <SaveCancelButtons onCancel={closeEditor} loading={saving} submitLabel={draft.id ? '保存修改' : '新增模块'} />
+          </form>
+        </Modal>
+      )}
     </Dashboard>
   )
 }

@@ -114,7 +114,7 @@ export interface EquipmentCategory {
   slug: string
   description: string
   bg_image: string | null
-  image_fit: 'cover' | 'contain' | 'original'
+  image_fit: 'cover' | 'contain'
 }
 
 export interface EquipmentProduct {

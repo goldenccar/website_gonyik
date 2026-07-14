@@ -33,7 +33,7 @@ export interface Database {
   faqs: any[]
   contact_config: any
   fluorine_sections: any[]
-  fluorine_value_chain: any
+  technology_sections_version?: number
   inquiry_subjects: any[]
   contact_messages: any[]
   users: any[]
@@ -173,9 +173,9 @@ function createDefaultDb(): Database {
         id: 1,
         page_key: 'pfas-free-innovation',
         order_index: 0,
-        title: '什么是 RPO 材料技术平台？',
-        subtitle: '阻断"永久化学品"，重构 PFAS-free 性能基盘',
-        content: 'PFAS 类物质因其极难降解被称为"永久化学品"，在人体内长期富集将引发严重健康隐患<note>永久化学品的隐患：ECHA / EPA 官方文件</note>/h<i>"PFAS are characterized by the carbon-fluorine bond, which is one of the strongest chemical bonds in organic chemistry. This makes them highly persistent in the environment and the human body, leading to their designation as \'forever chemicals\'."</i><i>"PFAS 的特征在于碳-氟键，这是有机化学中最强的化学键之一。这使得它们在环境和人体中具有极高的持久性，因此被称为"永久化学品"。"</i>/h<i>"Exposure to certain PFAS has been linked to adverse health effects, including liver damage, thyroid disease, reproductive issues, and certain types of cancer (e.g., kidney and testicular cancer). Due to their high bioaccumulation potential, they do not naturally degrade and accumulate in blood and organs over time."</i><i>"暴露于某些 PFAS 与不良健康影响有关，包括肝脏损伤、甲状腺疾病、生殖问题以及某些类型的癌症。由于其高生物富集潜力，它们无法自然降解，并会随时间推移在血液和器官中积聚。"</i>/hECHA Annex XV 限制提案原文：<i>"At the end of their service life, the waste management of PFAS-containing products poses significant environmental risks. Incomplete or inappropriate incineration of PFAS requires extremely high temperatures for complete mineralisation. Standard incineration processes can lead to the release of greenhouse gases (e.g., tetrafluoromethane CF4) and highly toxic hydrogen fluoride (HF) into the environment."</i><i>"在其使用寿命结束时，含 PFAS 产品的废物管理构成了重大的环境风险。不完全或不当的 PFAS 焚烧需要极高的温度才能完全矿化。标准的焚烧过程会导致温室气体及剧毒的氟化氢（HF）释放到环境中。"</i>/h<b>RPO 平台从高分子底层科学出发</b>，打造涵盖RPO二维薄膜、RPO一维纱线、复合到助剂的 <b>100% PFAS-Free 闭环</b>，为行业提供全生命周期的工程级解法，无需在环保合规与极限防护之间妥协。不仅解决环保合规，<b>RPO材料平台 更是极限防护的基盘</b>，直接支持军警与高危特种防护材料开发<note>防刺防割面料，满足 GA68-2024 标准</note><note>防火阻燃中间层，满足xx标准</note>',
+        title: '无氟技术体系',
+        subtitle: '从材料选择，到完整产品路径',
+        content: '无氟并不是对传统方案的简单删减，而是从材料选择、功能构建到成品结构的一次系统重组。港翼以无氟为重要技术方向，围绕膜材料、高性能纤维、功能整理与面料复合建立多条技术路径，根据不同使用环境组织材料与工艺，让防护、舒适、耐久与更负责任的材料选择在同一产品中取得平衡。/h这套体系贯穿研发、生产与验证。材料从实验室出发，经织造、染整与复合进入产品，再通过测试确认其在具体结构和使用条件下的实际表现。',
         image_url: null,
         image_fit: 'cover',
       },
@@ -183,9 +183,9 @@ function createDefaultDb(): Database {
         id: 2,
         page_key: 'pfas-free-innovation',
         order_index: 1,
-        title: '超微孔纳米薄膜',
-        subtitle: '极致微孔结构与力学稳定性',
-        content: '采用极精密超倍率拉伸工艺，构建近纳米级<note>孔径仅为传统高性能微孔薄膜约十分之一</note>超微孔网络，确立纯粹的物理透湿与极高水压屏障。/h薄膜具备<b>顶级的力学稳定性</b>，在复杂形变、拉伸下依然保持微观结构完整，彻底规避常规无氟替代方案在水洗后极易发生的孔隙塌陷与滑移问题。',
+        title: '膜技术',
+        subtitle: 'RPO-SOTEX 无氟纳米膜',
+        content: '真正的防护，来自一层几乎不可见的材料界面。RPO-SOTEX 是固纳面向高性能纺织应用研发的无氟纳米膜技术，被置入面料结构之中，在抵御外部雨水的同时，为人体产生的湿气保留向外传递的路径。/hRPO-SOTEX 不以一层孤立的膜材定义产品性能，而是与基布、复合结构及加工工艺协同工作，在防护与舒适之间建立平衡。它进入具体面料，并通过结构设计与测试验证发挥作用。',
         image_url: null,
         image_fit: 'cover',
       },
@@ -193,9 +193,9 @@ function createDefaultDb(): Database {
         id: 3,
         page_key: 'pfas-free-innovation',
         order_index: 2,
-        title: '无氟科技纱线',
-        subtitle: '一维 RPO 骨架与多维基材共融织造体系',
-        content: '以<b>极高强度的一维 RPO 材料</b>构筑核心防护骨架，提供极致的拉伸与抗切割性能。/h通过创新的<b>多维基材共融织造体系</b>，将常规锦纶、涤纶、氨纶等成熟基材无缝接入专属的无氟染整闭环。客户在维持原有面料触感与设计语言的同时，即可完成全线产品的无氟化升级。',
+        title: '纤维与功能整理',
+        subtitle: '让功能从纤维与基布开始',
+        content: '不同的功能目标，并不都需要依赖膜层。港翼通过高性能纤维、功能纱线、织物结构与无氟整理的组合，在基布阶段构建导湿、速干、防晒、凉感及专业防护等差异化能力。/h从纤维选择到织物成形，我们根据穿着环境和应用需求设计材料路径，让功能成为面料结构的一部分，并为后续复合、加工与成衣应用保留更大的设计空间。',
         image_url: null,
         image_fit: 'cover',
       },
@@ -203,9 +203,9 @@ function createDefaultDb(): Database {
         id: 4,
         page_key: 'pfas-free-innovation',
         order_index: 3,
-        title: '无氟界面粘接',
-        subtitle: '突破低表面能复合难题',
-        content: '针对RPO材料极低表面能（约 28-31 dynes/cm）的物理特性，开发<b>专属无氟粘接技术</b>。/h在不引入有毒含氟交联剂前提下，实现卓越的物理剥离力。赋予多层复合面料<b>极高的加工宽容度与结构耐用性</b>，历经严苛工业水洗与高频摩擦，各层结构依然紧密贴合。',
+        title: '面料复合技术',
+        subtitle: '让不同材料协同成为完整面料',
+        content: '一块高性能面料的表现，从来不由单一材料决定。港翼围绕面层、功能层与内层进行结构设计，通过基布选择、复合方式与层间结合，让不同材料在同一套面料系统中协同工作。/h我们根据具体应用，在防护、透湿、手感、重量与耐久之间寻找合适的结构平衡，使实验室中的材料能力转化为能够被裁剪、缝制、穿着并稳定使用的完整面料。',
         image_url: null,
         image_fit: 'cover',
       },
@@ -213,43 +213,24 @@ function createDefaultDb(): Database {
         id: 5,
         page_key: 'pfas-free-innovation',
         order_index: 4,
-        title: '无氟科技助剂',
-        subtitle: '系统级防护',
-        content: '专属无氟助剂体系构建<b>持久防泼水外层拦截</b>，偶发渗入的低表面张力油污无法与基材形成强化学键。/h依托薄膜卓越的力学稳定性，仅需常规清洗，即可利用流体置换孔内污染物，复原超微孔结构，实现<b>可循环的长效防护</b>。',
+        title: '供应链管理',
+        subtitle: '让技术稳定进入产品',
+        content: '技术只有被稳定制造，才真正具备产品价值。港翼与具备织造、染整、复合及质量管理能力的合作伙伴协同，围绕材料来源、规格、批次与工艺要求进行持续管理，让经过确认的技术方案能够从样品开发进入稳定生产。/h在材料选择上，我们重视来源可追溯性、质量稳定性及相关环境资质。部分供应链材料可提供 bluesign®、GRS 或 OEKO-TEX® 相关认证信息，为材料选择和项目交付提供更清晰的依据。',
+        image_url: null,
+        image_fit: 'cover',
+      },
+      {
+        id: 6,
+        page_key: 'pfas-free-innovation',
+        order_index: 5,
+        title: '测试与验证',
+        subtitle: '从研发测试到独立第三方检测',
+        content: '依托固纳实验室、香港科技大学（广州）多功能高聚物薄膜中央实验室，以及合作伙伴升佳纺织的织造与染整实验室，我们围绕材料筛选、结构开发、样品对比、耐久表现与生产过程开展测试，让产品在进入市场之前经过多层验证。/h对于需要独立验证的关键性能，我们根据具体产品与项目要求，委托 SGS、中纺标 CTTC 等专业机构进行检测。相关结果对应具体样品、测试方法与适用范围，并以正式检测报告为准。',
         image_url: null,
         image_fit: 'cover',
       },
     ],
-    fluorine_value_chain: {
-      id: 1,
-        page_key: 'pfas-free-innovation',
-      module_tag: 'MODULE 01 · VALUE CHAIN',
-      title: '无氟产业链全景图',
-      subtitle: '从原料端到终端装备，每一个环节严格无氟，构建完整的绿色材料闭环。',
-      columns: [
-        {
-          tag: 'RAW INPUT',
-          tag_cn: '上游基底',
-          title: 'RPO 高性能薄膜',
-          description: '从高分子母粒出发，自主精密合成，构建无氟防水透汽屏障的最小单元。',
-          items: ['高分子母粒', 'RPO 薄膜成形', '微孔结构控制'],
-        },
-        {
-          tag: 'INTEGRATION',
-          tag_cn: '中游协同',
-          title: '无氟基布 + 无氟 DWR',
-          description: '精选功能性无氟基布与顶级无氟拒水助剂，通过特殊界面复合工艺完成技术融合。',
-          items: ['无氟功能基布', '顶级无氟 DWR', '界面粘接体系'],
-        },
-        {
-          tag: 'HIGH-PERF OUTPUT',
-          tag_cn: '下游输出',
-          title: 'SOTEX 面料矩阵',
-          description: '最终交付跨代际防护能力——OS、KS、LS 全系列面料，覆盖从都市到极端环境的全场景需求。',
-          items: ['SOTEX OS', 'SOTEX KS', 'SOTEX LS', 'SOTEX Tread'],
-        },
-      ],
-    },
+    technology_sections_version: 4,
     social_media: [
       { id: 1, platform: 'wechat', account: '港翼科技GONYIK', qrcode_url: null },
       { id: 2, platform: 'xiaohongshu', account: '港翼科技GONYIK', qrcode_url: null },
@@ -371,19 +352,8 @@ export function initDatabase() {
       db.contact_config = { id: 1, email: 'contact@gangyi.tech', phone: '400-XXX-XXXX', address: '上海市', response_text: '提交表单后，我们的面料顾问将在 3 个工作日内与您取得联系' }
     }
     if (!db.fluorine_sections) db.fluorine_sections = []
-    if (!db.fluorine_value_chain) {
-      db.fluorine_value_chain = {
-        id: 1,
-        page_key: 'pfas-free-innovation',
-        module_tag: 'MODULE 01 · VALUE CHAIN',
-        title: '无氟产业链全景图',
-        subtitle: '从原料端到终端装备，每一个环节严格无氟，构建完整的绿色材料闭环。',
-        columns: [
-          { tag: 'RAW INPUT', tag_cn: '上游基底', title: 'RPO 高性能薄膜', description: '从高分子母粒出发，自主精密合成，构建无氟防水透汽屏障的最小单元。', items: ['高分子母粒', 'RPO 薄膜成形', '微孔结构控制'] },
-          { tag: 'INTEGRATION', tag_cn: '中游协同', title: '无氟基布 + 无氟 DWR', description: '精选功能性无氟基布与顶级无氟拒水助剂，通过特殊界面复合工艺完成技术融合。', items: ['无氟功能基布', '顶级无氟 DWR', '界面粘接体系'] },
-          { tag: 'HIGH-PERF OUTPUT', tag_cn: '下游输出', title: 'SOTEX 面料矩阵', description: '最终交付跨代际防护能力——OS、KS、LS 全系列面料，覆盖从都市到极端环境的全场景需求。', items: ['SOTEX OS', 'SOTEX KS', 'SOTEX LS', 'SOTEX Tread'] },
-        ],
-      }
+    if ('fluorine_value_chain' in db) {
+      delete (db as any).fluorine_value_chain
       saveDb()
     }
     if (db.fluorine_sections.length > 0 && !db.fluorine_sections[0].image_fit) {
@@ -660,6 +630,87 @@ export function initDatabase() {
         { title: '测试与验证', subtitle: '从内部验证到独立第三方检测', content: '内部测试用于材料筛选、样品对比、耐久检查和应用适配；关键项目再由 SGS、中纺标等独立第三方机构检测。展示结果时同时标明样品、方法、条件和适用范围。' },
       ]
       db.fluorine_sections = db.fluorine_sections.slice(0, 5).map((section: any, index: number) => ({ ...section, ...technologyContent[index], order_index: index }))
+      saveDb()
+    }
+    if ((db.technology_sections_version ?? 0) < 3) {
+      const technologySections = db.fluorine_sections
+        .filter((section: any) => section.page_key === 'pfas-free-innovation')
+        .sort(sortByOrderIndex)
+
+      const membraneSection = technologySections.find((section: any) => ['膜技术体系', '膜技术'].includes(section.title))
+      if (membraneSection) membraneSection.title = '膜技术'
+
+      const fiberSection = technologySections.find((section: any) => ['纤维技术体系', '无氟染整与功能整理', '纤维与功能整理'].includes(section.title))
+      if (fiberSection) fiberSection.title = '纤维与功能整理'
+
+      if (!technologySections.some((section: any) => section.title === '无氟技术体系')) {
+        technologySections.unshift({
+          id: getNextId(db.fluorine_sections),
+          page_key: 'pfas-free-innovation',
+          order_index: 0,
+          title: '无氟技术体系',
+          subtitle: '从材料选择，到完整产品路径',
+          content: '无氟并不是对传统方案的简单删减，而是从材料选择、功能构建到成品结构的一次系统重组。港翼以无氟为重要技术方向，围绕膜材料、高性能纤维、功能整理与面料复合建立多条技术路径，根据不同使用环境组织材料与工艺，让防护、舒适、耐久与更负责任的材料选择在同一产品中取得平衡。/h这套体系贯穿研发、生产与验证。材料从实验室出发，经织造、染整与复合进入产品，再通过测试确认其在具体结构和使用条件下的实际表现。',
+          image_url: null,
+          image_fit: 'cover',
+        })
+      }
+
+      const preferredOrder = ['无氟技术体系', '膜技术', '纤维与功能整理', '面料复合技术', '供应链管理', '测试与验证']
+      technologySections.sort((a: any, b: any) => {
+        const aIndex = preferredOrder.indexOf(a.title)
+        const bIndex = preferredOrder.indexOf(b.title)
+        if (aIndex === -1 && bIndex === -1) return a.order_index - b.order_index
+        if (aIndex === -1) return 1
+        if (bIndex === -1) return -1
+        return aIndex - bIndex
+      })
+      technologySections.forEach((section: any, order_index: number) => { section.order_index = order_index })
+      const otherSections = db.fluorine_sections.filter((section: any) => section.page_key !== 'pfas-free-innovation')
+      db.fluorine_sections = [...otherSections, ...technologySections]
+      db.technology_sections_version = 3
+      saveDb()
+    }
+    if ((db.technology_sections_version ?? 0) < 4) {
+      const technologyCopy = [
+        {
+          title: '无氟技术体系',
+          subtitle: '从材料选择，到完整产品路径',
+          content: '无氟并不是对传统方案的简单删减，而是从材料选择、功能构建到成品结构的一次系统重组。港翼以无氟为重要技术方向，围绕膜材料、高性能纤维、功能整理与面料复合建立多条技术路径，根据不同使用环境组织材料与工艺，让防护、舒适、耐久与更负责任的材料选择在同一产品中取得平衡。/h这套体系贯穿研发、生产与验证。材料从实验室出发，经织造、染整与复合进入产品，再通过测试确认其在具体结构和使用条件下的实际表现。',
+        },
+        {
+          title: '膜技术',
+          subtitle: 'RPO-SOTEX 无氟纳米膜',
+          content: '真正的防护，来自一层几乎不可见的材料界面。RPO-SOTEX 是固纳面向高性能纺织应用研发的无氟纳米膜技术，被置入面料结构之中，在抵御外部雨水的同时，为人体产生的湿气保留向外传递的路径。/hRPO-SOTEX 不以一层孤立的膜材定义产品性能，而是与基布、复合结构及加工工艺协同工作，在防护与舒适之间建立平衡。它进入具体面料，并通过结构设计与测试验证发挥作用。',
+        },
+        {
+          title: '纤维与功能整理',
+          subtitle: '让功能从纤维与基布开始',
+          content: '不同的功能目标，并不都需要依赖膜层。港翼通过高性能纤维、功能纱线、织物结构与无氟整理的组合，在基布阶段构建导湿、速干、防晒、凉感及专业防护等差异化能力。/h从纤维选择到织物成形，我们根据穿着环境和应用需求设计材料路径，让功能成为面料结构的一部分，并为后续复合、加工与成衣应用保留更大的设计空间。',
+        },
+        {
+          title: '面料复合技术',
+          subtitle: '让不同材料协同成为完整面料',
+          content: '一块高性能面料的表现，从来不由单一材料决定。港翼围绕面层、功能层与内层进行结构设计，通过基布选择、复合方式与层间结合，让不同材料在同一套面料系统中协同工作。/h我们根据具体应用，在防护、透湿、手感、重量与耐久之间寻找合适的结构平衡，使实验室中的材料能力转化为能够被裁剪、缝制、穿着并稳定使用的完整面料。',
+        },
+        {
+          title: '供应链管理',
+          subtitle: '让技术稳定进入产品',
+          content: '技术只有被稳定制造，才真正具备产品价值。港翼与具备织造、染整、复合及质量管理能力的合作伙伴协同，围绕材料来源、规格、批次与工艺要求进行持续管理，让经过确认的技术方案能够从样品开发进入稳定生产。/h在材料选择上，我们重视来源可追溯性、质量稳定性及相关环境资质。部分供应链材料可提供 bluesign®、GRS 或 OEKO-TEX® 相关认证信息，为材料选择和项目交付提供更清晰的依据。',
+        },
+        {
+          title: '测试与验证',
+          subtitle: '从研发测试到独立第三方检测',
+          content: '依托固纳实验室、香港科技大学（广州）多功能高聚物薄膜中央实验室，以及合作伙伴升佳纺织的织造与染整实验室，我们围绕材料筛选、结构开发、样品对比、耐久表现与生产过程开展测试，让产品在进入市场之前经过多层验证。/h对于需要独立验证的关键性能，我们根据具体产品与项目要求，委托 SGS、中纺标 CTTC 等专业机构进行检测。相关结果对应具体样品、测试方法与适用范围，并以正式检测报告为准。',
+        },
+      ]
+
+      const sections = db.fluorine_sections.filter((section: any) => section.page_key === 'pfas-free-innovation')
+      technologyCopy.forEach((copy, order_index) => {
+        const section = sections.find((item: any) => item.title === copy.title)
+        if (section) Object.assign(section, copy, { order_index })
+      })
+      db.technology_sections_version = 4
       saveDb()
     }
     const technologyPage = db.page_configs?.find((page: any) => page.page_key === 'pfas-free-innovation')
