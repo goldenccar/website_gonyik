@@ -95,9 +95,9 @@ export default function FabricDatabase() {
       <PageSection id="series-content">
         <div key={active} className="motion-content-enter">
         <div className="mb-10 max-w-[760px]">
-          <p className="-ml-px text-label uppercase text-secondary"><InlineMarkup text={activeSeries?.name || active} /></p>
-          <h2 className="mt-3 text-[32px] font-bold leading-tight text-primary md:text-[40px]"><InlineMarkup text={activeSeries?.tagline || (isSpecial ? '面向明确任务的专业防护' : '面向真实使用环境的功能材料')} /></h2>
-          <p className="mt-4 text-body text-secondary"><InlineMarkup text={activeSeries?.description} /></p>
+          <p className="label-en -ml-px text-secondary"><InlineMarkup text={activeSeries?.name || active} /></p>
+          <h2 className="type-section-title mt-3 text-primary"><InlineMarkup text={activeSeries?.tagline || (isSpecial ? '面向明确任务的专业防护' : '面向真实使用环境的功能材料')} /></h2>
+          <p className="body-copy mt-4 text-secondary"><InlineMarkup text={activeSeries?.description} /></p>
         </div>
 
         <div className="min-h-[260px]">
@@ -113,8 +113,8 @@ export default function FabricDatabase() {
 
         <AnimatedDisclosure open={skuOpen && Boolean(selectedSku)} className="mt-10">
         {selectedSku && <section ref={skuDetailRef} className="scroll-mt-[84px] pt-5" aria-live="polite">
-            <p className="text-label uppercase text-secondary"><InlineMarkup text={detail?.name} /> / {getSkuDisplayCode(selectedSku.sku_code, detail?.name)}</p>
-            <h3 className="mt-3 text-[30px] font-bold text-primary"><InlineMarkup text={page?.core_performance_title || '核心性能'} /></h3>
+            <p className="label-en text-secondary"><InlineMarkup text={detail?.name} /> / {getSkuDisplayCode(selectedSku.sku_code, detail?.name)}</p>
+            <h3 className="type-module-title mt-3 text-primary"><InlineMarkup text={page?.core_performance_title || '核心性能'} /></h3>
             <div className="mt-8 grid gap-x-8 gap-y-6 md:grid-cols-3">
               {Object.entries(parseSpecs(selectedSku.specifications)).slice(0, 3).map(([label, value]) => <div key={label} className="border-t border-border pt-4"><p className="text-[13px] font-medium text-secondary"><InlineMarkup text={label} /></p><p className="mt-2 text-[18px] font-medium text-primary"><InlineMarkup text={value} /></p></div>)}
             </div>

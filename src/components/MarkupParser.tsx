@@ -47,7 +47,7 @@ export function parseInlineMarkup(text: string): ReactNode[] {
     { regex: /<t>(.*?)<\/t>/s, wrapper: (content: string, k: number) => <TranslationToggle key={k} content={content} /> },
     { regex: /<note>(.*?)<\/note>/s, wrapper: (content: string, k: number) => <span key={k} className="text-[10px] text-muted italic">{parseInlineMarkup(content)}</span> },
     { regex: /<i>(.*?)<\/i>/s, wrapper: (content: string, k: number) => <em key={k} className="text-[13px] text-muted italic block mt-2 mb-2 pl-3 border-l-2 border-white/20">{parseInlineMarkup(content)}</em> },
-    { regex: /<b>(.*?)<\/b>/s, wrapper: (content: string, k: number) => <strong key={k} className="font-bold text-inherit">{parseInlineMarkup(content)}</strong> },
+    { regex: /<b>(.*?)<\/b>/s, wrapper: (content: string, k: number) => <strong key={k} className="font-semibold text-inherit">{parseInlineMarkup(content)}</strong> },
     { regex: /<up>(.*?)<\/up>/s, wrapper: (content: string, k: number) => <sup key={k} className="text-[0.68em] leading-none">{parseInlineMarkup(content)}</sup> },
     { regex: /<down>(.*?)<\/down>/s, wrapper: (content: string, k: number) => <sub key={k} className="text-[0.68em] leading-none">{parseInlineMarkup(content)}</sub> },
   ]

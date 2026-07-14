@@ -41,15 +41,15 @@ export default function Contact() {
     }
   }
 
-  const fieldClass = 'w-full border border-border bg-bg px-3 py-2.5 text-[13px] text-primary outline-none focus:border-primary'
+  const fieldClass = 'w-full border border-border bg-bg px-3 py-2.5 text-[16px] font-medium text-primary outline-none focus:border-primary sm:text-[14px]'
   return (
     <PageShell>
       <PageHero variant="detail" tag={page?.page_tag || 'CONTACT US'} title={page?.page_title || '联系我们'} subtitle={page?.page_subtitle} image={page?.hero_background} imageAlt="港翼科技材料合作" />
       <PageSection className="!py-8 lg:!py-10">
         <div className="grid overflow-hidden lg:grid-cols-12">
           <aside className="bg-darker p-6 text-white lg:col-span-4 lg:p-8">
-            <p className="text-label text-white/55">CONTACT</p><h2 className="mt-3 text-[28px] font-bold">材料与合作咨询</h2>
-            <dl className="mt-8 space-y-5 text-[14px]"><div><dt className="text-white/50">邮箱</dt><dd className="mt-1"><a href={contact?.email ? `mailto:${contact.email}` : undefined}>{contact?.email || '请在后台配置'}</a></dd></div>{contact?.phone && <div><dt className="text-white/50">电话</dt><dd className="mt-1"><InlineMarkup text={contact.phone} /></dd></div>}{contact?.address && <div><dt className="text-white/50">地址</dt><dd className="mt-1"><InlineMarkup text={contact.address} /></dd></div>}</dl>
+            <p className="label-en text-white/75">CONTACT</p><h2 className="type-module-title mt-3">材料与合作咨询</h2>
+            <dl className="mt-8 space-y-5 text-[14px]"><div><dt className="text-white/75">邮箱</dt><dd className="mt-1"><a href={contact?.email ? `mailto:${contact.email}` : undefined}>{contact?.email || '请在后台配置'}</a></dd></div>{contact?.phone && <div><dt className="text-white/75">电话</dt><dd className="mt-1"><InlineMarkup text={contact.phone} /></dd></div>}{contact?.address && <div><dt className="text-white/75">地址</dt><dd className="mt-1"><InlineMarkup text={contact.address} /></dd></div>}</dl>
           </aside>
           <form onSubmit={submit} className="grid gap-3 bg-white p-6 sm:grid-cols-2 lg:col-span-8 lg:p-8">
             <input className={fieldClass} placeholder="姓名 *" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />

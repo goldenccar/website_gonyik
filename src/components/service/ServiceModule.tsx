@@ -16,9 +16,9 @@ interface ServiceModuleProps {
 
 function ServiceSectionHeader({ section }: { section: ContentSection }) {
   return <>
-    {section.eyebrow && <p className="text-label text-secondary"><InlineMarkup text={section.eyebrow} /></p>}
-    <h2 className="mt-3 text-[30px] font-bold text-primary sm:text-[34px]"><InlineMarkup text={section.title} /></h2>
-    {section.subtitle && <p className="mt-3 max-w-[760px] text-body text-secondary"><InlineMarkup text={section.subtitle} /></p>}
+    {section.eyebrow && <p className="label-en text-secondary"><InlineMarkup text={section.eyebrow} /></p>}
+    <h2 className="type-module-title mt-3 text-primary"><InlineMarkup text={section.title} /></h2>
+    {section.subtitle && <p className="body-copy mt-3 max-w-[760px] text-secondary"><InlineMarkup text={section.subtitle} /></p>}
   </>
 }
 
@@ -28,7 +28,7 @@ function CareModule({ section, care }: ServiceModuleProps) {
     <div className="mt-8">
       <HorizontalRail label={section.nav_label || section.title} mobileStack>
         {care.map((item, index) => <article key={item.id} className="snap-start border-t border-primary pt-5">
-          <p className="text-label text-secondary">{String(index + 1).padStart(2, '0')}</p>
+          <p className="label-en text-secondary">{String(index + 1).padStart(2, '0')}</p>
           <h3 className="mt-4 text-h5 text-primary"><InlineMarkup text={item.title} /></h3>
           <p className="mt-3 text-[14px] leading-7 text-secondary"><InlineMarkup text={item.content} /></p>
         </article>)}

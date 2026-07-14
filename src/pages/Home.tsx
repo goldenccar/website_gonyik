@@ -57,17 +57,17 @@ export default function Home() {
       <PageSection className="lg:!py-16">
         <div className="grid gap-10 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-4">
-            <p className="text-label text-secondary">MATERIAL SYSTEM</p>
-            <h2 className="mt-4 text-[36px] font-semibold leading-[1.15] text-primary"><InlineMarkup text={config.platform_section_title} /></h2>
-            <p className="mt-4 max-w-[420px] text-body text-secondary"><InlineMarkup text={config.platform_section_subtitle} /></p>
+            <p className="label-en text-secondary">MATERIAL SYSTEM</p>
+            <h2 className="type-section-title mt-4 text-primary"><InlineMarkup text={config.platform_section_title} /></h2>
+            <p className="body-copy mt-4 max-w-[420px] text-secondary"><InlineMarkup text={config.platform_section_subtitle} /></p>
             <Link to={config.platform_section_link} className="mt-8 inline-block text-[14px] underline underline-offset-4"><InlineMarkup text={config.platform_section_link_text} /> →</Link>
           </div>
           <MotionInView className="relative grid md:grid-cols-3 lg:col-span-8">
             <span aria-hidden="true" className="motion-process-line absolute inset-x-0 top-0 h-px bg-[#69B2C1]" />
             {(config.platform_cards || []).slice(0, 3).map((item, index) => (
               <Link data-motion-item style={{ '--motion-delay': `${index * 75}ms` } as CSSProperties} to={config.platform_section_link} key={`${item.title}-${index}`} className="group flex min-h-[190px] flex-col border-b border-border py-6 md:border-r md:px-7 md:last:border-r-0">
-                <span className="text-label text-secondary">{String(index + 1).padStart(2, '0')}</span>
-                <h3 className="mt-5 text-[20px] font-semibold text-primary"><InlineMarkup text={item.title} /></h3>
+                <span className="label-en text-secondary">{String(index + 1).padStart(2, '0')}</span>
+                <h3 className="type-card-title mt-5 text-primary"><InlineMarkup text={item.title} /></h3>
                 <p className="mt-4 text-[14px] leading-6 text-secondary"><InlineMarkup text={item.subtitle || item.description} /></p>
                 <span className="mt-auto self-end pt-5 text-primary transition-transform group-hover:translate-x-1">→</span>
               </Link>
@@ -85,7 +85,7 @@ export default function Home() {
                 {item!.home_image ? <img src={item!.home_image} alt={item!.name} loading="lazy" decoding="async" className="h-full w-full object-cover transition-[transform,filter] duration-[var(--motion-media)] ease-apple group-hover:scale-[1.022] group-hover:brightness-[1.04] group-focus-visible:scale-[1.022] group-focus-visible:brightness-[1.04]" /> : <div className="gonyik-fabric-placeholder h-full w-full" />}
                 {item!.home_badge_image && <img src={item!.home_badge_image} alt={`${item!.name} 系列徽章`} loading="lazy" decoding="async" className="absolute bottom-4 left-4 z-10 w-[96px] object-contain drop-shadow-[0_3px_8px_rgba(0,0,0,0.28)] transition-transform duration-[var(--motion-media)] ease-apple group-hover:-translate-y-0.5 group-focus-visible:-translate-y-0.5 md:bottom-5 md:left-5 md:w-[112px]" />}
               </div>
-              <h3 className="mt-5 text-[20px] font-semibold text-white"><InlineMarkup text={SERIES_TITLES[item!.slug] || item!.name} /></h3>
+              <h3 className="type-card-title mt-5 text-white"><InlineMarkup text={SERIES_TITLES[item!.slug] || item!.name} /></h3>
               <p className="mt-2 max-w-[360px] text-[15px] leading-6 text-white/65"><InlineMarkup text={item!.tagline} /></p>
               <span className="mt-auto pt-6 text-[14px] text-white"><span className="relative inline-block after:absolute after:inset-x-0 after:-bottom-1 after:h-px after:origin-left after:scale-x-0 after:bg-white after:transition-transform after:duration-[var(--motion-instant)] group-hover:after:scale-x-100 group-focus-visible:after:scale-x-100">查看系列 <span className="inline-block transition-transform duration-[var(--motion-instant)] group-hover:translate-x-1 group-focus-visible:translate-x-1">→</span></span></span>
             </Link>
@@ -96,7 +96,7 @@ export default function Home() {
       <PageSection>
         <SectionHeader tag="VALIDATION" title={config.verification_section_title} subtitle={config.verification_section_subtitle} linkText={config.verification_section_link_text} linkTo={config.verification_section_link} />
         <div className="grid gap-8 md:grid-cols-2">
-          {(config.verifications || []).slice(0, 2).map((item, index) => <div key={`${item.title}-${index}`} className="border-t border-primary pt-6"><p className="text-label text-secondary">{String(index + 1).padStart(2, '0')}</p><h3 className="mt-4 text-[22px] font-semibold text-primary"><InlineMarkup text={item.title} /></h3><p className="mt-3 max-w-[520px] text-body text-secondary"><InlineMarkup text={item.subtitle} /></p></div>)}
+          {(config.verifications || []).slice(0, 2).map((item, index) => <div key={`${item.title}-${index}`} className="border-t border-primary pt-6"><p className="label-en text-secondary">{String(index + 1).padStart(2, '0')}</p><h3 className="type-card-title mt-4 text-primary"><InlineMarkup text={item.title} /></h3><p className="body-copy mt-3 max-w-[520px] text-secondary"><InlineMarkup text={item.subtitle} /></p></div>)}
         </div>
       </PageSection>
     </PageShell>

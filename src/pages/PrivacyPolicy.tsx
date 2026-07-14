@@ -16,8 +16,8 @@ export default function PrivacyPolicy() {
       {/* Header */}
       <div className="border-b border-white/[0.08]">
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12 py-16 md:py-20">
-          <p className="text-[11px] text-muted tracking-[0.2em] uppercase mb-4">Privacy Policy</p>
-          <h1 className="text-[28px] md:text-[36px] font-bold text-white leading-tight">隐私政策</h1>
+          <p className="label-en mb-4 text-white/75">Privacy Policy</p>
+          <h1 className="type-page-title text-white">隐私政策</h1>
         </div>
       </div>
 

@@ -56,8 +56,8 @@ export default function Footer() {
       <div className="mx-auto w-full max-w-[1760px] px-3 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-10 md:px-12 md:pb-6 md:pt-16 lg:px-16">
         <div className="grid grid-cols-2 gap-x-6 gap-y-9 border-b border-border pb-10 md:gap-12 md:pb-14 lg:grid-cols-12 lg:gap-10">
           <div className="col-span-2 lg:col-span-5">
-            <p className="text-label uppercase tracking-[0.18em] text-secondary"><InlineMarkup text={footer?.brand_tag} /></p>
-            <h2 className="mt-3 text-[24px] font-semibold md:mt-5 md:text-[28px]"><InlineMarkup text={footer?.brand_title} /></h2>
+            <p className="label-en text-secondary"><InlineMarkup text={footer?.brand_tag} /></p>
+            <h2 className="type-module-title mt-3 md:mt-5"><InlineMarkup text={footer?.brand_title} /></h2>
             <p className="mt-5 hidden max-w-[520px] text-[14px] leading-7 text-secondary md:block"><InlineMarkup text={footer?.brand_description} /></p>
           </div>
 
@@ -65,14 +65,14 @@ export default function Footer() {
           <FooterColumn title={footer?.support_title || '服务与支持'} links={navigation.slice(3)} />
 
           <div className="col-span-2 lg:col-span-3">
-            <p className="border-b border-border pb-3 text-label uppercase tracking-[0.16em] text-secondary md:pb-4"><InlineMarkup text={footer?.contact_title} /></p>
+            <p className="label-zh border-b border-border pb-3 text-secondary md:pb-4"><InlineMarkup text={footer?.contact_title} /></p>
             <p className="mt-4 text-[13px] text-secondary md:mt-5"><InlineMarkup text={footer?.contact_subtitle} /></p>
             {contact?.email && <a href={`mailto:${contact.email}`} className="mt-2 block text-[15px] underline decoration-border underline-offset-4 hover:decoration-primary">{contact.email}</a>}
             {visibleSocials.length > 0 && <div className="mt-5 flex flex-wrap gap-x-5 gap-y-3 md:mt-7">{visibleSocials.map((item) => <SocialLink key={item.id} item={item} />)}</div>}
           </div>
         </div>
 
-        <div className="pt-6 text-[11px] leading-5 text-secondary md:flex md:items-center md:justify-between">
+        <div className="pt-6 text-[12px] leading-5 text-secondary md:flex md:items-center md:justify-between">
           <span className="block"><InlineMarkup text={footer?.copyright || '© 2026 港翼科技 GONYIK 版权所有'} /></span>
           <div className="mt-5 grid grid-cols-[minmax(0,1fr)_28px] items-end gap-x-4 md:mt-0 md:flex md:items-center md:gap-0">
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
@@ -95,7 +95,7 @@ function SocialLink({ item }: { item: SocialMedia }) {
 
   return (
     <span className="group relative inline-flex">
-      <button type="button" className="text-[12px] tracking-[0.08em] text-secondary hover:text-primary focus:outline-none focus-visible:text-primary" aria-label={`查看${label}账号`}>
+      <button type="button" className="label-zh text-secondary hover:text-primary focus:outline-none focus-visible:text-primary" aria-label={`查看${label}账号`}>
         {label}
       </button>
       <span className="pointer-events-none absolute bottom-full right-0 z-20 mb-3 hidden w-[168px] border border-border bg-white p-3 text-center shadow-lg group-hover:block group-focus-within:block">
@@ -109,7 +109,7 @@ function SocialLink({ item }: { item: SocialMedia }) {
 function FooterColumn({ title, links }: { title: string; links: NavItem[] }) {
   return (
     <div className="min-w-0 lg:col-span-2">
-      <p className="border-b border-border pb-3 text-label uppercase tracking-[0.16em] text-secondary md:pb-4"><InlineMarkup text={title} /></p>
+      <p className="label-zh border-b border-border pb-3 text-secondary md:pb-4"><InlineMarkup text={title} /></p>
       <nav className="mt-4 flex flex-col gap-3 md:mt-5 md:gap-4">{links.map((item) => <Link key={item.id} to={item.link} className="w-fit text-[13px] hover:underline hover:underline-offset-4 md:text-[14px]"><InlineMarkup text={item.label} /></Link>)}</nav>
     </div>
   )

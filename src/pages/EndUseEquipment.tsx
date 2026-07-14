@@ -43,7 +43,7 @@ export default function EndUseEquipment() {
       <PageSection className="!py-8 lg:!py-10">
         <div key={active} className="motion-content-enter">
         <div className="mb-7 flex flex-col gap-5 border-b border-border pb-6 lg:flex-row lg:items-end lg:justify-between">
-          <div className="max-w-[680px]"><p className="text-label uppercase text-secondary">REPRESENTATIVE APPLICATIONS</p><h2 className="mt-2 text-[28px] font-bold text-primary"><InlineMarkup text={category?.name} /></h2><p className="mt-2 text-[14px] text-secondary"><InlineMarkup text={category?.description} /></p></div>
+          <div className="max-w-[680px]"><p className="label-en text-secondary">REPRESENTATIVE APPLICATIONS</p><h2 className="type-module-title mt-2 text-primary"><InlineMarkup text={category?.name} /></h2><p className="mt-2 text-[14px] leading-6 text-secondary"><InlineMarkup text={category?.description} /></p></div>
           <nav aria-label="终端应用分类" className="flex flex-wrap items-center gap-2">{categories.map((item) => <span key={item.id} className="contents">{item.slug === 'special' && <span aria-hidden="true" className="mx-2 h-5 w-px self-center bg-border" />}<button onClick={() => setActive(item.slug)} className={`px-4 py-2 text-[13px] tracking-[0.03em] transition-colors duration-[var(--motion-instant)] ${active === item.slug ? 'bg-dark text-white' : 'border border-border text-primary'}`}>{item.name}</button></span>)}</nav>
         </div>
         <div className="min-h-[260px]">
