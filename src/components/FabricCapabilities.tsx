@@ -44,8 +44,10 @@ export const FABRIC_CAPABILITIES: FabricCapability[] = [
   { id: 'stain-resistant', label: '防污性', icon: Sparkles, aliases: ['防污', '易去污'] },
 ]
 
-function readValues(value?: string | null) {
+function readValues(value?: unknown) {
   if (!value) return []
+  if (Array.isArray(value)) return value.map(String)
+  if (typeof value !== 'string') return []
   try {
     const parsed = JSON.parse(value)
     if (Array.isArray(parsed)) return parsed.map(String)
@@ -55,7 +57,7 @@ function readValues(value?: string | null) {
   return []
 }
 
-export function getFabricCapabilityIds(features?: string | null, legacySummary?: string | null) {
+export function getFabricCapabilityIds(features?: unknown, legacySummary?: unknown) {
   const values = [...readValues(features), ...readValues(legacySummary)]
   return FABRIC_CAPABILITIES.filter((capability) => values.some((value) => {
     const normalized = value.trim().toLowerCase()
@@ -64,7 +66,7 @@ export function getFabricCapabilityIds(features?: string | null, legacySummary?:
   })).map((capability) => capability.id)
 }
 
-export function FabricCapabilityIcons({ features, legacySummary, limit = 4 }: { features?: string | null; legacySummary?: string | null; limit?: number }) {
+export function FabricCapabilityIcons({ features, legacySummary, limit = 4 }: { features?: unknown; legacySummary?: unknown; limit?: number }) {
   const selected = getFabricCapabilityIds(features, legacySummary)
     .map((id) => FABRIC_CAPABILITIES.find((item) => item.id === id))
     .filter((item): item is FabricCapability => Boolean(item))
@@ -84,7 +86,7 @@ export function FabricCapabilityIcons({ features, legacySummary, limit = 4 }: { 
   )
 }
 
-export function FabricCapabilitySelector({ features, legacySummary, max = 4 }: { features?: string | null; legacySummary?: string | null; max?: number }) {
+export function FabricCapabilitySelector({ features, legacySummary, max = 4 }: { features?: unknown; legacySummary?: unknown; max?: number }) {
   const [selected, setSelected] = useState(() => getFabricCapabilityIds(features, legacySummary).slice(0, max))
   return (
     <fieldset>

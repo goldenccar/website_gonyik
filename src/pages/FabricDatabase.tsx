@@ -9,7 +9,9 @@ import type { FabricSeries, FabricSku, PageConfig } from '@/types'
 import AnimatedDisclosure from '@/components/AnimatedDisclosure'
 import { InlineMarkup } from '@/components/MarkupParser'
 
-function parseSpecs(value: string) {
+function parseSpecs(value: unknown) {
+  if (value && typeof value === 'object' && !Array.isArray(value)) return value as Record<string, string>
+  if (typeof value !== 'string') return {}
   try { return JSON.parse(value) as Record<string, string> } catch { return {} }
 }
 
