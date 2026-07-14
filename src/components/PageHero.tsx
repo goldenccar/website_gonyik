@@ -1,4 +1,5 @@
 import type { CSSProperties, ReactNode } from 'react'
+import { InlineMarkup } from './MarkupParser'
 
 interface PageHeroProps {
   tag?: string
@@ -36,9 +37,9 @@ export default function PageHero({ tag, title, subtitle, image, mobileImage, ima
         )}
         <div className={`absolute inset-0 -z-10 bg-[#03182b]/55 sm:bg-transparent sm:bg-gradient-to-r sm:from-[#03182b]/95 ${home ? 'sm:via-[#03182b]/55' : 'sm:via-[#03182b]/50'} sm:to-transparent`} />
         <div className={`w-full max-w-[720px] px-7 text-white md:px-12 lg:px-16 ${home ? 'py-16' : 'py-12'}`}>
-          {tag && <p style={home ? { '--motion-delay': '70ms' } as CSSProperties : undefined} className={`uppercase tracking-[0.2em] text-white/70 ${home ? 'motion-hero-item mb-5 text-label' : 'mb-4 text-label'}`}>{tag}</p>}
-          <h1 style={home ? { '--motion-delay': '140ms' } as CSSProperties : undefined} className={`whitespace-pre-line font-semibold tracking-[-0.025em] ${home ? 'motion-hero-item text-[40px] leading-[1.1] md:text-[56px]' : 'text-[34px] leading-[1.12] md:text-[44px]'}`}>{title}</h1>
-          {subtitle && <p style={home ? { '--motion-delay': '220ms' } as CSSProperties : undefined} className={`mt-5 max-w-[600px] text-body text-white/80 ${home ? 'motion-hero-item' : ''}`}>{subtitle}</p>}
+          {tag && <p style={home ? { '--motion-delay': '70ms' } as CSSProperties : undefined} className={`uppercase tracking-[0.2em] text-white/70 ${home ? 'motion-hero-item mb-5 text-label' : 'mb-4 text-label'}`}><InlineMarkup text={tag} /></p>}
+          <h1 style={home ? { '--motion-delay': '140ms' } as CSSProperties : undefined} className={`whitespace-pre-line font-semibold tracking-[-0.025em] ${home ? 'motion-hero-item text-[40px] leading-[1.1] md:text-[56px]' : 'text-[34px] leading-[1.12] md:text-[44px]'}`}><InlineMarkup text={title} /></h1>
+          {subtitle && <p style={home ? { '--motion-delay': '220ms' } as CSSProperties : undefined} className={`mt-5 max-w-[600px] text-body text-white/80 ${home ? 'motion-hero-item' : ''}`}><InlineMarkup text={subtitle} /></p>}
           {children && <div style={home ? { '--motion-delay': '300ms' } as CSSProperties : undefined} className={home ? 'motion-hero-item' : ''}>{children}</div>}
         </div>
       </div>

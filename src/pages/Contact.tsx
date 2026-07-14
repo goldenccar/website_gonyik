@@ -3,6 +3,7 @@ import { getContactConfig, getInquirySubjects, getPageConfig, submitContactForm 
 import PageHero from '@/components/PageHero'
 import { PageSection, PageShell } from '@/components/PageLayout'
 import type { ContactConfig, InquirySubject, PageConfig } from '@/types'
+import { InlineMarkup } from '@/components/MarkupParser'
 
 const EMPTY = { name: '', company: '', position: '', email: '', phone: '', subject: '', cooperation_type: '', message: '' }
 
@@ -48,7 +49,7 @@ export default function Contact() {
         <div className="grid overflow-hidden lg:grid-cols-12">
           <aside className="bg-darker p-6 text-white lg:col-span-4 lg:p-8">
             <p className="text-label text-white/55">CONTACT</p><h2 className="mt-3 text-[28px] font-bold">材料与合作咨询</h2>
-            <dl className="mt-8 space-y-5 text-[14px]"><div><dt className="text-white/50">邮箱</dt><dd className="mt-1"><a href={contact?.email ? `mailto:${contact.email}` : undefined}>{contact?.email || '请在后台配置'}</a></dd></div>{contact?.phone && <div><dt className="text-white/50">电话</dt><dd className="mt-1">{contact.phone}</dd></div>}{contact?.address && <div><dt className="text-white/50">地址</dt><dd className="mt-1">{contact.address}</dd></div>}</dl>
+            <dl className="mt-8 space-y-5 text-[14px]"><div><dt className="text-white/50">邮箱</dt><dd className="mt-1"><a href={contact?.email ? `mailto:${contact.email}` : undefined}>{contact?.email || '请在后台配置'}</a></dd></div>{contact?.phone && <div><dt className="text-white/50">电话</dt><dd className="mt-1"><InlineMarkup text={contact.phone} /></dd></div>}{contact?.address && <div><dt className="text-white/50">地址</dt><dd className="mt-1"><InlineMarkup text={contact.address} /></dd></div>}</dl>
           </aside>
           <form onSubmit={submit} className="grid gap-3 bg-white p-6 sm:grid-cols-2 lg:col-span-8 lg:p-8">
             <input className={fieldClass} placeholder="姓名 *" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
@@ -57,7 +58,7 @@ export default function Contact() {
             <input className={fieldClass} placeholder="电话（选填）" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
             <select className={`${fieldClass} sm:col-span-2`} value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value, cooperation_type: e.target.value })}><option value="">联系目的 *</option>{subjects.map((item) => <option key={item.id} value={item.label}>{item.label}</option>)}</select>
             <textarea className={`${fieldClass} resize-none sm:col-span-2`} rows={3} maxLength={500} placeholder="需求说明（至少 10 个字）*" value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} />
-            <div className="flex flex-wrap items-center gap-4 sm:col-span-2"><button disabled={submitting} className="bg-dark px-6 py-3 text-[14px] font-medium text-white disabled:opacity-50">{submitting ? '提交中…' : '提交咨询'}</button><p className="text-[12px] text-secondary">{message || contact?.response_text}</p></div>
+            <div className="flex flex-wrap items-center gap-4 sm:col-span-2"><button disabled={submitting} className="bg-dark px-6 py-3 text-[14px] font-medium text-white disabled:opacity-50">{submitting ? '提交中…' : '提交咨询'}</button><p className="text-[12px] text-secondary"><InlineMarkup text={message || contact?.response_text} /></p></div>
           </form>
         </div>
       </PageSection>

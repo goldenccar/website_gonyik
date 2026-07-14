@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 
 interface MarkupParserProps {
   text: string
@@ -9,6 +9,8 @@ interface MarkupParserProps {
  * 解析自定义标记语言：
  * <i>...</i>   → 引用（斜体小字灰色）
  * <b>...</b>   → 高亮（粗体）
+ * <up>...</up> → 上标
+ * <down>...</down> → 下标
  * <note>...</note> → 备注（小字灰色斜体）
  * <t>...</t>   → 翻译（默认隐藏，点击按钮展开）
  * /h           → 换行（段落分隔）
@@ -30,17 +32,24 @@ export default function MarkupParser({ text, className = '' }: MarkupParserProps
   )
 }
 
-function parseInlineMarkup(text: string): React.ReactNode[] {
-  const result: React.ReactNode[] = []
+export function InlineMarkup({ text }: { text?: string | null }) {
+  if (!text) return null
+  return <>{parseInlineMarkup(text)}</>
+}
+
+export function parseInlineMarkup(text: string): ReactNode[] {
+  const result: ReactNode[] = []
   let remaining = text
   let key = 0
 
-  // 按优先级匹配标记：<t> <note> <i> <b>
+  // Only explicitly supported tags are converted; all other input remains text.
   const patterns = [
     { regex: /<t>(.*?)<\/t>/s, wrapper: (content: string, k: number) => <TranslationToggle key={k} content={content} /> },
     { regex: /<note>(.*?)<\/note>/s, wrapper: (content: string, k: number) => <span key={k} className="text-[10px] text-muted italic">{parseInlineMarkup(content)}</span> },
     { regex: /<i>(.*?)<\/i>/s, wrapper: (content: string, k: number) => <em key={k} className="text-[13px] text-muted italic block mt-2 mb-2 pl-3 border-l-2 border-white/20">{parseInlineMarkup(content)}</em> },
     { regex: /<b>(.*?)<\/b>/s, wrapper: (content: string, k: number) => <strong key={k} className="font-bold text-inherit">{parseInlineMarkup(content)}</strong> },
+    { regex: /<up>(.*?)<\/up>/s, wrapper: (content: string, k: number) => <sup key={k} className="text-[0.68em] leading-none">{parseInlineMarkup(content)}</sup> },
+    { regex: /<down>(.*?)<\/down>/s, wrapper: (content: string, k: number) => <sub key={k} className="text-[0.68em] leading-none">{parseInlineMarkup(content)}</sub> },
   ]
 
   while (remaining.length > 0) {

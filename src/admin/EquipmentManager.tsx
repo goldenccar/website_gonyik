@@ -181,9 +181,9 @@ export default function AdminEquipmentManager() {
         {showCatForm && (
           <Modal title={editingCategory ? '编辑品类' : '新增品类'} onClose={() => setShowCatForm(false)}>
             <form onSubmit={handleSaveCategory} className="space-y-4">
-              <FormField label="名称" name="name" defaultValue={editingCategory?.name} required />
+              <FormField label="名称" name="name" markup="inline" defaultValue={editingCategory?.name} required />
               <FormField label="Slug" name="slug" defaultValue={editingCategory?.slug} required />
-              <FormField label="描述" name="description" defaultValue={editingCategory?.description} textarea />
+              <FormField label="描述" name="description" markup="inline" defaultValue={editingCategory?.description} textarea />
               <SaveCancelButtons onCancel={() => setShowCatForm(false)} />
             </form>
           </Modal>
@@ -192,13 +192,13 @@ export default function AdminEquipmentManager() {
         {showProdForm && (
           <Modal title={editingProduct ? '编辑产品' : '新增产品'} onClose={() => setShowProdForm(false)}>
             <form onSubmit={handleSaveProduct} className="space-y-4">
-              <FormField label="产品名" name="name" defaultValue={editingProduct?.name} required />
+              <FormField label="产品名" name="name" markup="inline" defaultValue={editingProduct?.name} required />
               <FormField
                 label="特点（逗号分隔）"
                 name="features"
                 defaultValue={editingProduct?.features ? (Array.isArray(editingProduct.features) ? editingProduct.features : JSON.parse(editingProduct.features)).join(', ') : ''}
               />
-              <FormField label="卡片核心收益" name="card_summary" defaultValue={editingProduct?.card_summary} placeholder="一句话说明应用价值" />
+              <FormField label="卡片核心收益" name="card_summary" markup="inline" defaultValue={editingProduct?.card_summary} placeholder="一句话说明应用价值" />
               <div className="grid gap-3 sm:grid-cols-2"><FormField label="前台显示" name="visibility" select defaultValue={editingProduct?.visibility || 'public'} options={[{ value: 'public', label: '显示' }, { value: 'hidden', label: '隐藏' }]} /><FormField label="内容状态" name="status" select defaultValue={editingProduct?.status || 'active'} options={[{ value: 'active', label: '正常' }, { value: 'archived', label: '归档' }]} /></div>
               <div>
                 <label className="block text-[12px] text-secondary uppercase mb-1">产品图</label>

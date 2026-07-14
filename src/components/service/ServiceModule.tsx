@@ -4,6 +4,7 @@ import AnimatedDisclosure from '@/components/AnimatedDisclosure'
 import HorizontalRail from '@/components/HorizontalRail'
 import { isServiceModuleType, type ServiceModuleType } from '@/config/serviceModules'
 import type { CareGuide, ContentSection, FAQ } from '@/types'
+import { InlineMarkup } from '@/components/MarkupParser'
 
 interface ServiceModuleProps {
   section: ContentSection
@@ -15,9 +16,9 @@ interface ServiceModuleProps {
 
 function ServiceSectionHeader({ section }: { section: ContentSection }) {
   return <>
-    {section.eyebrow && <p className="text-label text-secondary">{section.eyebrow}</p>}
-    <h2 className="mt-3 text-[30px] font-bold text-primary sm:text-[34px]">{section.title}</h2>
-    {section.subtitle && <p className="mt-3 max-w-[760px] text-body text-secondary">{section.subtitle}</p>}
+    {section.eyebrow && <p className="text-label text-secondary"><InlineMarkup text={section.eyebrow} /></p>}
+    <h2 className="mt-3 text-[30px] font-bold text-primary sm:text-[34px]"><InlineMarkup text={section.title} /></h2>
+    {section.subtitle && <p className="mt-3 max-w-[760px] text-body text-secondary"><InlineMarkup text={section.subtitle} /></p>}
   </>
 }
 
@@ -28,8 +29,8 @@ function CareModule({ section, care }: ServiceModuleProps) {
       <HorizontalRail label={section.nav_label || section.title} mobileStack>
         {care.map((item, index) => <article key={item.id} className="snap-start border-t border-primary pt-5">
           <p className="text-label text-secondary">{String(index + 1).padStart(2, '0')}</p>
-          <h3 className="mt-4 text-h5 text-primary">{item.title}</h3>
-          <p className="mt-3 text-[14px] leading-7 text-secondary">{item.content}</p>
+          <h3 className="mt-4 text-h5 text-primary"><InlineMarkup text={item.title} /></h3>
+          <p className="mt-3 text-[14px] leading-7 text-secondary"><InlineMarkup text={item.content} /></p>
         </article>)}
       </HorizontalRail>
     </div>
@@ -44,9 +45,9 @@ function FaqModule({ section, faqs, openFaqId, onToggleFaq }: ServiceModuleProps
         const isOpen = openFaqId === item.id
         return <article key={item.id} className="border-b border-border">
           <button type="button" onClick={() => onToggleFaq(item.id)} aria-expanded={isOpen} className="flex w-full items-center justify-between gap-5 py-5 text-left text-[16px] font-medium text-primary">
-            <span>{item.question}</span><span aria-hidden="true">{isOpen ? '−' : '+'}</span>
+            <span><InlineMarkup text={item.question} /></span><span aria-hidden="true">{isOpen ? '−' : '+'}</span>
           </button>
-          <AnimatedDisclosure open={isOpen}><p className="max-w-[720px] pb-5 text-body text-secondary">{item.answer}</p></AnimatedDisclosure>
+          <AnimatedDisclosure open={isOpen}><p className="max-w-[720px] pb-5 text-body text-secondary"><InlineMarkup text={item.answer} /></p></AnimatedDisclosure>
         </article>
       })}
     </div>

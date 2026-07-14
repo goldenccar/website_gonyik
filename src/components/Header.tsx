@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Menu, X } from 'lucide-react'
 import { getNavigation, getSiteConfig } from '@/api/client'
 import type { NavItem } from '@/types'
+import { InlineMarkup } from './MarkupParser'
 
 export default function Header() {
   const [navItems, setNavItems] = useState<NavItem[]>([])
@@ -58,13 +59,13 @@ export default function Header() {
       <div className="mx-auto flex h-full w-full max-w-[1760px] items-center px-0 lg:px-10">
         <Link to="/" className="flex shrink-0 items-center" aria-label="港翼科技首页">
           {siteConfig.logo_url ? <img src={siteConfig.logo_url} alt="GONYIK" className="mr-2 h-7 w-auto" /> : <span className="mr-2 grid h-7 w-7 place-items-center bg-white text-[10px] font-bold text-[#041F38]">GY</span>}
-          <span className="text-[15px] font-bold text-white">{siteConfig.logo_text || '港翼科技'}</span>
+          <span className="text-[15px] font-bold text-white"><InlineMarkup text={siteConfig.logo_text || '港翼科技'} /></span>
         </Link>
 
         <nav className="ml-auto hidden h-full items-center gap-8 md:flex" aria-label="主导航">
           {navItems.map((item) => {
             const active = location.pathname === item.link || (item.link !== '/' && location.pathname.startsWith(`${item.link}/`))
-            return <Link key={item.id} to={item.link} className={`group/nav relative flex h-full items-center text-[12px] font-normal tracking-[0.06em] transition-colors duration-[var(--motion-instant)] ${active ? 'text-white' : 'text-white/70 hover:text-white'}`}>{item.label}<span className={`absolute inset-x-0 bottom-0 h-[3px] origin-left bg-[#69B2C1] transition-transform duration-[var(--motion-instant)] ease-apple ${active ? 'scale-x-100' : 'scale-x-0 group-hover/nav:scale-x-100'}`} /></Link>
+            return <Link key={item.id} to={item.link} className={`group/nav relative flex h-full items-center text-[12px] font-normal tracking-[0.06em] transition-colors duration-[var(--motion-instant)] ${active ? 'text-white' : 'text-white/70 hover:text-white'}`}><InlineMarkup text={item.label} /><span className={`absolute inset-x-0 bottom-0 h-[3px] origin-left bg-[#69B2C1] transition-transform duration-[var(--motion-instant)] ease-apple ${active ? 'scale-x-100' : 'scale-x-0 group-hover/nav:scale-x-100'}`} /></Link>
           })}
         </nav>
 
@@ -81,7 +82,7 @@ export default function Header() {
           <nav className="flex flex-col pt-5" aria-label="移动端主导航">
             {navItems.map((item, index) => {
               const active = location.pathname === item.link || (item.link !== '/' && location.pathname.startsWith(`${item.link}/`))
-              return <Link key={item.id} to={item.link} tabIndex={mobileOpen ? 0 : -1} onClick={(event) => handleMobileNavigation(event, item.link)} style={{ transitionDelay: mobileOpen ? `${80 + index * 35}ms` : '0ms' } as CSSProperties} className={`flex items-center justify-between border-b border-white/10 py-5 text-[18px] transition-[opacity,transform,color] duration-[var(--motion-switch)] ease-apple ${mobileOpen ? 'translate-x-0 opacity-100' : 'translate-x-3 opacity-0'} ${active ? 'text-white' : 'text-white/70'}`}><span>{item.label}</span>{active && <span aria-hidden="true" className="h-px w-6 bg-[#69B2C1]" />}</Link>
+              return <Link key={item.id} to={item.link} tabIndex={mobileOpen ? 0 : -1} onClick={(event) => handleMobileNavigation(event, item.link)} style={{ transitionDelay: mobileOpen ? `${80 + index * 35}ms` : '0ms' } as CSSProperties} className={`flex items-center justify-between border-b border-white/10 py-5 text-[18px] transition-[opacity,transform,color] duration-[var(--motion-switch)] ease-apple ${mobileOpen ? 'translate-x-0 opacity-100' : 'translate-x-3 opacity-0'} ${active ? 'text-white' : 'text-white/70'}`}><span><InlineMarkup text={item.label} /></span>{active && <span aria-hidden="true" className="h-px w-6 bg-[#69B2C1]" />}</Link>
             })}
           </nav>
         </div>

@@ -250,7 +250,7 @@ export default function AdminFabricManager() {
             <div className="md:hidden">
               <ResponsiveAdminList items={skus} getKey={(item) => item.id} emptyLabel="暂无 SKU" renderTitle={(item) => item.name} renderSubtitle={(item) => item.sku_code || '未填写编码'} renderActions={(item) => <><button type="button" onClick={() => { setEditingSku(item); setShowSkuForm(true) }} className="flex h-11 w-11 items-center justify-center text-accent" aria-label={`编辑${item.name}`}><Edit2 size={16} /></button><button type="button" onClick={() => deleteSku(item.id)} className="flex h-11 w-11 items-center justify-center text-error" aria-label={`删除${item.name}`}><Trash2 size={16} /></button></>} />
             </div>
-            <ContentRailEditor label="SKU 横向轨道" items={skus} renderCard={(sku) => <SkuCard key={sku.id} sku={sku} seriesName={series.find((item) => item.id === selectedSeries)?.name} seriesTagline={sku.name} />} onEdit={(sku) => { setEditingSku(sku); setShowSkuForm(true) }} onMove={moveSku} onVisibility={toggleSkuVisibility} endCard={rail} onEndCardChange={(patch) => setRail({ ...rail, ...patch })} onSaveEndCard={saveRail} />
+            <ContentRailEditor label="SKU 横向轨道" items={skus} renderCard={(sku) => <SkuCard key={sku.id} sku={sku} seriesName={series.find((item) => item.id === selectedSeries)?.name} />} onEdit={(sku) => { setEditingSku(sku); setShowSkuForm(true) }} onMove={moveSku} onVisibility={toggleSkuVisibility} endCard={rail} onEndCardChange={(patch) => setRail({ ...rail, ...patch })} onSaveEndCard={saveRail} />
           </div>
         )}
 
@@ -258,10 +258,10 @@ export default function AdminFabricManager() {
         {showSeriesForm && (
           <Modal title={editingSeries ? '编辑系列' : '新增系列'} onClose={() => setShowSeriesForm(false)}>
             <form onSubmit={handleSaveSeries} className="space-y-4">
-              <FormField label="名称" name="name" defaultValue={editingSeries?.name} required />
+              <FormField label="名称" name="name" markup="inline" defaultValue={editingSeries?.name} required />
               <FormField label="Slug" name="slug" defaultValue={editingSeries?.slug} required />
-              <FormField label="标语 Tagline" name="tagline" defaultValue={editingSeries?.tagline} />
-              <FormField label="描述" name="description" defaultValue={editingSeries?.description} textarea />
+              <FormField label="标语 Tagline" name="tagline" markup="inline" defaultValue={editingSeries?.tagline} />
+              <FormField label="描述" name="description" markup="inline" defaultValue={editingSeries?.description} textarea />
               <div>
                 <label className="block text-[12px] text-secondary uppercase mb-1">首页卡片背景图</label>
                 {editingSeries?.id ? (
@@ -282,9 +282,9 @@ export default function AdminFabricManager() {
         {showSkuForm && (
           <Modal title={editingSku ? '编辑 SKU' : '新增 SKU'} onClose={() => setShowSkuForm(false)}>
             <form onSubmit={handleSaveSku} className="space-y-4">
-              <FormField label="SKU 名称" name="name" defaultValue={editingSku?.name} required />
-              <FormField label="编码" name="sku_code" defaultValue={editingSku?.sku_code} />
-              <FormField label="卡片核心收益" name="card_summary" defaultValue={editingSku?.card_summary} placeholder="最多 12-16 个中文字" />
+              <FormField label="内部名称" name="name" markup="inline" defaultValue={editingSku?.name} required />
+              <FormField label="产品代码（可修改）" name="sku_code" defaultValue={editingSku?.sku_code} placeholder="例如 GY-OTTER-T31 或 T31" />
+              <FormField label="卡片核心收益" name="card_summary" markup="inline" defaultValue={editingSku?.card_summary} placeholder="最多 12-16 个中文字" />
               <div className="grid gap-3 sm:grid-cols-2"><FormField label="前台显示" name="visibility" select defaultValue={editingSku?.visibility || 'public'} options={[{ value: 'public', label: '显示' }, { value: 'hidden', label: '隐藏' }]} /><FormField label="内容状态" name="status" select defaultValue={editingSku?.status || 'active'} options={[{ value: 'active', label: '正常' }, { value: 'archived', label: '归档' }]} /></div>
               <div>
                 <label className="mb-2 block text-[12px] uppercase text-secondary">前台核心数据（最多三项）</label>
@@ -292,7 +292,7 @@ export default function AdminFabricManager() {
                 {[0, 1, 2].map((index) => {
                   let entries: [string, string][] = []
                   try { entries = Object.entries(JSON.parse(editingSku?.specifications || '{}')) as [string, string][] } catch { entries = [] }
-                  return <div key={index} className="mb-3 grid gap-3 sm:grid-cols-2"><FormField label={`数据 ${index + 1} 标题`} name={`metric_label_${index}`} defaultValue={entries[index]?.[0] || ''} /><FormField label={`数据 ${index + 1} 内容`} name={`metric_value_${index}`} defaultValue={entries[index]?.[1] || ''} /></div>
+                  return <div key={index} className="mb-3 grid gap-3 sm:grid-cols-2"><FormField label={`数据 ${index + 1} 标题`} name={`metric_label_${index}`} markup="inline" defaultValue={entries[index]?.[0] || ''} /><FormField label={`数据 ${index + 1} 内容`} name={`metric_value_${index}`} markup="inline" defaultValue={entries[index]?.[1] || ''} /></div>
                 })}
               </div>
               <div>

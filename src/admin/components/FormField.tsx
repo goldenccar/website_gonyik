@@ -1,4 +1,5 @@
 import type { ReactNode, SelectHTMLAttributes, InputHTMLAttributes, TextareaHTMLAttributes } from 'react'
+import MarkupSyntaxHelp from './MarkupSyntaxHelp'
 
 type CommonProps = {
   label: string
@@ -6,6 +7,7 @@ type CommonProps = {
   required?: boolean
   className?: string
   children?: ReactNode
+  markup?: 'inline' | 'block'
 }
 
 type InputFieldProps = CommonProps & {
@@ -95,6 +97,7 @@ export default function FormField(props: FormFieldProps) {
           className={inputClass}
         />
       )}
+      {props.markup && <MarkupSyntaxHelp mode={props.markup} />}
       {props.children}
     </div>
   )

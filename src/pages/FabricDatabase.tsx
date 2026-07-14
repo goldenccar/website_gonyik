@@ -4,9 +4,10 @@ import { getFabricSeries, getFabricSeriesDetail, getPageConfig } from '@/api/cli
 import HorizontalRail from '@/components/HorizontalRail'
 import PageHero from '@/components/PageHero'
 import { PageSection, PageShell } from '@/components/PageLayout'
-import SkuCard from '@/components/SkuCard'
+import SkuCard, { getSkuDisplayCode } from '@/components/SkuCard'
 import type { FabricSeries, FabricSku, PageConfig } from '@/types'
 import AnimatedDisclosure from '@/components/AnimatedDisclosure'
+import { InlineMarkup } from '@/components/MarkupParser'
 
 function parseSpecs(value: string) {
   try { return JSON.parse(value) as Record<string, string> } catch { return {} }
@@ -91,28 +92,28 @@ export default function FabricDatabase() {
       <PageSection id="series-content">
         <div key={active} className="motion-content-enter">
         <div className="mb-10 max-w-[760px]">
-          <p className="-ml-px text-label uppercase text-secondary">{activeSeries?.name || active}</p>
-          <h2 className="mt-3 text-[32px] font-bold leading-tight text-primary md:text-[40px]">{activeSeries?.tagline || (isSpecial ? '面向明确任务的专业防护' : '面向真实使用环境的功能材料')}</h2>
-          <p className="mt-4 text-body text-secondary">{activeSeries?.description}</p>
+          <p className="-ml-px text-label uppercase text-secondary"><InlineMarkup text={activeSeries?.name || active} /></p>
+          <h2 className="mt-3 text-[32px] font-bold leading-tight text-primary md:text-[40px]"><InlineMarkup text={activeSeries?.tagline || (isSpecial ? '面向明确任务的专业防护' : '面向真实使用环境的功能材料')} /></h2>
+          <p className="mt-4 text-body text-secondary"><InlineMarkup text={activeSeries?.description} /></p>
         </div>
 
         <div className="min-h-[260px]">
         {detailLoading ? <div className="motion-content-enter border-t border-border py-8 text-body text-secondary">正在加载该系列资料…</div> : detail?.skus?.length ? (
           <HorizontalRail label={`${detail.name} 面料型号`} mobileStack>
-            {detail.skus.map((sku) => {
-              return <SkuCard key={`${sku.series_id}-${sku.id}`} sku={sku} seriesName={detail.name} seriesTagline={sku.name || detail.tagline} expanded={skuOpen && selectedSku?.id === sku.id} onClick={() => openSku(sku)} />
+            {detail.skus.map((sku, index) => {
+              return <SkuCard key={`${sku.series_id}-${sku.id}`} sku={sku} seriesName={detail.name} sequence={index + 1} expanded={skuOpen && selectedSku?.id === sku.id} onClick={() => openSku(sku)} />
             })}
-            {page?.rail_end_card_visible !== false && <article className="flex min-h-[180px] snap-start items-end bg-white p-7 sm:min-h-full"><div><p className="text-label text-secondary">IN DEVELOPMENT</p><h3 className="mt-3 text-h4 text-primary">{page?.rail_end_card_title || '新面料开发中'}</h3><p className="mt-3 text-body text-secondary">{page?.rail_end_card_description || '针对新的使用环境与性能目标持续开发。'}</p>{page?.rail_end_card_cta_label && <a href={page.rail_end_card_cta_href || '/contact'} className="mt-6 inline-block text-[14px] underline underline-offset-4">{page.rail_end_card_cta_label} →</a>}</div></article>}
+            {page?.rail_end_card_visible !== false && <article className="flex min-h-[180px] snap-start items-end bg-white p-7 sm:min-h-full"><div><p className="text-label text-secondary">IN DEVELOPMENT</p><h3 className="mt-3 text-h4 text-primary"><InlineMarkup text={page?.rail_end_card_title || '新面料开发中'} /></h3><p className="mt-3 text-body text-secondary"><InlineMarkup text={page?.rail_end_card_description || '针对新的使用环境与性能目标持续开发。'} /></p>{page?.rail_end_card_cta_label && <a href={page.rail_end_card_cta_href || '/contact'} className="mt-6 inline-block text-[14px] underline underline-offset-4"><InlineMarkup text={page.rail_end_card_cta_label} /> →</a>}</div></article>}
           </HorizontalRail>
         ) : <p className="border-t border-border py-8 text-body text-secondary">该系列具体型号正在整理中。</p>}
         </div>
 
         <AnimatedDisclosure open={skuOpen && Boolean(selectedSku)} className="mt-10">
         {selectedSku && <section ref={skuDetailRef} className="scroll-mt-[84px] pt-5" aria-live="polite">
-            <p className="text-label uppercase text-secondary">{detail?.name} {selectedSku.sku_code.replace(/^GY-[A-Z]+-/, '')}</p>
+            <p className="text-label uppercase text-secondary"><InlineMarkup text={detail?.name} /> / {getSkuDisplayCode(selectedSku.sku_code, detail?.name)}</p>
             <h3 className="mt-3 text-[30px] font-bold text-primary">经验证的性能</h3>
             <div className="mt-8 grid gap-x-8 gap-y-6 md:grid-cols-3">
-              {Object.entries(parseSpecs(selectedSku.specifications)).slice(0, 3).map(([label, value]) => <div key={label} className="border-t border-border pt-4"><p className="text-[13px] font-medium text-secondary">{label}</p><p className="mt-2 text-[18px] font-medium text-primary">{value}</p></div>)}
+              {Object.entries(parseSpecs(selectedSku.specifications)).slice(0, 3).map(([label, value]) => <div key={label} className="border-t border-border pt-4"><p className="text-[13px] font-medium text-secondary"><InlineMarkup text={label} /></p><p className="mt-2 text-[18px] font-medium text-primary"><InlineMarkup text={value} /></p></div>)}
             </div>
             <p className="mt-7 max-w-[720px] text-[13px] text-secondary">页面仅展示该型号已有的结构与性能资料；测试方法、适用条件和第三方验证以对应资料为准。</p>
           </section>}

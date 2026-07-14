@@ -148,13 +148,11 @@ export default function AdminFluorineManager() {
         <Modal title={draft.id ? '编辑技术模块' : '新增技术模块'} onClose={closeEditor} maxWidth="max-w-[1100px]">
           <form onSubmit={submit} className="space-y-5">
             <div className="grid gap-4 sm:grid-cols-2">
-              <FormField label="标题" name="title" required value={draft.title} onChange={(event) => setDraft({ ...draft, title: event.target.value })} />
-              <FormField label="副标题" name="subtitle" value={draft.subtitle} onChange={(event) => setDraft({ ...draft, subtitle: event.target.value })} />
+              <FormField label="标题" name="title" required markup="inline" value={draft.title} onChange={(event) => setDraft({ ...draft, title: event.target.value })} />
+              <FormField label="副标题" name="subtitle" markup="inline" value={draft.subtitle} onChange={(event) => setDraft({ ...draft, subtitle: event.target.value })} />
             </div>
 
-            <FormField label="正文内容" name="content" textarea rows={7} value={draft.content} onChange={(event) => setDraft({ ...draft, content: event.target.value })}>
-              <p className="mt-1.5 text-[11px] leading-5 text-muted">支持 &lt;b&gt;重点&lt;/b&gt;、&lt;i&gt;引用&lt;/i&gt;、&lt;note&gt;备注&lt;/note&gt; 和 /h 分段。</p>
-            </FormField>
+            <FormField label="正文内容" name="content" textarea rows={7} markup="block" value={draft.content} onChange={(event) => setDraft({ ...draft, content: event.target.value })} />
 
             <div>
               <div className="mb-2 flex items-center justify-between gap-4">

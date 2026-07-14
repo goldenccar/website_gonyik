@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { InlineMarkup } from './MarkupParser'
 
 interface ContentTab {
   id: string
@@ -54,7 +55,7 @@ export default function ContentTabs({ items, active, onChange, label, variant = 
           aria-current={selected ? 'true' : undefined}
           onClick={() => onChange(item.id)}
           className={buttonClass}
-        ><span className="mr-3 text-label">{String(index + 1).padStart(2, '0')}</span><span className="text-[14px] font-medium">{item.label}</span></button>
+        ><span className="mr-3 text-label">{String(index + 1).padStart(2, '0')}</span><span className="text-[14px] font-medium"><InlineMarkup text={item.label} /></span></button>
       })}
     </nav>
   )

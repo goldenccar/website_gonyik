@@ -102,9 +102,9 @@ export default function PageConfigManager({ pageKey }: PageConfigManagerProps = 
 
         <div className="bg-dark p-4 sm:p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormField label="英文标签" name="page_tag" value={config.page_tag} onChange={(event) => setConfig({ ...config, page_tag: event.target.value })} />
-            <FormField label="页面标题" name="page_title" value={config.page_title} onChange={(event) => setConfig({ ...config, page_title: event.target.value })} />
-            <FormField className="md:col-span-2" label="副标题" name="page_subtitle" value={config.page_subtitle} onChange={(event) => setConfig({ ...config, page_subtitle: event.target.value })} />
+            <FormField label="英文标签" name="page_tag" markup="inline" value={config.page_tag} onChange={(event) => setConfig({ ...config, page_tag: event.target.value })} />
+            <FormField label="页面标题" name="page_title" markup="inline" value={config.page_title} onChange={(event) => setConfig({ ...config, page_title: event.target.value })} />
+            <FormField className="md:col-span-2" label="副标题" name="page_subtitle" markup="inline" value={config.page_subtitle} onChange={(event) => setConfig({ ...config, page_subtitle: event.target.value })} />
             <div className="md:col-span-2">
               <label className="block text-[12px] text-secondary uppercase mb-1.5">Hero 图片</label>
               {config.hero_background && <img src={config.hero_background} alt="当前 Hero" className="mb-3 aspect-[3/1] w-full object-cover" />}
