@@ -1,7 +1,7 @@
 import { useEffect, useState, type CSSProperties, type MouseEvent } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Menu, X } from 'lucide-react'
-import { getNavigation, getSiteConfig } from '@/api/client'
+import { getPublicBootstrap } from '@/api/client'
 import type { NavItem } from '@/types'
 import { InlineMarkup } from './MarkupParser'
 
@@ -14,9 +14,9 @@ export default function Header() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    Promise.all([getNavigation(), getSiteConfig()]).then(([navigation, site]) => {
-      setNavItems(navigation.data.data || [])
-      setSiteConfig(site.data.data || {})
+    getPublicBootstrap().then((response) => {
+      setNavItems(response.data.navigation || [])
+      setSiteConfig(response.data.site_config || {})
     })
   }, [])
 

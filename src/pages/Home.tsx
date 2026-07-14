@@ -1,6 +1,6 @@
 import { useEffect, useState, type CSSProperties } from 'react'
 import { Link } from 'react-router-dom'
-import { getHomeConfig } from '@/api/client'
+import { getPublicBootstrap } from '@/api/client'
 import PageHero from '@/components/PageHero'
 import { PageSection, PageShell, SectionHeader } from '@/components/PageLayout'
 import type { FabricSeries, HomeConfig } from '@/types'
@@ -31,9 +31,9 @@ export default function Home() {
   const [series, setSeries] = useState<FabricSeries[]>([])
 
   useEffect(() => {
-    getHomeConfig().then((home) => {
-      setConfig(home.data.data || DEFAULT_HOME)
-      setSeries((home.data.series || []).sort((a: FabricSeries, b: FabricSeries) => a.order_index - b.order_index))
+    getPublicBootstrap().then((response) => {
+      setConfig(response.data.home_config || DEFAULT_HOME)
+      setSeries((response.data.series || []).sort((a: FabricSeries, b: FabricSeries) => a.order_index - b.order_index))
     })
   }, [])
 

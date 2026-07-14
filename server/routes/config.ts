@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import nodemailer from 'nodemailer'
-import { db, saveDb, getNextId, sortByOrderIndex, updateById, deleteById, uploadUrl, nextOrderIndex } from '../db'
+import { db, saveDb, getNextId, sortByOrderIndex, updateById, deleteById, nextOrderIndex } from '../db'
+import { registerUploadedFile } from '../mediaAssets'
 import { authMiddleware, AuthRequest } from '../middleware/auth'
 import { upload } from '../middleware/upload'
 
@@ -9,6 +10,15 @@ const router = Router()
 router.get('/home', (_req, res) => {
   res.json({
     data: db.home_config,
+    series: [...db.fabric_series].sort(sortByOrderIndex),
+  })
+})
+
+router.get('/bootstrap', (_req, res) => {
+  res.json({
+    site_config: db.site_config,
+    navigation: [...db.navigation].sort(sortByOrderIndex),
+    home_config: db.home_config,
     series: [...db.fabric_series].sort(sortByOrderIndex),
   })
 })
@@ -25,14 +35,14 @@ router.put('/admin/site-config', authMiddleware, (req: AuthRequest, res) => {
 
 router.put('/admin/site-config/logo', authMiddleware, upload.single('file'), (req: AuthRequest, res) => {
   if (!req.file) { res.status(400).json({ error: 'No file' }); return }
-  db.site_config.logo_url = uploadUrl(req.file)
+  db.site_config.logo_url = registerUploadedFile(req.file, 'global', '网站标志').url
   saveDb()
   res.json({ success: true, url: db.site_config.logo_url })
 })
 
 router.put('/admin/site-config/favicon', authMiddleware, upload.single('file'), (req: AuthRequest, res) => {
   if (!req.file) { res.status(400).json({ error: 'No file' }); return }
-  db.site_config.favicon_url = uploadUrl(req.file)
+  db.site_config.favicon_url = registerUploadedFile(req.file, 'global', '网站图标').url
   saveDb()
   res.json({ success: true, url: db.site_config.favicon_url })
 })
@@ -55,7 +65,8 @@ router.get('/social', (_req, res) => {
 })
 
 router.get('/contact-config', (_req, res) => {
-  res.json({ data: db.contact_config })
+  const { email, phone, address, response_text } = db.contact_config
+  res.json({ data: { email, phone, address, response_text } })
 })
 
 router.put('/admin/contact-config', authMiddleware, (req: AuthRequest, res) => {
@@ -150,14 +161,14 @@ router.put('/admin/home', authMiddleware, (req: AuthRequest, res) => {
 
 router.put('/admin/home/background', authMiddleware, upload.single('file'), (req: AuthRequest, res) => {
   if (!req.file) { res.status(400).json({ error: 'No file' }); return }
-  db.home_config.hero_background = uploadUrl(req.file)
+  db.home_config.hero_background = registerUploadedFile(req.file, 'home', '首页桌面首图').url
   saveDb()
   res.json({ success: true, url: db.home_config.hero_background })
 })
 
 router.put('/admin/home/mobile-background', authMiddleware, upload.single('file'), (req: AuthRequest, res) => {
   if (!req.file) { res.status(400).json({ error: 'No file' }); return }
-  db.home_config.hero_mobile_background = uploadUrl(req.file)
+  db.home_config.hero_mobile_background = registerUploadedFile(req.file, 'home', '首页移动端首图').url
   saveDb()
   res.json({ success: true, url: db.home_config.hero_mobile_background })
 })
@@ -186,7 +197,7 @@ router.put('/admin/footer', authMiddleware, (req: AuthRequest, res) => {
 router.put('/admin/social', authMiddleware, upload.single('qrcode'), (req: AuthRequest, res) => {
   const { platform, account } = req.body
   const idx = db.social_media.findIndex((s) => s.platform === platform)
-  const qrcode_url = req.file ? uploadUrl(req.file) : req.body.qrcode_url
+  const qrcode_url = req.file ? registerUploadedFile(req.file, 'global', `${platform || ''}二维码`).url : req.body.qrcode_url
   if (idx >= 0) {
     db.social_media[idx] = { ...db.social_media[idx], account, qrcode_url }
     saveDb()

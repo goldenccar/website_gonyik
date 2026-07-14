@@ -64,6 +64,7 @@ api.interceptors.response.use(
 
 export default api
 
+export const getPublicBootstrap = () => cachedGet('/bootstrap')
 export const getHomeConfig = () => cachedGet('/home')
 export const getSiteConfig = () => cachedGet('/site-config')
 export const getPageConfig = (key: string) => cachedGet(`/page/${key}`)

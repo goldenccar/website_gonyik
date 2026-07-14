@@ -1,5 +1,6 @@
 import { Router } from 'express'
-import { db, saveDb, getNextId, sortByOrderIndex, updateById, deleteById, uploadUrl, nextOrderIndex } from '../db'
+import { db, saveDb, getNextId, sortByOrderIndex, updateById, deleteById, nextOrderIndex } from '../db'
+import { registerUploadedFile } from '../mediaAssets'
 import { authMiddleware, AuthRequest } from '../middleware/auth'
 import { upload } from '../middleware/upload'
 import { FABRIC_CAPABILITY_THEMES } from '../../src/config/fabricCapabilities'
@@ -120,7 +121,7 @@ router.get('/admin/series', authMiddleware, (_req, res) => {
 
 router.post('/admin/series', authMiddleware, upload.single('cover_image'), (req: AuthRequest, res) => {
   const { name, slug, description, tagline, sub_series_data, home_image, home_badge_image } = req.body
-  const cover_image = req.file ? uploadUrl(req.file) : null
+  const cover_image = req.file ? registerUploadedFile(req.file, 'fabrics', '面料系列封面').url : null
   const normalizedHomeImage = home_image && home_image !== 'undefined' ? home_image : null
   const newSeries = {
     id: getNextId(db.fabric_series),
@@ -144,7 +145,7 @@ router.put('/admin/series/:id', authMiddleware, upload.single('cover_image'), (r
   const existing = db.fabric_series.find((s) => s.id === id)
   if (!existing) { res.status(404).json({ error: 'Not found' }); return }
   const { name, slug, description, tagline, sub_series_data, home_image, home_badge_image } = req.body
-  const cover_image = req.file ? uploadUrl(req.file) : (req.body.cover_image || existing.cover_image)
+  const cover_image = req.file ? registerUploadedFile(req.file, 'fabrics', '面料系列封面').url : (req.body.cover_image || existing.cover_image)
   const normalizedHomeImage = home_image && home_image !== 'undefined' ? home_image : null
   updateById(db.fabric_series, id, {
     name: name ?? existing.name,
@@ -194,7 +195,7 @@ router.get('/admin/sku', authMiddleware, (req, res) => {
 
 router.post('/admin/sku', authMiddleware, upload.single('image'), (req: AuthRequest, res) => {
   const { series_id, name, sku_code, features, specifications, card_summary, visibility, status } = req.body
-  const image = req.file ? uploadUrl(req.file) : null
+  const image = req.file ? registerUploadedFile(req.file, 'fabrics', '面料 SKU 图片').url : null
   const newSku = {
     id: getNextId(db.fabric_sku),
     series_id: Number(series_id),
@@ -225,7 +226,7 @@ router.put('/admin/sku/:id', authMiddleware, upload.single('image'), (req: AuthR
   const existing = db.fabric_sku.find((k) => k.id === id)
   if (!existing) { res.status(404).json({ error: 'Not found' }); return }
   const { series_id, name, sku_code, features, specifications, card_summary, visibility, status, order_index } = req.body
-  const image = req.file ? uploadUrl(req.file) : (req.body.image || existing.image)
+  const image = req.file ? registerUploadedFile(req.file, 'fabrics', '面料 SKU 图片').url : (req.body.image || existing.image)
   updateById(db.fabric_sku, id, {
     series_id: series_id ? Number(series_id) : existing.series_id,
     name: name ?? existing.name,

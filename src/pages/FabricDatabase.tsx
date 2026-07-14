@@ -9,6 +9,7 @@ import type { FabricSeries, FabricSku, PageConfig } from '@/types'
 import AnimatedDisclosure from '@/components/AnimatedDisclosure'
 import { InlineMarkup } from '@/components/MarkupParser'
 import type { FabricCapabilityDefinition } from '@/config/fabricCapabilities'
+import RailEndCard from '@/components/RailEndCard'
 
 function parseSpecs(value: unknown) {
   if (value && typeof value === 'object' && !Array.isArray(value)) return value as Record<string, string>
@@ -106,7 +107,7 @@ export default function FabricDatabase() {
             {detail.skus.map((sku) => {
               return <SkuCard key={`${sku.series_id}-${sku.id}`} sku={sku} seriesName={detail.name} capabilities={detail.capabilities} expanded={skuOpen && selectedSku?.id === sku.id} onClick={() => openSku(sku)} />
             })}
-            {page?.rail_end_card_visible !== false && <article className="flex min-h-[180px] snap-start items-end bg-white p-7 sm:min-h-full"><div><p className="text-label text-secondary">IN DEVELOPMENT</p><h3 className="mt-3 text-h4 text-primary"><InlineMarkup text={page?.rail_end_card_title || '新面料开发中'} /></h3><p className="mt-3 text-body text-secondary"><InlineMarkup text={page?.rail_end_card_description || '针对新的使用环境与性能目标持续开发。'} /></p>{page?.rail_end_card_cta_label && <a href={page.rail_end_card_cta_href || '/contact'} className="mt-6 inline-block text-[14px] underline underline-offset-4"><InlineMarkup text={page.rail_end_card_cta_label} /> →</a>}</div></article>}
+            <RailEndCard config={page || {}} fallbackTitle="新面料开发中" fallbackDescription="针对新的使用环境与性能目标持续开发。" />
           </HorizontalRail>
         ) : <p className="border-t border-border py-8 text-body text-secondary">该系列具体型号正在整理中。</p>}
         </div>

@@ -3,7 +3,7 @@ import { Routes, Route, Outlet, Navigate, useLocation } from 'react-router-dom'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import PageScrollProgress from './components/PageScrollProgress'
-import { getSiteConfig } from './api/client'
+import { getPublicBootstrap } from './api/client'
 import Home from './pages/Home'
 
 function PublicLayout() {
@@ -63,8 +63,8 @@ const AdminPageConfigManager = lazy(() => import('./admin/PageConfigManager'))
 
 function App() {
   useEffect(() => {
-    getSiteConfig().then((res) => {
-      const favicon = res.data.data?.favicon_url
+    getPublicBootstrap().then((res) => {
+      const favicon = res.data.site_config?.favicon_url
       if (favicon) {
         let link = document.querySelector('link[rel="icon"]') as HTMLLinkElement
         if (!link) {

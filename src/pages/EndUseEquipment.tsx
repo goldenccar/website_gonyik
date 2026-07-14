@@ -6,6 +6,7 @@ import PageHero from '@/components/PageHero'
 import { PageSection, PageShell } from '@/components/PageLayout'
 import type { EquipmentCategory, EquipmentProduct, PageConfig } from '@/types'
 import { InlineMarkup } from '@/components/MarkupParser'
+import RailEndCard from '@/components/RailEndCard'
 
 export default function EndUseEquipment() {
   const [page, setPage] = useState<PageConfig | null>(null)
@@ -49,7 +50,7 @@ export default function EndUseEquipment() {
         <div className="min-h-[260px]">
         {loadingProducts ? <div className="border-t border-border py-8 text-body text-secondary">正在加载该分类内容…</div> : <HorizontalRail label={`${category?.name || ''}应用`} mobileStack>
           {products.map((product) => <ApplicationCard key={product.id} product={product} categoryName={category?.name} />)}
-          {page?.rail_end_card_visible !== false && <article className="flex min-h-[180px] snap-start items-end bg-white p-7 sm:min-h-full"><div><p className="text-label text-secondary">IN DEVELOPMENT</p><h3 className="mt-3 text-h4 text-primary"><InlineMarkup text={page?.rail_end_card_title || '新应用开发中'} /></h3><p className="mt-3 text-body text-secondary"><InlineMarkup text={page?.rail_end_card_description || '围绕新的任务与穿着环境持续开发。'} /></p>{page?.rail_end_card_cta_label && <a href={page.rail_end_card_cta_href || '/contact'} className="mt-6 inline-block text-[14px] underline underline-offset-4"><InlineMarkup text={page.rail_end_card_cta_label} /> →</a>}</div></article>}
+          <RailEndCard config={page || {}} fallbackTitle="新应用开发中" fallbackDescription="围绕新的任务与穿着环境持续开发。" />
         </HorizontalRail>}
         </div>
         </div>

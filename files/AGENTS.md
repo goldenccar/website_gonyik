@@ -4,7 +4,7 @@
 - **品牌**：港翼科技（GONYIK）— 科技面料品牌
 - **技术栈**：React 19 + TypeScript + Vite + Tailwind CSS + Express + JSON DB
 - **内容管理**：全站内容通过 `/admin` 后台维护，数据存在 `db.json`
-- **字体**：Inter（英文）+ 阿里巴巴普惠体（中文）
+- **字体**：自托管 Inter Variable（英文）+ Noto Sans SC Variable（中文）
 
 ## 关键文件
 | 文件 | 作用 |
@@ -41,7 +41,7 @@
 | IP | `111.231.141.7` |
 | 系统 | OpenCloudOS 9.4 |
 | 登录用户 | `root` |
-| 密码 | 凯撒密码加密：`Wyeb594;:55;`（偏移量见本地 `.deploy-key.md`） |
+| 凭据 | 仅从本地未跟踪的 `.deploy-key.md` 读取，不在文档或源码记录密文/明文 |
 | 项目路径 | `/var/www/website_gonyik` |
 | 后端服务 | `gonyik` (PM2 管理)，监听 `localhost:3001` |
 | PM2 配置 | `ecosystem.config.cjs` |

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Settings } from 'lucide-react'
-import { getContactConfig, getFooter, getNavigation, getSocial } from '@/api/client'
+import { getContactConfig, getFooter, getPublicBootstrap, getSocial } from '@/api/client'
 import type { ContactConfig, FooterConfig, NavItem, SocialMedia } from '@/types'
 import { InlineMarkup } from './MarkupParser'
 
@@ -21,12 +21,12 @@ export default function Footer() {
   useEffect(() => {
     let cancelled = false
     const loadFooterData = () => {
-      Promise.all([getFooter(), getContactConfig(), getSocial(), getNavigation()]).then(([footerRes, contactRes, socialRes, navigationRes]) => {
+      Promise.all([getFooter(), getContactConfig(), getSocial(), getPublicBootstrap()]).then(([footerRes, contactRes, socialRes, bootstrapRes]) => {
         if (cancelled) return
         setFooter(footerRes.data.data)
         setContact(contactRes.data.data)
         setSocials(socialRes.data.data || [])
-        setNavigation(navigationRes.data.data || [])
+        setNavigation(bootstrapRes.data.navigation || [])
       })
     }
 

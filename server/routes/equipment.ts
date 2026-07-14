@@ -1,5 +1,6 @@
 import { Router } from 'express'
-import { db, saveDb, getNextId, sortByOrderIndex, updateById, deleteById, uploadUrl, nextOrderIndex } from '../db'
+import { db, saveDb, getNextId, sortByOrderIndex, updateById, deleteById, nextOrderIndex } from '../db'
+import { registerUploadedFile } from '../mediaAssets'
 import { authMiddleware, AuthRequest } from '../middleware/auth'
 import { upload } from '../middleware/upload'
 
@@ -22,7 +23,7 @@ router.get('/admin/categories', authMiddleware, (_req, res) => {
 
 router.post('/admin/categories', authMiddleware, upload.single('bg_image'), (req: AuthRequest, res) => {
   const { name, slug, description, image_fit } = req.body
-  const bg_image = req.file ? uploadUrl(req.file) : null
+  const bg_image = req.file ? registerUploadedFile(req.file, 'equipment', '装备分类背景').url : null
   const newCat = {
     id: getNextId(db.equipment_categories),
     name,
@@ -42,7 +43,7 @@ router.put('/admin/categories/:id', authMiddleware, upload.single('bg_image'), (
   const existing = db.equipment_categories.find((c) => c.id === id)
   if (!existing) { res.status(404).json({ error: 'Not found' }); return }
   const { name, slug, description, image_fit } = req.body
-  const bg_image = req.file ? uploadUrl(req.file) : (req.body.bg_image || existing.bg_image)
+  const bg_image = req.file ? registerUploadedFile(req.file, 'equipment', '装备分类背景').url : (req.body.bg_image || existing.bg_image)
   updateById(db.equipment_categories, id, {
     name: name ?? existing.name,
     slug: slug ?? existing.slug,
@@ -70,7 +71,7 @@ router.get('/admin/products', authMiddleware, (req, res) => {
 
 router.post('/admin/products', authMiddleware, upload.single('image'), (req: AuthRequest, res) => {
   const { category_id, name, features, card_summary, visibility, status } = req.body
-  const image = req.file ? uploadUrl(req.file) : null
+  const image = req.file ? registerUploadedFile(req.file, 'equipment', '装备产品图片').url : null
   const newProd = {
     id: getNextId(db.equipment_products),
     category_id: Number(category_id),
@@ -99,7 +100,7 @@ router.put('/admin/products/:id', authMiddleware, upload.single('image'), (req: 
   const existing = db.equipment_products.find((p) => p.id === id)
   if (!existing) { res.status(404).json({ error: 'Not found' }); return }
   const { category_id, name, features, card_summary, visibility, status, order_index } = req.body
-  const image = req.file ? uploadUrl(req.file) : (req.body.image || existing.image)
+  const image = req.file ? registerUploadedFile(req.file, 'equipment', '装备产品图片').url : (req.body.image || existing.image)
   updateById(db.equipment_products, id, {
     category_id: category_id ? Number(category_id) : existing.category_id,
     name: name ?? existing.name,
