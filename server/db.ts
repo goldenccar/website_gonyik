@@ -1,6 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import bcrypt from 'bcryptjs'
+import { DEFAULT_FABRIC_CAPABILITIES } from '../src/config/fabricCapabilities'
 
 const DB_PATH = path.resolve(process.cwd(), 'db.json')
 const UPLOADS_DIR = path.resolve(process.cwd(), 'public/uploads')
@@ -17,6 +18,7 @@ export interface Database {
   footer_config: any
   social_media: any[]
   fabric_series: any[]
+  fabric_capabilities: any[]
   fabric_sku: any[]
   fabric_scenes: any[]
   digital_assets: any[]
@@ -281,6 +283,7 @@ function createDefaultDb(): Database {
       { id: 2, platform: 'xiaohongshu', account: '港翼科技GONYIK', qrcode_url: null },
       { id: 3, platform: 'douyin', account: '港翼科技GONYIK', qrcode_url: null },
     ],
+    fabric_capabilities: DEFAULT_FABRIC_CAPABILITIES.map((item, index) => ({ ...item, id: index + 1, order_index: index })),
     fabric_series: [
       { id: 1, name: 'Otter', slug: 'otter', description: '无氟高性能复合面料 3L，Solidgood RPO Membrane 中间层，香港科技大学前沿纳米材料 / 日内瓦国际发明展金奖技术', tagline: '新一代无氟防护', sub_series_data: null, cover_image: '/uploads/otter-logo.svg', home_image: null, home_badge_image: '/brandmarks/otter-label.svg', order_index: 0 },
       { id: 2, name: 'Kais', slug: 'kais', description: '专业防护平台，基于 UHMWPE 纤维基材的防刺/防火/防化解决方案', tagline: '专业防护平台 · 防刺/防火/防化', sub_series_data: null, cover_image: null, home_image: null, home_badge_image: '/brandmarks/kais-label.svg', order_index: 1 },
@@ -489,6 +492,10 @@ export function initDatabase() {
         { id: 4, page_key: 'services', page_tag: 'CARE & SUPPORT', page_title: '服务与支持', page_subtitle: '从洗涤保养到常见问题，为材料使用与项目沟通提供支持。', hero_background: null },
         { id: 5, page_key: 'contact', page_tag: 'CONTACT US', page_title: '联系我们', page_subtitle: '如有材料需求或合作意向，欢迎与我们取得联系。', hero_background: null },
       ]
+      saveDb()
+    }
+    if (!db.fabric_capabilities) {
+      db.fabric_capabilities = DEFAULT_FABRIC_CAPABILITIES.map((item, index) => ({ ...item, id: index + 1, order_index: index }))
       saveDb()
     }
     db.page_configs = db.page_configs.map((page: any) => page.page_key === 'fluorine-free' ? { ...page, page_key: 'pfas-free-innovation' } : page)

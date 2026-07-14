@@ -12,11 +12,14 @@ import ContentRailEditor, { type RailEndCardConfig } from './components/ContentR
 import SeriesHomeImageEditor from './components/SeriesHomeImageEditor'
 import ResponsiveAdminList from './components/ResponsiveAdminList'
 import { FabricCapabilitySelector } from '@/components/FabricCapabilities'
+import FabricCapabilityLibrary from './components/FabricCapabilityLibrary'
+import type { FabricCapabilityDefinition } from '@/config/fabricCapabilities'
 
 const DEFAULT_RAIL: RailEndCardConfig = { rail_end_card_visible: true, rail_end_card_title: '新面料开发中', rail_end_card_description: '针对新的使用环境与性能目标持续开发。', rail_end_card_cta_label: '提交需求', rail_end_card_cta_href: '/contact' }
 
 export default function AdminFabricManager() {
   const [series, setSeries] = useState<any[]>([])
+  const [capabilities, setCapabilities] = useState<FabricCapabilityDefinition[]>([])
   const [skus, setSkus] = useState<any[]>([])
   const [selectedSeries, setSelectedSeries] = useState<number | null>(null)
   const [editingSeries, setEditingSeries] = useState<any | null>(null)
@@ -27,12 +30,23 @@ export default function AdminFabricManager() {
   const [rail, setRail] = useState<RailEndCardConfig>(DEFAULT_RAIL)
 
   const loadData = async () => {
-    const sRes = await api.get('/fabrics/admin/series')
+    const [sRes, capabilityRes] = await Promise.all([api.get('/fabrics/admin/series'), api.get('/fabrics/admin/capabilities')])
     setSeries(sRes.data.data || [])
+    setCapabilities(capabilityRes.data.data || [])
     if (selectedSeries) {
       const kRes = await api.get('/fabrics/admin/sku?series_id=' + selectedSeries)
       setSkus(kRes.data.data || [])
     }
+  }
+
+  const loadCapabilities = async () => {
+    const res = await api.get('/fabrics/admin/capabilities')
+    setCapabilities(res.data.data || [])
+  }
+
+  const showMessage = (value: string) => {
+    setMessage(value)
+    window.setTimeout(() => setMessage(''), 2000)
   }
 
   useEffect(() => {
@@ -154,6 +168,8 @@ export default function AdminFabricManager() {
 
         {message && <p className="text-success text-[13px] mb-4">{message}</p>}
 
+        <FabricCapabilityLibrary items={capabilities} onChange={loadCapabilities} onMessage={showMessage} />
+
         {/* Series List */}
         <div className="mb-8 hidden bg-dark md:block">
           <table className="w-full text-left text-[13px]">
@@ -252,7 +268,7 @@ export default function AdminFabricManager() {
             <div className="md:hidden">
               <ResponsiveAdminList items={skus} getKey={(item) => item.id} emptyLabel="暂无 SKU" renderTitle={(item) => item.name} renderSubtitle={(item) => item.sku_code || '未填写编码'} renderActions={(item) => <><button type="button" onClick={() => { setEditingSku(item); setShowSkuForm(true) }} className="flex h-11 w-11 items-center justify-center text-accent" aria-label={`编辑${item.name}`}><Edit2 size={16} /></button><button type="button" onClick={() => deleteSku(item.id)} className="flex h-11 w-11 items-center justify-center text-error" aria-label={`删除${item.name}`}><Trash2 size={16} /></button></>} />
             </div>
-            <ContentRailEditor label="SKU 横向轨道" items={skus} renderCard={(sku) => <SkuCard key={sku.id} sku={sku} seriesName={series.find((item) => item.id === selectedSeries)?.name} />} onEdit={(sku) => { setEditingSku(sku); setShowSkuForm(true) }} onMove={moveSku} onVisibility={toggleSkuVisibility} endCard={rail} onEndCardChange={(patch) => setRail({ ...rail, ...patch })} onSaveEndCard={saveRail} />
+            <ContentRailEditor label="SKU 横向轨道" items={skus} renderCard={(sku) => <SkuCard key={sku.id} sku={sku} seriesName={series.find((item) => item.id === selectedSeries)?.name} capabilities={capabilities} />} onEdit={(sku) => { setEditingSku(sku); setShowSkuForm(true) }} onMove={moveSku} onVisibility={toggleSkuVisibility} endCard={rail} onEndCardChange={(patch) => setRail({ ...rail, ...patch })} onSaveEndCard={saveRail} />
           </div>
         )}
 
@@ -286,7 +302,7 @@ export default function AdminFabricManager() {
             <form onSubmit={handleSaveSku} className="space-y-4">
               <FormField label="内部名称" name="name" markup="inline" defaultValue={editingSku?.name} required />
               <FormField label="产品代码（可修改）" name="sku_code" defaultValue={editingSku?.sku_code} placeholder="例如 GY-OTTER-T31 或 T31" />
-              <FabricCapabilitySelector key={editingSku?.id || 'new'} features={editingSku?.features} legacySummary={editingSku?.card_summary} />
+              <FabricCapabilitySelector key={editingSku?.id || 'new'} features={editingSku?.features} legacySummary={editingSku?.card_summary} capabilities={capabilities} />
               <div className="grid gap-3 sm:grid-cols-2"><FormField label="前台显示" name="visibility" select defaultValue={editingSku?.visibility || 'public'} options={[{ value: 'public', label: '显示' }, { value: 'hidden', label: '隐藏' }]} /><FormField label="内容状态" name="status" select defaultValue={editingSku?.status || 'active'} options={[{ value: 'active', label: '正常' }, { value: 'archived', label: '归档' }]} /></div>
               <div>
                 <label className="mb-2 block text-[12px] uppercase text-secondary">前台核心数据（最多三项）</label>

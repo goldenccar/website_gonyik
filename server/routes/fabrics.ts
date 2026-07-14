@@ -2,8 +2,69 @@ import { Router } from 'express'
 import { db, saveDb, getNextId, sortByOrderIndex, updateById, deleteById, uploadUrl, nextOrderIndex } from '../db'
 import { authMiddleware, AuthRequest } from '../middleware/auth'
 import { upload } from '../middleware/upload'
+import { FABRIC_CAPABILITY_THEMES } from '../../src/config/fabricCapabilities'
 
 const router = Router()
+const capabilityThemes = new Set(FABRIC_CAPABILITY_THEMES.map((item) => item.value))
+
+function readFeatureKeys(value: unknown) {
+  if (Array.isArray(value)) return value.map(String)
+  if (typeof value !== 'string') return []
+  try {
+    const parsed = JSON.parse(value)
+    return Array.isArray(parsed) ? parsed.map(String) : []
+  } catch {
+    return value.split(/[,、·]/).map((item) => item.trim()).filter(Boolean)
+  }
+}
+
+router.get('/capabilities', (_req, res) => {
+  res.json({ data: db.fabric_capabilities.sort(sortByOrderIndex) })
+})
+
+router.get('/admin/capabilities', authMiddleware, (_req, res) => {
+  res.json({ data: db.fabric_capabilities.sort(sortByOrderIndex) })
+})
+
+router.post('/admin/capabilities', authMiddleware, (req: AuthRequest, res) => {
+  const label = String(req.body.label || '').trim()
+  const theme = capabilityThemes.has(req.body.theme) ? req.body.theme : 'neutral'
+  if (!label) { res.status(400).json({ error: 'Label is required' }); return }
+  if (db.fabric_capabilities.some((item) => String(item.label).toLowerCase() === label.toLowerCase())) { res.status(409).json({ error: 'Label already exists' }); return }
+  const id = getNextId(db.fabric_capabilities)
+  const capability = { id, key: `custom-${id}`, label, theme, aliases: [], order_index: nextOrderIndex(db.fabric_capabilities) }
+  db.fabric_capabilities.push(capability)
+  saveDb()
+  res.json({ success: true, data: capability })
+})
+
+router.put('/admin/capabilities/:id', authMiddleware, (req: AuthRequest, res) => {
+  const id = Number(req.params.id)
+  const existing = db.fabric_capabilities.find((item) => item.id === id)
+  if (!existing) { res.status(404).json({ error: 'Not found' }); return }
+  const label = req.body.label === undefined ? existing.label : String(req.body.label).trim()
+  if (!label) { res.status(400).json({ error: 'Label is required' }); return }
+  if (db.fabric_capabilities.some((item) => item.id !== id && String(item.label).toLowerCase() === label.toLowerCase())) { res.status(409).json({ error: 'Label already exists' }); return }
+  updateById(db.fabric_capabilities, id, {
+    label,
+    theme: capabilityThemes.has(req.body.theme) ? req.body.theme : existing.theme,
+  })
+  saveDb()
+  res.json({ success: true })
+})
+
+router.delete('/admin/capabilities/:id', authMiddleware, (req: AuthRequest, res) => {
+  const id = Number(req.params.id)
+  const existing = db.fabric_capabilities.find((item) => item.id === id)
+  if (!existing) { res.status(404).json({ error: 'Not found' }); return }
+  deleteById(db.fabric_capabilities, id)
+  db.fabric_sku = db.fabric_sku.map((sku) => ({
+    ...sku,
+    features: JSON.stringify(readFeatureKeys(sku.features).filter((key) => key !== existing.key)),
+  }))
+  saveDb()
+  res.json({ success: true })
+})
 
 router.get('/series', (_req, res) => {
   res.json({ data: db.fabric_series.sort(sortByOrderIndex) })
@@ -37,7 +98,7 @@ router.get('/series/:slug', (req, res) => {
   }
   if (!series) { res.status(404).json({ error: 'Series not found' }); return }
   const skus = db.fabric_sku.filter((k) => k.series_id === series.id && k.visibility !== 'hidden' && k.status !== 'archived').sort(sortByOrderIndex)
-  res.json({ data: { ...series, skus } })
+  res.json({ data: { ...series, skus, capabilities: db.fabric_capabilities.sort(sortByOrderIndex) } })
 })
 
 router.get('/sku/:id', (req, res) => {
