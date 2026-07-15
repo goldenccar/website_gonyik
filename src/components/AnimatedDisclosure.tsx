@@ -1,4 +1,4 @@
-import { useRef, type AnimationEvent, type ReactNode } from 'react'
+import { useLayoutEffect, useRef, type ReactNode } from 'react'
 
 export default function AnimatedDisclosure({ open, children, className = '', replayKey, scrollOnExpand = false }: {
   open: boolean
@@ -8,30 +8,29 @@ export default function AnimatedDisclosure({ open, children, className = '', rep
   scrollOnExpand?: boolean
 }) {
   const rootRef = useRef<HTMLDivElement>(null)
+  const replayingExpansion = open && replayKey !== undefined
 
-  const handleAnimationEnd = (event: AnimationEvent<HTMLDivElement>) => {
-    if (
-      !open
-      || !scrollOnExpand
-      || event.currentTarget !== event.target
-      || event.animationName !== 'gonyik-disclosure-expand'
-    ) return
+  useLayoutEffect(() => {
+    if (!open || !scrollOnExpand) return
 
     rootRef.current?.scrollIntoView({
       behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
       block: 'start',
     })
-  }
+  }, [open, replayKey, scrollOnExpand])
 
   return (
     <div
-      key={replayKey}
       ref={rootRef}
-      aria-hidden={!open}
-      onAnimationEnd={handleAnimationEnd}
-      className={`grid transition-[grid-template-rows,opacity] duration-[240ms] ease-apple ${open ? `grid-rows-[1fr] opacity-100 ${replayKey === undefined ? '' : 'motion-disclosure-expand'}` : 'pointer-events-none grid-rows-[0fr] opacity-0'} ${className}`}
+      className={`[overflow-anchor:none] ${className}`}
     >
-      <div className="overflow-hidden">{children}</div>
+      <div
+        key={replayKey}
+        aria-hidden={!open}
+        className={`grid ${replayingExpansion ? '' : 'transition-[grid-template-rows,opacity] duration-[240ms] ease-apple'} ${open ? `grid-rows-[1fr] opacity-100 ${replayingExpansion ? 'motion-disclosure-expand' : ''}` : 'pointer-events-none grid-rows-[0fr] opacity-0'}`}
+      >
+        <div className="overflow-hidden">{children}</div>
+      </div>
     </div>
   )
 }
