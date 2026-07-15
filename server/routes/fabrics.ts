@@ -8,6 +8,16 @@ import { FABRIC_CAPABILITY_THEMES } from '../../src/config/fabricCapabilities'
 const router = Router()
 const capabilityThemes = new Set(FABRIC_CAPABILITY_THEMES.map((item) => item.value))
 
+function toPublicSku(sku: any) {
+  const { internal_code: _internalCode, ...publicSku } = sku
+  return publicSku
+}
+
+function getSeriesCode(seriesId: number) {
+  const slug = db.fabric_series.find((series) => series.id === seriesId)?.slug
+  return slug === 'otter' ? 'OT' : slug === 'rayo' ? 'RA' : slug === 'kais' ? 'KA' : null
+}
+
 function readFeatureKeys(value: unknown) {
   if (Array.isArray(value)) return value.map(String)
   if (typeof value !== 'string') return []
@@ -98,14 +108,14 @@ router.get('/series/:slug', (req, res) => {
     }
   }
   if (!series) { res.status(404).json({ error: 'Series not found' }); return }
-  const skus = db.fabric_sku.filter((k) => k.series_id === series.id && k.visibility !== 'hidden' && k.status !== 'archived').sort(sortByOrderIndex)
+  const skus = db.fabric_sku.filter((k) => k.series_id === series.id && k.visibility !== 'hidden' && k.status !== 'archived').sort(sortByOrderIndex).map(toPublicSku)
   res.json({ data: { ...series, skus, capabilities: db.fabric_capabilities.sort(sortByOrderIndex) } })
 })
 
 router.get('/sku/:id', (req, res) => {
   const row = db.fabric_sku.find((k) => k.id === Number(req.params.id))
   if (!row) { res.status(404).json({ error: 'SKU not found' }); return }
-  res.json({ data: row })
+  res.json({ data: toPublicSku(row) })
 })
 
 router.get('/admin/series', authMiddleware, (_req, res) => {
@@ -194,13 +204,21 @@ router.get('/admin/sku', authMiddleware, (req, res) => {
 })
 
 router.post('/admin/sku', authMiddleware, upload.single('image'), (req: AuthRequest, res) => {
-  const { series_id, name, sku_code, features, specifications, card_summary, visibility, status } = req.body
+  const { series_id, name, sku_code, internal_code, features, specifications, card_summary, visibility, status } = req.body
+  const externalCode = String(sku_code || '').trim().toUpperCase()
+  const internalCode = String(internal_code || '').trim().toUpperCase()
+  const seriesCode = getSeriesCode(Number(series_id))
+  if (!/^(OT|RA|KA)-\d{2}$/.test(externalCode)) { res.status(400).json({ error: '对外简码必须使用 OT-01、RA-01 或 KA-01 格式' }); return }
+  if (!internalCode) { res.status(400).json({ error: '内部结构码不能为空' }); return }
+  if (!seriesCode || !externalCode.startsWith(`${seriesCode}-`) || !internalCode.startsWith(seriesCode)) { res.status(400).json({ error: '对外简码和内部结构码必须与所属系列一致' }); return }
+  if ((db.product_code_registry || []).some((item) => item.sku_code === externalCode || item.internal_code === internalCode)) { res.status(409).json({ error: '对外简码或内部结构码已被使用，不得重新分配' }); return }
   const image = req.file ? registerUploadedFile(req.file, 'fabrics', '面料 SKU 图片').url : null
   const newSku = {
     id: getNextId(db.fabric_sku),
     series_id: Number(series_id),
     name,
-    sku_code,
+    sku_code: externalCode,
+    internal_code: internalCode,
     image,
     features,
     specifications,
@@ -210,6 +228,7 @@ router.post('/admin/sku', authMiddleware, upload.single('image'), (req: AuthRequ
     order_index: nextOrderIndex(db.fabric_sku),
   }
   db.fabric_sku.push(newSku)
+  db.product_code_registry = [...(db.product_code_registry || []), { sku_code: externalCode, internal_code: internalCode }]
   saveDb()
   res.json({ success: true, id: newSku.id })
 })
@@ -225,12 +244,22 @@ router.put('/admin/sku/:id', authMiddleware, upload.single('image'), (req: AuthR
   const id = Number(req.params.id)
   const existing = db.fabric_sku.find((k) => k.id === id)
   if (!existing) { res.status(404).json({ error: 'Not found' }); return }
-  const { series_id, name, sku_code, features, specifications, card_summary, visibility, status, order_index } = req.body
+  const { series_id, name, sku_code, internal_code, features, specifications, card_summary, visibility, status, order_index } = req.body
+  const externalCode = sku_code === undefined ? existing.sku_code : String(sku_code).trim().toUpperCase()
+  const internalCode = internal_code === undefined ? existing.internal_code : String(internal_code).trim().toUpperCase()
+  const targetSeriesId = series_id ? Number(series_id) : existing.series_id
+  const seriesCode = getSeriesCode(targetSeriesId)
+  if (!/^(OT|RA|KA)-\d{2}$/.test(externalCode)) { res.status(400).json({ error: '对外简码必须使用 OT-01、RA-01 或 KA-01 格式' }); return }
+  if (!internalCode) { res.status(400).json({ error: '内部结构码不能为空' }); return }
+  if (externalCode !== existing.sku_code || internalCode !== existing.internal_code) { res.status(409).json({ error: '已使用的产品代码不得修改；结构发生实质变化时请新建 SKU' }); return }
+  if (!seriesCode || !externalCode.startsWith(`${seriesCode}-`) || !internalCode.startsWith(seriesCode)) { res.status(400).json({ error: '对外简码和内部结构码必须与所属系列一致' }); return }
+  if (db.fabric_sku.some((item) => item.id !== id && (item.sku_code === externalCode || item.internal_code === internalCode))) { res.status(409).json({ error: '对外简码或内部结构码已被使用' }); return }
   const image = req.file ? registerUploadedFile(req.file, 'fabrics', '面料 SKU 图片').url : (req.body.image || existing.image)
   updateById(db.fabric_sku, id, {
-    series_id: series_id ? Number(series_id) : existing.series_id,
+    series_id: targetSeriesId,
     name: name ?? existing.name,
-    sku_code: sku_code ?? existing.sku_code,
+    sku_code: externalCode,
+    internal_code: internalCode,
     image,
     features: features ?? existing.features,
     specifications: specifications ?? existing.specifications,

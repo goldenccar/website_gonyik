@@ -20,6 +20,7 @@ export interface Database {
   fabric_series: any[]
   fabric_capabilities: any[]
   fabric_sku: any[]
+  product_code_registry?: { sku_code: string; internal_code: string }[]
   fabric_scenes: any[]
   digital_assets: any[]
   media_items: any[]
@@ -38,6 +39,7 @@ export interface Database {
   technology_sections_version?: number
   rpo_sotex_naming_version?: number
   brand_identity_version?: number
+  product_dual_code_version?: number
   service_sections_version?: number
   inquiry_subjects: any[]
   contact_messages: any[]
@@ -281,6 +283,7 @@ function createDefaultDb(): Database {
     technology_sections_version: 4,
     rpo_sotex_naming_version: 1,
     brand_identity_version: 1,
+    product_dual_code_version: 1,
     service_sections_version: 1,
     social_media: [
       { id: 1, platform: 'wechat', account: '港翼科技GONYIK', qrcode_url: null },
@@ -310,13 +313,12 @@ function createDefaultDb(): Database {
     digital_assets: [],
     media_items: [],
     fabric_sku: [
-      { id: 1, series_id: 1, name: 'Otter-T31', sku_code: 'GY-OTTER-T31', image: null, features: '["无氟","3L复合","防水透气","RPO膜","再生材料"]', specifications: '{"结构":"3L","面层":"88% PA6 [REC] + 12% SP","中间层":"100% Solidgood RPO Membrane","底层":"100% PES [REC]","克重":"188 g/m²","规格":"80D","认证":"SGS / CTTC / OEKO-TEX 100 / GRS"}', order_index: 0 },
-      { id: 2, series_id: 1, name: 'Otter-T32', sku_code: 'GY-OTTER-T32', image: null, features: '["无氟","3L复合","防水透气","RPO膜","再生材料"]', specifications: '{"结构":"3L","面层":"88% PA6 [REC] + 12% SP","中间层":"100% Solidgood RPO Membrane","底层":"100% PES [REC]","克重":"165 g/m²","规格":"70D","认证":"SGS / CTTC / OEKO-TEX 100 / GRS"}', order_index: 1 },
-      { id: 3, series_id: 1, name: 'Otter-T33', sku_code: 'GY-OTTER-T33', image: null, features: '["无氟","3L复合","防水透气","RPO膜","再生材料"]', specifications: '{"结构":"3L","面层":"88% PA6 [REC] + 12% SP","中间层":"100% Solidgood RPO Membrane","底层":"100% PES [REC]","克重":"210 g/m²","规格":"100D","认证":"SGS / CTTC / OEKO-TEX 100 / GRS"}', order_index: 2 },
-      { id: 3, series_id: 2, name: 'Kinetic-100', sku_code: 'GY-KINETIC-100', image: null, features: '["高弹","速干"]', specifications: '{"stretch":"30%","breathable":"12000g/m²/24h","weight":"100g/m²"}', order_index: 0 },
-      { id: 4, series_id: 2, name: 'Kinetic-101', sku_code: 'GY-KINETIC-101', image: null, features: '["高弹","速干"]', specifications: '{"stretch":"40%","breathable":"15000g/m²/24h","weight":"110g/m²"}', order_index: 1 },
-      { id: 5, series_id: 3, name: 'Lumix-100', sku_code: 'GY-LUMIX-100', image: null, features: '["轻量化","透光"]', specifications: '{"weight":"60g/m²","transparency":"15%","uv":"UPF50+"}', order_index: 0 },
-      { id: 6, series_id: 3, name: 'Lumix-101', sku_code: 'GY-LUMIX-101', image: null, features: '["轻量化","透光"]', specifications: '{"weight":"70g/m²","transparency":"20%","uv":"UPF50+"}', order_index: 1 },
+      { id: 1, series_id: 1, name: 'OT-01（原T31）', sku_code: 'OT-01', internal_code: 'OT3-PAEL70-V15-PES50-B', image: null, features: '["无氟","3L复合","RPO膜"]', specifications: '{"结构":"3L","面层":"70D锦氨面布 · 130 g/m²","中层":"V1.5膜 · 4 g/m²","底层":"50D纯涤佳积布 · 95 g/m²","胶量":"两面各12 g/m²，合计24 g/m²","复合纹路":"篮球纹","理论成品克重":"253 g/m²"}', card_summary: '', visibility: 'public', status: 'active', order_index: 0 },
+      { id: 2, series_id: 1, name: 'OT-02', sku_code: 'OT-02', internal_code: 'OT3-PAEL50-V20-PES30-D', image: null, features: '["无氟","3L复合","RPO膜"]', specifications: '{"结构":"3L","面层":"50D锦氨面布 · 100 g/m²","中层":"V2.0膜 · 4 g/m²","底层":"30D纯涤高密精编可特 · 55 g/m²","胶量":"两面各12 g/m²，合计24 g/m²","复合纹路":"小菱形纹","理论成品克重":"183 g/m²"}', card_summary: '', visibility: 'public', status: 'active', order_index: 1 },
+    ],
+    product_code_registry: [
+      { sku_code: 'OT-01', internal_code: 'OT3-PAEL70-V15-PES50-B' },
+      { sku_code: 'OT-02', internal_code: 'OT3-PAEL50-V20-PES30-D' },
     ],
     test_reports: [],
     equipment_categories: [
@@ -366,7 +368,7 @@ function createDefaultDb(): Database {
       { id: 5, year: '2026', event: '发布 100% 无氟产品路线图', order_index: 4 },
     ],
     news: [
-      { id: 1, title: '港翼科技发布 2026 春夏面料系列', cover_image: null, content: '<p>本季新品涵盖 Osmo、Kinetic、Lumix、Tread 四大系列，在保持卓越功能性的同时，全面采用无氟防水技术。</p>', images: null, status: 'published', published_at: new Date().toISOString(), created_at: new Date().toISOString() },
+      { id: 1, title: '港翼科技发布 2026 春夏面料系列', cover_image: null, content: '<p>本季产品围绕 Otter、Rayo、Kais 三条面料与防护材料路径展开。</p>', images: null, status: 'published', published_at: new Date().toISOString(), created_at: new Date().toISOString() },
       { id: 2, title: '荣获 bluesign® 系统合作伙伴认证', cover_image: null, content: '<p>标志着港翼科技在可持续生产和环境管理方面达到国际领先水平。</p>', images: null, status: 'published', published_at: new Date(Date.now() - 7 * 86400000).toISOString(), created_at: new Date(Date.now() - 7 * 86400000).toISOString() },
       { id: 3, title: '无氟防水技术白皮书正式发布', cover_image: null, content: '<p>详细阐述了港翼科技在无氟防水领域的研发路径、测试数据与环保效益。</p>', images: null, status: 'published', published_at: new Date(Date.now() - 14 * 86400000).toISOString(), created_at: new Date(Date.now() - 14 * 86400000).toISOString() },
     ],
@@ -419,6 +421,79 @@ function replaceLegacyBrandIdentity(value: any): any {
   return value
 }
 
+function migrateProductDualCode(database: Database) {
+  const otterSeries = database.fabric_series?.find((series: any) => series.slug === 'otter')
+  if (!otterSeries) return
+
+  const existingSkus = Array.isArray(database.fabric_sku) ? database.fabric_sku : []
+  const source = existingSkus.find((sku: any) => sku.sku_code === 'OT-001')
+    || existingSkus.find((sku: any) => sku.series_id === otterSeries.id && /T31|N70|PAEL70/i.test(`${sku.name || ''} ${sku.sku_code || ''}`))
+    || existingSkus.find((sku: any) => sku.series_id === otterSeries.id)
+  let sourceSpecs: Record<string, string> = {}
+  try { sourceSpecs = typeof source?.specifications === 'string' ? JSON.parse(source.specifications) : (source?.specifications || {}) } catch { sourceSpecs = {} }
+
+  const firstId = source?.id ?? getNextId(existingSkus)
+  const secondId = Math.max(firstId + 1, getNextId(existingSkus))
+  database.fabric_sku = [
+    {
+      id: firstId,
+      series_id: otterSeries.id,
+      name: 'OT-01（原T31）',
+      sku_code: 'OT-01',
+      internal_code: 'OT3-PAEL70-V15-PES50-B',
+      image: source?.image || null,
+      features: source?.features || '["无氟","3L复合","RPO膜"]',
+      specifications: JSON.stringify({
+        ...sourceSpecs,
+        '结构': '3L',
+        '面层': '70D锦氨面布 · 130 g/m²',
+        '中层': 'V1.5膜 · 4 g/m²',
+        '底层': '50D纯涤佳积布 · 95 g/m²',
+        '胶量': '两面各12 g/m²，合计24 g/m²',
+        '复合纹路': '篮球纹',
+        '理论成品克重': '253 g/m²',
+      }),
+      card_summary: source?.card_summary || '',
+      visibility: 'public',
+      status: 'active',
+      order_index: 0,
+    },
+    {
+      id: secondId,
+      series_id: otterSeries.id,
+      name: 'OT-02',
+      sku_code: 'OT-02',
+      internal_code: 'OT3-PAEL50-V20-PES30-D',
+      image: null,
+      features: '["无氟","3L复合","RPO膜"]',
+      specifications: JSON.stringify({
+        '结构': '3L',
+        '面层': '50D锦氨面布 · 100 g/m²',
+        '中层': 'V2.0膜 · 4 g/m²',
+        '底层': '30D纯涤高密精编可特 · 55 g/m²',
+        '胶量': '两面各12 g/m²，合计24 g/m²',
+        '复合纹路': '小菱形纹',
+        '理论成品克重': '183 g/m²',
+      }),
+      card_summary: '',
+      visibility: 'public',
+      status: 'active',
+      order_index: 1,
+    },
+  ]
+  database.product_code_registry = database.fabric_sku.map((sku: any) => ({
+    sku_code: sku.sku_code,
+    internal_code: sku.internal_code,
+  }))
+
+  database.news = (database.news || []).map((item: any) => ({
+    ...item,
+    content: typeof item.content === 'string'
+      ? item.content.replaceAll('Osmo、Kinetic、Lumix、Tread 四大系列', 'Otter、Rayo、Kais 三条面料与防护材料路径')
+      : item.content,
+  }))
+}
+
 export function initDatabase() {
   if (fs.existsSync(DB_PATH)) {
     db = JSON.parse(fs.readFileSync(DB_PATH, 'utf-8'))
@@ -430,6 +505,11 @@ export function initDatabase() {
     if ((db.brand_identity_version ?? 0) < 1) {
       replaceLegacyBrandIdentity(db)
       db.brand_identity_version = 1
+      saveDb()
+    }
+    if ((db.product_dual_code_version ?? 0) < 1) {
+      migrateProductDualCode(db)
+      db.product_dual_code_version = 1
       saveDb()
     }
     // Backward compatibility: ensure new fields exist

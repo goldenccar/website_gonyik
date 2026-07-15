@@ -101,6 +101,7 @@ export interface FabricSku {
   series_id: number
   name: string
   sku_code: string
+  internal_code?: string
   image: string | null
   features: string // JSON
   specifications: string // JSON

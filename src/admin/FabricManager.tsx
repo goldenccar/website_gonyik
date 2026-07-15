@@ -97,6 +97,7 @@ export default function AdminFabricManager() {
     formData.append('series_id', String(selectedSeries))
     formData.append('name', data.name as string)
     formData.append('sku_code', data.sku_code as string)
+    formData.append('internal_code', data.internal_code as string)
     formData.append('features', JSON.stringify(fd.getAll('capabilities')))
     formData.append('card_summary', editingSku?.card_summary || '')
     formData.append('visibility', (data.visibility as string) || 'public')
@@ -242,7 +243,8 @@ export default function AdminFabricManager() {
                 <thead className="border-b border-white/10 text-accent uppercase">
                   <tr>
                     <th className="px-6 py-3">SKU 名称</th>
-                    <th className="px-6 py-3">编码</th>
+                    <th className="px-6 py-3">对外简码</th>
+                    <th className="px-6 py-3">内部结构码</th>
                     <th className="px-6 py-3 text-right">操作</th>
                   </tr>
                 </thead>
@@ -251,6 +253,7 @@ export default function AdminFabricManager() {
                     <tr key={k.id} className="border-b border-white/5">
                       <td className="px-6 py-4 font-medium">{k.name}</td>
                       <td className="px-6 py-4 text-accent">{k.sku_code}</td>
+                      <td className="px-6 py-4 text-accent">{k.internal_code || '-'}</td>
                       <td className="px-6 py-4 text-right">
                         <button onClick={() => { setEditingSku(k); setShowSkuForm(true) }} className="text-accent hover:text-white mr-3">
                           <Edit2 size={14} />
@@ -266,7 +269,7 @@ export default function AdminFabricManager() {
               {skus.length === 0 && <p className="text-accent text-center py-8">暂无 SKU</p>}
             </div>
             <div className="md:hidden">
-              <ResponsiveAdminList items={skus} getKey={(item) => item.id} emptyLabel="暂无 SKU" renderTitle={(item) => item.name} renderSubtitle={(item) => item.sku_code || '未填写编码'} renderActions={(item) => <><button type="button" onClick={() => { setEditingSku(item); setShowSkuForm(true) }} className="flex h-11 w-11 items-center justify-center text-accent" aria-label={`编辑${item.name}`}><Edit2 size={16} /></button><button type="button" onClick={() => deleteSku(item.id)} className="flex h-11 w-11 items-center justify-center text-error" aria-label={`删除${item.name}`}><Trash2 size={16} /></button></>} />
+              <ResponsiveAdminList items={skus} getKey={(item) => item.id} emptyLabel="暂无 SKU" renderTitle={(item) => item.name} renderSubtitle={(item) => [item.sku_code, item.internal_code].filter(Boolean).join(' · ') || '未填写编码'} renderActions={(item) => <><button type="button" onClick={() => { setEditingSku(item); setShowSkuForm(true) }} className="flex h-11 w-11 items-center justify-center text-accent" aria-label={`编辑${item.name}`}><Edit2 size={16} /></button><button type="button" onClick={() => deleteSku(item.id)} className="flex h-11 w-11 items-center justify-center text-error" aria-label={`删除${item.name}`}><Trash2 size={16} /></button></>} />
             </div>
             <ContentRailEditor label="SKU 横向轨道" items={skus} renderCard={(sku) => <SkuCard key={sku.id} sku={sku} seriesName={series.find((item) => item.id === selectedSeries)?.name} capabilities={capabilities} />} onEdit={(sku) => { setEditingSku(sku); setShowSkuForm(true) }} onMove={moveSku} onVisibility={toggleSkuVisibility} endCard={rail} onEndCardChange={(patch) => setRail({ ...rail, ...patch })} onSaveEndCard={saveRail} />
           </div>
@@ -301,7 +304,8 @@ export default function AdminFabricManager() {
           <Modal title={editingSku ? '编辑 SKU' : '新增 SKU'} onClose={() => setShowSkuForm(false)}>
             <form onSubmit={handleSaveSku} className="space-y-4">
               <FormField label="内部名称" name="name" markup="inline" defaultValue={editingSku?.name} required />
-              <FormField label="产品代码（可修改）" name="sku_code" defaultValue={editingSku?.sku_code} placeholder="例如 GY-OTTER-T31 或 T31" />
+              <FormField label={`对外简码${editingSku ? '（已锁定）' : ''}`} name="sku_code" defaultValue={editingSku?.sku_code} placeholder="例如 OT-01" required readOnly={Boolean(editingSku)} />
+              <FormField label={`内部结构码${editingSku ? '（已锁定）' : ''}`} name="internal_code" defaultValue={editingSku?.internal_code} placeholder="例如 OT3-PAEL70-V15-PES50-B" required readOnly={Boolean(editingSku)} />
               <FabricCapabilitySelector key={editingSku?.id || 'new'} features={editingSku?.features} legacySummary={editingSku?.card_summary} capabilities={capabilities} />
               <div className="grid gap-3 sm:grid-cols-2"><FormField label="前台显示" name="visibility" select defaultValue={editingSku?.visibility || 'public'} options={[{ value: 'public', label: '显示' }, { value: 'hidden', label: '隐藏' }]} /><FormField label="内容状态" name="status" select defaultValue={editingSku?.status || 'active'} options={[{ value: 'active', label: '正常' }, { value: 'archived', label: '归档' }]} /></div>
               <div>

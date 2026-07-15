@@ -21,6 +21,7 @@ type InputFieldProps = CommonProps & {
   placeholder?: string
   rows?: never
   accept?: string
+  readOnly?: boolean
 }
 
 type TextareaFieldProps = CommonProps & {
@@ -94,6 +95,7 @@ export default function FormField(props: FormFieldProps) {
           onChange={props.onChange}
           placeholder={props.placeholder}
           accept={props.accept}
+          readOnly={props.readOnly}
           className={inputClass}
         />
       )}
