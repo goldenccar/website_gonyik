@@ -188,6 +188,7 @@
 .motion-hero-media { animation: gonyik-hero-media 1200ms var(--motion-ease) both; }
 
 .motion-content-enter { animation: gonyik-content-enter var(--motion-switch) var(--motion-ease) both; }
+.motion-disclosure-expand { animation: gonyik-disclosure-expand 240ms var(--motion-ease) both; }
 
 .motion-section { position: relative; }
 .motion-section::before {
@@ -223,6 +224,11 @@
 @keyframes gonyik-content-enter {
   from { opacity: 0; transform: translateY(7px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes gonyik-disclosure-expand {
+  from { grid-template-rows: 0fr; opacity: 0; }
+  to { grid-template-rows: 1fr; opacity: 1; }
 }
 
 .gonyik-material-placeholder {

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { getFabricSeries, getFabricSeriesDetail, getPageConfig } from '@/api/client'
 import HorizontalRail from '@/components/HorizontalRail'
@@ -26,7 +26,6 @@ export default function FabricDatabase() {
   const [detailLoading, setDetailLoading] = useState(false)
   const [selectedSku, setSelectedSku] = useState<FabricSku | null>(null)
   const [skuOpen, setSkuOpen] = useState(false)
-  const skuDetailRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
     Promise.all([getPageConfig('fabrics'), getFabricSeries()]).then(([config, list]) => {
@@ -66,7 +65,6 @@ export default function FabricDatabase() {
     }
     setSelectedSku(sku)
     setSkuOpen(true)
-    window.setTimeout(() => skuDetailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50)
   }
 
   return (
@@ -112,8 +110,8 @@ export default function FabricDatabase() {
         ) : <p className="border-t border-border py-8 text-body text-secondary">该系列具体型号正在整理中。</p>}
         </div>
 
-        <AnimatedDisclosure open={skuOpen && Boolean(selectedSku)} className="mt-10">
-        {selectedSku && <section ref={skuDetailRef} className="scroll-mt-[84px] pt-5" aria-live="polite">
+        <AnimatedDisclosure open={skuOpen && Boolean(selectedSku)} replayKey={selectedSku?.id} className="mt-10">
+        {selectedSku && <section className="pt-5" aria-live="polite">
             <p className="label-en text-secondary"><InlineMarkup text={detail?.name} /> / {getSkuDisplayCode(selectedSku.sku_code, detail?.name)}</p>
             <h3 className="type-module-title mt-3 text-primary"><InlineMarkup text={page?.core_performance_title || '核心性能'} /></h3>
             <div className="mt-8 grid gap-x-8 gap-y-6 md:grid-cols-3">
