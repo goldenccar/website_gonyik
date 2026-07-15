@@ -36,6 +36,8 @@ export interface Database {
   contact_config: any
   fluorine_sections: any[]
   technology_sections_version?: number
+  rpo_sotex_naming_version?: number
+  brand_identity_version?: number
   service_sections_version?: number
   inquiry_subjects: any[]
   contact_messages: any[]
@@ -76,9 +78,9 @@ function createDefaultDb(): Database {
         {
           icon: 'Atom',
           title: '固纳 RPO',
-          subtitle: 'GONYIK 专有无氟材料平台',
+          subtitle: '固纳高性能材料平台',
           description: '以配方与工艺创新\n实现高性能与可持续的平衡',
-          footer: 'GONYIK Proprietary Platform',
+          footer: 'SOLIDGOOD RPO',
         },
         {
           icon: 'Hexagon',
@@ -277,6 +279,8 @@ function createDefaultDb(): Database {
       },
     ],
     technology_sections_version: 4,
+    rpo_sotex_naming_version: 1,
+    brand_identity_version: 1,
     service_sections_version: 1,
     social_media: [
       { id: 1, platform: 'wechat', account: '港翼科技GONYIK', qrcode_url: null },
@@ -392,9 +396,42 @@ function createDefaultDb(): Database {
 
 export let db: Database
 
+function replaceLegacyRpoName(value: any): any {
+  if (typeof value === 'string') return value.replaceAll('RPO-TEX', 'RPO-SOTEX')
+  if (Array.isArray(value)) return value.map(replaceLegacyRpoName)
+  if (value && typeof value === 'object') {
+    for (const key of Object.keys(value)) value[key] = replaceLegacyRpoName(value[key])
+  }
+  return value
+}
+
+function replaceLegacyBrandIdentity(value: any): any {
+  if (typeof value === 'string') {
+    return value
+      .replaceAll('固纳科技旗下', '固纳旗下')
+      .replaceAll('GONYIK 专有无氟材料平台', '固纳高性能材料平台')
+      .replaceAll('GONYIK Proprietary Platform', 'SOLIDGOOD RPO')
+  }
+  if (Array.isArray(value)) return value.map(replaceLegacyBrandIdentity)
+  if (value && typeof value === 'object') {
+    for (const key of Object.keys(value)) value[key] = replaceLegacyBrandIdentity(value[key])
+  }
+  return value
+}
+
 export function initDatabase() {
   if (fs.existsSync(DB_PATH)) {
     db = JSON.parse(fs.readFileSync(DB_PATH, 'utf-8'))
+    if ((db.rpo_sotex_naming_version ?? 0) < 1) {
+      replaceLegacyRpoName(db)
+      db.rpo_sotex_naming_version = 1
+      saveDb()
+    }
+    if ((db.brand_identity_version ?? 0) < 1) {
+      replaceLegacyBrandIdentity(db)
+      db.brand_identity_version = 1
+      saveDb()
+    }
     // Backward compatibility: ensure new fields exist
     if (!db.contact_config) {
       db.contact_config = { id: 1, email: 'contact@gangyi.tech', phone: '400-XXX-XXXX', address: '上海市', response_text: '提交表单后，我们的面料顾问将在 3 个工作日内与您取得联系' }
@@ -552,7 +589,7 @@ export function initDatabase() {
         platform_section_link: '/pfas-free-innovation',
         platform_cards: [
           { icon: 'Building2', title: '科研来源', subtitle: '香港科技大学（广州）科创成果转化', description: '先进材料与工程研究基础\n创新驱动，工程化商落地', footer: 'HKUST(GZ) Origin' },
-          { icon: 'Atom', title: '固纳 RPO', subtitle: 'GONYIK 专有无氟材料平台', description: '以配方与工艺创新\n实现高性能与可持续的平衡', footer: 'GONYIK Proprietary Platform' },
+          { icon: 'Atom', title: '固纳 RPO', subtitle: '固纳高性能材料平台', description: '以配方与工艺创新\n实现高性能与可持续的平衡', footer: 'SOLIDGOOD RPO' },
           { icon: 'Hexagon', title: '无氟复合体系', subtitle: 'PFAS-FREE 复合材料体系', description: '在防护、耐久与舒适之间\n达成可靠平衡', footer: 'PFAS-Free by Design' },
           { icon: 'Shirt', title: '功能织物结构设计', subtitle: '以纤维与结构设计', description: '放大材料潜能\n服务多样化应用需求', footer: 'Engineered for Performance' },
         ],
@@ -699,7 +736,7 @@ export function initDatabase() {
     }
     if (db.fluorine_sections?.[0]?.title === '什么是 RPO 材料技术平台？') {
       const technologyContent = [
-        { title: '膜技术', subtitle: 'RPO-TEX 无氟纳米膜', content: 'RPO-TEX 是固纳体系内的无氟纳米膜，用作特定复合面料的功能层，承担防水、透湿及相关防护作用。该技术仅关联实际采用 RPO-TEX 的产品。' },
+        { title: '膜技术', subtitle: 'RPO-SOTEX 无氟纳米膜', content: 'RPO-SOTEX 是固纳体系内的无氟纳米膜，用作特定复合面料的功能层，承担防水、透湿及相关防护作用。该技术仅关联实际采用 RPO-SOTEX 的产品。' },
         { title: '面料复合技术', subtitle: '从单层材料到复合性能', content: '通过面层、胶层、功能层和内层的协同设计，将不同材料复合成可直接用于服装与装备的完整面料。复合方式、基布选择和层间结合共同影响防护、手感、透湿与耐久。' },
         { title: '无氟染整与功能整理', subtitle: '不依赖 RPO 膜的功能面料路径', content: '用于 Rayo 等非膜结构功能面料，通过无氟防泼、导湿、速干、防晒或凉感整理，使功能直接作用于基布。具体能力以对应 SKU 和测试结果为准。' },
         { title: '供应链管理', subtitle: '让技术稳定进入产品', content: '港翼严格选择供应链合作伙伴，围绕材料来源、质量稳定性、生产能力和相关资质进行综合评估。从织物、功能材料到复合加工，我们持续管理材料规格、批次信息和工艺要求，使确认过的技术方案能够稳定进入面料并实现交付。' },
@@ -797,8 +834,8 @@ export function initDatabase() {
       technologyPage.page_subtitle = '探索膜、复合、功能整理、供应链与测试验证。'
     }
     const membraneSection = db.fluorine_sections?.find((section: any) => section.page_key === 'pfas-free-innovation' && section.title === '膜技术')
-    if (membraneSection?.content === 'RPO-TEX 是固纳体系内的膜产品，用作特定复合面料的功能层，承担防水、透湿及相关防护作用。它只关联实际采用该膜的 SKU，不代表港翼全部材料技术。') {
-      membraneSection.content = 'RPO-TEX 是固纳体系内的无氟纳米膜，用作特定复合面料的功能层，承担防水、透湿及相关防护作用。该技术仅关联实际采用 RPO-TEX 的产品。'
+    if (membraneSection?.content === 'RPO-SOTEX 是固纳体系内的膜产品，用作特定复合面料的功能层，承担防水、透湿及相关防护作用。它只关联实际采用该膜的 SKU，不代表港翼全部材料技术。') {
+      membraneSection.content = 'RPO-SOTEX 是固纳体系内的无氟纳米膜，用作特定复合面料的功能层，承担防水、透湿及相关防护作用。该技术仅关联实际采用 RPO-SOTEX 的产品。'
     }
     const supplyChainSection = db.fluorine_sections?.find((section: any) => section.page_key === 'pfas-free-innovation' && section.title === '材料与供应链管理')
     if (supplyChainSection?.content === '围绕膜、胶水、基布、染整、复合和批次资料进行协同管理，使材料方案能够被打样、追溯、验证和交付。官网不公开配方、供应商名单或客户机密。') {
@@ -816,7 +853,7 @@ export function initDatabase() {
         platform_section_link_text: '探索技术',
         platform_section_link: '/pfas-free-innovation',
         platform_cards: [
-          { icon: 'Layers', title: '膜技术', subtitle: 'RPO-TEX 用于特定复合面料的功能层', description: '承担防水、透湿及相关防护作用', footer: 'MEMBRANE' },
+          { icon: 'Layers', title: '膜技术', subtitle: 'RPO-SOTEX 用于特定复合面料的功能层', description: '承担防水、透湿及相关防护作用', footer: 'MEMBRANE' },
           { icon: 'Hexagon', title: '面料复合', subtitle: '让面层、功能层与内层形成完整材料', description: '协同防护、手感与耐久表现', footer: 'LAMINATION' },
           { icon: 'Droplets', title: '无氟染整', subtitle: '服务 Rayo 等非膜结构功能面料', description: '实现防晒、导湿、速干等具体功能', footer: 'FINISHING' },
         ],
