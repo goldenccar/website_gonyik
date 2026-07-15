@@ -530,6 +530,10 @@ export function initDatabase() {
       .filter((section: any) => section.page_key === 'pfas-free-innovation')
       .forEach((section: any) => {
         if (section.nav_label === undefined) { section.nav_label = section.title; contentSectionsChanged = true }
+        if (section.title === '高性能纤维' && section.nav_label === '纤维与功能整理') {
+          section.nav_label = '高性能纤维'
+          contentSectionsChanged = true
+        }
         if (section.module_type === undefined) { section.module_type = 'rich'; contentSectionsChanged = true }
       })
     if ((db.service_sections_version ?? 0) < 1) {

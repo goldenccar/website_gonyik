@@ -12,10 +12,11 @@ import PrimaryButton from './components/PrimaryButton'
 import SaveCancelButtons from './components/SaveCancelButtons'
 import ResponsiveAdminList from './components/ResponsiveAdminList'
 
-type SectionDraft = Pick<FluorineSection, 'title' | 'subtitle' | 'content' | 'image_url' | 'image_fit'> & { id?: number }
+type SectionDraft = Pick<FluorineSection, 'title' | 'subtitle' | 'content' | 'image_url' | 'image_fit' | 'nav_label'> & { id?: number }
 
 const EMPTY_SECTION: SectionDraft = {
   title: '',
+  nav_label: '',
   subtitle: '',
   content: '',
   image_url: null,
@@ -56,6 +57,7 @@ export default function AdminFluorineManager() {
     try {
       const payload = {
         title: draft.title.trim(),
+        nav_label: draft.nav_label?.trim() || draft.title.trim(),
         subtitle: draft.subtitle.trim(),
         content: draft.content,
         image_url: draft.image_url,
@@ -148,8 +150,9 @@ export default function AdminFluorineManager() {
         <Modal title={draft.id ? '编辑技术模块' : '新增技术模块'} onClose={closeEditor} maxWidth="max-w-[1100px]">
           <form onSubmit={submit} className="space-y-5">
             <div className="grid gap-4 sm:grid-cols-2">
+              <FormField label="目录名称" name="nav_label" required markup="inline" value={draft.nav_label || ''} onChange={(event) => setDraft({ ...draft, nav_label: event.target.value })} />
               <FormField label="标题" name="title" required markup="inline" value={draft.title} onChange={(event) => setDraft({ ...draft, title: event.target.value })} />
-              <FormField label="副标题" name="subtitle" markup="inline" value={draft.subtitle} onChange={(event) => setDraft({ ...draft, subtitle: event.target.value })} />
+              <FormField className="sm:col-span-2" label="副标题" name="subtitle" markup="inline" value={draft.subtitle} onChange={(event) => setDraft({ ...draft, subtitle: event.target.value })} />
             </div>
 
             <FormField label="正文内容" name="content" textarea rows={7} markup="block" value={draft.content} onChange={(event) => setDraft({ ...draft, content: event.target.value })} />
