@@ -26,7 +26,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use('/api', (req, res, next) => {
   const adminRequest = req.path.split('/').includes('admin')
   const fabricRequest = req.path.startsWith('/fabrics')
-  if (req.method === 'GET' && fabricRequest) {
+  if (['GET', 'HEAD'].includes(req.method) && fabricRequest) {
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
   } else if (req.method === 'GET' && !adminRequest) {
     res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=300')
