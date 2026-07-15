@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import { getFabricSeries, getFabricSeriesDetail, getPageConfig } from '@/api/client'
 import HorizontalRail from '@/components/HorizontalRail'
 import PageHero from '@/components/PageHero'
@@ -26,6 +26,7 @@ export default function FabricDatabase() {
   const [detailLoading, setDetailLoading] = useState(false)
   const [selectedSku, setSelectedSku] = useState<FabricSku | null>(null)
   const [skuOpen, setSkuOpen] = useState(false)
+  const skuDetailRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
     Promise.all([getPageConfig('fabrics'), getFabricSeries()]).then(([config, list]) => {
@@ -63,8 +64,15 @@ export default function FabricDatabase() {
       setSkuOpen(false)
       return
     }
+    const switchingOpenSku = skuOpen && selectedSku?.id !== sku.id
     setSelectedSku(sku)
     setSkuOpen(true)
+    if (!switchingOpenSku) {
+      window.setTimeout(() => skuDetailRef.current?.scrollIntoView({
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+        block: 'start',
+      }), 50)
+    }
   }
 
   return (
@@ -111,13 +119,14 @@ export default function FabricDatabase() {
         </div>
 
         <AnimatedDisclosure open={skuOpen && Boolean(selectedSku)} replayKey={selectedSku?.id} className="mt-10">
-        {selectedSku && <section className="pt-5" aria-live="polite">
+        {selectedSku && <section ref={skuDetailRef} className="scroll-mt-[84px] pt-5" aria-live="polite">
             <p className="label-en text-secondary"><InlineMarkup text={detail?.name} /> / {getSkuDisplayCode(selectedSku.sku_code, detail?.name)}</p>
             <h3 className="type-module-title mt-3 text-primary"><InlineMarkup text={page?.core_performance_title || '核心性能'} /></h3>
             <div className="mt-8 grid gap-x-8 gap-y-6 md:grid-cols-3">
               {Object.entries(parseSpecs(selectedSku.specifications)).slice(0, 3).map(([label, value]) => <div key={label} className="border-t border-border pt-4"><p className="text-[13px] font-medium text-secondary"><InlineMarkup text={label} /></p><p className="mt-2 text-[18px] font-medium text-primary"><InlineMarkup text={value} /></p></div>)}
             </div>
-            <p className="mt-7 max-w-[720px] text-[13px] text-secondary">页面仅展示该型号已有的结构与性能资料；测试方法、适用条件和第三方验证以对应资料为准。</p>
+            <p className="mt-7 max-w-[760px] text-[13px] text-secondary">页面数据为代表性样品的典型值。不同测试标准、版本及测试条件下的结果可能存在差异，具体规格、测试方法和适用条件以对应 TDS 为准。如需 GB、JIS、ISO 等标准资料，请联系我们。</p>
+            <Link to="/contact" className="mt-4 inline-block text-[14px] font-medium text-primary underline underline-offset-4">获取完整 TDS →</Link>
           </section>}
         </AnimatedDisclosure>
         </div>
