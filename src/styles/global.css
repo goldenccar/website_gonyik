@@ -323,13 +323,14 @@
 }
 
 .material-render-lamination {
-  --lamination-top-open-y: -34px;
-  --lamination-bottom-open-y: 34px;
+  --lamination-top-open-y: -23px;
+  --lamination-bottom-open-y: 23px;
   height: calc(100% - 12px);
   margin-block: 6px;
   overflow: clip;
   contain: paint;
   isolation: isolate;
+  transform: translateY(20px);
 }
 .material-render-lamination-top {
   --lamination-open-y: var(--lamination-top-open-y);
@@ -491,10 +492,11 @@
   .viz-fog > g:nth-child(3) { display: none; }
   .viz-fog-aura { opacity: .28; }
   .material-render-lamination {
-    --lamination-top-open-y: -25px;
-    --lamination-bottom-open-y: 25px;
+    --lamination-top-open-y: -17px;
+    --lamination-bottom-open-y: 17px;
     height: calc(100% - 8px);
     margin-block: 4px;
+    transform: translateY(12px);
   }
 }
 
