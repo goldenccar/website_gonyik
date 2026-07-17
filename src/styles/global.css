@@ -257,6 +257,14 @@
   overflow: hidden;
   background: transparent;
 }
+.material-render-stage {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: visible;
+  isolation: isolate;
+  pointer-events: none;
+}
 .material-render-image {
   position: absolute;
   inset: 0;
@@ -315,8 +323,13 @@
 }
 
 .material-render-lamination {
-  --lamination-top-open-y: -38px;
-  --lamination-bottom-open-y: 38px;
+  --lamination-top-open-y: -34px;
+  --lamination-bottom-open-y: 34px;
+  height: calc(100% - 12px);
+  margin-block: 6px;
+  overflow: clip;
+  contain: paint;
+  isolation: isolate;
 }
 .material-render-lamination-top {
   --lamination-open-y: var(--lamination-top-open-y);
@@ -324,10 +337,14 @@
 }
 .material-render-lamination-membrane {
   filter: drop-shadow(0 9px 7px rgb(13 34 48 / .1));
+  -webkit-mask: url('/visuals/lamination-layer-top-alpha-v1.png') center / contain no-repeat;
+  mask: url('/visuals/lamination-layer-top-alpha-v1.png') center / contain no-repeat;
 }
 .material-render-lamination-backing {
   --lamination-open-y: var(--lamination-bottom-open-y);
   filter: drop-shadow(0 9px 8px rgb(13 34 48 / .16));
+  -webkit-mask: url('/visuals/lamination-layer-top-alpha-v1.png') center / contain no-repeat;
+  mask: url('/visuals/lamination-layer-top-alpha-v1.png') center / contain no-repeat;
 }
 .material-system-visual.is-visible .material-render-lamination-membrane {
   opacity: 1;
@@ -474,8 +491,10 @@
   .viz-fog > g:nth-child(3) { display: none; }
   .viz-fog-aura { opacity: .28; }
   .material-render-lamination {
-    --lamination-top-open-y: -28px;
-    --lamination-bottom-open-y: 28px;
+    --lamination-top-open-y: -25px;
+    --lamination-bottom-open-y: 25px;
+    height: calc(100% - 8px);
+    margin-block: 4px;
   }
 }
 

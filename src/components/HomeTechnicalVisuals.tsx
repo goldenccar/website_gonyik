@@ -35,10 +35,12 @@ function MaterialScene({ kind, image, layers, label, children }: {
 }) {
   return (
     <div className={`material-render material-render-${kind}`} role="img" aria-label={label}>
-      {image && <img src={image} alt="" loading="lazy" decoding="async" className="material-render-image" />}
-      {layers?.map((layer) => (
-        <img key={layer.src} src={layer.src} alt="" loading="lazy" decoding="async" className={`material-render-layer ${layer.className}`} />
-      ))}
+      <div className="material-render-stage" aria-hidden="true">
+        {image && <img src={image} alt="" loading="lazy" decoding="async" className="material-render-image" />}
+        {layers?.map((layer) => (
+          <img key={layer.src} src={layer.src} alt="" loading="lazy" decoding="async" className={`material-render-layer ${layer.className}`} />
+        ))}
+      </div>
       <svg viewBox="0 0 560 220" aria-hidden="true" className="material-render-overlay" fill="none">
         {children}
       </svg>
@@ -192,14 +194,14 @@ export function MaterialSystemVisual({ items, href }: { items: HomePlatformCard[
           to={href}
           data-motion-item
           style={{ '--motion-delay': `${index * 90}ms` } as CSSProperties}
-          className="material-system-row group grid min-h-[218px] border-t border-border bg-transparent px-5 py-4 first:border-t-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent md:grid-cols-[minmax(220px,0.9fr)_minmax(0,1.35fr)] md:items-center md:gap-5 md:px-6 lg:min-h-[218px]"
+          className="material-system-row group relative isolate grid min-h-[218px] overflow-hidden border-t border-border bg-transparent px-5 py-4 first:border-t-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent md:grid-cols-[minmax(220px,0.9fr)_minmax(0,1.35fr)] md:items-center md:gap-5 md:px-10 lg:min-h-[218px]"
         >
           <div className="relative z-10 pr-4">
             <h3 className="type-card-title text-primary"><InlineMarkup text={item.title} /></h3>
             <p className="mt-3 text-[14px] leading-6 text-secondary"><InlineMarkup text={item.subtitle || item.description || ''} /></p>
             {item.description && item.description !== item.subtitle && <p className="mt-1 text-[14px] leading-6 text-secondary"><InlineMarkup text={item.description} /></p>}
           </div>
-          <div className="material-system-media mt-3 h-[170px] min-w-0 text-primary md:mt-0 md:h-[182px]">
+          <div className="material-system-media relative z-0 mt-3 h-[170px] min-w-0 overflow-hidden text-primary md:mt-0 md:h-[182px]">
             <MaterialDiagram kind={MATERIAL_KINDS[index]} />
           </div>
         </Link>
