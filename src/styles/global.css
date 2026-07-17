@@ -281,6 +281,17 @@
   overflow: visible;
   pointer-events: none;
 }
+.material-render-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: 0;
+  pointer-events: none;
+  transform-origin: center;
+}
 .material-render-adhesive {
   fill: var(--color-accent);
   opacity: 0;
@@ -303,17 +314,28 @@
   transform: translateY(-2px) scale(1.006);
 }
 
-.material-render-lamination .material-render-image {
-  -webkit-mask-image: radial-gradient(ellipse 86% 78% at 50% 48%, #000 58%, transparent 93%);
-  mask-image: radial-gradient(ellipse 86% 78% at 50% 48%, #000 58%, transparent 93%);
+.material-render-lamination {
+  --lamination-top-open-y: -38px;
+  --lamination-bottom-open-y: 38px;
 }
-.material-system-visual.is-visible .material-render-lamination .material-render-image {
-  filter: brightness(1.065) contrast(1.02);
-  transform: translateY(2px) scale(1.02);
+.material-render-lamination-top {
+  --lamination-open-y: var(--lamination-top-open-y);
+  filter: drop-shadow(0 11px 8px rgb(13 34 48 / .14));
 }
-.material-system-visual > a:hover .material-render-lamination .material-render-image,
-.material-system-visual > a:focus-visible .material-render-lamination .material-render-image {
-  transform: translateY(0) scale(1.035);
+.material-render-lamination-membrane {
+  filter: drop-shadow(0 9px 7px rgb(13 34 48 / .1));
+}
+.material-render-lamination-backing {
+  --lamination-open-y: var(--lamination-bottom-open-y);
+  filter: drop-shadow(0 9px 8px rgb(13 34 48 / .16));
+}
+.material-system-visual.is-visible .material-render-lamination-membrane {
+  opacity: 1;
+  transform: none;
+}
+.material-system-visual.is-visible .material-render-lamination-top,
+.material-system-visual.is-visible .material-render-lamination-backing {
+  animation: viz-lamination-layer-cycle 8s cubic-bezier(.4, 0, .2, 1) 1.2s infinite both;
 }
 .material-render-finishing { overflow: visible; }
 .material-system-visual.is-visible .material-render-finishing .material-render-image {
@@ -396,15 +418,20 @@
 }
 .viz-adhesive-halo { fill: var(--color-accent); opacity: .34; }
 .viz-adhesive-core { fill: var(--color-accent); opacity: .68; }
-.material-system-visual > a:hover .material-render-adhesive > g,
-.material-system-visual > a:focus-visible .material-render-adhesive > g {
-  animation: viz-adhesive-settle 3.8s var(--motion-ease) both;
-  animation-delay: calc(var(--motion-delay, 0ms) + var(--flow-delay, 0ms) + 480ms);
+.material-system-visual.is-visible .material-render-lamination .material-render-adhesive > g {
+  animation: viz-adhesive-cycle 8s var(--motion-ease) infinite both;
+  animation-delay: calc(1.2s + var(--flow-delay, 0ms));
 }
-@keyframes viz-adhesive-settle {
-  0% { opacity: 0; transform: scale(.55); }
-  24% { opacity: .8; transform: scale(1.12); }
-  52%, 100% { opacity: .62; transform: scale(1); }
+@keyframes viz-lamination-layer-cycle {
+  0%, 22% { opacity: 1; transform: translateY(var(--lamination-open-y)); }
+  42%, 64% { opacity: 1; transform: translateY(0); }
+  84%, 100% { opacity: 1; transform: translateY(var(--lamination-open-y)); }
+}
+@keyframes viz-adhesive-cycle {
+  0%, 17% { opacity: 0; transform: scale(.55); }
+  28% { opacity: .72; transform: scale(1.08); }
+  39% { opacity: .82; transform: scale(1); }
+  47%, 100% { opacity: 0; transform: scale(.72); }
 }
 
 .material-system-visual > a:hover .viz-finish-bead,
@@ -446,6 +473,10 @@
   .viz-rain .viz-rain-drop:nth-child(even),
   .viz-fog > g:nth-child(3) { display: none; }
   .viz-fog-aura { opacity: .28; }
+  .material-render-lamination {
+    --lamination-top-open-y: -28px;
+    --lamination-bottom-open-y: 28px;
+  }
 }
 
 @media (max-width: 767px) {
@@ -480,6 +511,17 @@
   .material-system-visual .viz-rain-impact,
   .material-system-visual .viz-fog-volume,
   .material-system-visual .viz-fog-contact {
+    opacity: 0 !important;
+  }
+  .material-system-visual .material-render-adhesive {
+    opacity: 0 !important;
+  }
+  .material-system-visual .material-render-lamination-top {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .material-system-visual .material-render-lamination-membrane,
+  .material-system-visual .material-render-lamination-backing {
     opacity: 0 !important;
   }
 }

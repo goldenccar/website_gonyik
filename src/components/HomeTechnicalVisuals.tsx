@@ -24,15 +24,21 @@ const FOG_COLUMNS: FlowPoint[] = [
 
 const ADHESIVE_POINTS = [160, 205, 250, 295, 340, 385, 430]
 
-function MaterialScene({ kind, image, label, children }: {
+type MaterialLayer = { src: string; className: string }
+
+function MaterialScene({ kind, image, layers, label, children }: {
   kind: MaterialKind
-  image: string
+  image?: string
+  layers?: MaterialLayer[]
   label: string
   children: ReactNode
 }) {
   return (
     <div className={`material-render material-render-${kind}`} role="img" aria-label={label}>
-      <img src={image} alt="" loading="lazy" decoding="async" className="material-render-image" />
+      {image && <img src={image} alt="" loading="lazy" decoding="async" className="material-render-image" />}
+      {layers?.map((layer) => (
+        <img key={layer.src} src={layer.src} alt="" loading="lazy" decoding="async" className={`material-render-layer ${layer.className}`} />
+      ))}
       <svg viewBox="0 0 560 220" aria-hidden="true" className="material-render-overlay" fill="none">
         {children}
       </svg>
@@ -101,7 +107,15 @@ function LaminationDiagram() {
   const uid = useId().replace(/:/g, '')
   const glowId = `adhesive-glow-${uid}`
   return (
-    <MaterialScene kind="lamination" image="/visuals/lamination-material-crop-v1.png" label="织物、膜层和内层形成三层复合面料的示意图">
+    <MaterialScene
+      kind="lamination"
+      layers={[
+        { src: '/visuals/lamination-layer-backing-alpha-v2.png', className: 'material-render-lamination-backing' },
+        { src: '/visuals/lamination-layer-membrane-alpha-v2.png', className: 'material-render-lamination-membrane' },
+        { src: '/visuals/lamination-layer-top-alpha-v1.png', className: 'material-render-lamination-top' },
+      ]}
+      label="织物、膜层和内层压合形成完整复合面料的示意图"
+    >
         <defs>
           <filter id={glowId} x="-150%" y="-150%" width="400%" height="400%"><feGaussianBlur stdDeviation="4" /></filter>
         </defs>
@@ -171,7 +185,7 @@ function MaterialDiagram({ kind }: { kind: MaterialKind }) {
 
 export function MaterialSystemVisual({ items, href }: { items: HomePlatformCard[]; href: string }) {
   return (
-    <MotionInView className="material-system-visual grid border-y border-border bg-white lg:col-span-8 lg:col-start-5 lg:row-span-2 lg:row-start-1">
+    <MotionInView className="material-system-visual grid border-y border-border bg-white lg:col-span-8 lg:col-start-5 lg:row-span-2 lg:row-start-1 lg:mt-[34px]">
       {items.slice(0, 3).map((item, index) => (
         <Link
           key={`${item.title}-${index}`}
