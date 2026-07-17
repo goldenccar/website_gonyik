@@ -46,7 +46,6 @@ const Contact = lazy(() => import('./pages/Contact'))
 
 // Admin pages
 const AdminLogin = lazy(() => import('./admin/Login'))
-const AdminDashboard = lazy(() => import('./admin/Dashboard'))
 const AdminHomeEditor = lazy(() => import('./admin/HomeEditor'))
 const AdminFabricManager = lazy(() => import('./admin/FabricManager'))
 const AdminEquipmentManager = lazy(() => import('./admin/EquipmentManager'))

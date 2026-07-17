@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Plus, Trash2, Edit2, X } from 'lucide-react'
+import { Plus, Trash2, Edit2 } from 'lucide-react'
 import api, { getPageConfig, updatePageConfig, uploadFile } from '@/api/client'
 import SkuCard from '@/components/SkuCard'
 import Dashboard from './Dashboard'
@@ -68,17 +68,18 @@ export default function AdminFabricManager() {
       home_image = up.data.url || up.data.data?.url || ''
     }
 
-    const formData = new FormData()
-    formData.append('name', data.name as string)
-    formData.append('slug', data.slug as string)
-    formData.append('tagline', (data.tagline as string) || '')
-    formData.append('description', data.description as string)
-    formData.append('home_image', home_image)
+    const payload = {
+      name: data.name as string,
+      slug: data.slug as string,
+      tagline: (data.tagline as string) || '',
+      description: data.description as string,
+      home_image,
+    }
 
     if (editingSeries?.id) {
-      await api.put(`/fabrics/admin/series/${editingSeries.id}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+      await api.put(`/fabrics/admin/series/${editingSeries.id}`, payload)
     } else {
-      await api.post('/fabrics/admin/series', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+      await api.post('/fabrics/admin/series', payload)
     }
     setShowSeriesForm(false)
     setEditingSeries(null)

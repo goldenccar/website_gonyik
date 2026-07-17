@@ -83,30 +83,7 @@ router.get('/series', (_req, res) => {
 
 router.get('/series/:slug', (req, res) => {
   const slug = req.params.slug
-  let series = db.fabric_series.find((s) => s.slug === slug)
-  // If not found as a top-level series, check sub_series_data of all series
-  if (!series) {
-    for (const s of db.fabric_series) {
-      if (s.sub_series_data) {
-        try {
-          const subs = JSON.parse(s.sub_series_data)
-          const sub = subs.find((x: any) => x.slug === slug)
-          if (sub) {
-            series = {
-              ...s,
-              id: s.id * 100 + (subs.indexOf(sub) + 1), // pseudo-id
-              name: sub.name,
-              slug: sub.slug,
-              description: sub.description,
-              tagline: sub.subtitle || '',
-              sub_series_data: null,
-            }
-            break
-          }
-        } catch {}
-      }
-    }
-  }
+  const series = db.fabric_series.find((s) => s.slug === slug)
   if (!series) { res.status(404).json({ error: 'Series not found' }); return }
   const skus = db.fabric_sku.filter((k) => k.series_id === series.id && k.visibility !== 'hidden' && k.status !== 'archived').sort(sortByOrderIndex).map(toPublicSku)
   res.json({ data: { ...series, skus, capabilities: db.fabric_capabilities.sort(sortByOrderIndex) } })
@@ -119,19 +96,11 @@ router.get('/sku/:id', (req, res) => {
 })
 
 router.get('/admin/series', authMiddleware, (_req, res) => {
-  const series = db.fabric_series.sort(sortByOrderIndex).map((s) => {
-    let sub_series: any[] = []
-    if (s.sub_series_data) {
-      try { sub_series = JSON.parse(s.sub_series_data) } catch { /* ignore */ }
-    }
-    return { ...s, sub_series }
-  })
-  res.json({ data: series })
+  res.json({ data: db.fabric_series.sort(sortByOrderIndex) })
 })
 
-router.post('/admin/series', authMiddleware, upload.single('cover_image'), (req: AuthRequest, res) => {
-  const { name, slug, description, tagline, sub_series_data, home_image, home_badge_image } = req.body
-  const cover_image = req.file ? registerUploadedFile(req.file, 'fabrics', '面料系列封面').url : null
+router.post('/admin/series', authMiddleware, (req: AuthRequest, res) => {
+  const { name, slug, description, tagline, home_image, home_badge_image } = req.body
   const normalizedHomeImage = home_image && home_image !== 'undefined' ? home_image : null
   const newSeries = {
     id: getNextId(db.fabric_series),
@@ -139,8 +108,6 @@ router.post('/admin/series', authMiddleware, upload.single('cover_image'), (req:
     slug,
     description,
     tagline: tagline || '',
-    sub_series_data: sub_series_data || null,
-    cover_image,
     home_image: normalizedHomeImage,
     home_badge_image: home_badge_image || null,
     order_index: nextOrderIndex(db.fabric_series),
@@ -150,20 +117,17 @@ router.post('/admin/series', authMiddleware, upload.single('cover_image'), (req:
   res.json({ success: true, id: newSeries.id })
 })
 
-router.put('/admin/series/:id', authMiddleware, upload.single('cover_image'), (req: AuthRequest, res) => {
+router.put('/admin/series/:id', authMiddleware, (req: AuthRequest, res) => {
   const id = Number(req.params.id)
   const existing = db.fabric_series.find((s) => s.id === id)
   if (!existing) { res.status(404).json({ error: 'Not found' }); return }
-  const { name, slug, description, tagline, sub_series_data, home_image, home_badge_image } = req.body
-  const cover_image = req.file ? registerUploadedFile(req.file, 'fabrics', '面料系列封面').url : (req.body.cover_image || existing.cover_image)
+  const { name, slug, description, tagline, home_image, home_badge_image } = req.body
   const normalizedHomeImage = home_image && home_image !== 'undefined' ? home_image : null
   updateById(db.fabric_series, id, {
     name: name ?? existing.name,
     slug: slug ?? existing.slug,
     description: description ?? existing.description,
     tagline: tagline ?? existing.tagline,
-    sub_series_data: sub_series_data ?? existing.sub_series_data,
-    cover_image,
     home_image: normalizedHomeImage ?? existing.home_image,
     home_badge_image: home_badge_image ?? existing.home_badge_image,
   })

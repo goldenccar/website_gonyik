@@ -21,7 +21,7 @@ export default function FluorineFreeFuture() {
   return (
     <PageShell>
       <PageHero variant="detail" tag={page?.page_tag || 'TECHNOLOGY INNOVATION'} title={page?.page_title || '技术，从材料开始'} subtitle={page?.page_subtitle} image={page?.hero_background} imageAlt="膜层、复合与测试对象微距" />
-      <ScrollSpySections idPrefix="technology" label="技术目录" items={sections.map((section) => ({ id: String(section.id), label: section.nav_label || section.title, content: <TechnologyDetail section={section} /> }))} />
+      <ScrollSpySections idPrefix="technology" label="技术目录" items={sections.map((section) => ({ id: section.section_key || String(section.id), label: section.nav_label || section.title, content: <TechnologyDetail section={section} /> }))} />
     </PageShell>
   )
 }

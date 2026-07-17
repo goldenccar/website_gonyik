@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Home, Layers, Shirt, Award, Plus, Upload } from 'lucide-react'
-import api, { getHomeConfig, getFabricSeries } from '@/api/client'
+import api, { getHomeConfig, getFabricSeries, uploadFile } from '@/api/client'
 import Dashboard from './Dashboard'
 import SaveButton from './components/SaveButton'
 import PrimaryButton from './components/PrimaryButton'
@@ -29,12 +29,19 @@ export default function AdminHomeEditor() {
   const [cropSrc, setCropSrc] = useState<string | null>(null)
   const [cropBlob, setCropBlob] = useState<Blob | null>(null)
   const [cropPreview, setCropPreview] = useState<string | null>(null)
+  const [validationCropSource, setValidationCropSource] = useState<string | null>(null)
+  const [validationUploading, setValidationUploading] = useState(false)
   const [previewVersion, setPreviewVersion] = useState(0)
 
   useEffect(() => {
     getHomeConfig().then((res) => {
-      const { hero_features: _heroFeatures, scenarios: _scenarios, scenarios_section_title: _scenariosTitle, ...data } = res.data.data || {}
-      setForm({ ...data, platform_cards: ensureArray(data.platform_cards).slice(0, 3), verifications: ensureArray(data.verifications).slice(0, 2) })
+      const data = res.data.data || {}
+      const verificationDefaults = [
+        { title: '内部实验室', subtitle: '依托香港科技大学（广州）多功能高聚物薄膜中央实验室，开展材料筛选、结构开发、样品对比与耐久验证。' },
+        { title: '第三方测试认证', subtitle: '根据具体产品与项目要求，委托 SGS、中纺标 CTTC 等专业机构检测，结果以正式报告为准。' },
+      ]
+      const verifications = verificationDefaults.map((fallback, index) => ({ ...fallback, ...(ensureArray(data.verifications)[index] || {}) }))
+      setForm({ ...data, platform_cards: ensureArray(data.platform_cards).slice(0, 3), verifications })
     })
     getFabricSeries().then((res) => setSeries(res.data.data || []))
   }, [])
@@ -109,6 +116,28 @@ export default function AdminHomeEditor() {
     setForm({ ...form, hero_background: url })
     setCropBlob(null)
     setCropPreview(null)
+  }
+
+  const startValidationCrop = (file: File) => {
+    if (validationCropSource) URL.revokeObjectURL(validationCropSource)
+    setValidationCropSource(URL.createObjectURL(file))
+  }
+
+  const cancelValidationCrop = () => {
+    if (validationCropSource) URL.revokeObjectURL(validationCropSource)
+    setValidationCropSource(null)
+  }
+
+  const applyValidationCrop = async (blob: Blob) => {
+    setValidationUploading(true)
+    try {
+      const file = new File([blob], `home-lab-${Date.now()}.jpg`, { type: 'image/jpeg' })
+      const response = await uploadFile(file)
+      setForm((current: any) => ({ ...current, verification_image: response.data.url || response.data.data?.url }))
+    } finally {
+      setValidationUploading(false)
+      cancelValidationCrop()
+    }
   }
 
   const updateArrayItem = (key: string, idx: number, patch: any) => {
@@ -292,45 +321,41 @@ export default function AdminHomeEditor() {
     <div className="space-y-6">
       <div className="grid gap-6 sm:grid-cols-2">
         {textField('区块标题', 'verification_section_title')}
-        {textField('链接文案', 'verification_section_link_text')}
-        {textField('链接地址', 'verification_section_link')}
       </div>
       {textareaField('区块副标题', 'verification_section_subtitle')}
 
-      <div>
-        <div className="flex items-center justify-between mb-4">
-          <label className="text-[12px] text-secondary uppercase">验证路径（前台最多显示 2 项）</label>
-          {ensureArray(form.verifications).length < 2 && <PrimaryButton onClick={() => addArrayItem('verifications', { title: '', subtitle: '' })} size="sm" icon={<Plus size={14} />}>新增</PrimaryButton>}
-        </div>
-        <div className="space-y-3">
-          {ensureArray(form.verifications).map((item: any, idx: number) => (
-            <div key={idx} className="grid gap-3 border border-white/5 bg-dark p-3 sm:grid-cols-12 sm:items-start">
-              <div className="sm:col-span-5">
-                <label className="block text-[11px] text-muted mb-1">标题</label>
-                <input
-                  type="text"
-                  value={item.title || ''}
-                  onChange={(e) => updateArrayItem('verifications', idx, { title: e.target.value })}
-                  className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none"
-                />
-              </div>
-              <div className="sm:col-span-6">
-                <label className="block text-[11px] text-muted mb-1">副标题</label>
-                <input
-                  type="text"
-                  value={item.subtitle || ''}
-                  onChange={(e) => updateArrayItem('verifications', idx, { subtitle: e.target.value })}
-                  className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none"
-                />
-              </div>
-              <div className="text-right sm:col-span-1 sm:pt-6">
-                <button onClick={() => removeArrayItem('verifications', idx)} className="text-error hover:text-white">
-                  ×
-                </button>
-              </div>
+      <div className="border border-white/5 bg-dark p-4">
+        <label className="mb-3 block text-[12px] uppercase text-secondary">内部实验室长条图片（16:7）</label>
+        {validationCropSource ? (
+          <ImageCropper src={validationCropSource} aspect={16 / 7} onComplete={(blob) => applyValidationCrop(blob)} onCancel={cancelValidationCrop} />
+        ) : form.verification_image ? (
+          <div className="relative aspect-[16/7] max-w-[720px] overflow-hidden bg-white/5">
+            <img src={form.verification_image} alt="内部实验室预览" className="h-full w-full object-cover" />
+            <button type="button" onClick={() => setForm({ ...form, verification_image: null })} className="absolute right-2 top-2 bg-black/70 px-3 py-2 text-[12px] text-white">移除</button>
+          </div>
+        ) : <div className="flex aspect-[16/7] max-w-[720px] items-end border border-dashed border-borderDark bg-white/[0.03] p-4 text-[12px] text-muted">16:7 实验室图片占位</div>}
+        {!validationCropSource && <div className="mt-3 flex items-center gap-3">
+          <PrimaryButton type="button" onClick={() => document.getElementById('home-validation-image')?.click()} size="sm" loading={validationUploading} icon={<Upload size={14} />}>{form.verification_image ? '更换图片' : '上传图片'}</PrimaryButton>
+          <input id="home-validation-image" type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={(event) => { const file = event.target.files?.[0]; if (file) startValidationCrop(file); event.currentTarget.value = '' }} />
+          <span className="text-[11px] text-muted">建议宽度不低于 1280px，上传后固定按 16:7 裁切。</span>
+        </div>}
+      </div>
+
+      <div className="space-y-4">
+        {ensureArray(form.verifications).slice(0, 2).map((item: any, idx: number) => (
+          <div key={idx} className="border border-white/5 bg-dark p-4">
+            <p className="mb-3 text-[12px] uppercase text-secondary">{idx === 0 ? '内部实验室' : '第三方测试认证'}</p>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div><label className="mb-1 block text-[11px] text-muted">标题</label><input type="text" value={item.title || ''} onChange={(e) => updateArrayItem('verifications', idx, { title: e.target.value })} className="w-full border border-borderDark bg-white/5 px-3 py-2 text-[13px] text-white focus:border-white focus:outline-none" /></div>
+              <div><label className="mb-1 block text-[11px] text-muted">说明</label><textarea rows={3} value={item.subtitle || ''} onChange={(e) => updateArrayItem('verifications', idx, { subtitle: e.target.value })} className="w-full border border-borderDark bg-white/5 px-3 py-2 text-[13px] text-white focus:border-white focus:outline-none" /></div>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="grid gap-6 sm:grid-cols-2">
+        {textField('第三方测试认证链接文案', 'verification_section_link_text')}
+        {textField('跳转地址', 'verification_section_link', '/pfas-free-innovation#technology-testing-certification')}
       </div>
     </div>
   )

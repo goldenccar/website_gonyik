@@ -244,6 +244,210 @@
     repeating-linear-gradient(35deg, #183d5d 0 2px, #102f4a 2px 6px);
 }
 
+/* Homepage material diagrams */
+.material-system-visual svg {
+  display: block;
+  color: var(--color-primary);
+}
+
+.material-render {
+  position: relative;
+  height: 100%;
+  min-width: 0;
+  overflow: hidden;
+  background: transparent;
+}
+.material-render-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  mix-blend-mode: normal;
+  filter: brightness(1.035) contrast(1.015);
+  -webkit-mask-image: radial-gradient(ellipse 94% 92% at center, #000 74%, transparent 100%);
+  mask-image: radial-gradient(ellipse 94% 92% at center, #000 74%, transparent 100%);
+  opacity: 0;
+  transform: translateY(7px) scale(1.012);
+  transition: opacity 620ms var(--motion-ease), transform 900ms var(--motion-ease);
+  transition-delay: calc(var(--motion-delay, 0ms) + 160ms);
+}
+.material-render-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+.material-render-adhesive {
+  fill: var(--color-accent);
+  opacity: 0;
+  transform: scale(.75);
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: opacity 420ms var(--motion-ease), transform 620ms var(--motion-ease);
+  transition-delay: calc(var(--motion-delay, 0ms) + 520ms);
+}
+.material-system-visual.is-visible .material-render-image {
+  opacity: 1;
+  transform: none;
+}
+.material-system-visual.is-visible .material-render-adhesive {
+  opacity: .72;
+  transform: none;
+}
+.material-system-visual > a:hover .material-render-image,
+.material-system-visual > a:focus-visible .material-render-image {
+  transform: translateY(-2px) scale(1.006);
+}
+
+.material-render-lamination .material-render-image {
+  -webkit-mask-image: radial-gradient(ellipse 86% 78% at 50% 48%, #000 58%, transparent 93%);
+  mask-image: radial-gradient(ellipse 86% 78% at 50% 48%, #000 58%, transparent 93%);
+}
+.material-system-visual.is-visible .material-render-lamination .material-render-image {
+  filter: brightness(1.065) contrast(1.02);
+  transform: translateY(2px) scale(1.02);
+}
+.material-system-visual > a:hover .material-render-lamination .material-render-image,
+.material-system-visual > a:focus-visible .material-render-lamination .material-render-image {
+  transform: translateY(0) scale(1.035);
+}
+.material-render-finishing { overflow: visible; }
+.material-system-visual.is-visible .material-render-finishing .material-render-image {
+  filter: brightness(1.02) contrast(1.025);
+  transform: translateY(-5px) scale(1.28);
+}
+.material-system-visual > a:hover .material-render-finishing .material-render-image,
+.material-system-visual > a:focus-visible .material-render-finishing .material-render-image {
+  transform: translateY(-7px) scale(1.3);
+}
+
+/* Scene-integrated membrane flow: rainfall is blocked while moisture rises as fog */
+.material-system-visual .viz-rain-body,
+.material-system-visual .viz-rain-impact,
+.material-system-visual .viz-fog-volume,
+.material-system-visual .viz-fog-contact,
+.material-system-visual .viz-finish-bead,
+.material-system-visual .viz-finish-trail,
+.material-system-visual .viz-dry-vapor path {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.material-system-visual.is-visible .material-render-membrane .viz-rain-body {
+  animation: viz-rain-fall 5.2s cubic-bezier(.32, 0, .22, 1) infinite;
+  animation-delay: calc(var(--motion-delay, 0ms) + var(--flow-delay, 0ms) + 260ms);
+}
+.material-system-visual.is-visible .material-render-membrane .viz-rain-impact {
+  animation: viz-rain-impact 5.2s var(--motion-ease) infinite;
+  animation-delay: calc(var(--motion-delay, 0ms) + var(--flow-delay, 0ms) + 260ms);
+}
+.material-system-visual.is-visible .material-render-membrane .viz-fog-volume {
+  animation: viz-fog-rise 6s cubic-bezier(.42, 0, .2, 1) infinite;
+  animation-delay: calc(var(--motion-delay, 0ms) + var(--flow-delay, 0ms) + 520ms);
+}
+.material-system-visual.is-visible .material-render-membrane .viz-fog-contact {
+  animation: viz-fog-contact 6s var(--motion-ease) infinite;
+  animation-delay: calc(var(--motion-delay, 0ms) + var(--flow-delay, 0ms) + 520ms);
+}
+.viz-water-drop-aura { opacity: .26; }
+.viz-water-drop { opacity: .82; }
+.viz-water-drop-highlight { opacity: .64; }
+.viz-rain-impact { filter: blur(2.4px); }
+.viz-fog-body { opacity: .96; }
+.viz-fog-aura { opacity: .52; }
+.viz-fog-contact { filter: blur(3px); }
+
+@keyframes viz-rain-fall {
+  0%, 7% { opacity: 0; transform: translateY(-48px) scale(.82, 1.08); }
+  15% { opacity: .82; }
+  31% { opacity: .92; transform: translateY(0) scale(1); }
+  36% { opacity: .5; transform: translateY(2px) scale(1.08, .72); }
+  44%, 100% { opacity: 0; transform: translateY(3px) scale(1.12, .62); }
+}
+@keyframes viz-rain-impact {
+  0%, 29% { opacity: 0; transform: scaleX(.28); }
+  34% { opacity: .28; transform: scaleX(.72); }
+  40% { opacity: .17; transform: scaleX(1.08); }
+  48%, 100% { opacity: 0; transform: scaleX(1.42); }
+}
+@keyframes viz-fog-rise {
+  0%, 10% { opacity: 0; transform: translate(0, 18px) scale(.76, .68); }
+  27% { opacity: .4; transform: translate(-2px, 0) scale(.92, .9); }
+  52% { opacity: .68; transform: translate(2px, -16px) scale(1.05, 1.08); }
+  78% { opacity: .3; transform: translate(-4px, -36px) scale(1.18, 1.24); }
+  100% { opacity: 0; transform: translate(3px, -50px) scale(1.28, 1.34); }
+}
+@keyframes viz-fog-contact {
+  0%, 15% { opacity: 0; transform: scaleX(.5); }
+  31% { opacity: .2; transform: scaleX(.9); }
+  46% { opacity: .12; transform: scaleX(1.18); }
+  60%, 100% { opacity: 0; transform: scaleX(1.4); }
+}
+
+.material-render-adhesive > g {
+  opacity: 0;
+  transform: scale(.65);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.viz-adhesive-halo { fill: var(--color-accent); opacity: .34; }
+.viz-adhesive-core { fill: var(--color-accent); opacity: .68; }
+.material-system-visual > a:hover .material-render-adhesive > g,
+.material-system-visual > a:focus-visible .material-render-adhesive > g {
+  animation: viz-adhesive-settle 3.8s var(--motion-ease) both;
+  animation-delay: calc(var(--motion-delay, 0ms) + var(--flow-delay, 0ms) + 480ms);
+}
+@keyframes viz-adhesive-settle {
+  0% { opacity: 0; transform: scale(.55); }
+  24% { opacity: .8; transform: scale(1.12); }
+  52%, 100% { opacity: .62; transform: scale(1); }
+}
+
+.material-system-visual > a:hover .viz-finish-bead,
+.material-system-visual > a:focus-visible .viz-finish-bead {
+  animation: viz-finish-bead 5.4s var(--motion-ease) infinite;
+  animation-delay: calc(var(--motion-delay, 0ms) + 520ms);
+}
+.material-system-visual > a:hover .viz-finish-trail,
+.material-system-visual > a:focus-visible .viz-finish-trail {
+  animation: viz-finish-trail 5.4s var(--motion-ease) infinite;
+  animation-delay: calc(var(--motion-delay, 0ms) + 650ms);
+}
+.viz-finish-trail path { stroke-linecap: round; }
+.viz-finish-trail-head { opacity: .48; }
+.material-system-visual > a:hover .viz-dry-vapor path,
+.material-system-visual > a:focus-visible .viz-dry-vapor path {
+  animation: viz-dry-vapor-volume 5.8s var(--motion-ease) infinite;
+  animation-delay: calc(var(--motion-delay, 0ms) + var(--flow-delay, 0ms) + 900ms);
+}
+@keyframes viz-finish-bead {
+  0%, 8% { opacity: 0; transform: translateX(-8px) scale(.94); }
+  25%, 66% { opacity: .72; transform: translateX(0) scale(1); }
+  82%, 100% { opacity: 0; transform: translateX(13px) scale(.98); }
+}
+@keyframes viz-finish-trail {
+  0%, 12% { opacity: 0; transform: scaleX(.25); transform-origin: left center; }
+  32%, 64% { opacity: .62; transform: scaleX(1); transform-origin: left center; }
+  82%, 100% { opacity: 0; transform: translateX(8px); }
+}
+@keyframes viz-dry-vapor-volume {
+  0%, 12% { opacity: 0; transform: translateY(10px); }
+  34%, 66% { opacity: .48; transform: translateY(0); }
+  84%, 100% { opacity: 0; transform: translateY(-9px); }
+}
+
+@media (max-width: 767px) {
+  .material-system-visual > a::before { display: none; }
+  .material-system-visual.is-visible .material-render-membrane .material-render-image { transform: scale(1.15); }
+  .viz-rain .viz-rain-drop:nth-child(even),
+  .viz-fog > g:nth-child(3) { display: none; }
+  .viz-fog-aura { opacity: .28; }
+}
+
 @media (max-width: 767px) {
   .gonyik-page input:not([type='file']),
   .gonyik-page select,
@@ -266,4 +470,16 @@
   .motion-process-line { transform: scaleX(1); }
   .motion-section::before { transform: scaleX(1); }
   .motion-section img { clip-path: none; }
+  .material-system-visual svg * {
+    opacity: 1 !important;
+    transform: none !important;
+    stroke-dashoffset: 0 !important;
+    transition: none !important;
+  }
+  .material-system-visual .viz-rain-body,
+  .material-system-visual .viz-rain-impact,
+  .material-system-visual .viz-fog-volume,
+  .material-system-visual .viz-fog-contact {
+    opacity: 0 !important;
+  }
 }

@@ -1,11 +1,11 @@
-import { useEffect, useState, type CSSProperties } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getPublicBootstrap } from '@/api/client'
 import PageHero from '@/components/PageHero'
 import { PageSection, PageShell, SectionHeader } from '@/components/PageLayout'
 import type { FabricSeries, HomeConfig } from '@/types'
-import MotionInView from '@/components/MotionInView'
 import { InlineMarkup } from '@/components/MarkupParser'
+import { MaterialSystemVisual, MaterialValidationSummary } from '@/components/HomeTechnicalVisuals'
 
 const SERIES_TITLES: Record<string, string> = {
   otter: '蓝标 OTTER',
@@ -23,7 +23,8 @@ const DEFAULT_HOME: HomeConfig = {
   primary_btn_text: '探索材料', primary_btn_link: '/fabrics', secondary_btn_text: '探索技术', secondary_btn_link: '/pfas-free-innovation',
   platform_section_title: '', platform_section_subtitle: '', platform_section_link_text: '', platform_section_link: '/pfas-free-innovation', platform_cards: [],
   series_section_title: '', series_section_subtitle: '', series_section_link_text: '', series_section_link: '/fabrics',
-  verification_section_title: '', verification_section_subtitle: '', verification_section_link_text: '', verification_section_link: '/fabrics', verifications: [],
+  verification_image: null,
+  verification_section_title: '', verification_section_subtitle: '', verification_section_link_text: '', verification_section_link: '/pfas-free-innovation#technology-testing-certification', verifications: [],
 }
 
 export default function Home() {
@@ -55,24 +56,22 @@ export default function Home() {
       </PageHero>
 
       <PageSection className="lg:!py-16">
-        <div className="grid gap-10 lg:grid-cols-12 lg:gap-16">
-          <div className="lg:col-span-4">
+        <div className="grid gap-10 lg:grid-cols-12 lg:gap-x-16 lg:gap-y-12">
+          <div className="lg:col-span-4 lg:col-start-1 lg:row-start-1">
             <p className="label-en text-secondary">MATERIAL SYSTEM</p>
             <h2 className="type-section-title mt-4 text-primary"><InlineMarkup text={config.platform_section_title} /></h2>
             <p className="body-copy mt-4 max-w-[420px] text-secondary"><InlineMarkup text={config.platform_section_subtitle} /></p>
             <Link to={config.platform_section_link} className="mt-8 inline-block text-[14px] underline underline-offset-4"><InlineMarkup text={config.platform_section_link_text} /> →</Link>
           </div>
-          <MotionInView className="relative grid md:grid-cols-3 lg:col-span-8">
-            <span aria-hidden="true" className="motion-process-line absolute inset-x-0 top-0 h-px bg-[#69B2C1]" />
-            {(config.platform_cards || []).slice(0, 3).map((item, index) => (
-              <Link data-motion-item style={{ '--motion-delay': `${index * 75}ms` } as CSSProperties} to={config.platform_section_link} key={`${item.title}-${index}`} className="group flex min-h-[190px] flex-col border-b border-border py-6 md:border-r md:px-7 md:last:border-r-0">
-                <span className="label-en text-secondary">{String(index + 1).padStart(2, '0')}</span>
-                <h3 className="type-card-title mt-5 text-primary"><InlineMarkup text={item.title} /></h3>
-                <p className="mt-4 text-[14px] leading-6 text-secondary"><InlineMarkup text={item.subtitle || item.description} /></p>
-                <span className="mt-auto self-end pt-5 text-primary transition-transform group-hover:translate-x-1">→</span>
-              </Link>
-            ))}
-          </MotionInView>
+          <MaterialSystemVisual items={config.platform_cards || []} href={config.platform_section_link} />
+          <MaterialValidationSummary
+            image={config.verification_image}
+            title={config.verification_section_title}
+            subtitle={config.verification_section_subtitle}
+            items={config.verifications || []}
+            linkText={config.verification_section_link_text}
+            linkTo={config.verification_section_link || '/pfas-free-innovation#technology-testing-certification'}
+          />
         </div>
       </PageSection>
 
@@ -90,13 +89,6 @@ export default function Home() {
               <span className="mt-auto pt-6 text-[14px] text-white"><span className="relative inline-block after:absolute after:inset-x-0 after:-bottom-1 after:h-px after:origin-left after:scale-x-0 after:bg-white after:transition-transform after:duration-[var(--motion-instant)] group-hover:after:scale-x-100 group-focus-visible:after:scale-x-100">查看系列 <span className="inline-block transition-transform duration-[var(--motion-instant)] group-hover:translate-x-1 group-focus-visible:translate-x-1">→</span></span></span>
             </Link>
           })}
-        </div>
-      </PageSection>
-
-      <PageSection>
-        <SectionHeader tag="VALIDATION" title={config.verification_section_title} subtitle={config.verification_section_subtitle} linkText={config.verification_section_link_text} linkTo={config.verification_section_link} />
-        <div className="grid gap-8 md:grid-cols-2">
-          {(config.verifications || []).slice(0, 2).map((item, index) => <div key={`${item.title}-${index}`} className="border-t border-primary pt-6"><p className="label-en text-secondary">{String(index + 1).padStart(2, '0')}</p><h3 className="type-card-title mt-4 text-primary"><InlineMarkup text={item.title} /></h3><p className="body-copy mt-3 max-w-[520px] text-secondary"><InlineMarkup text={item.subtitle} /></p></div>)}
         </div>
       </PageSection>
     </PageShell>

@@ -29,6 +29,7 @@ export interface HomeConfig {
   series_section_subtitle: string
   series_section_link_text: string
   series_section_link: string
+  verification_image: string | null
   verification_section_title: string
   verification_section_subtitle: string
   verification_section_link_text: string
@@ -89,8 +90,6 @@ export interface FabricSeries {
   slug: string
   description: string
   tagline: string
-  sub_series_data: string | null // JSON: [{slug, name, subtitle, description, accent_color, link}]
-  cover_image: string | null
   home_image: string | null
   home_badge_image: string | null
   order_index: number

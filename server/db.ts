@@ -21,17 +21,10 @@ export interface Database {
   fabric_capabilities: any[]
   fabric_sku: any[]
   product_code_registry?: { sku_code: string; internal_code: string }[]
-  fabric_scenes: any[]
-  digital_assets: any[]
   media_items: any[]
   test_reports: any[]
   equipment_categories: any[]
   equipment_products: any[]
-  equipment_scenes: any[]
-  about_us: any
-  philosophies: any[]
-  milestones: any[]
-  news: any[]
   care_guides: any[]
   faqs: any[]
   contact_config: any
@@ -59,12 +52,6 @@ function createDefaultDb(): Database {
       primary_btn_link: '/fabrics',
       secondary_btn_text: '了解无氟未来',
       secondary_btn_link: '/pfas-free-innovation',
-      hero_features: [
-        { icon: 'ShieldCheck', title: '100% PFAS-FREE', subtitle: '全系无氟' },
-        { icon: 'Droplets', title: '防水透湿', subtitle: '平衡舒适' },
-        { icon: 'Layers', title: '多功能复合', subtitle: '应对多元场景' },
-        { icon: 'Leaf', title: '可持续创新', subtitle: '安全·耐用·可信赖' },
-      ],
       platform_section_title: '技术来源与材料平台',
       platform_section_subtitle: '源自科研，成就可靠材料解决方案。',
       platform_section_link_text: '了解更多',
@@ -103,22 +90,14 @@ function createDefaultDb(): Database {
       series_section_subtitle: '面向多元应用的材料平台，让高性能更可持续。',
       series_section_link_text: '查看全部系列',
       series_section_link: '/fabrics',
-      scenarios_section_title: '应用场景提示',
-      scenarios: [
-        { icon: 'Shirt', label: '冲锋衣', link: '/fabrics/otter' },
-        { icon: 'Shield', label: '防护服', link: '/fabrics/kais' },
-        { icon: 'Backpack', label: '背负系统', link: '/equipment' },
-        { icon: 'Sun', label: '防晒轻量单品', link: '/fabrics/rayo' },
-      ],
-      verification_section_title: '验证与标准',
-      verification_section_subtitle: '平台级验证，安心选择。',
-      verification_section_link_text: '具体指标见系列',
-      verification_section_link: '/fabrics',
+      verification_image: null,
+      verification_section_title: '测试与认证',
+      verification_section_subtitle: '内部验证用于研发与过程控制，关键结果由独立第三方检测提供依据。',
+      verification_section_link_text: '查看测试与认证',
+      verification_section_link: '/pfas-free-innovation#technology-testing-certification',
       verifications: [
-        { icon: 'Award', title: '平台级验证', subtitle: '面料通过多维性能验证' },
-        { icon: 'Droplets', title: '防水透湿性能', subtitle: '在防护中保持舒适干爽' },
-        { icon: 'Sun', title: '抗紫外线防护', subtitle: '有效阻隔紫外线' },
-        { icon: 'Leaf', title: 'PFAS 检测（LC-MS）', subtitle: '未检出，全系无氟' },
+        { title: '内部实验室', subtitle: '依托香港科技大学（广州）多功能高聚物薄膜中央实验室，开展材料筛选、结构开发、样品对比与耐久验证。' },
+        { title: '第三方测试认证', subtitle: '根据具体产品与项目要求，委托 SGS、中纺标 CTTC 等专业机构检测，结果以正式报告为准。' },
       ],
     },
     site_config: {
@@ -230,6 +209,7 @@ function createDefaultDb(): Database {
       {
         id: 6,
         page_key: 'pfas-free-innovation',
+        section_key: 'testing-certification',
         order_index: 5,
         title: '测试与验证',
         subtitle: '从研发测试到独立第三方检测',
@@ -292,25 +272,10 @@ function createDefaultDb(): Database {
     ],
     fabric_capabilities: DEFAULT_FABRIC_CAPABILITIES.map((item, index) => ({ ...item, id: index + 1, order_index: index })),
     fabric_series: [
-      { id: 1, name: 'Otter', slug: 'otter', description: '无氟高性能复合面料 3L，Solidgood RPO Membrane 中间层，香港科技大学前沿纳米材料 / 日内瓦国际发明展金奖技术', tagline: '新一代无氟防护', sub_series_data: null, cover_image: '/uploads/otter-logo.svg', home_image: null, home_badge_image: '/brandmarks/otter-label.svg', order_index: 0 },
-      { id: 2, name: 'Kais', slug: 'kais', description: '专业防护平台，基于 UHMWPE 纤维基材的防刺/防火/防化解决方案', tagline: '专业防护平台 · 防刺/防火/防化', sub_series_data: null, cover_image: null, home_image: null, home_badge_image: '/brandmarks/kais-label.svg', order_index: 1 },
-      { id: 3, name: 'Rayo', slug: 'rayo', description: '原生防晒导湿系列，Coolmax + TiO2 原纱处理，UPF 150+', tagline: '原生防晒 · 导湿凉感', sub_series_data: null, cover_image: null, home_image: null, home_badge_image: '/brandmarks/rayo-label.svg', order_index: 2 },
+      { id: 1, name: 'Otter', slug: 'otter', description: '无氟高性能复合面料 3L，Solidgood RPO Membrane 中间层，香港科技大学前沿纳米材料 / 日内瓦国际发明展金奖技术', tagline: '新一代无氟防护', home_image: null, home_badge_image: '/brandmarks/otter-label.svg', order_index: 0 },
+      { id: 2, name: 'Kais', slug: 'kais', description: '专业防护平台，基于 UHMWPE 纤维基材的防刺/防火/防化解决方案', tagline: '专业防护平台 · 防刺/防火/防化', home_image: null, home_badge_image: '/brandmarks/kais-label.svg', order_index: 1 },
+      { id: 3, name: 'Rayo', slug: 'rayo', description: '原生防晒导湿系列，Coolmax + TiO2 原纱处理，UPF 150+', tagline: '原生防晒 · 导湿凉感', home_image: null, home_badge_image: '/brandmarks/rayo-label.svg', order_index: 2 },
     ],
-    fabric_scenes: [
-      { id: 1, category: '都市生活', label: '日常通勤', series_slug: 'rayo', order_index: 0 },
-      { id: 2, category: '都市生活', label: '商务差旅', series_slug: 'otter', order_index: 1 },
-      { id: 3, category: '都市生活', label: '城市轻户外', series_slug: 'rayo', order_index: 2 },
-      { id: 4, category: '轻户外', label: '徒步旅行', series_slug: 'otter', order_index: 3 },
-      { id: 5, category: '轻户外', label: '露营休闲', series_slug: 'otter', order_index: 4 },
-      { id: 6, category: '轻户外', label: '城市骑行', series_slug: 'rayo', order_index: 5 },
-      { id: 7, category: '专业运动', label: '滑雪登山', series_slug: 'otter', order_index: 6 },
-      { id: 8, category: '专业运动', label: '水域活动', series_slug: 'otter', order_index: 7 },
-      { id: 9, category: '专业运动', label: '越野跑步', series_slug: 'rayo', order_index: 8 },
-      { id: 10, category: '特种防护', label: '战术防护', series_slug: 'kais-edge', order_index: 9 },
-      { id: 11, category: '特种防护', label: '阻燃工装', series_slug: 'kais-ignis', order_index: 10 },
-      { id: 12, category: '特种防护', label: '工业安全', series_slug: 'kais-edge', order_index: 11 },
-    ],
-    digital_assets: [],
     media_items: [],
     fabric_sku: [
       { id: 1, series_id: 1, name: 'OT-01（原T31）', sku_code: 'OT-01', internal_code: 'OT3-PAEL70-V15-PES50-B', image: null, features: '["无氟","3L复合","RPO膜"]', specifications: '{"结构":"3L","面层":"70D锦氨面布 · 130 g/m²","中层":"V1.5膜 · 4 g/m²","底层":"50D纯涤佳积布 · 95 g/m²","胶量":"两面各12 g/m²，合计24 g/m²","复合纹路":"篮球纹","理论成品克重":"253 g/m²"}', card_summary: '', visibility: 'public', status: 'active', order_index: 0 },
@@ -333,44 +298,6 @@ function createDefaultDb(): Database {
       { id: 4, category_id: 2, name: '运动防晒服装', image: null, features: '["轻量","导湿","Rayo"]', order_index: 1 },
       { id: 5, category_id: 3, name: '防刺装备', image: null, features: '["明确任务","防刺内层","Kais"]', order_index: 0 },
       { id: 6, category_id: 3, name: '消防装备', image: null, features: '["消防场景","专业防护","Kais"]', order_index: 1 },
-    ],
-    equipment_scenes: [
-      { id: 1, category: '都市生活', label: '日常通勤', equipment_slug: 'latent', order_index: 0 },
-      { id: 2, category: '都市生活', label: '商务差旅', equipment_slug: 'latent', order_index: 1 },
-      { id: 3, category: '都市生活', label: '城市轻户外', equipment_slug: 'u-line', order_index: 2 },
-      { id: 4, category: '轻户外', label: '徒步旅行', equipment_slug: 'p-line', order_index: 3 },
-      { id: 5, category: '轻户外', label: '露营休闲', equipment_slug: 'a-line', order_index: 4 },
-      { id: 6, category: '轻户外', label: '城市骑行', equipment_slug: 'u-line', order_index: 5 },
-      { id: 7, category: '专业运动', label: '滑雪登山', equipment_slug: 'p-line', order_index: 6 },
-      { id: 8, category: '专业运动', label: '水域活动', equipment_slug: 'p-line', order_index: 7 },
-      { id: 9, category: '专业运动', label: '越野跑步', equipment_slug: 'p-line', order_index: 8 },
-      { id: 10, category: '特种防护', label: '战术防护', equipment_slug: 'p-line', order_index: 9 },
-      { id: 11, category: '特种防护', label: '阻燃工装', equipment_slug: 'a-line', order_index: 10 },
-      { id: 12, category: '特种防护', label: '工业安全', equipment_slug: 'p-line', order_index: 11 },
-      { id: 13, category: '特种防护', label: '鞋材应用', equipment_slug: 'p-line', order_index: 12 },
-    ],
-    about_us: {
-      id: 1,
-      positioning_title: '公司定位',
-      positioning_content: '港翼科技（GONYIK）是一家专注于高性能科技面料研发与生产的创新型企业。我们致力于将尖端材料科学与可持续环保理念相结合，为户外、运动、工装及都市时尚领域提供卓越的功能性面料解决方案。',
-      slogan_text: '科技之翼，赋能无限可能',
-    },
-    philosophies: [
-      { id: 1, number: 1, title: '科技驱动', description: '以材料科学为核心，持续突破功能性面料的性能边界', order_index: 0 },
-      { id: 2, number: 2, title: '可持续未来', description: '100% 无氟承诺，从源头减少环境负担', order_index: 1 },
-      { id: 3, number: 3, title: '极致品质', description: '每一米面料都经过严苛测试，确保终端产品表现卓越', order_index: 2 },
-    ],
-    milestones: [
-      { id: 1, year: '2018', event: '港翼科技成立，专注功能性面料研发', order_index: 0 },
-      { id: 2, year: '2020', event: '首款无氟防水面料投入量产', order_index: 1 },
-      { id: 3, year: '2022', event: 'Osmo 系列问世，进军高端户外市场', order_index: 2 },
-      { id: 4, year: '2024', event: '通过 bluesign® 系统合作伙伴认证', order_index: 3 },
-      { id: 5, year: '2026', event: '发布 100% 无氟产品路线图', order_index: 4 },
-    ],
-    news: [
-      { id: 1, title: '港翼科技发布 2026 春夏面料系列', cover_image: null, content: '<p>本季产品围绕 Otter、Rayo、Kais 三条面料与防护材料路径展开。</p>', images: null, status: 'published', published_at: new Date().toISOString(), created_at: new Date().toISOString() },
-      { id: 2, title: '荣获 bluesign® 系统合作伙伴认证', cover_image: null, content: '<p>标志着港翼科技在可持续生产和环境管理方面达到国际领先水平。</p>', images: null, status: 'published', published_at: new Date(Date.now() - 7 * 86400000).toISOString(), created_at: new Date(Date.now() - 7 * 86400000).toISOString() },
-      { id: 3, title: '无氟防水技术白皮书正式发布', cover_image: null, content: '<p>详细阐述了港翼科技在无氟防水领域的研发路径、测试数据与环保效益。</p>', images: null, status: 'published', published_at: new Date(Date.now() - 14 * 86400000).toISOString(), created_at: new Date(Date.now() - 14 * 86400000).toISOString() },
     ],
     care_guides: [
       { id: 1, icon: 'Droplets', title: '常规清洗', content: '使用中性洗涤剂，水温不超过 30°C，反面洗涤以保护面料功能层。避免使用柔顺剂。', order_index: 0 },
@@ -486,12 +413,6 @@ function migrateProductDualCode(database: Database) {
     internal_code: sku.internal_code,
   }))
 
-  database.news = (database.news || []).map((item: any) => ({
-    ...item,
-    content: typeof item.content === 'string'
-      ? item.content.replaceAll('Osmo、Kinetic、Lumix、Tread 四大系列', 'Otter、Rayo、Kais 三条面料与防护材料路径')
-      : item.content,
-  }))
 }
 
 export function initDatabase() {
@@ -512,6 +433,25 @@ export function initDatabase() {
       db.product_dual_code_version = 1
       saveDb()
     }
+    const deprecatedCollections = ['fabric_scenes', 'digital_assets', 'equipment_scenes', 'about_us', 'philosophies', 'milestones', 'news']
+    const deprecatedHomeFields = ['hero_features', 'scenarios', 'scenarios_section_title']
+    let deprecatedDataRemoved = false
+    for (const key of deprecatedCollections) {
+      if (!(key in db)) continue
+      delete (db as unknown as Record<string, unknown>)[key]
+      deprecatedDataRemoved = true
+    }
+    for (const key of deprecatedHomeFields) {
+      if (!(key in db.home_config)) continue
+      delete db.home_config[key]
+      deprecatedDataRemoved = true
+    }
+    db.fabric_series = db.fabric_series.map((series: any) => {
+      const { sub_series_data: _subSeries, cover_image: _coverImage, ...currentSeries } = series
+      if (_subSeries !== undefined || _coverImage !== undefined) deprecatedDataRemoved = true
+      return currentSeries
+    })
+    if (deprecatedDataRemoved) saveDb()
     // Backward compatibility: ensure new fields exist
     if (!db.contact_config) {
       db.contact_config = { id: 1, email: 'contact@gangyi.tech', phone: '400-XXX-XXXX', address: '上海市', response_text: '提交表单后，我们的面料顾问将在 3 个工作日内与您取得联系' }
@@ -551,8 +491,6 @@ export function initDatabase() {
       contentSectionsChanged = true
     }
     if (contentSectionsChanged) saveDb()
-    if (!db.fabric_scenes) db.fabric_scenes = []
-    if (!db.digital_assets) db.digital_assets = []
     if (!db.media_items) {
       // Migrate existing uploads to media_items
       const uploadsDir = path.resolve(process.cwd(), 'public/uploads')
@@ -584,24 +522,6 @@ export function initDatabase() {
         { id: 3, label: '合作洽谈', order_index: 2 },
         { id: 4, label: '技术支持', order_index: 3 },
         { id: 5, label: '其他', order_index: 4 },
-      ]
-      saveDb()
-    }
-    if (!db.equipment_scenes) {
-      db.equipment_scenes = [
-        { id: 1, category: '都市生活', label: '日常通勤', equipment_slug: 'latent', order_index: 0 },
-        { id: 2, category: '都市生活', label: '商务差旅', equipment_slug: 'latent', order_index: 1 },
-        { id: 3, category: '都市生活', label: '城市轻户外', equipment_slug: 'u-line', order_index: 2 },
-        { id: 4, category: '轻户外', label: '徒步旅行', equipment_slug: 'p-line', order_index: 3 },
-        { id: 5, category: '轻户外', label: '露营休闲', equipment_slug: 'a-line', order_index: 4 },
-        { id: 6, category: '轻户外', label: '城市骑行', equipment_slug: 'u-line', order_index: 5 },
-        { id: 7, category: '专业运动', label: '滑雪登山', equipment_slug: 'p-line', order_index: 6 },
-        { id: 8, category: '专业运动', label: '水域活动', equipment_slug: 'p-line', order_index: 7 },
-        { id: 9, category: '专业运动', label: '越野跑步', equipment_slug: 'p-line', order_index: 8 },
-        { id: 10, category: '特种防护', label: '战术防护', equipment_slug: 'p-line', order_index: 9 },
-        { id: 11, category: '特种防护', label: '阻燃工装', equipment_slug: 'a-line', order_index: 10 },
-        { id: 12, category: '特种防护', label: '工业安全', equipment_slug: 'p-line', order_index: 11 },
-        { id: 13, category: '特种防护', label: '鞋材应用', equipment_slug: 'p-line', order_index: 12 },
       ]
       saveDb()
     }
@@ -661,12 +581,7 @@ export function initDatabase() {
     if (db.home_config) {
       const homeDefaults: Record<string, any> = {
         hero_mobile_background: null,
-        hero_features: [
-          { icon: 'ShieldCheck', title: '100% PFAS-FREE', subtitle: '全系无氟' },
-          { icon: 'Droplets', title: '防水透湿', subtitle: '平衡舒适' },
-          { icon: 'Layers', title: '多功能复合', subtitle: '应对多元场景' },
-          { icon: 'Leaf', title: '可持续创新', subtitle: '安全·耐用·可信赖' },
-        ],
+        verification_image: null,
         platform_section_title: '技术来源与材料平台',
         platform_section_subtitle: '源自科研，成就可靠材料解决方案。',
         platform_section_link_text: '了解更多',
@@ -681,13 +596,6 @@ export function initDatabase() {
         series_section_subtitle: '面向多元应用的材料平台，让高性能更可持续。',
         series_section_link_text: '查看全部系列',
         series_section_link: '/fabrics',
-        scenarios_section_title: '应用场景提示',
-        scenarios: [
-          { icon: 'Shirt', label: '冲锋衣', link: '/fabrics/otter' },
-          { icon: 'Shield', label: '防护服', link: '/fabrics/kais' },
-          { icon: 'Backpack', label: '背负系统', link: '/equipment' },
-          { icon: 'Sun', label: '防晒轻量单品', link: '/fabrics/rayo' },
-        ],
         verification_section_title: '验证与标准',
         verification_section_subtitle: '平台级验证，安心选择。',
         verification_section_link_text: '具体指标见系列',
@@ -705,6 +613,11 @@ export function initDatabase() {
           db.home_config[key] = value
           homeChanged = true
         }
+      }
+      if (!db.home_config.verification_section_link || db.home_config.verification_section_link === '/fabrics') {
+        db.home_config.verification_section_link = '/pfas-free-innovation#technology-testing-certification'
+        db.home_config.verification_section_link_text = '查看测试与认证'
+        homeChanged = true
       }
       // Migrate old default hero content to new optimized defaults
       if (
@@ -748,17 +661,11 @@ export function initDatabase() {
       db.fabric_series = db.fabric_series.map((s: any) => ({ ...s, home_image: s.home_image && s.home_image !== 'undefined' ? s.home_image : null }))
       saveDb()
     }
-    // Data cleanup: remove Kais sub_series_data now that Kais uses the same structure as Otter/Rayo
-    if (db.fabric_series && db.fabric_series.some((s: any) => s.slug === 'kais' && s.sub_series_data)) {
-      db.fabric_series = db.fabric_series.map((s: any) => s.slug === 'kais' ? { ...s, sub_series_data: null } : s)
-      saveDb()
-    }
     // Backward compatibility: remove Tread series/SKUs/scenes if present
     if (db.fabric_series && db.fabric_series.some((s: any) => s.slug === 'tread')) {
       const treadIds = new Set(db.fabric_series.filter((s: any) => s.slug === 'tread').map((s: any) => s.id))
       db.fabric_series = db.fabric_series.filter((s: any) => s.slug !== 'tread')
       if (db.fabric_sku) db.fabric_sku = db.fabric_sku.filter((k: any) => !treadIds.has(k.series_id))
-      if (db.fabric_scenes) db.fabric_scenes = db.fabric_scenes.filter((s: any) => s.series_slug !== 'tread' && !s.series_slug.startsWith('tread'))
       saveDb()
     }
     // Backward compatibility: ensure police_number / police_link exist on footer_config
@@ -911,6 +818,11 @@ export function initDatabase() {
       saveDb()
     }
     const technologyPage = db.page_configs?.find((page: any) => page.page_key === 'pfas-free-innovation')
+    const testingSection = db.fluorine_sections?.find((section: any) => section.page_key === 'pfas-free-innovation' && section.title === '测试与验证')
+    if (testingSection && testingSection.section_key !== 'testing-certification') {
+      testingSection.section_key = 'testing-certification'
+      saveDb()
+    }
     if (technologyPage?.page_subtitle === '探索膜技术、面料复合、无氟供应链与测试验证。') {
       technologyPage.page_subtitle = '探索膜、复合、功能整理、供应链与测试验证。'
     }
@@ -956,6 +868,25 @@ export function initDatabase() {
     if (db.home_config?.series_section_title === '三条材料路径，服务不同场景') {
       db.home_config.series_section_title = '三大面料平台'
       db.home_config.series_section_subtitle = '蓝标 OTTER 与银标 RAYO 面向日常及户外，红标 KAIS 独立服务特种专业场景。'
+      saveDb()
+    }
+    if (db.home_config?.verification_section_title === '验证不是口号') {
+      db.home_config.verification_section_title = '测试与认证'
+      saveDb()
+    }
+    const homeVerifications = Array.isArray(db.home_config?.verifications) ? db.home_config.verifications : []
+    if (homeVerifications[0]?.title === '内部测试与应用验证') {
+      Object.assign(homeVerifications[0], {
+        title: '内部实验室',
+        subtitle: '依托香港科技大学（广州）多功能高聚物薄膜中央实验室，开展材料筛选、结构开发、样品对比与耐久验证。',
+      })
+      saveDb()
+    }
+    if (homeVerifications[1]?.title === '独立第三方检测') {
+      Object.assign(homeVerifications[1], {
+        title: '第三方测试认证',
+        subtitle: '根据具体产品与项目要求，委托 SGS、中纺标 CTTC 等专业机构检测，结果以正式报告为准。',
+      })
       saveDb()
     }
     let publicCopyChanged = false
