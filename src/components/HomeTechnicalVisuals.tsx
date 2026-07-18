@@ -4,7 +4,7 @@ import type { HomePlatformCard, HomeVerification } from '@/types'
 import MotionInView from './MotionInView'
 import { InlineMarkup } from './MarkupParser'
 
-type MaterialKind = 'membrane' | 'lamination' | 'finishing'
+type MaterialKind = 'membrane' | 'lamination' | 'supply'
 
 type FlowPoint = { x: number; y: number; scale: number; delay: number }
 
@@ -22,8 +22,6 @@ const FOG_COLUMNS: FlowPoint[] = [
   { x: 420, y: 6, scale: .76, delay: 1980 },
 ]
 
-const ADHESIVE_POINTS = [160, 205, 250, 295, 340, 385, 430]
-
 type MaterialLayer = { src: string; className: string }
 
 function MaterialScene({ kind, image, layers, label, children }: {
@@ -31,7 +29,7 @@ function MaterialScene({ kind, image, layers, label, children }: {
   image?: string
   layers?: MaterialLayer[]
   label: string
-  children: ReactNode
+  children?: ReactNode
 }) {
   return (
     <div className={`material-render material-render-${kind}`} role="img" aria-label={label}>
@@ -41,9 +39,11 @@ function MaterialScene({ kind, image, layers, label, children }: {
           <img key={layer.src} src={layer.src} alt="" loading="lazy" decoding="async" className={`material-render-layer ${layer.className}`} />
         ))}
       </div>
-      <svg viewBox="0 0 560 220" aria-hidden="true" className="material-render-overlay" fill="none">
-        {children}
-      </svg>
+      {children && (
+        <svg viewBox="0 0 560 220" aria-hidden="true" className="material-render-overlay" fill="none">
+          {children}
+        </svg>
+      )}
     </div>
   )
 }
@@ -106,8 +106,6 @@ function MembraneDiagram() {
 }
 
 function LaminationDiagram() {
-  const uid = useId().replace(/:/g, '')
-  const glowId = `adhesive-glow-${uid}`
   return (
     <MaterialScene
       kind="lamination"
@@ -117,72 +115,55 @@ function LaminationDiagram() {
         { src: '/visuals/lamination-layer-top-alpha-v1.png', className: 'material-render-lamination-top' },
       ]}
       label="织物、膜层和内层压合形成完整复合面料的示意图"
-    >
-        <defs>
-          <filter id={glowId} x="-150%" y="-150%" width="400%" height="400%"><feGaussianBlur stdDeviation="4" /></filter>
-        </defs>
-        <g className="material-render-adhesive">
-          {ADHESIVE_POINTS.map((x, index) => (
-            <g key={x} style={{ '--flow-delay': `${index * 110}ms` } as CSSProperties}>
-              <circle cx={x} cy={index % 2 ? 127 : 122} r="7" filter={`url(#${glowId})`} className="viz-adhesive-halo" />
-              <circle cx={x} cy={index % 2 ? 127 : 122} r="2.2" className="viz-adhesive-core" />
-            </g>
-          ))}
-        </g>
-    </MaterialScene>
+    />
   )
 }
 
-function FinishingDiagram() {
+const SUPPLY_CHAIN_NODES = [
+  { key: 'lab', src: '/visuals/supply-chain-node-lab-v1.png', delay: -3.316 },
+  { key: 'factory', src: '/visuals/supply-chain-node-factory-v1.png', delay: -.76 },
+  { key: 'retail', src: '/visuals/supply-chain-node-retail-v1.png', delay: -9.542 },
+  { key: 'materials', src: '/visuals/supply-chain-node-materials-v1.png', delay: -6.832 },
+  { key: 'material', src: '/visuals/supply-chain-node-material-v1.png', delay: -4.212 },
+] as const
+
+function SupplyChainDiagram() {
   const uid = useId().replace(/:/g, '')
-  const trailId = `finish-trail-${uid}`
-  const beadId = `finish-bead-${uid}`
-  const vaporId = `finish-vapor-${uid}`
-  const softId = `finish-soft-${uid}`
+  const glowId = `supply-glow-${uid}`
   return (
-    <MaterialScene kind="finishing" image="/visuals/finishing-material-alpha-v2.png" label="单层功能织物表面导湿并逐渐干燥的示意图">
-        <defs>
-          <linearGradient id={trailId} x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0" stopColor="var(--color-accent)" stopOpacity="0" />
-            <stop offset=".68" stopColor="var(--color-accent)" stopOpacity=".2" />
-            <stop offset="1" stopColor="var(--color-accent)" stopOpacity=".52" />
-          </linearGradient>
-          <radialGradient id={beadId} cx="35%" cy="28%" r="68%">
-            <stop offset="0" stopColor="#fff" stopOpacity=".78" />
-            <stop offset=".38" stopColor="var(--color-accent)" stopOpacity=".2" />
-            <stop offset="1" stopColor="var(--color-primary)" stopOpacity=".16" />
-          </radialGradient>
-          <linearGradient id={vaporId} x1="0" y1="1" x2="0" y2="0">
-            <stop offset="0" stopColor="var(--color-accent)" stopOpacity="0" />
-            <stop offset=".55" stopColor="var(--color-accent)" stopOpacity=".15" />
-            <stop offset="1" stopColor="var(--color-accent)" stopOpacity="0" />
-          </linearGradient>
-          <filter id={softId} x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="6" /></filter>
-        </defs>
-        <g className="viz-finish-bead">
-          <ellipse cx="139" cy="108" rx="17" ry="12" fill={`url(#${beadId})`} />
-          <ellipse cx="134" cy="104" rx="5" ry="3" fill="#fff" opacity=".72" />
-        </g>
-        <g className="viz-finish-trail">
-          <path d="M137 122C181 116 222 119 266 112C294 108 318 108 342 105" stroke={`url(#${trailId})`} strokeWidth="10" filter={`url(#${softId})`} />
-          <path d="M139 120C190 115 230 118 275 111C299 107 320 107 346 103" stroke={`url(#${trailId})`} strokeWidth="2.2" />
-          <path d="M338 96L352 102L340 111Z" fill="var(--color-accent)" className="viz-finish-trail-head" />
-        </g>
-        <g className="viz-dry-vapor">
-          {[420, 476].map((x, index) => (
-            <path key={x} style={{ '--flow-delay': `${index * 820}ms` } as CSSProperties} d={`M${x} 143C${x - 12} 127 ${x + 11} 112 ${x} 96C${x - 8} 84 ${x + 6} 72 ${x} 57`} stroke={`url(#${vaporId})`} strokeWidth="14" filter={`url(#${softId})`} />
-          ))}
-        </g>
-    </MaterialScene>
+    <div className="supply-chain-scene" role="img" aria-label="从原料、材料、实验验证、制造到终端应用的无氟供应链闭环示意图">
+      <div className="supply-chain-canvas" aria-hidden="true">
+        <img src="/visuals/supply-chain-ribbon-v1.png" alt="" loading="lazy" decoding="async" className="supply-chain-ribbon" />
+        <svg viewBox="0 0 1746 901" className="supply-chain-flow" fill="none">
+          <defs>
+            <filter id={glowId} x="-60%" y="-80%" width="220%" height="260%">
+              <feGaussianBlur stdDeviation="18" result="blur" />
+              <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+            </filter>
+          </defs>
+          <ellipse cx="873" cy="466" rx="642" ry="278" pathLength="100" className="supply-chain-pulse" filter={`url(#${glowId})`} />
+        </svg>
+        {SUPPLY_CHAIN_NODES.map((node) => (
+          <div
+            key={node.key}
+            className={`supply-chain-node supply-chain-node-${node.key}`}
+            style={{ '--supply-delay': `${node.delay}s` } as CSSProperties}
+          >
+            <img src={node.src} alt="" loading="lazy" decoding="async" />
+          </div>
+        ))}
+        <div className="supply-chain-center"><span>PFAS FREE</span></div>
+      </div>
+    </div>
   )
 }
 
-const MATERIAL_KINDS: MaterialKind[] = ['membrane', 'lamination', 'finishing']
+const MATERIAL_KINDS: MaterialKind[] = ['membrane', 'lamination', 'supply']
 
 function MaterialDiagram({ kind }: { kind: MaterialKind }) {
   if (kind === 'membrane') return <MembraneDiagram />
   if (kind === 'lamination') return <LaminationDiagram />
-  return <FinishingDiagram />
+  return <SupplyChainDiagram />
 }
 
 export function MaterialSystemVisual({ items, href }: { items: HomePlatformCard[]; href: string }) {
