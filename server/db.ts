@@ -292,18 +292,18 @@ function createDefaultDb(): Database {
       { id: 3, name: '特种专业', slug: 'special', description: '面向防刺与消防等明确任务的专业装备应用。', bg_image: null, image_fit: 'cover', order_index: 2 },
     ],
     equipment_products: [
-      { id: 1, category_id: 1, name: '通勤防护外套', image: null, features: '["日常风雨","舒适穿着","Otter"]', order_index: 0 },
-      { id: 2, category_id: 1, name: '夏季轻量外层', image: null, features: '["防晒","导湿","Rayo"]', order_index: 1 },
-      { id: 3, category_id: 2, name: '风雨户外服装', image: null, features: '["防水透湿","耐用","Otter"]', order_index: 0 },
-      { id: 4, category_id: 2, name: '运动防晒服装', image: null, features: '["轻量","导湿","Rayo"]', order_index: 1 },
-      { id: 5, category_id: 3, name: '防刺装备', image: null, features: '["明确任务","防刺内层","Kais"]', order_index: 0 },
-      { id: 6, category_id: 3, name: '消防装备', image: null, features: '["消防场景","专业防护","Kais"]', order_index: 1 },
+      { id: 1, category_id: 1, name: '通勤防护外套', image: null, features: '["日常风雨","舒适穿着","Otter"]', related_sku_ids: [1], order_index: 0 },
+      { id: 2, category_id: 1, name: '夏季轻量外层', image: null, features: '["防晒","导湿","Rayo"]', related_sku_ids: [], order_index: 1 },
+      { id: 3, category_id: 2, name: '风雨户外服装', image: null, features: '["防水透湿","耐用","Otter"]', related_sku_ids: [1, 2], order_index: 0 },
+      { id: 4, category_id: 2, name: '运动防晒服装', image: null, features: '["轻量","导湿","Rayo"]', related_sku_ids: [], order_index: 1 },
+      { id: 5, category_id: 3, name: '防刺装备', image: null, features: '["明确任务","防刺内层","Kais"]', related_sku_ids: [], order_index: 0 },
+      { id: 6, category_id: 3, name: '消防装备', image: null, features: '["消防场景","专业防护","Kais"]', related_sku_ids: [], order_index: 1 },
     ],
     care_guides: [
-      { id: 1, icon: 'Droplets', title: '常规清洗', content: '使用中性洗涤剂，水温不超过 30°C，反面洗涤以保护面料功能层。避免使用柔顺剂。', order_index: 0 },
-      { id: 2, icon: 'Sun', title: '自然晾干', content: '洗后置于通风阴凉处自然晾干，避免暴晒和高温烘干，以保持面料的防水透气性能。', order_index: 1 },
-      { id: 3, icon: 'Wind', title: '恢复防泼水', content: '随着穿着和洗涤，防泼水效果会逐渐减弱。低温熨烫或使用专业 DWR 喷雾可恢复。', order_index: 2 },
-      { id: 4, icon: 'Ban', title: '避免事项', content: '请勿干洗、漂白或干烘。避免接触油性物质和尖锐物品，以防损伤面料表层。', order_index: 3 },
+      { id: 1, title: '常规清洗', content: '使用中性洗涤剂，水温不超过 30°C，反面洗涤以保护面料功能层。避免使用柔顺剂。', order_index: 0 },
+      { id: 2, title: '自然晾干', content: '洗后置于通风阴凉处自然晾干，避免暴晒和高温烘干，以保持面料的防水透气性能。', order_index: 1 },
+      { id: 3, title: '恢复防泼水', content: '随着穿着和洗涤，防泼水效果会逐渐减弱。低温熨烫或使用专业 DWR 喷雾可恢复。', order_index: 2 },
+      { id: 4, title: '避免事项', content: '请勿干洗、漂白或干烘。避免接触油性物质和尖锐物品，以防损伤面料表层。', order_index: 3 },
     ],
     faqs: [
       { id: 1, question: '如何索取面料样品？', answer: '您可以通过服务与支持页面的联系表单提交样品申请，或直接与我们的销售团队联系。通常在 3-5 个工作日内寄出。', category: null, order_index: 0 },
@@ -574,7 +574,7 @@ export function initDatabase() {
       rail_end_card_cta_href: equipmentRail.rail_end_card_cta_href ?? '/contact',
     })
     db.fabric_sku = db.fabric_sku.map((item: any) => ({ ...item, card_summary: item.card_summary ?? '', visibility: item.visibility ?? 'public', status: item.status ?? 'active' }))
-    db.equipment_products = db.equipment_products.map((item: any) => ({ ...item, card_summary: item.card_summary ?? '', visibility: item.visibility ?? 'public', status: item.status ?? 'active' }))
+    db.equipment_products = db.equipment_products.map((item: any) => ({ ...item, card_summary: item.card_summary ?? '', visibility: item.visibility ?? 'public', status: item.status ?? 'active', related_sku_ids: Array.isArray(item.related_sku_ids) ? item.related_sku_ids : [] }))
     saveDb()
     if (!db.contact_messages) db.contact_messages = []
     // Backward compatibility: ensure new home_config fields exist

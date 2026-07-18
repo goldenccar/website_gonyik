@@ -129,6 +129,14 @@ export interface EquipmentProduct {
   visibility?: 'public' | 'hidden'
   status?: 'active' | 'archived'
   order_index: number
+  related_sku_ids?: number[]
+  related_skus?: Array<{
+    id: number
+    sku_code: string
+    name: string
+    series_slug: string
+    series_name: string
+  }>
 }
 
 export interface CareGuide {

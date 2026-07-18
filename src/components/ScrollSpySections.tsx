@@ -8,10 +8,12 @@ interface ScrollSpyItem {
   content: ReactNode
 }
 
-export default function ScrollSpySections({ items, label, idPrefix }: {
+export default function ScrollSpySections({ items, label, idPrefix, showIndex = true, compactNav = false }: {
   items: ScrollSpyItem[]
   label: string
   idPrefix: string
+  showIndex?: boolean
+  compactNav?: boolean
 }) {
   const [activeId, setActiveId] = useState('')
   const itemKey = items.map((item) => item.id).join('|')
@@ -63,11 +65,11 @@ export default function ScrollSpySections({ items, label, idPrefix }: {
 
   return (
     <PageSection className="!py-0">
-      <div className="relative lg:grid lg:grid-cols-12 lg:gap-12 xl:gap-14">
-        <div className="contents lg:col-span-3 lg:block">
-          <ContentTabs variant="scrollspy" label={label} items={items.map(({ id, label: itemLabel }) => ({ id, label: itemLabel }))} active={activeId} onChange={scrollToSection} />
+      <div className={`relative lg:grid ${compactNav ? 'lg:grid-cols-[190px_minmax(0,1fr)] lg:gap-10 xl:grid-cols-[210px_minmax(0,1fr)] xl:gap-14' : 'lg:grid-cols-12 lg:gap-12 xl:gap-14'}`}>
+        <div className={`contents lg:block ${compactNav ? '' : 'lg:col-span-3'}`}>
+          <ContentTabs variant="scrollspy" label={label} items={items.map(({ id, label: itemLabel }) => ({ id, label: itemLabel }))} active={activeId} onChange={scrollToSection} showIndex={showIndex} />
         </div>
-        <div className="lg:col-span-9 lg:col-start-4">
+        <div className={compactNav ? 'min-w-0' : 'lg:col-span-9 lg:col-start-4'}>
           {items.map((item) => <section
             key={item.id}
             id={`${idPrefix}-${item.id}`}

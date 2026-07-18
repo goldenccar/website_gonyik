@@ -100,6 +100,7 @@
   .gonyik-page textarea {
     font-weight: 500;
   }
+
 }
 
 @layer components {
@@ -235,6 +236,15 @@
   background:
     linear-gradient(140deg, transparent 0 42%, rgba(105,178,193,.24) 42% 44%, transparent 44%),
     repeating-linear-gradient(12deg, #e7edf1 0 3px, #f8fafb 3px 9px);
+}
+
+.gonyik-application-placeholder {
+  background:
+    linear-gradient(135deg, transparent 0 48%, rgba(105,178,193,.2) 48% 48.5%, transparent 48.5%),
+    linear-gradient(rgba(15,45,70,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15,45,70,.035) 1px, transparent 1px),
+    linear-gradient(145deg, #f8fafb, #e9eff2);
+  background-size: auto, 24px 24px, 24px 24px, auto;
 }
 
 .gonyik-fabric-placeholder {

@@ -6,12 +6,13 @@ interface ContentTab {
   label: string
 }
 
-export default function ContentTabs({ items, active, onChange, label, variant = 'panel' }: {
+export default function ContentTabs({ items, active, onChange, label, variant = 'panel', showIndex = true }: {
   items: ContentTab[]
   active: string
   onChange: (id: string) => void
   label: string
   variant?: 'panel' | 'scrollspy'
+  showIndex?: boolean
 }) {
   const navRef = useRef<HTMLElement>(null)
   const buttonRefs = useRef(new Map<string, HTMLButtonElement>())
@@ -37,8 +38,8 @@ export default function ContentTabs({ items, active, onChange, label, variant = 
   }, [active, itemKey, variant])
 
   const navClass = variant === 'scrollspy'
-    ? 'gonyik-rail relative sticky top-[60px] z-30 -mx-7 flex overflow-x-auto border-y border-border bg-bg/95 px-7 backdrop-blur lg:top-[84px] lg:z-20 lg:mx-0 lg:mt-12 lg:block lg:self-start lg:overflow-visible lg:border-y-0 lg:bg-transparent lg:px-0 lg:backdrop-blur-none'
-    : 'gonyik-rail mb-8 flex gap-3 overflow-x-auto pb-4 lg:sticky lg:top-[84px] lg:mb-0 lg:block lg:self-start lg:overflow-visible lg:pb-0'
+    ? 'gonyik-rail relative sticky top-[60px] z-30 -mx-7 flex overflow-x-auto border-y border-border bg-bg px-7 lg:z-20 lg:mx-0 lg:mt-12 lg:block lg:self-start lg:overflow-visible lg:border-y-0 lg:bg-transparent lg:px-0'
+    : 'gonyik-rail mb-8 flex gap-3 overflow-x-auto pb-4 lg:sticky lg:top-[60px] lg:mb-0 lg:block lg:self-start lg:overflow-visible lg:pb-0'
 
   return (
     <nav ref={navRef} aria-label={label} className={navClass}>
@@ -55,7 +56,7 @@ export default function ContentTabs({ items, active, onChange, label, variant = 
           aria-current={selected ? 'true' : undefined}
           onClick={() => onChange(item.id)}
           className={buttonClass}
-        ><span className="label-en mr-3">{String(index + 1).padStart(2, '0')}</span><span className="text-[14px] font-medium tracking-[0.04em]"><InlineMarkup text={item.label} /></span></button>
+        >{showIndex && <span className="label-en mr-3">{String(index + 1).padStart(2, '0')}</span>}<span className="text-[14px] font-medium tracking-[0.04em]"><InlineMarkup text={item.label} /></span></button>
       })}
     </nav>
   )

@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
 import { getCategoryProducts, getEquipmentCategories, getPageConfig } from '@/api/client'
-import HorizontalRail from '@/components/HorizontalRail'
+import CatalogCollection from '@/components/CatalogCollection'
+import { CatalogCardSkeleton, CatalogEndCta } from '@/components/CatalogCard'
 import ApplicationCard from '@/components/ApplicationCard'
 import PageHero from '@/components/PageHero'
 import { PageSection, PageShell } from '@/components/PageLayout'
 import type { EquipmentCategory, EquipmentProduct, PageConfig } from '@/types'
 import { InlineMarkup } from '@/components/MarkupParser'
-import RailEndCard from '@/components/RailEndCard'
 
 export default function EndUseEquipment() {
   const [page, setPage] = useState<PageConfig | null>(null)
@@ -37,21 +37,24 @@ export default function EndUseEquipment() {
   }, [active])
 
   const category = categories.find((item) => item.slug === active)
+  const endCardVisible = page?.rail_end_card_visible !== false
 
   return (
     <PageShell>
       <PageHero variant="detail" tag={page?.page_tag || 'END-USE APPLICATIONS'} title={page?.page_title || '从面料到真实应用'} subtitle={page?.page_subtitle} image={page?.hero_background} imageAlt="港翼面料终端应用" />
-      <PageSection className="!py-8 lg:!py-10">
+      <PageSection className="!py-9 lg:!py-12">
         <div key={active} className="motion-content-enter">
         <div className="mb-7 flex flex-col gap-5 border-b border-border pb-6 lg:flex-row lg:items-end lg:justify-between">
-          <div className="max-w-[680px]"><p className="label-en text-secondary">REPRESENTATIVE APPLICATIONS</p><h2 className="type-module-title mt-2 text-primary"><InlineMarkup text={category?.name} /></h2><p className="mt-2 text-[14px] leading-6 text-secondary"><InlineMarkup text={category?.description} /></p></div>
-          <nav aria-label="终端应用分类" className="flex flex-wrap items-center gap-2">{categories.map((item) => <span key={item.id} className="contents">{item.slug === 'special' && <span aria-hidden="true" className="mx-2 h-5 w-px self-center bg-border" />}<button onClick={() => setActive(item.slug)} className={`px-4 py-2 text-[13px] tracking-[0.03em] transition-colors duration-[var(--motion-instant)] ${active === item.slug ? 'bg-dark text-white' : 'border border-border text-primary'}`}>{item.name}</button></span>)}</nav>
+          <div className="max-w-[680px]"><h2 className="type-module-title text-primary"><InlineMarkup text={category?.name} /></h2><p className="mt-2 text-[14px] leading-6 text-secondary"><InlineMarkup text={category?.description} /></p></div>
+          <nav aria-label="终端应用分类" className="flex max-w-full items-center gap-6 overflow-x-auto pb-0.5">{categories.map((item) => <button key={item.id} onClick={() => setActive(item.slug)} className={`relative shrink-0 py-2 text-[13px] font-medium tracking-[0.03em] transition-colors duration-[var(--motion-instant)] after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:origin-left after:bg-[#69B2C1] after:transition-transform after:duration-[var(--motion-switch)] ${active === item.slug ? 'text-primary after:scale-x-100' : 'text-secondary after:scale-x-0 hover:text-primary'}`}>{item.name}</button>)}</nav>
         </div>
         <div className="min-h-[260px]">
-        {loadingProducts ? <div className="border-t border-border py-8 text-body text-secondary">正在加载该分类内容…</div> : <HorizontalRail label={`${category?.name || ''}应用`} mobileStack>
-          {products.map((product) => <ApplicationCard key={product.id} product={product} categoryName={category?.name} />)}
-          <RailEndCard config={page || {}} fallbackTitle="新应用开发中" fallbackDescription="围绕新的任务与穿着环境持续开发。" />
-        </HorizontalRail>}
+        {loadingProducts ? <div aria-label="正在加载该分类内容" className="grid gap-5 md:grid-cols-2"><CatalogCardSkeleton ratio="equipment" /><CatalogCardSkeleton ratio="equipment" /></div> : <>
+          <CatalogCollection label={`${category?.name || ''}应用`}>
+            {products.map((product) => <ApplicationCard key={product.id} product={product} categoryName={category?.name} />)}
+          </CatalogCollection>
+          {endCardVisible && <CatalogEndCta title={page?.rail_end_card_title ?? '新应用开发中'} description={page?.rail_end_card_description ?? '围绕新的任务与穿着环境持续开发。'} label={page?.rail_end_card_cta_label ?? '提交应用需求'} href={page?.rail_end_card_cta_href || '/contact'} />}
+        </>}
         </div>
         </div>
       </PageSection>

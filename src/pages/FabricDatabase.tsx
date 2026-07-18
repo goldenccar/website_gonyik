@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { getFabricSeries, getFabricSeriesDetail, getPageConfig } from '@/api/client'
-import HorizontalRail from '@/components/HorizontalRail'
+import CatalogCollection from '@/components/CatalogCollection'
 import PageHero from '@/components/PageHero'
 import { PageSection, PageShell } from '@/components/PageLayout'
 import SkuCard, { getSkuDisplayCode } from '@/components/SkuCard'
@@ -9,7 +9,7 @@ import type { FabricSeries, FabricSku, PageConfig } from '@/types'
 import AnimatedDisclosure from '@/components/AnimatedDisclosure'
 import { InlineMarkup } from '@/components/MarkupParser'
 import type { FabricCapabilityDefinition } from '@/config/fabricCapabilities'
-import RailEndCard from '@/components/RailEndCard'
+import { CatalogEndCta } from '@/components/CatalogCard'
 
 function parseSpecs(value: unknown) {
   if (value && typeof value === 'object' && !Array.isArray(value)) return value as Record<string, string>
@@ -26,6 +26,7 @@ export default function FabricDatabase() {
   const [detailLoading, setDetailLoading] = useState(false)
   const [selectedSku, setSelectedSku] = useState<FabricSku | null>(null)
   const [skuOpen, setSkuOpen] = useState(false)
+  const handledRequestedSku = useRef('')
 
   useEffect(() => {
     Promise.all([getPageConfig('fabrics'), getFabricSeries()]).then(([config, list]) => {
@@ -52,8 +53,20 @@ export default function FabricDatabase() {
     if (requested && ['otter', 'rayo', 'kais'].includes(requested) && requested !== active) setActive(requested)
   }, [active, params])
 
+  useEffect(() => {
+    const requestedId = Number(params.get('sku'))
+    const requestKey = `${active}:${requestedId}`
+    if (!requestedId || !detail?.skus?.length || handledRequestedSku.current === requestKey) return
+    const match = detail.skus.find((sku) => sku.id === requestedId)
+    if (!match) return
+    handledRequestedSku.current = requestKey
+    setSelectedSku(match)
+    setSkuOpen(true)
+  }, [active, detail, params])
+
   const activeSeries = series.find((item) => item.slug === active)
   const isSpecial = active === 'kais'
+  const endCardVisible = page?.rail_end_card_visible !== false
   const selectSeries = (slug: string) => {
     setActive(slug)
     setParams({ series: slug }, { replace: true })
@@ -71,29 +84,26 @@ export default function FabricDatabase() {
     <PageShell>
       <PageHero tag={page?.page_tag || 'FABRIC DATABASE'} title={page?.page_title || '按使用环境，找到合适的材料'} subtitle={page?.page_subtitle || '从日常与户外使用到特种专业场景，查看材料系列、具体型号与验证依据。'} image={page?.hero_background} imageAlt="复合面料与膜层结构微距" />
 
-      <PageSection tone="white" className="!py-8">
-        <nav aria-label="面料系列" className="grid grid-cols-3 gap-2 md:hidden">
-          <div className="col-span-2 grid grid-cols-2 gap-2">
-            <span className="col-span-2 text-[12px] text-secondary">日常与户外使用</span>
-            {['otter', 'rayo'].map((slug) => <button key={slug} onClick={() => selectSeries(slug)} className={`h-11 border px-3 text-[13px] font-medium uppercase transition-colors duration-[var(--motion-instant)] ${active === slug ? 'border-dark bg-dark text-white' : 'border-border bg-white text-primary'}`}>{slug}</button>)}
+      <div className="sticky top-[60px] z-40 bg-white">
+      <PageSection tone="white" className="!py-5 shadow-[0_1px_0_rgba(13,38,61,0.08)] md:!py-6">
+        <nav aria-label="面料系列" className="flex flex-col gap-4 md:flex-row md:items-center md:gap-8">
+          <div className="flex items-center gap-5">
+            <span className="shrink-0 text-[12px] text-secondary">日常与户外使用</span>
+            <div className="flex items-center gap-5">
+              {['otter', 'rayo'].map((slug) => <button key={slug} onClick={() => selectSeries(slug)} className={`relative py-2 text-[13px] font-semibold uppercase tracking-[0.06em] transition-colors duration-[var(--motion-instant)] after:absolute after:inset-x-0 after:-bottom-0.5 after:h-0.5 after:origin-left after:bg-[#69B2C1] after:transition-transform after:duration-[var(--motion-switch)] ${active === slug ? 'text-primary after:scale-x-100' : 'text-secondary after:scale-x-0 hover:text-primary'}`}>{slug}</button>)}
+            </div>
           </div>
-          <div className="grid grid-cols-1 gap-2">
-            <span className="text-[12px] text-secondary">特种场景</span>
-            <button onClick={() => selectSeries('kais')} className={`h-11 border px-3 text-[13px] font-medium uppercase transition-colors duration-[var(--motion-instant)] ${active === 'kais' ? 'border-dark bg-dark text-white' : 'border-border bg-white text-primary'}`}>kais</button>
+          <div className="flex items-center gap-5 border-t border-border pt-4 md:border-l md:border-t-0 md:pl-8 md:pt-0">
+            <span className="shrink-0 text-[12px] text-secondary">特种场景</span>
+            <button onClick={() => selectSeries('kais')} className={`relative py-2 text-[13px] font-semibold uppercase tracking-[0.06em] transition-colors duration-[var(--motion-instant)] after:absolute after:inset-x-0 after:-bottom-0.5 after:h-0.5 after:origin-left after:bg-[#69B2C1] after:transition-transform after:duration-[var(--motion-switch)] ${active === 'kais' ? 'text-primary after:scale-x-100' : 'text-secondary after:scale-x-0 hover:text-primary'}`}>kais</button>
           </div>
-        </nav>
-        <nav aria-label="面料系列" className="hidden items-center gap-x-3 text-[14px] md:flex">
-          <span className="mr-1 text-secondary">日常与户外使用</span>
-          {['otter', 'rayo'].map((slug) => <button key={slug} onClick={() => selectSeries(slug)} className={`px-3 py-2 uppercase transition-colors duration-[var(--motion-instant)] ${active === slug ? 'bg-dark text-white' : 'border border-border text-primary'}`}>{slug}</button>)}
-          <span className="mx-2 text-border">|</span>
-          <span className="text-secondary">特种场景</span>
-          <button onClick={() => selectSeries('kais')} className={`px-3 py-2 uppercase transition-colors duration-[var(--motion-instant)] ${active === 'kais' ? 'bg-dark text-white' : 'border border-border text-primary'}`}>kais</button>
         </nav>
       </PageSection>
+      </div>
 
       <PageSection id="series-content">
         <div key={active} className="motion-content-enter">
-        <div className="mb-10 max-w-[760px]">
+        <div className="mb-8 max-w-[760px] md:mb-10">
           <p className="label-en -ml-px text-secondary"><InlineMarkup text={activeSeries?.name || active} /></p>
           <h2 className="type-section-title mt-3 text-primary"><InlineMarkup text={activeSeries?.tagline || (isSpecial ? '面向明确任务的专业防护' : '面向真实使用环境的功能材料')} /></h2>
           <p className="body-copy mt-4 text-secondary"><InlineMarkup text={activeSeries?.description} /></p>
@@ -101,12 +111,13 @@ export default function FabricDatabase() {
 
         <div className="min-h-[260px]">
         {detailLoading ? <div className="motion-content-enter border-t border-border py-8 text-body text-secondary">正在加载该系列资料…</div> : detail?.skus?.length ? (
-          <HorizontalRail label={`${detail.name} 面料型号`} mobileStack>
+          <>
+          <CatalogCollection label={`${detail.name} 面料型号`}>
             {detail.skus.map((sku) => {
               return <SkuCard key={`${sku.series_id}-${sku.id}`} sku={sku} seriesName={detail.name} capabilities={detail.capabilities} expanded={skuOpen && selectedSku?.id === sku.id} onClick={() => openSku(sku)} />
             })}
-            <RailEndCard config={page || {}} fallbackTitle="新面料开发中" fallbackDescription="针对新的使用环境与性能目标持续开发。" />
-          </HorizontalRail>
+          </CatalogCollection>
+          </>
         ) : <p className="border-t border-border py-8 text-body text-secondary">该系列具体型号正在整理中。</p>}
         </div>
 
@@ -114,9 +125,9 @@ export default function FabricDatabase() {
           open={skuOpen && Boolean(selectedSku)}
           replayKey={selectedSku?.id}
           scrollOnExpand
-          className="mt-10 scroll-mt-[84px]"
+          className="mt-6 scroll-mt-[84px]"
         >
-          {selectedSku && <section className="pt-5" aria-live="polite">
+          {selectedSku && <section className="border-y border-border bg-white px-5 py-8 md:px-7 md:py-10" aria-live="polite">
             <p className="label-en text-secondary"><InlineMarkup text={detail?.name} /> / {getSkuDisplayCode(selectedSku.sku_code, detail?.name)}</p>
             <h3 className="type-module-title mt-3 text-primary"><InlineMarkup text={page?.core_performance_title || '核心性能'} /></h3>
             <div className="mt-8 grid gap-x-8 gap-y-6 md:grid-cols-3">
@@ -126,6 +137,7 @@ export default function FabricDatabase() {
             <Link to="/contact" className="mt-4 inline-block text-[14px] font-medium text-primary underline underline-offset-4">获取完整 TDS →</Link>
           </section>}
         </AnimatedDisclosure>
+        {endCardVisible && <CatalogEndCta title={page?.rail_end_card_title ?? '新面料开发中'} description={page?.rail_end_card_description ?? '针对新的使用环境与性能目标持续开发。'} label={page?.rail_end_card_cta_label ?? '提交需求'} href={page?.rail_end_card_cta_href || '/contact'} />}
         </div>
       </PageSection>
     </PageShell>

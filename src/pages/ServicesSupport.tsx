@@ -31,7 +31,7 @@ export default function ServicesSupport() {
   return (
     <PageShell>
       <PageHero tag={page?.page_tag || 'CARE & SUPPORT'} title={page?.page_title || '服务与支持'} subtitle={page?.page_subtitle} image={page?.hero_background} imageAlt="功能面料洗涤与保养" />
-      <ScrollSpySections idPrefix="service" label="服务目录" items={sections} />
+      <ScrollSpySections idPrefix="service" label="服务目录" showIndex={false} compactNav items={sections} />
     </PageShell>
   )
 }

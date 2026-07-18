@@ -23,6 +23,8 @@ export default function AdminEquipmentManager() {
   const [showProdForm, setShowProdForm] = useState(false)
   const [message, setMessage] = useState('')
   const [rail, setRail] = useState<RailEndCardConfig>(DEFAULT_RAIL)
+  const [fabricSeries, setFabricSeries] = useState<any[]>([])
+  const [fabricSkus, setFabricSkus] = useState<any[]>([])
 
   const loadData = async () => {
     const cRes = await api.get('/equipment/admin/categories')
@@ -35,6 +37,12 @@ export default function AdminEquipmentManager() {
 
   useEffect(() => { loadData() }, [selectedCategory])
   useEffect(() => { getPageConfig('equipment').then((res) => setRail({ ...DEFAULT_RAIL, ...res.data.data })) }, [])
+  useEffect(() => {
+    Promise.all([api.get('/fabrics/admin/series'), api.get('/fabrics/admin/sku')]).then(([seriesRes, skuRes]) => {
+      setFabricSeries(seriesRes.data.data || [])
+      setFabricSkus(skuRes.data.data || [])
+    })
+  }, [])
 
   const handleSaveCategory = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -66,6 +74,7 @@ export default function AdminEquipmentManager() {
     formData.append('card_summary', (data.card_summary as string) || '')
     formData.append('visibility', (data.visibility as string) || 'public')
     formData.append('status', (data.status as string) || 'active')
+    formData.append('related_sku_ids', JSON.stringify(fd.getAll('related_sku_ids').map(Number).filter(Number.isFinite)))
     if (file) formData.append('image', file)
     if (editingProduct?.image && !file) formData.append('image', editingProduct.image)
 
@@ -200,6 +209,20 @@ export default function AdminEquipmentManager() {
               />
               <FormField label="卡片核心收益" name="card_summary" markup="inline" defaultValue={editingProduct?.card_summary} placeholder="一句话说明应用价值" />
               <div className="grid gap-3 sm:grid-cols-2"><FormField label="前台显示" name="visibility" select defaultValue={editingProduct?.visibility || 'public'} options={[{ value: 'public', label: '显示' }, { value: 'hidden', label: '隐藏' }]} /><FormField label="内容状态" name="status" select defaultValue={editingProduct?.status || 'active'} options={[{ value: 'active', label: '正常' }, { value: 'archived', label: '归档' }]} /></div>
+              <fieldset className="border border-white/10 p-4">
+                <legend className="px-1 text-[12px] uppercase tracking-[0.08em] text-secondary">关联具体面料</legend>
+                <p className="mb-3 text-[12px] leading-5 text-accent">前台会显示为可跳转到具体 SKU 的链接；未勾选时不显示关联入口。</p>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {fabricSkus.map((sku) => {
+                    const series = fabricSeries.find((item) => item.id === sku.series_id)
+                    const related = Array.isArray(editingProduct?.related_sku_ids) ? editingProduct.related_sku_ids : []
+                    return <label key={sku.id} className="flex cursor-pointer items-start gap-3 border border-white/10 px-3 py-3 text-[13px] text-white hover:border-white/25">
+                      <input type="checkbox" name="related_sku_ids" value={sku.id} defaultChecked={related.map(Number).includes(sku.id)} className="mt-0.5 accent-[#69B2C1]" />
+                      <span><span className="font-medium">{series?.name || '未归类'} · {sku.sku_code}</span><span className="mt-0.5 block text-[12px] text-accent">{sku.name}</span></span>
+                    </label>
+                  })}
+                </div>
+              </fieldset>
               <div>
                 <label className="block text-[12px] text-secondary uppercase mb-1">产品图</label>
                 {editingProduct?.image && <img src={editingProduct.image} alt="当前应用卡片图" className="mb-2 aspect-video w-full object-cover" />}

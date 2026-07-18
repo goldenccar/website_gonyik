@@ -27,7 +27,7 @@ export function getFabricCapabilityIds(features?: unknown, legacySummary?: unkno
   })).map((capability) => capability.key)
 }
 
-export function FabricCapabilityTags({ features, legacySummary, capabilities = DEFAULT_FABRIC_CAPABILITIES, limit = 4 }: { features?: unknown; legacySummary?: unknown; capabilities?: FabricCapabilityDefinition[]; limit?: number }) {
+export function FabricCapabilityTags({ features, legacySummary, capabilities = DEFAULT_FABRIC_CAPABILITIES, limit = 4, align = 'end' }: { features?: unknown; legacySummary?: unknown; capabilities?: FabricCapabilityDefinition[]; limit?: number; align?: 'start' | 'end' }) {
   const selected = getFabricCapabilityIds(features, legacySummary, capabilities)
     .map((key) => capabilities.find((item) => item.key === key))
     .filter((item): item is FabricCapabilityDefinition => Boolean(item))
@@ -36,7 +36,7 @@ export function FabricCapabilityTags({ features, legacySummary, capabilities = D
   if (!selected.length) return null
 
   return (
-    <ul className="flex flex-wrap items-center justify-end gap-1.5" aria-label={selected.map((item) => item.label).join('、')}>
+    <ul className={`flex flex-wrap items-center gap-1.5 ${align === 'start' ? 'justify-start' : 'justify-end'}`} aria-label={selected.map((item) => item.label).join('、')}>
       {selected.map(({ key, label, theme }) => (
         <li key={key} className={`flex h-7 items-center whitespace-nowrap border px-2.5 text-[12px] leading-none ${FABRIC_CAPABILITY_THEME_CLASSES[theme] || FABRIC_CAPABILITY_THEME_CLASSES.neutral}`}>
           {label}

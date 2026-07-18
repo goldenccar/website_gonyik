@@ -1,6 +1,7 @@
 import type { FabricSku } from '@/types'
 import { FabricCapabilityTags } from './FabricCapabilities'
 import type { FabricCapabilityDefinition } from '@/config/fabricCapabilities'
+import { CatalogCardMedia, CatalogCardShell } from './CatalogCard'
 
 interface SkuCardProps {
   sku: FabricSku
@@ -18,20 +19,48 @@ export function getSkuDisplayCode(skuCode = '', seriesName = '') {
   return parts.join('-') || skuCode || 'UNNAMED'
 }
 
+function getCardSpecifications(value: unknown) {
+  let specifications: Record<string, string> = {}
+  if (value && typeof value === 'object' && !Array.isArray(value)) specifications = value as Record<string, string>
+  if (typeof value === 'string') {
+    try { specifications = JSON.parse(value) as Record<string, string> } catch { specifications = {} }
+  }
+  const entries = Object.entries(specifications)
+  const preferred = [
+    entries.find(([label]) => label === '结构'),
+    entries.find(([label]) => /成品克重|理论.*克重/.test(label)),
+    entries.find(([label]) => /面层|面料/.test(label)),
+  ].filter(Boolean) as Array<[string, string]>
+  return [...preferred, ...entries.filter(([label]) => !preferred.some(([selected]) => selected === label))].slice(0, 3)
+}
+
 export default function SkuCard({ sku, seriesName, capabilities, onClick, expanded = false }: SkuCardProps) {
   const code = getSkuDisplayCode(sku.sku_code, seriesName)
+  const cardSpecifications = getCardSpecifications(sku.specifications)
   return (
-    <article className="group min-w-0 snap-start">
-      <button type="button" onClick={onClick} aria-expanded={expanded} className="block w-full text-left">
-        <div className="aspect-[4/3] overflow-hidden bg-white">
-          {sku.image ? <img src={sku.image} alt={sku.name} loading="lazy" decoding="async" className="h-full w-full object-cover transition-[transform,filter] duration-[var(--motion-media)] ease-apple group-hover:scale-[1.022] group-hover:brightness-[1.04] group-focus-within:scale-[1.022] group-focus-within:brightness-[1.04]" /> : <div className="gonyik-fabric-placeholder h-full w-full" />}
+    <CatalogCardShell selected={expanded} interactive className="snap-start">
+      <button type="button" onClick={onClick} aria-expanded={expanded} className="grid h-full w-full text-left focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#69B2C1] md:grid-cols-[34%_1fr]">
+        <CatalogCardMedia
+          src={sku.image}
+          alt={sku.name}
+          placeholder={<div className="gonyik-fabric-placeholder relative h-full w-full"><span className="absolute bottom-4 left-4 text-[10px] font-medium tracking-[0.18em] text-white/65">SAMPLE IMAGE PENDING</span></div>}
+          ratio="compact"
+          className="md:h-full"
+        />
+        <div className="flex min-w-0 flex-col p-5 md:p-6">
+          <h3 className="text-[24px] font-bold leading-none tracking-[-0.02em] text-primary">{code}</h3>
+          <div className="mt-3 min-h-7">
+            <FabricCapabilityTags features={sku.features} legacySummary={sku.card_summary} capabilities={capabilities} align="start" />
+          </div>
+          {Boolean(cardSpecifications.length) && <dl className="mt-4 grid gap-2 border-t border-border pt-4">
+            {cardSpecifications.map(([label, value]) => <div key={label} className="grid grid-cols-[72px_minmax(0,1fr)] gap-3 text-[12px] leading-5"><dt className="text-secondary">{label}</dt><dd className="truncate font-medium text-primary">{value}</dd></div>)}
+          </dl>}
+          <span className="mt-auto inline-flex items-center gap-2 pt-5 text-[13px] font-medium text-primary">
+            <span className="border-b border-primary/55 pb-0.5">{expanded ? '收起性能' : '查看性能'}</span>
+            <span aria-hidden="true" className={`transition-transform duration-[var(--motion-instant)] ${expanded ? 'rotate-180' : ''}`}>↓</span>
+          </span>
         </div>
-        <div className="mt-4 flex min-h-8 items-center justify-between gap-4">
-          <h3 className="shrink-0 text-[30px] font-bold leading-none text-primary">{code}</h3>
-          <FabricCapabilityTags features={sku.features} legacySummary={sku.card_summary} capabilities={capabilities} />
-        </div>
-        <span className="mt-4 inline-block text-[14px] font-medium text-primary underline underline-offset-4">{expanded ? '收起性能 ↑' : '查看性能 ↓'}</span>
       </button>
-    </article>
+    </CatalogCardShell>
   )
 }
