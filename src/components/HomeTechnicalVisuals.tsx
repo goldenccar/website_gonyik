@@ -1,10 +1,59 @@
-import { useId, type CSSProperties, type ReactNode } from 'react'
+import { useEffect, useId, useState, type CSSProperties, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import type { HomePlatformCard, HomeVerification } from '@/types'
 import MotionInView from './MotionInView'
 import { InlineMarkup } from './MarkupParser'
 
 type MaterialKind = 'membrane' | 'lamination' | 'supply'
+
+const TECHNICAL_VISUAL_ASSETS = [
+  '/visuals/membrane-waterdrops-v3.webp',
+  '/visuals/lamination-layer-backing-alpha-v3.webp',
+  '/visuals/lamination-layer-membrane-alpha-v3.webp',
+  '/visuals/lamination-layer-top-alpha-v3.webp',
+  '/visuals/supply-chain-ribbon-v2.webp',
+  '/visuals/supply-chain-node-lab-v2.webp',
+  '/visuals/supply-chain-node-factory-v2.webp',
+  '/visuals/supply-chain-node-retail-v2.webp',
+  '/visuals/supply-chain-node-materials-v2.webp',
+  '/visuals/supply-chain-node-material-v2.webp',
+] as const
+
+function useTechnicalVisualsReady() {
+  const [ready, setReady] = useState(false)
+
+  useEffect(() => {
+    let active = true
+    const timeout = window.setTimeout(() => active && setReady(true), 5000)
+    const loadImage = (src: string) => new Promise<void>((resolve) => {
+      const image = new Image()
+      let settled = false
+      const finish = () => {
+        if (settled) return
+        settled = true
+        image.decode().catch(() => undefined).finally(resolve)
+      }
+      image.decoding = 'async'
+      image.fetchPriority = 'low'
+      image.onload = finish
+      image.onerror = finish
+      image.src = src
+      if (image.complete) finish()
+    })
+
+    Promise.all(TECHNICAL_VISUAL_ASSETS.map(loadImage)).then(() => {
+      window.clearTimeout(timeout)
+      if (active) setReady(true)
+    })
+
+    return () => {
+      active = false
+      window.clearTimeout(timeout)
+    }
+  }, [])
+
+  return ready
+}
 
 type FlowPoint = { x: number; y: number; scale: number; delay: number }
 
@@ -34,9 +83,9 @@ function MaterialScene({ kind, image, layers, label, children }: {
   return (
     <div className={`material-render material-render-${kind}`} role="img" aria-label={label}>
       <div className="material-render-stage" aria-hidden="true">
-        {image && <img src={image} alt="" loading="lazy" decoding="async" className="material-render-image" />}
+        {image && <img src={image} alt="" loading="eager" decoding="async" fetchPriority="low" className="material-render-image" />}
         {layers?.map((layer) => (
-          <img key={layer.src} src={layer.src} alt="" loading="lazy" decoding="async" className={`material-render-layer ${layer.className}`} />
+          <img key={layer.src} src={layer.src} alt="" loading="eager" decoding="async" fetchPriority="low" className={`material-render-layer ${layer.className}`} />
         ))}
       </div>
       {children && (
@@ -55,7 +104,7 @@ function MembraneDiagram() {
   const softId = `flow-soft-${uid}`
   const fogFilterId = `fog-filter-${uid}`
   return (
-    <MaterialScene kind="membrane" image="/visuals/membrane-waterdrops-v2.png" label="微孔膜阻挡液态水并允许湿气通过的示意图">
+    <MaterialScene kind="membrane" image="/visuals/membrane-waterdrops-v3.webp" label="微孔膜阻挡液态水并允许湿气通过的示意图">
         <defs>
           <radialGradient id={waterId} cx="34%" cy="26%" r="72%">
             <stop offset="0" stopColor="#fff" stopOpacity=".9" />
@@ -110,9 +159,9 @@ function LaminationDiagram() {
     <MaterialScene
       kind="lamination"
       layers={[
-        { src: '/visuals/lamination-layer-backing-alpha-v2.png', className: 'material-render-lamination-backing' },
-        { src: '/visuals/lamination-layer-membrane-alpha-v2.png', className: 'material-render-lamination-membrane' },
-        { src: '/visuals/lamination-layer-top-alpha-v1.png', className: 'material-render-lamination-top' },
+        { src: '/visuals/lamination-layer-backing-alpha-v3.webp', className: 'material-render-lamination-backing' },
+        { src: '/visuals/lamination-layer-membrane-alpha-v3.webp', className: 'material-render-lamination-membrane' },
+        { src: '/visuals/lamination-layer-top-alpha-v3.webp', className: 'material-render-lamination-top' },
       ]}
       label="织物、膜层和内层压合形成完整复合面料的示意图"
     />
@@ -120,11 +169,11 @@ function LaminationDiagram() {
 }
 
 const SUPPLY_CHAIN_NODES = [
-  { key: 'lab', src: '/visuals/supply-chain-node-lab-v1.png', delay: -3.316 },
-  { key: 'factory', src: '/visuals/supply-chain-node-factory-v1.png', delay: -.76 },
-  { key: 'retail', src: '/visuals/supply-chain-node-retail-v1.png', delay: -9.542 },
-  { key: 'materials', src: '/visuals/supply-chain-node-materials-v1.png', delay: -6.832 },
-  { key: 'material', src: '/visuals/supply-chain-node-material-v1.png', delay: -4.212 },
+  { key: 'lab', src: '/visuals/supply-chain-node-lab-v2.webp', delay: -3.316 },
+  { key: 'factory', src: '/visuals/supply-chain-node-factory-v2.webp', delay: -.76 },
+  { key: 'retail', src: '/visuals/supply-chain-node-retail-v2.webp', delay: -9.542 },
+  { key: 'materials', src: '/visuals/supply-chain-node-materials-v2.webp', delay: -6.832 },
+  { key: 'material', src: '/visuals/supply-chain-node-material-v2.webp', delay: -4.212 },
 ] as const
 
 function SupplyChainDiagram() {
@@ -133,7 +182,7 @@ function SupplyChainDiagram() {
   return (
     <div className="supply-chain-scene" role="img" aria-label="从原料、材料、实验验证、制造到终端应用的无氟供应链闭环示意图">
       <div className="supply-chain-canvas" aria-hidden="true">
-        <img src="/visuals/supply-chain-ribbon-v1.png" alt="" loading="lazy" decoding="async" className="supply-chain-ribbon" />
+        <img src="/visuals/supply-chain-ribbon-v2.webp" alt="" loading="eager" decoding="async" fetchPriority="low" className="supply-chain-ribbon" />
         <svg viewBox="0 0 1746 901" className="supply-chain-flow" fill="none">
           <defs>
             <filter id={glowId} x="-60%" y="-80%" width="220%" height="260%">
@@ -149,7 +198,7 @@ function SupplyChainDiagram() {
             className={`supply-chain-node supply-chain-node-${node.key}`}
             style={{ '--supply-delay': `${node.delay}s` } as CSSProperties}
           >
-            <img src={node.src} alt="" loading="lazy" decoding="async" />
+            <img src={node.src} alt="" loading="eager" decoding="async" fetchPriority="low" />
           </div>
         ))}
         <div className="supply-chain-center"><span>PFAS FREE</span></div>
@@ -167,8 +216,9 @@ function MaterialDiagram({ kind }: { kind: MaterialKind }) {
 }
 
 export function MaterialSystemVisual({ items, href }: { items: HomePlatformCard[]; href: string }) {
+  const mediaReady = useTechnicalVisualsReady()
   return (
-    <MotionInView className="material-system-visual grid border-y border-border bg-white lg:col-span-8 lg:col-start-5 lg:row-span-2 lg:row-start-1 lg:mt-[34px]">
+    <MotionInView className={`material-system-visual ${mediaReady ? 'media-ready' : ''} grid border-y border-border bg-white lg:col-span-8 lg:col-start-5 lg:row-span-2 lg:row-start-1 lg:mt-[34px]`}>
       {items.slice(0, 3).map((item, index) => (
         <Link
           key={`${item.title}-${index}`}

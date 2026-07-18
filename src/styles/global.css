@@ -300,7 +300,16 @@
   pointer-events: none;
   transform-origin: center;
 }
-.material-system-visual.is-visible .material-render-image {
+.material-system-media {
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 420ms var(--motion-ease), transform 620ms var(--motion-ease);
+}
+.material-system-visual.media-ready .material-system-media {
+  opacity: 1;
+  transform: translateY(0);
+}
+.material-system-visual.is-visible.media-ready .material-render-image {
   opacity: 1;
   transform: none;
 }
@@ -339,21 +348,21 @@
 }
 .material-render-lamination-membrane {
   filter: drop-shadow(0 9px 7px rgb(13 34 48 / .1));
-  -webkit-mask: url('/visuals/lamination-layer-top-alpha-v1.png') center / contain no-repeat;
-  mask: url('/visuals/lamination-layer-top-alpha-v1.png') center / contain no-repeat;
+  -webkit-mask: url('/visuals/lamination-layer-top-alpha-v3.webp') center / contain no-repeat;
+  mask: url('/visuals/lamination-layer-top-alpha-v3.webp') center / contain no-repeat;
 }
 .material-render-lamination-backing {
   --lamination-open-y: var(--lamination-bottom-open-y);
   filter: drop-shadow(0 9px 8px rgb(13 34 48 / .16));
-  -webkit-mask: url('/visuals/lamination-layer-top-alpha-v1.png') center / contain no-repeat;
-  mask: url('/visuals/lamination-layer-top-alpha-v1.png') center / contain no-repeat;
+  -webkit-mask: url('/visuals/lamination-layer-top-alpha-v3.webp') center / contain no-repeat;
+  mask: url('/visuals/lamination-layer-top-alpha-v3.webp') center / contain no-repeat;
 }
-.material-system-visual.is-visible .material-render-lamination-membrane {
+.material-system-visual.is-visible.media-ready .material-render-lamination-membrane {
   opacity: 1;
   transform: none;
 }
-.material-system-visual.is-visible .material-render-lamination-top,
-.material-system-visual.is-visible .material-render-lamination-backing {
+.material-system-visual.is-visible.media-ready .material-render-lamination-top,
+.material-system-visual.is-visible.media-ready .material-render-lamination-backing {
   animation: viz-lamination-layer-cycle 8s cubic-bezier(.4, 0, .2, 1) 1.2s infinite both;
 }
 /* Scene-integrated membrane flow: rainfall is blocked while moisture rises as fog */
@@ -365,19 +374,19 @@
   transform-box: fill-box;
   transform-origin: center;
 }
-.material-system-visual.is-visible .material-render-membrane .viz-rain-body {
+.material-system-visual.is-visible.media-ready .material-render-membrane .viz-rain-body {
   animation: viz-rain-fall 5.2s cubic-bezier(.32, 0, .22, 1) infinite;
   animation-delay: calc(var(--motion-delay, 0ms) + var(--flow-delay, 0ms) + 260ms);
 }
-.material-system-visual.is-visible .material-render-membrane .viz-rain-impact {
+.material-system-visual.is-visible.media-ready .material-render-membrane .viz-rain-impact {
   animation: viz-rain-impact 5.2s var(--motion-ease) infinite;
   animation-delay: calc(var(--motion-delay, 0ms) + var(--flow-delay, 0ms) + 260ms);
 }
-.material-system-visual.is-visible .material-render-membrane .viz-fog-volume {
+.material-system-visual.is-visible.media-ready .material-render-membrane .viz-fog-volume {
   animation: viz-fog-rise 6s cubic-bezier(.42, 0, .2, 1) infinite;
   animation-delay: calc(var(--motion-delay, 0ms) + var(--flow-delay, 0ms) + 520ms);
 }
-.material-system-visual.is-visible .material-render-membrane .viz-fog-contact {
+.material-system-visual.is-visible.media-ready .material-render-membrane .viz-fog-contact {
   animation: viz-fog-contact 6s var(--motion-ease) infinite;
   animation-delay: calc(var(--motion-delay, 0ms) + var(--flow-delay, 0ms) + 520ms);
 }
@@ -465,7 +474,7 @@
   stroke-dashoffset: 0;
   opacity: 0;
 }
-.material-system-visual.is-visible .supply-chain-pulse {
+.material-system-visual.is-visible.media-ready .supply-chain-pulse {
   animation:
     supply-chain-pulse-path 12s linear infinite,
     supply-chain-pulse-breathe 2.4s ease-in-out infinite;
@@ -507,17 +516,17 @@
 .supply-chain-node-lab { left: 61%; top: 12%; width: 46%; height: 58%; }
 .supply-chain-node-factory { left: 40%; top: 47%; width: 52%; height: 59%; }
 .supply-chain-node-retail { left: 5%; top: 47%; width: 49%; height: 57%; }
-.material-system-visual.is-visible .supply-chain-node {
+.material-system-visual.is-visible.media-ready .supply-chain-node {
   animation-duration: 12s;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
   animation-delay: var(--supply-delay);
 }
-.material-system-visual.is-visible .supply-chain-node-factory { animation-name: supply-chain-node-factory; }
-.material-system-visual.is-visible .supply-chain-node-retail { animation-name: supply-chain-node-retail; }
-.material-system-visual.is-visible .supply-chain-node-materials { animation-name: supply-chain-node-materials; }
-.material-system-visual.is-visible .supply-chain-node-material { animation-name: supply-chain-node-material; }
-.material-system-visual.is-visible .supply-chain-node-lab { animation-name: supply-chain-node-lab; }
+.material-system-visual.is-visible.media-ready .supply-chain-node-factory { animation-name: supply-chain-node-factory; }
+.material-system-visual.is-visible.media-ready .supply-chain-node-retail { animation-name: supply-chain-node-retail; }
+.material-system-visual.is-visible.media-ready .supply-chain-node-materials { animation-name: supply-chain-node-materials; }
+.material-system-visual.is-visible.media-ready .supply-chain-node-material { animation-name: supply-chain-node-material; }
+.material-system-visual.is-visible.media-ready .supply-chain-node-lab { animation-name: supply-chain-node-lab; }
 .supply-chain-center {
   position: absolute;
   z-index: 3;
@@ -586,7 +595,7 @@
 
 @media (max-width: 767px) {
   .material-system-visual > a::before { display: none; }
-  .material-system-visual.is-visible .material-render-membrane .material-render-image { transform: scale(1.15); }
+  .material-system-visual.is-visible.media-ready .material-render-membrane .material-render-image { transform: scale(1.15); }
   .viz-rain .viz-rain-drop:nth-child(even),
   .viz-fog > g:nth-child(3) { display: none; }
   .viz-fog-aura { opacity: .28; }

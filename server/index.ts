@@ -68,7 +68,7 @@ const clientDist = path.resolve(process.cwd(), 'dist/client')
 if (fs.existsSync(clientDist)) {
   app.use(express.static(clientDist, {
     setHeaders: (res, filePath) => {
-      if (filePath.includes(`${path.sep}assets${path.sep}`)) {
+      if (filePath.includes(`${path.sep}assets${path.sep}`) || filePath.includes(`${path.sep}visuals${path.sep}`)) {
         res.setHeader('Cache-Control', 'public, max-age=31536000, immutable')
       }
     },
