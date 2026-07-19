@@ -16,6 +16,10 @@ import FabricCapabilityLibrary from './components/FabricCapabilityLibrary'
 import type { FabricCapabilityDefinition } from '@/config/fabricCapabilities'
 
 const DEFAULT_RAIL: RailEndCardConfig = { rail_end_card_visible: true, rail_end_card_title: '新面料开发中', rail_end_card_description: '针对新的使用环境与性能目标持续开发。', rail_end_card_cta_label: '提交需求', rail_end_card_cta_href: '/contact' }
+const POSITION_OPTIONS = [
+  { value: '', label: '暂不显示' },
+  ...Array.from({ length: 9 }, (_, index) => ({ value: String(index + 1), label: `${index + 1} / 9` })),
+]
 
 export default function AdminFabricManager() {
   const [series, setSeries] = useState<any[]>([])
@@ -99,10 +103,16 @@ export default function AdminFabricManager() {
     formData.append('name', data.name as string)
     formData.append('sku_code', data.sku_code as string)
     formData.append('internal_code', data.internal_code as string)
+    formData.append('public_name', data.public_name as string)
+    formData.append('product_type', data.product_type as string)
+    formData.append('position_performance', data.position_performance as string)
+    formData.append('position_durability', data.position_durability as string)
+    formData.append('position_handfeel', data.position_handfeel as string)
     formData.append('features', JSON.stringify(fd.getAll('capabilities')))
     formData.append('card_summary', editingSku?.card_summary || '')
     formData.append('visibility', (data.visibility as string) || 'public')
     formData.append('status', (data.status as string) || 'active')
+    formData.append('remove_image', data.remove_image === 'true' ? 'true' : 'false')
     const existingSpecs = (() => { try { return JSON.parse(editingSku?.specifications || '{}') as Record<string, string> } catch { return {} } })()
     const preservedSpecs = Object.fromEntries(Object.entries(existingSpecs).slice(3))
     const coreSpecs = Object.fromEntries([0, 1, 2].map((index) => [String(data[`metric_label_${index}`] || '').trim(), String(data[`metric_value_${index}`] || '').trim()]).filter(([label]) => label))
@@ -307,7 +317,17 @@ export default function AdminFabricManager() {
               <FormField label="内部名称" name="name" markup="inline" defaultValue={editingSku?.name} required />
               <FormField label={`对外简码${editingSku ? '（已锁定）' : ''}`} name="sku_code" defaultValue={editingSku?.sku_code} placeholder="例如 OT-01" required readOnly={Boolean(editingSku)} />
               <FormField label={`内部结构码${editingSku ? '（已锁定）' : ''}`} name="internal_code" defaultValue={editingSku?.internal_code} placeholder="例如 OT3-PAEL70-V15-PES50-B" required readOnly={Boolean(editingSku)} />
-              <FabricCapabilitySelector key={editingSku?.id || 'new'} features={editingSku?.features} legacySummary={editingSku?.card_summary} capabilities={capabilities} />
+              <div className="grid gap-3 sm:grid-cols-2"><FormField label="前台产品名" name="public_name" defaultValue={editingSku?.public_name} placeholder="例如 OTTER T70" required /><FormField label="产品定位副标题" name="product_type" markup="inline" defaultValue={editingSku?.product_type} placeholder="例如 三层防护复合面料" required /></div>
+              <FabricCapabilitySelector key={editingSku?.id || 'new'} features={editingSku?.features} legacySummary={editingSku?.card_summary} capabilities={capabilities} max={3} />
+              <div>
+                <label className="mb-1 block text-[12px] uppercase text-secondary">三轴产品定位</label>
+                <p className="mb-3 text-[12px] text-muted">后台维护 1–9 分，前台仅显示位置，不显示数字。</p>
+                <div className="grid gap-3 sm:grid-cols-3">
+                  <FormField label="性能：日常 → 专业" name="position_performance" select options={POSITION_OPTIONS} defaultValue={editingSku?.position_performance == null ? '' : String(editingSku.position_performance)} />
+                  <FormField label="重量：轻盈 → 强韧" name="position_durability" select options={POSITION_OPTIONS} defaultValue={editingSku?.position_durability == null ? '' : String(editingSku.position_durability)} />
+                  <FormField label="手感：柔软 → 挺括" name="position_handfeel" select options={POSITION_OPTIONS} defaultValue={editingSku?.position_handfeel == null ? '' : String(editingSku.position_handfeel)} />
+                </div>
+              </div>
               <div className="grid gap-3 sm:grid-cols-2"><FormField label="前台显示" name="visibility" select defaultValue={editingSku?.visibility || 'public'} options={[{ value: 'public', label: '显示' }, { value: 'hidden', label: '隐藏' }]} /><FormField label="内容状态" name="status" select defaultValue={editingSku?.status || 'active'} options={[{ value: 'active', label: '正常' }, { value: 'archived', label: '归档' }]} /></div>
               <div>
                 <label className="mb-2 block text-[12px] uppercase text-secondary">前台核心数据（最多三项）</label>
@@ -322,6 +342,12 @@ export default function AdminFabricManager() {
                 <label className="block text-[12px] text-secondary uppercase mb-1">产品图</label>
                 {editingSku?.image && <img src={editingSku.image} alt="当前 SKU 卡片图" className="mb-2 aspect-[4/3] w-full object-cover" />}
                 <input type="file" name="image" accept="image/*" className="text-white text-[13px]" />
+                {editingSku?.image && (
+                  <label className="mt-3 flex min-h-11 cursor-pointer items-center gap-3 border border-white/10 px-3 text-[13px] text-secondary">
+                    <input type="checkbox" name="remove_image" value="true" className="h-4 w-4 accent-[#69B2C1]" />
+                    <span>移除当前产品图（如同时上传新图，以新图为准）</span>
+                  </label>
+                )}
               </div>
               <SaveCancelButtons onCancel={() => setShowSkuForm(false)} />
             </form>

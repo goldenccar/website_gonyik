@@ -29,6 +29,13 @@ function readFeatureKeys(value: unknown) {
   }
 }
 
+function parsePosition(value: unknown) {
+  if (value === '' || value === null || value === undefined) return null
+  const parsed = Number(value)
+  if (!Number.isFinite(parsed)) return null
+  return Math.min(9, Math.max(1, Math.round(parsed)))
+}
+
 router.get('/capabilities', (_req, res) => {
   res.json({ data: db.fabric_capabilities.sort(sortByOrderIndex) })
 })
@@ -168,7 +175,7 @@ router.get('/admin/sku', authMiddleware, (req, res) => {
 })
 
 router.post('/admin/sku', authMiddleware, upload.single('image'), (req: AuthRequest, res) => {
-  const { series_id, name, sku_code, internal_code, features, specifications, card_summary, visibility, status } = req.body
+  const { series_id, name, sku_code, internal_code, public_name, product_type, features, specifications, card_summary, visibility, status } = req.body
   const externalCode = String(sku_code || '').trim().toUpperCase()
   const internalCode = String(internal_code || '').trim().toUpperCase()
   const seriesCode = getSeriesCode(Number(series_id))
@@ -183,6 +190,11 @@ router.post('/admin/sku', authMiddleware, upload.single('image'), (req: AuthRequ
     name,
     sku_code: externalCode,
     internal_code: internalCode,
+    public_name: String(public_name || '').trim(),
+    product_type: String(product_type || '').trim(),
+    position_performance: parsePosition(req.body.position_performance),
+    position_durability: parsePosition(req.body.position_durability),
+    position_handfeel: parsePosition(req.body.position_handfeel),
     image,
     features,
     specifications,
@@ -208,7 +220,7 @@ router.put('/admin/sku/:id', authMiddleware, upload.single('image'), (req: AuthR
   const id = Number(req.params.id)
   const existing = db.fabric_sku.find((k) => k.id === id)
   if (!existing) { res.status(404).json({ error: 'Not found' }); return }
-  const { series_id, name, sku_code, internal_code, features, specifications, card_summary, visibility, status, order_index } = req.body
+  const { series_id, name, sku_code, internal_code, public_name, product_type, features, specifications, card_summary, visibility, status, order_index } = req.body
   const externalCode = sku_code === undefined ? existing.sku_code : String(sku_code).trim().toUpperCase()
   const internalCode = internal_code === undefined ? existing.internal_code : String(internal_code).trim().toUpperCase()
   const targetSeriesId = series_id ? Number(series_id) : existing.series_id
@@ -218,12 +230,18 @@ router.put('/admin/sku/:id', authMiddleware, upload.single('image'), (req: AuthR
   if (externalCode !== existing.sku_code || internalCode !== existing.internal_code) { res.status(409).json({ error: '已使用的产品代码不得修改；结构发生实质变化时请新建 SKU' }); return }
   if (!seriesCode || !externalCode.startsWith(`${seriesCode}-`) || !internalCode.startsWith(seriesCode)) { res.status(400).json({ error: '对外简码和内部结构码必须与所属系列一致' }); return }
   if (db.fabric_sku.some((item) => item.id !== id && (item.sku_code === externalCode || item.internal_code === internalCode))) { res.status(409).json({ error: '对外简码或内部结构码已被使用' }); return }
-  const image = req.file ? registerUploadedFile(req.file, 'fabrics', '面料 SKU 图片').url : (req.body.image || existing.image)
+  const removeImage = req.body.remove_image === 'true'
+  const image = req.file ? registerUploadedFile(req.file, 'fabrics', '面料 SKU 图片').url : (removeImage ? null : (req.body.image || existing.image))
   updateById(db.fabric_sku, id, {
     series_id: targetSeriesId,
     name: name ?? existing.name,
     sku_code: externalCode,
     internal_code: internalCode,
+    public_name: public_name === undefined ? existing.public_name : String(public_name).trim(),
+    product_type: product_type === undefined ? existing.product_type : String(product_type).trim(),
+    position_performance: req.body.position_performance === undefined ? existing.position_performance : parsePosition(req.body.position_performance),
+    position_durability: req.body.position_durability === undefined ? existing.position_durability : parsePosition(req.body.position_durability),
+    position_handfeel: req.body.position_handfeel === undefined ? existing.position_handfeel : parsePosition(req.body.position_handfeel),
     image,
     features: features ?? existing.features,
     specifications: specifications ?? existing.specifications,

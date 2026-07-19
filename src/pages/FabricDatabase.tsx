@@ -128,7 +128,7 @@ export default function FabricDatabase() {
           className="mt-6 scroll-mt-[84px]"
         >
           {selectedSku && <section className="border-y border-border bg-white px-5 py-8 md:px-7 md:py-10" aria-live="polite">
-            <p className="label-en text-secondary"><InlineMarkup text={detail?.name} /> / {getSkuDisplayCode(selectedSku.sku_code, detail?.name)}</p>
+            <p className="label-en text-secondary"><InlineMarkup text={detail?.name} /> / {selectedSku.public_name || getSkuDisplayCode(selectedSku.sku_code, detail?.name)}</p>
             <h3 className="type-module-title mt-3 text-primary"><InlineMarkup text={page?.core_performance_title || '核心性能'} /></h3>
             <div className="mt-8 grid gap-x-8 gap-y-6 md:grid-cols-3">
               {Object.entries(parseSpecs(selectedSku.specifications)).slice(0, 3).map(([label, value]) => <div key={label} className="border-t border-border pt-4"><p className="text-[13px] font-medium text-secondary"><InlineMarkup text={label} /></p><p className="mt-2 text-[18px] font-medium text-primary"><InlineMarkup text={value} /></p></div>)}

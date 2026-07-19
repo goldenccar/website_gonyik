@@ -105,6 +105,11 @@ export interface FabricSku {
   features: string // JSON
   specifications: string // JSON
   card_summary?: string
+  public_name?: string
+  product_type?: string
+  position_performance?: number | null
+  position_durability?: number | null
+  position_handfeel?: number | null
   visibility?: 'public' | 'hidden'
   status?: 'active' | 'archived'
   order_index: number

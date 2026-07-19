@@ -33,6 +33,7 @@ export interface Database {
   rpo_sotex_naming_version?: number
   brand_identity_version?: number
   product_dual_code_version?: number
+  fabric_card_positioning_version?: number
   service_sections_version?: number
   inquiry_subjects: any[]
   contact_messages: any[]
@@ -264,6 +265,7 @@ function createDefaultDb(): Database {
     rpo_sotex_naming_version: 1,
     brand_identity_version: 1,
     product_dual_code_version: 1,
+    fabric_card_positioning_version: 1,
     service_sections_version: 1,
     social_media: [
       { id: 1, platform: 'wechat', account: '港翼科技GONYIK', qrcode_url: null },
@@ -278,8 +280,8 @@ function createDefaultDb(): Database {
     ],
     media_items: [],
     fabric_sku: [
-      { id: 1, series_id: 1, name: 'OT-01（原T31）', sku_code: 'OT-01', internal_code: 'OT3-PAEL70-V15-PES50-B', image: null, features: '["无氟","3L复合","RPO膜"]', specifications: '{"结构":"3L","面层":"70D锦氨面布 · 130 g/m²","中层":"V1.5膜 · 4 g/m²","底层":"50D纯涤佳积布 · 95 g/m²","胶量":"两面各12 g/m²，合计24 g/m²","复合纹路":"篮球纹","理论成品克重":"253 g/m²"}', card_summary: '', visibility: 'public', status: 'active', order_index: 0 },
-      { id: 2, series_id: 1, name: 'OT-02', sku_code: 'OT-02', internal_code: 'OT3-PAEL50-V20-PES30-D', image: null, features: '["无氟","3L复合","RPO膜"]', specifications: '{"结构":"3L","面层":"50D锦氨面布 · 100 g/m²","中层":"V2.0膜 · 4 g/m²","底层":"30D纯涤高密精编可特 · 55 g/m²","胶量":"两面各12 g/m²，合计24 g/m²","复合纹路":"小菱形纹","理论成品克重":"183 g/m²"}', card_summary: '', visibility: 'public', status: 'active', order_index: 1 },
+      { id: 1, series_id: 1, name: 'OT-01（原T31）', sku_code: 'OT-01', internal_code: 'OT3-PAEL70-V15-PES50-B', public_name: 'OTTER T70', product_type: '三层防护复合面料', position_performance: 7, position_durability: 7, position_handfeel: 4, image: '/visuals/otter-t70-texture.png', features: '["durable-waterproof","high-moisture-permeability","all-weather-protection"]', specifications: '{"结构":"3L Tri-layer","面层":"70D锦氨梭织面料","理论克重":"253 g/m²","中层":"V1.5膜 · 4 g/m²","底层":"50D纯涤佳积布 · 95 g/m²","胶量":"两面各12 g/m²，合计24 g/m²","复合纹路":"篮球纹"}', card_summary: '', visibility: 'public', status: 'active', order_index: 0 },
+      { id: 2, series_id: 1, name: 'OT-02', sku_code: 'OT-02', internal_code: 'OT3-PAEL50-V20-PES30-D', public_name: 'OTTER T50', product_type: '轻量三层防护复合面料', position_performance: null, position_durability: null, position_handfeel: null, image: null, features: '["无氟","3L复合","RPO膜"]', specifications: '{"结构":"3L Tri-layer","面层":"50D锦氨梭织面料","理论克重":"183 g/m²","中层":"V2.0膜 · 4 g/m²","底层":"30D纯涤高密精编可特 · 55 g/m²","胶量":"两面各12 g/m²，合计24 g/m²","复合纹路":"小菱形纹"}', card_summary: '', visibility: 'public', status: 'active', order_index: 1 },
     ],
     product_code_registry: [
       { sku_code: 'OT-01', internal_code: 'OT3-PAEL70-V15-PES50-B' },
@@ -415,6 +417,49 @@ function migrateProductDualCode(database: Database) {
 
 }
 
+function migrateFabricProductCards(database: Database) {
+  database.fabric_capabilities = Array.isArray(database.fabric_capabilities) ? database.fabric_capabilities : []
+  const nextCapabilityId = () => Math.max(0, ...database.fabric_capabilities.map((item: any) => Number(item.id) || 0)) + 1
+  for (const definition of DEFAULT_FABRIC_CAPABILITIES.slice(0, 3)) {
+    if (database.fabric_capabilities.some((item: any) => item.key === definition.key)) continue
+    database.fabric_capabilities.push({ ...definition, id: nextCapabilityId(), order_index: database.fabric_capabilities.length })
+  }
+
+  const otterSeries = database.fabric_series?.find((series: any) => series.slug === 'otter')
+  if (!otterSeries) return
+  const otterSkus = database.fabric_sku.filter((sku: any) => sku.series_id === otterSeries.id)
+  const t70 = otterSkus.find((sku: any) => /PAEL70/i.test(sku.internal_code || '')) || otterSkus.find((sku: any) => sku.sku_code === 'OT-01')
+  const t50 = otterSkus.find((sku: any) => /PAEL50/i.test(sku.internal_code || '')) || otterSkus.find((sku: any) => sku.sku_code === 'OT-02')
+
+  const updateCoreSpecs = (sku: any, face: string, weight: string) => {
+    let existing: Record<string, string> = {}
+    try { existing = typeof sku.specifications === 'string' ? JSON.parse(sku.specifications) : (sku.specifications || {}) } catch { existing = {} }
+    const secondary = Object.fromEntries(Object.entries(existing).filter(([label]) => !['结构', '面层', '面料', '理论克重', '理论成品克重', '成品克重', '克重'].includes(label)))
+    sku.specifications = JSON.stringify({ '结构': '3L Tri-layer', '面层': face, '理论克重': weight, ...secondary })
+  }
+
+  if (t70) {
+    Object.assign(t70, {
+      public_name: 'OTTER T70',
+      product_type: '三层防护复合面料',
+      features: '["durable-waterproof","high-moisture-permeability","all-weather-protection"]',
+      position_performance: 7,
+      position_durability: 7,
+      position_handfeel: 4,
+      image: t70.image || '/visuals/otter-t70-texture.png',
+    })
+    updateCoreSpecs(t70, '70D锦氨梭织面料', '253 g/m²')
+  }
+  if (t50) {
+    t50.public_name = t50.public_name || 'OTTER T50'
+    t50.product_type = t50.product_type || '轻量三层防护复合面料'
+    t50.position_performance ??= null
+    t50.position_durability ??= null
+    t50.position_handfeel ??= null
+    updateCoreSpecs(t50, '50D锦氨梭织面料', '183 g/m²')
+  }
+}
+
 export function initDatabase() {
   if (fs.existsSync(DB_PATH)) {
     db = JSON.parse(fs.readFileSync(DB_PATH, 'utf-8'))
@@ -431,6 +476,11 @@ export function initDatabase() {
     if ((db.product_dual_code_version ?? 0) < 1) {
       migrateProductDualCode(db)
       db.product_dual_code_version = 1
+      saveDb()
+    }
+    if ((db.fabric_card_positioning_version ?? 0) < 1) {
+      migrateFabricProductCards(db)
+      db.fabric_card_positioning_version = 1
       saveDb()
     }
     const deprecatedCollections = ['fabric_scenes', 'digital_assets', 'equipment_scenes', 'about_us', 'philosophies', 'milestones', 'news']
@@ -573,7 +623,7 @@ export function initDatabase() {
       rail_end_card_cta_label: equipmentRail.rail_end_card_cta_label ?? '',
       rail_end_card_cta_href: equipmentRail.rail_end_card_cta_href ?? '/contact',
     })
-    db.fabric_sku = db.fabric_sku.map((item: any) => ({ ...item, card_summary: item.card_summary ?? '', visibility: item.visibility ?? 'public', status: item.status ?? 'active' }))
+    db.fabric_sku = db.fabric_sku.map((item: any) => ({ ...item, card_summary: item.card_summary ?? '', public_name: item.public_name ?? '', product_type: item.product_type ?? '', position_performance: item.position_performance ?? null, position_durability: item.position_durability ?? null, position_handfeel: item.position_handfeel ?? null, visibility: item.visibility ?? 'public', status: item.status ?? 'active' }))
     db.equipment_products = db.equipment_products.map((item: any) => ({ ...item, card_summary: item.card_summary ?? '', visibility: item.visibility ?? 'public', status: item.status ?? 'active', related_sku_ids: Array.isArray(item.related_sku_ids) ? item.related_sku_ids : [] }))
     saveDb()
     if (!db.contact_messages) db.contact_messages = []

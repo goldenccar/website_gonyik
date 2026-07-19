@@ -28,6 +28,9 @@ export const FABRIC_CAPABILITY_THEME_CLASSES: Record<FabricCapabilityTheme, stri
 }
 
 export const DEFAULT_FABRIC_CAPABILITIES: FabricCapabilityDefinition[] = [
+  { key: 'durable-waterproof', label: '耐久防水', theme: 'blue', aliases: ['持久防水'] },
+  { key: 'high-moisture-permeability', label: '高透湿', theme: 'cyan', aliases: ['高透湿性'] },
+  { key: 'all-weather-protection', label: '全天候防护', theme: 'neutral', aliases: ['全天候'] },
   { key: 'waterproof', label: '防水性', theme: 'blue', aliases: ['防水', '防水透气'] },
   { key: 'moisture-permeable', label: '透湿性', theme: 'cyan', aliases: ['透湿', '防水透气'] },
   { key: 'windproof', label: '防风性', theme: 'blue', aliases: ['防风'] },
