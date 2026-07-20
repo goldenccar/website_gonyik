@@ -24,15 +24,13 @@ app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ extended: true }))
 
 app.use('/api', (req, res, next) => {
-  const adminRequest = req.path.split('/').includes('admin')
-  const fabricRequest = req.path.startsWith('/fabrics')
-  if (['GET', 'HEAD'].includes(req.method) && fabricRequest) {
-    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
-  } else if (req.method === 'GET' && !adminRequest) {
-    res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=300')
-  } else {
-    res.setHeader('Cache-Control', 'private, no-store')
-  }
+  // All API responses are CMS-backed or operational data. Caching them at the
+  // browser / reverse-proxy layer makes a successful CMS save appear to fail,
+  // especially because stale-while-revalidate may keep old values for minutes.
+  // Static assets are cached separately below and are unaffected by this rule.
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
+  res.setHeader('Pragma', 'no-cache')
+  res.setHeader('Expires', '0')
   next()
 })
 

@@ -7,30 +7,14 @@ const api = axios.create({
   },
 })
 
-const responseCache = new Map<string, { response: AxiosResponse; expiry: number }>()
 const inFlightGets = new Map<string, Promise<AxiosResponse>>()
-const CACHE_TTL = 60_000 // 60 seconds
-let cacheGeneration = 0
 
 function cachedGet<T = any>(url: string, params?: Record<string, unknown>): Promise<AxiosResponse<T>> {
   const key = `${url}:${JSON.stringify(params || {})}`
-  const cached = responseCache.get(key)
-
-  if (cached && cached.expiry > Date.now()) {
-    return Promise.resolve(cached.response as AxiosResponse<T>)
-  }
-
   const pending = inFlightGets.get(key)
   if (pending) return pending as Promise<AxiosResponse<T>>
 
-  const requestGeneration = cacheGeneration
   const request = api.get<T>(url, { params })
-    .then((response) => {
-      if (requestGeneration === cacheGeneration) {
-        responseCache.set(key, { response, expiry: Date.now() + CACHE_TTL })
-      }
-      return response
-    })
     .finally(() => inFlightGets.delete(key))
 
   inFlightGets.set(key, request)
@@ -41,10 +25,6 @@ api.interceptors.request.use((config) => {
   const token = localStorage.getItem('admin_token')
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
-  }
-  if (config.method !== 'get') {
-    cacheGeneration += 1
-    responseCache.clear()
   }
   return config
 })

@@ -61,21 +61,21 @@ export default function SkuCard({ sku, seriesName, capabilities, onClick, expand
           ratio="compact"
           className="aspect-[16/7] md:h-full"
         />
-        <div className="grid min-w-0 gap-6 p-5 md:grid-cols-[minmax(140px,1fr)_175px] md:gap-6 md:p-6">
-          <div className="flex min-w-0 flex-col">
+        <div className="grid min-w-0 gap-y-6 p-5 md:grid-cols-[minmax(140px,1fr)_175px] md:grid-rows-[1fr_auto] md:gap-x-6 md:gap-y-0 md:p-6">
+          <div className="min-w-0 md:col-start-1 md:row-start-1">
             <h3 className="whitespace-nowrap text-[26px] font-bold leading-none tracking-[-0.025em] text-primary">{code}</h3>
             <p className="mt-2 text-[14px] font-medium text-secondary">{sku.product_type || sku.name}</p>
             <div className="mt-5 min-h-5">
               <FabricCapabilityTags features={sku.features} legacySummary={sku.card_summary} capabilities={capabilities} align="start" limit={3} variant="editorial" />
             </div>
-            <span className="mt-auto inline-flex items-center gap-1.5 pt-7 text-[12px] font-medium text-primary">
-              <span className="border-b border-primary/35 pb-0.5">{expanded ? '收起详细性能' : '查看详细性能'}</span>
-              <span aria-hidden="true" className={`transition-transform duration-[var(--motion-instant)] ${expanded ? 'rotate-180' : ''}`}>↓</span>
-            </span>
           </div>
-          {positions.length > 0 && <div className="grid w-full max-w-[260px] content-center gap-6 border-t border-border pt-5 md:max-w-none md:border-0 md:pt-0">
+          {positions.length > 0 && <div className="grid w-full content-center gap-5 border-y border-border/80 py-5 md:col-start-2 md:row-span-2 md:row-start-1 md:max-w-none md:gap-6 md:border-0 md:py-0">
             {positions.map((axis) => <PositionAxis key={axis.label} {...axis} />)}
           </div>}
+          <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-primary md:col-start-1 md:row-start-2 md:pt-7">
+            <span className="border-b border-primary/35 pb-0.5">{expanded ? '收起详细性能' : '查看详细性能'}</span>
+            <span aria-hidden="true" className={`transition-transform duration-[var(--motion-instant)] ${expanded ? 'rotate-180' : ''}`}>↓</span>
+          </span>
         </div>
       </button>
     </CatalogCardShell>
