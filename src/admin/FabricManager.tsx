@@ -13,6 +13,7 @@ import SeriesHomeImageEditor from './components/SeriesHomeImageEditor'
 import ResponsiveAdminList from './components/ResponsiveAdminList'
 import { FabricCapabilitySelector } from '@/components/FabricCapabilities'
 import FabricCapabilityLibrary from './components/FabricCapabilityLibrary'
+import CroppedImageField, { type CroppedImageChange } from './components/CroppedImageField'
 import type { FabricCapabilityDefinition } from '@/config/fabricCapabilities'
 
 const DEFAULT_RAIL: RailEndCardConfig = { rail_end_card_visible: true, rail_end_card_title: '新面料开发中', rail_end_card_description: '针对新的使用环境与性能目标持续开发。', rail_end_card_cta_label: '提交需求', rail_end_card_cta_href: '/contact' }
@@ -32,6 +33,12 @@ export default function AdminFabricManager() {
   const [showSkuForm, setShowSkuForm] = useState(false)
   const [message, setMessage] = useState('')
   const [rail, setRail] = useState<RailEndCardConfig>(DEFAULT_RAIL)
+  const [skuImage, setSkuImage] = useState<CroppedImageChange>({ file: null, removeCurrent: false })
+  const [seriesImage, setSeriesImage] = useState<CroppedImageChange>({ file: null, removeCurrent: false })
+  const [formError, setFormError] = useState('')
+  const [savingSku, setSavingSku] = useState(false)
+  const [seriesError, setSeriesError] = useState('')
+  const [savingSeries, setSavingSeries] = useState(false)
 
   const loadData = async () => {
     const [sRes, capabilityRes] = await Promise.all([api.get('/fabrics/admin/series'), api.get('/fabrics/admin/capabilities')])
@@ -43,14 +50,23 @@ export default function AdminFabricManager() {
     }
   }
 
-  const loadCapabilities = async () => {
-    const res = await api.get('/fabrics/admin/capabilities')
-    setCapabilities(res.data.data || [])
-  }
-
   const showMessage = (value: string) => {
     setMessage(value)
     window.setTimeout(() => setMessage(''), 2000)
+  }
+
+  const openSkuForm = (sku: any | null) => {
+    setEditingSku(sku)
+    setSkuImage({ file: null, removeCurrent: false })
+    setFormError('')
+    setShowSkuForm(true)
+  }
+
+  const openSeriesForm = (item: any | null) => {
+    setEditingSeries(item)
+    setSeriesImage({ file: null, removeCurrent: false })
+    setSeriesError('')
+    setShowSeriesForm(true)
   }
 
   useEffect(() => {
@@ -63,85 +79,87 @@ export default function AdminFabricManager() {
     e.preventDefault()
     const fd = new FormData(e.currentTarget)
     const data = Object.fromEntries(fd)
-    const homeInput = e.currentTarget.elements.namedItem('home_image') as HTMLInputElement | null
-    const homeFile = homeInput?.files?.[0]
-
-    let home_image = editingSeries?.home_image || ''
-    if (homeFile) {
-      const up = await uploadFile(homeFile)
-      home_image = up.data.url || up.data.data?.url || ''
+    setSavingSeries(true)
+    setSeriesError('')
+    try {
+      let home_image = editingSeries?.home_image || ''
+      if (seriesImage.file) {
+        const up = await uploadFile(seriesImage.file)
+        home_image = up.data.url || up.data.data?.url || ''
+      }
+      const payload = { name: data.name as string, slug: data.slug as string, tagline: (data.tagline as string) || '', description: (data.description as string) || '', home_image }
+      if (editingSeries?.id) await api.put(`/fabrics/admin/series/${editingSeries.id}`, payload)
+      else await api.post('/fabrics/admin/series', payload)
+      setShowSeriesForm(false)
+      setEditingSeries(null)
+      setSeriesImage({ file: null, removeCurrent: false })
+      await loadData()
+      showMessage('保存成功')
+    } catch (error: any) {
+      setSeriesError(error?.response?.data?.error || '保存失败，请检查必填项后重试')
+    } finally {
+      setSavingSeries(false)
     }
-
-    const payload = {
-      name: data.name as string,
-      slug: data.slug as string,
-      tagline: (data.tagline as string) || '',
-      description: data.description as string,
-      home_image,
-    }
-
-    if (editingSeries?.id) {
-      await api.put(`/fabrics/admin/series/${editingSeries.id}`, payload)
-    } else {
-      await api.post('/fabrics/admin/series', payload)
-    }
-    setShowSeriesForm(false)
-    setEditingSeries(null)
-    loadData()
-    setMessage('保存成功')
-    setTimeout(() => setMessage(''), 2000)
   }
 
   const handleSaveSku = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const fd = new FormData(e.currentTarget)
     const data = Object.fromEntries(fd)
-    const file = (e.currentTarget as any).image.files[0]
-
     const formData = new FormData()
     formData.append('series_id', String(selectedSeries))
-    formData.append('name', data.name as string)
-    formData.append('sku_code', data.sku_code as string)
+    formData.append('name', data.public_name as string)
     formData.append('internal_code', data.internal_code as string)
     formData.append('public_name', data.public_name as string)
-    formData.append('product_type', data.product_type as string)
-    formData.append('position_performance', data.position_performance as string)
-    formData.append('position_durability', data.position_durability as string)
-    formData.append('position_handfeel', data.position_handfeel as string)
+    formData.append('product_type', (data.product_type as string) || '')
+    formData.append('position_performance', (data.position_performance as string) || '')
+    formData.append('position_durability', (data.position_durability as string) || '')
+    formData.append('position_handfeel', (data.position_handfeel as string) || '')
     formData.append('features', JSON.stringify(fd.getAll('capabilities')))
-    formData.append('card_summary', editingSku?.card_summary || '')
+    formData.append('card_summary', '')
     formData.append('visibility', (data.visibility as string) || 'public')
-    formData.append('status', (data.status as string) || 'active')
-    formData.append('remove_image', data.remove_image === 'true' ? 'true' : 'false')
+    formData.append('status', editingSku?.status || 'active')
+    formData.append('remove_image', skuImage.removeCurrent ? 'true' : 'false')
     const existingSpecs = (() => { try { return JSON.parse(editingSku?.specifications || '{}') as Record<string, string> } catch { return {} } })()
     const preservedSpecs = Object.fromEntries(Object.entries(existingSpecs).slice(3))
     const coreSpecs = Object.fromEntries([0, 1, 2].map((index) => [String(data[`metric_label_${index}`] || '').trim(), String(data[`metric_value_${index}`] || '').trim()]).filter(([label]) => label))
     formData.append('specifications', JSON.stringify({ ...coreSpecs, ...preservedSpecs }))
-    if (file) formData.append('image', file)
-    if (editingSku?.image && !file) formData.append('image', editingSku.image)
+    if (skuImage.file) formData.append('image', skuImage.file)
 
-    if (editingSku?.id) {
-      await api.put(`/fabrics/admin/sku/${editingSku.id}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
-    } else {
-      await api.post('/fabrics/admin/sku', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+    setSavingSku(true)
+    setFormError('')
+    try {
+      if (editingSku?.id) {
+        await api.put(`/fabrics/admin/sku/${editingSku.id}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+      } else {
+        await api.post('/fabrics/admin/sku', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+      }
+      setShowSkuForm(false)
+      setEditingSku(null)
+      setSkuImage({ file: null, removeCurrent: false })
+      await loadData()
+      showMessage('保存成功')
+    } catch (error: any) {
+      setFormError(error?.response?.data?.error || '保存失败，请检查必填项后重试')
+    } finally {
+      setSavingSku(false)
     }
-    setShowSkuForm(false)
-    setEditingSku(null)
-    loadData()
-    setMessage('保存成功')
-    setTimeout(() => setMessage(''), 2000)
   }
 
   const deleteSeries = async (id: number) => {
-    if (!confirm('确定删除该系列？')) return
+    if (!confirm('确定删除该系列及其全部面料？终端产品中的对应采用关系也会清空。')) return
     await api.delete(`/fabrics/admin/series/${id}`)
-    loadData()
+    if (selectedSeries === id) {
+      setSelectedSeries(null)
+      setSkus([])
+    }
+    await loadData()
   }
 
   const deleteSku = async (id: number) => {
-    if (!confirm('确定删除该 SKU？')) return
+    if (!confirm('确定删除该面料？终端产品中的对应采用关系也会清空。')) return
     await api.delete(`/fabrics/admin/sku/${id}`)
-    loadData()
+    await loadData()
   }
 
   const moveSku = async (index: number, direction: -1 | 1) => {
@@ -170,7 +188,7 @@ export default function AdminFabricManager() {
   }
 
   const seriesAction = (
-    <PrimaryButton onClick={() => { setEditingSeries(null); setShowSeriesForm(true) }} icon={<Plus size={16} />}>新增系列</PrimaryButton>
+    <PrimaryButton onClick={() => openSeriesForm(null)} icon={<Plus size={16} />}>新增系列</PrimaryButton>
   )
 
   return (
@@ -180,7 +198,7 @@ export default function AdminFabricManager() {
 
         {message && <p className="text-success text-[13px] mb-4">{message}</p>}
 
-        <FabricCapabilityLibrary items={capabilities} onChange={loadCapabilities} onMessage={showMessage} />
+        <FabricCapabilityLibrary items={capabilities} onChange={loadData} onMessage={showMessage} />
 
         {/* Series List */}
         <div className="mb-8 hidden bg-dark md:block">
@@ -213,7 +231,7 @@ export default function AdminFabricManager() {
                   <td className="px-6 py-4 text-accent max-w-[200px] truncate">{s.tagline || s.description}</td>
                   <td className="px-6 py-4 text-right">
                     <button
-                      onClick={(e) => { e.stopPropagation(); setEditingSeries(s); setShowSeriesForm(true) }}
+                      onClick={(e) => { e.stopPropagation(); openSeriesForm(s) }}
                       className="text-accent hover:text-white mr-3"
                     >
                       <Edit2 size={14} />
@@ -236,7 +254,7 @@ export default function AdminFabricManager() {
             renderMedia={(item) => item.home_image ? <img src={item.home_image} alt="" className="h-12 w-16 object-cover" /> : <div className="h-12 w-16 bg-white/5" />}
             renderTitle={(item) => item.name}
             renderSubtitle={(item) => `${item.slug}${item.tagline || item.description ? ` · ${item.tagline || item.description}` : ''}`}
-            renderActions={(item) => <><button type="button" onClick={() => { setEditingSeries(item); setShowSeriesForm(true) }} className="flex h-11 w-11 items-center justify-center text-accent" aria-label={`编辑${item.name}`}><Edit2 size={16} /></button><button type="button" onClick={() => deleteSeries(item.id)} className="flex h-11 w-11 items-center justify-center text-error" aria-label={`删除${item.name}`}><Trash2 size={16} /></button></>}
+            renderActions={(item) => <><button type="button" onClick={() => openSeriesForm(item)} className="flex h-11 w-11 items-center justify-center text-accent" aria-label={`编辑${item.name}`}><Edit2 size={16} /></button><button type="button" onClick={() => deleteSeries(item.id)} className="flex h-11 w-11 items-center justify-center text-error" aria-label={`删除${item.name}`}><Trash2 size={16} /></button></>}
           />
         </div>
 
@@ -245,28 +263,28 @@ export default function AdminFabricManager() {
           <div>
             <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <h2 className="text-[19px] font-bold text-white sm:text-h4">
-                {series.find((s) => s.id === selectedSeries)?.name} - SKU 管理
+                {series.find((s) => s.id === selectedSeries)?.name} - 面料管理
               </h2>
-              <PrimaryButton onClick={() => { setEditingSku(null); setShowSkuForm(true) }} icon={<Plus size={16} />}>新增 SKU</PrimaryButton>
+              <PrimaryButton onClick={() => openSkuForm(null)} icon={<Plus size={16} />}>新增面料</PrimaryButton>
             </div>
             <div className="hidden bg-dark md:block">
               <table className="w-full text-left text-[13px]">
                 <thead className="border-b border-white/10 text-accent uppercase">
                   <tr>
-                    <th className="px-6 py-3">SKU 名称</th>
-                    <th className="px-6 py-3">对外简码</th>
-                    <th className="px-6 py-3">内部结构码</th>
+                    <th className="px-6 py-3">对外商品编号</th>
+                    <th className="px-6 py-3">产品定位</th>
+                    <th className="px-6 py-3">内部编号</th>
                     <th className="px-6 py-3 text-right">操作</th>
                   </tr>
                 </thead>
                 <tbody className="text-white">
                   {skus.map((k) => (
                     <tr key={k.id} className="border-b border-white/5">
-                      <td className="px-6 py-4 font-medium">{k.name}</td>
-                      <td className="px-6 py-4 text-accent">{k.sku_code}</td>
+                      <td className="px-6 py-4 font-medium">{k.public_name || k.name}</td>
+                      <td className="px-6 py-4 text-accent">{k.product_type || '-'}</td>
                       <td className="px-6 py-4 text-accent">{k.internal_code || '-'}</td>
                       <td className="px-6 py-4 text-right">
-                        <button onClick={() => { setEditingSku(k); setShowSkuForm(true) }} className="text-accent hover:text-white mr-3">
+                        <button onClick={() => openSkuForm(k)} className="text-accent hover:text-white mr-3">
                           <Edit2 size={14} />
                         </button>
                         <button onClick={() => deleteSku(k.id)} className="text-error hover:text-white">
@@ -277,12 +295,12 @@ export default function AdminFabricManager() {
                   ))}
                 </tbody>
               </table>
-              {skus.length === 0 && <p className="text-accent text-center py-8">暂无 SKU</p>}
+              {skus.length === 0 && <p className="text-accent text-center py-8">暂无面料</p>}
             </div>
             <div className="md:hidden">
-              <ResponsiveAdminList items={skus} getKey={(item) => item.id} emptyLabel="暂无 SKU" renderTitle={(item) => item.name} renderSubtitle={(item) => [item.sku_code, item.internal_code].filter(Boolean).join(' · ') || '未填写编码'} renderActions={(item) => <><button type="button" onClick={() => { setEditingSku(item); setShowSkuForm(true) }} className="flex h-11 w-11 items-center justify-center text-accent" aria-label={`编辑${item.name}`}><Edit2 size={16} /></button><button type="button" onClick={() => deleteSku(item.id)} className="flex h-11 w-11 items-center justify-center text-error" aria-label={`删除${item.name}`}><Trash2 size={16} /></button></>} />
+              <ResponsiveAdminList items={skus} getKey={(item) => item.id} emptyLabel="暂无面料" renderTitle={(item) => item.public_name || item.name} renderSubtitle={(item) => [item.product_type, item.internal_code].filter(Boolean).join(' · ') || '未填写内部编号'} renderActions={(item) => <><button type="button" onClick={() => openSkuForm(item)} className="flex h-11 w-11 items-center justify-center text-accent" aria-label={`编辑${item.public_name || item.name}`}><Edit2 size={16} /></button><button type="button" onClick={() => deleteSku(item.id)} className="flex h-11 w-11 items-center justify-center text-error" aria-label={`删除${item.public_name || item.name}`}><Trash2 size={16} /></button></>} />
             </div>
-            <ContentRailEditor label="SKU 横向轨道" items={skus} renderCard={(sku) => <SkuCard key={sku.id} sku={sku} seriesName={series.find((item) => item.id === selectedSeries)?.name} capabilities={capabilities} />} onEdit={(sku) => { setEditingSku(sku); setShowSkuForm(true) }} onMove={moveSku} onVisibility={toggleSkuVisibility} endCard={rail} onEndCardChange={(patch) => setRail({ ...rail, ...patch })} onSaveEndCard={saveRail} />
+            <ContentRailEditor label="面料卡片组" items={skus} renderCard={(sku) => <SkuCard key={sku.id} sku={sku} seriesName={series.find((item) => item.id === selectedSeries)?.name} capabilities={capabilities} />} onEdit={openSkuForm} onMove={moveSku} onVisibility={toggleSkuVisibility} endCard={rail} onEndCardChange={(patch) => setRail({ ...rail, ...patch })} onSaveEndCard={saveRail} />
           </div>
         )}
 
@@ -295,29 +313,30 @@ export default function AdminFabricManager() {
               <FormField label="标语 Tagline" name="tagline" markup="inline" defaultValue={editingSeries?.tagline} />
               <FormField label="描述" name="description" markup="inline" defaultValue={editingSeries?.description} textarea />
               <div>
-                <label className="block text-[12px] text-secondary uppercase mb-1">首页卡片背景图</label>
                 {editingSeries?.id ? (
                   <SeriesHomeImageEditor series={editingSeries} onChange={(patch) => {
-                    setEditingSeries({ ...editingSeries, ...patch })
-                    setSeries((items) => items.map((item) => item.id === editingSeries.id ? { ...item, ...patch } : item))
-                  }} />
+                      setEditingSeries({ ...editingSeries, ...patch })
+                      setSeries((items) => items.map((item) => item.id === editingSeries.id ? { ...item, ...patch } : item))
+                    }} />
                 ) : (
-                  <input type="file" name="home_image" accept="image/*" className="text-white text-[13px]" />
+                  <CroppedImageField label="首页卡片背景图" aspect={4 / 3} fileBaseName="series-home" onChange={setSeriesImage} help="新增系列保存时一并上传；保存后可继续替换或移除。" />
                 )}
               </div>
-              <SaveCancelButtons onCancel={() => setShowSeriesForm(false)} />
+              {seriesError && <p className="border border-error/40 bg-error/10 px-3 py-2 text-[13px] text-error">{seriesError}</p>}
+              <SaveCancelButtons loading={savingSeries} onCancel={() => setShowSeriesForm(false)} />
             </form>
           </Modal>
         )}
 
         {/* SKU Form Modal */}
         {showSkuForm && (
-          <Modal title={editingSku ? '编辑 SKU' : '新增 SKU'} onClose={() => setShowSkuForm(false)}>
+          <Modal title={editingSku ? '编辑面料' : '新增面料'} onClose={() => setShowSkuForm(false)} maxWidth="max-w-[660px]">
             <form onSubmit={handleSaveSku} className="space-y-4">
-              <FormField label="内部名称" name="name" markup="inline" defaultValue={editingSku?.name} required />
-              <FormField label={`对外简码${editingSku ? '（已锁定）' : ''}`} name="sku_code" defaultValue={editingSku?.sku_code} placeholder="例如 OT-01" required readOnly={Boolean(editingSku)} />
-              <FormField label={`内部结构码${editingSku ? '（已锁定）' : ''}`} name="internal_code" defaultValue={editingSku?.internal_code} placeholder="例如 OT3-PAEL70-V15-PES50-B" required readOnly={Boolean(editingSku)} />
-              <div className="grid gap-3 sm:grid-cols-2"><FormField label="前台产品名" name="public_name" defaultValue={editingSku?.public_name} placeholder="例如 OTTER T70" required /><FormField label="产品定位副标题" name="product_type" markup="inline" defaultValue={editingSku?.product_type} placeholder="例如 三层防护复合面料" required /></div>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <FormField label={`对外商品编号${editingSku?.public_name ? '（已锁定）' : ''}`} name="public_name" defaultValue={editingSku?.public_name || editingSku?.name} placeholder="例如 OTTER T70" required readOnly={Boolean(editingSku?.public_name)} />
+                <FormField label={`内部编号${editingSku?.internal_code ? '（已锁定）' : ''}`} name="internal_code" defaultValue={editingSku?.internal_code} placeholder="例如 OT3-PAEL70-V15-PES50-B" required readOnly={Boolean(editingSku?.internal_code)} />
+              </div>
+              <FormField label="产品定位副标题" name="product_type" markup="inline" defaultValue={editingSku?.product_type} placeholder="例如 三层防护复合面料" required />
               <FabricCapabilitySelector key={editingSku?.id || 'new'} features={editingSku?.features} legacySummary={editingSku?.card_summary} capabilities={capabilities} max={3} />
               <div>
                 <label className="mb-1 block text-[12px] uppercase text-secondary">三轴产品定位</label>
@@ -328,28 +347,19 @@ export default function AdminFabricManager() {
                   <FormField label="手感：柔软 → 挺括" name="position_handfeel" select options={POSITION_OPTIONS} defaultValue={editingSku?.position_handfeel == null ? '' : String(editingSku.position_handfeel)} />
                 </div>
               </div>
-              <div className="grid gap-3 sm:grid-cols-2"><FormField label="前台显示" name="visibility" select defaultValue={editingSku?.visibility || 'public'} options={[{ value: 'public', label: '显示' }, { value: 'hidden', label: '隐藏' }]} /><FormField label="内容状态" name="status" select defaultValue={editingSku?.status || 'active'} options={[{ value: 'active', label: '正常' }, { value: 'archived', label: '归档' }]} /></div>
-              <div>
-                <label className="mb-2 block text-[12px] uppercase text-secondary">前台核心数据（最多三项）</label>
-                <p className="mb-3 text-[12px] text-muted">标题和值都会显示在 SKU 展开区；其他已有参数会保留，但不进入首层展示。</p>
+              <FormField label="前台显示" name="visibility" select defaultValue={editingSku?.visibility || 'public'} options={[{ value: 'public', label: '显示' }, { value: 'hidden', label: '隐藏' }]} />
+              <details className="border border-white/10 p-4">
+                <summary className="cursor-pointer text-[13px] font-medium text-white">详细性能数据（可选）</summary>
+                <p className="mb-3 mt-3 text-[12px] text-muted">最多三项，只在用户展开卡片后显示。</p>
                 {[0, 1, 2].map((index) => {
                   let entries: [string, string][] = []
                   try { entries = Object.entries(JSON.parse(editingSku?.specifications || '{}')) as [string, string][] } catch { entries = [] }
                   return <div key={index} className="mb-3 grid gap-3 sm:grid-cols-2"><FormField label={`数据 ${index + 1} 标题`} name={`metric_label_${index}`} markup="inline" defaultValue={entries[index]?.[0] || ''} /><FormField label={`数据 ${index + 1} 内容`} name={`metric_value_${index}`} markup="inline" defaultValue={entries[index]?.[1] || ''} /></div>
                 })}
-              </div>
-              <div>
-                <label className="block text-[12px] text-secondary uppercase mb-1">产品图</label>
-                {editingSku?.image && <img src={editingSku.image} alt="当前 SKU 卡片图" className="mb-2 aspect-[4/3] w-full object-cover" />}
-                <input type="file" name="image" accept="image/*" className="text-white text-[13px]" />
-                {editingSku?.image && (
-                  <label className="mt-3 flex min-h-11 cursor-pointer items-center gap-3 border border-white/10 px-3 text-[13px] text-secondary">
-                    <input type="checkbox" name="remove_image" value="true" className="h-4 w-4 accent-[#69B2C1]" />
-                    <span>移除当前产品图（如同时上传新图，以新图为准）</span>
-                  </label>
-                )}
-              </div>
-              <SaveCancelButtons onCancel={() => setShowSkuForm(false)} />
+              </details>
+              <CroppedImageField key={editingSku?.id || 'new'} label="面料卡片图" currentSrc={editingSku?.image} aspect={4 / 3} fileBaseName={`${editingSku?.public_name || 'fabric'}`.toLowerCase().replace(/[^a-z0-9]+/g, '-')} onChange={setSkuImage} help="建议使用面料微距图；保存为 WebP，上传后可裁切。" />
+              {formError && <p className="border border-error/40 bg-error/10 px-3 py-2 text-[13px] text-error">{formError}</p>}
+              <SaveCancelButtons loading={savingSku} onCancel={() => setShowSkuForm(false)} />
             </form>
           </Modal>
         )}

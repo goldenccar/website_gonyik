@@ -1,16 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 80" role="img" aria-labelledby="title desc">
-  <title id="title">GONYIK 红标 KAIS</title>
+  <title id="title">GONYIK 黑标 KAIS</title>
   <desc id="desc">透明画布上的港翼 KAIS 无氟高性能面料徽章</desc>
   <defs>
     <clipPath id="badge-clip"><rect x="2" y="2" width="156" height="76" rx="3"/></clipPath>
   </defs>
   <g clip-path="url(#badge-clip)">
-    <rect x="2" y="2" width="156" height="29" fill="#F5F3F1"/>
-    <rect x="2" y="31" width="156" height="47" fill="#7D3934"/>
+    <rect x="2" y="2" width="156" height="29" fill="#F3F4F4"/>
+    <rect x="2" y="31" width="156" height="47" fill="#171C20"/>
   </g>
-  <rect x="2" y="2" width="156" height="76" rx="3" fill="none" stroke="#A7645E" stroke-width="2"/>
-  <text x="15" y="21" fill="#43211F" font-family="Arial,sans-serif" font-size="9" font-weight="700" letter-spacing="2.8">GONYIK</text>
-  <g fill="none" stroke="#A9625C" stroke-width="2" stroke-linecap="square">
+  <rect x="2" y="2" width="156" height="76" rx="3" fill="none" stroke="#4B545B" stroke-width="2"/>
+  <text x="15" y="21" fill="#171C20" font-family="Arial,sans-serif" font-size="9" font-weight="700" letter-spacing="2.8">GONYIK</text>
+  <g fill="none" stroke="#5D6971" stroke-width="2" stroke-linecap="square">
     <path d="M130 12h16"/><path d="M134 18h12"/><path d="M138 24h8"/>
   </g>
   <text x="15" y="58" fill="#FFFFFF" font-family="Arial,sans-serif" font-size="25" font-weight="700" letter-spacing="2.2">KAIS</text>

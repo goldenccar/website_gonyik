@@ -10,7 +10,7 @@ import { MaterialSystemVisual, MaterialValidationSummary } from '@/components/Ho
 const SERIES_TITLES: Record<string, string> = {
   otter: '蓝标 OTTER',
   rayo: '银标 RAYO',
-  kais: '红标 KAIS',
+  kais: '黑标 KAIS',
 }
 
 const DEFAULT_HOME: HomeConfig = {

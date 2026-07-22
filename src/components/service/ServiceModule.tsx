@@ -26,13 +26,12 @@ function CareModule({ section, care }: ServiceModuleProps) {
   return <div className="lg:grid lg:grid-cols-12 lg:gap-12 xl:gap-16">
     <div className="lg:col-span-4">
       <ServiceSectionHeader section={section} />
-      <p className="label-en mt-8 hidden text-[#4e9bab] lg:block">CARE PROTOCOL · {String(care.length).padStart(2, '0')} STEPS</p>
     </div>
-    <ol className="mt-9 border-t border-primary lg:col-span-8 lg:mt-0">
-      {care.map((item, index) => <li key={item.id} className="grid gap-3 border-b border-border py-6 sm:grid-cols-[56px_160px_minmax(0,1fr)] sm:gap-5 md:py-7">
-        <span className="label-en pt-1 text-[#4e9bab]">{String(index + 1).padStart(2, '0')}</span>
-        <h3 className="text-[17px] font-medium leading-7 text-primary"><InlineMarkup text={item.title} /></h3>
-        <p className="text-[14px] leading-7 text-secondary"><InlineMarkup text={item.content} /></p>
+    <ol className="mt-9 grid gap-px border border-border/80 bg-border/80 sm:grid-cols-2 lg:col-span-8 lg:mt-0">
+      {care.map((item, index) => <li key={item.id} className="min-w-0 bg-white/70 px-5 py-6 md:px-6 md:py-7">
+        <span className="label-en text-[#4e9bab]">{String(index + 1).padStart(2, '0')}</span>
+        <h3 className="mt-4 text-[17px] font-medium leading-7 text-primary"><InlineMarkup text={item.title} /></h3>
+        <p className="mt-2 text-[14px] leading-7 text-secondary"><InlineMarkup text={item.content} /></p>
       </li>)}
     </ol>
   </div>

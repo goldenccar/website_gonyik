@@ -20,7 +20,7 @@ export interface Database {
   fabric_series: any[]
   fabric_capabilities: any[]
   fabric_sku: any[]
-  product_code_registry?: { sku_code: string; internal_code: string }[]
+  product_code_registry?: { sku_code: string; internal_code: string; public_name?: string }[]
   media_items: any[]
   test_reports: any[]
   equipment_categories: any[]
@@ -284,14 +284,14 @@ function createDefaultDb(): Database {
       { id: 2, series_id: 1, name: 'OT-02', sku_code: 'OT-02', internal_code: 'OT3-PAEL50-V20-PES30-D', public_name: 'OTTER T50', product_type: '轻量三层防护复合面料', position_performance: null, position_durability: null, position_handfeel: null, image: null, features: '["无氟","3L复合","RPO膜"]', specifications: '{"结构":"3L Tri-layer","面层":"50D锦氨梭织面料","理论克重":"183 g/m²","中层":"V2.0膜 · 4 g/m²","底层":"30D纯涤高密精编可特 · 55 g/m²","胶量":"两面各12 g/m²，合计24 g/m²","复合纹路":"小菱形纹"}', card_summary: '', visibility: 'public', status: 'active', order_index: 1 },
     ],
     product_code_registry: [
-      { sku_code: 'OT-01', internal_code: 'OT3-PAEL70-V15-PES50-B' },
-      { sku_code: 'OT-02', internal_code: 'OT3-PAEL50-V20-PES30-D' },
+      { sku_code: 'OT-01', internal_code: 'OT3-PAEL70-V15-PES50-B', public_name: 'OTTER T70' },
+      { sku_code: 'OT-02', internal_code: 'OT3-PAEL50-V20-PES30-D', public_name: 'OTTER T50' },
     ],
     test_reports: [],
     equipment_categories: [
-      { id: 1, name: '日常休闲', slug: 'daily', description: '面向通勤与日常穿着的舒适、防风雨和轻量应用。', bg_image: null, image_fit: 'cover', order_index: 0 },
-      { id: 2, name: '户外运动', slug: 'outdoor', description: '面向徒步、骑行和多变天气的功能装备应用。', bg_image: null, image_fit: 'cover', order_index: 1 },
-      { id: 3, name: '特种专业', slug: 'special', description: '面向防刺与消防等明确任务的专业装备应用。', bg_image: null, image_fit: 'cover', order_index: 2 },
+      { id: 1, name: '日常休闲', slug: 'daily', description: '面向通勤与日常穿着的舒适、防风雨和轻量应用。', order_index: 0 },
+      { id: 2, name: '户外运动', slug: 'outdoor', description: '面向徒步、骑行和多变天气的功能装备应用。', order_index: 1 },
+      { id: 3, name: '特种专业', slug: 'special', description: '面向防刺与消防等明确任务的专业装备应用。', order_index: 2 },
     ],
     equipment_products: [
       { id: 1, category_id: 1, name: '通勤防护外套', image: null, features: '["日常风雨","舒适穿着","Otter"]', related_sku_ids: [1], order_index: 0 },
@@ -413,6 +413,7 @@ function migrateProductDualCode(database: Database) {
   database.product_code_registry = database.fabric_sku.map((sku: any) => ({
     sku_code: sku.sku_code,
     internal_code: sku.internal_code,
+    public_name: sku.public_name,
   }))
 
 }
@@ -624,6 +625,10 @@ export function initDatabase() {
       rail_end_card_cta_href: equipmentRail.rail_end_card_cta_href ?? '/contact',
     })
     db.fabric_sku = db.fabric_sku.map((item: any) => ({ ...item, card_summary: item.card_summary ?? '', public_name: item.public_name ?? '', product_type: item.product_type ?? '', position_performance: item.position_performance ?? null, position_durability: item.position_durability ?? null, position_handfeel: item.position_handfeel ?? null, visibility: item.visibility ?? 'public', status: item.status ?? 'active' }))
+    db.product_code_registry = (db.product_code_registry || []).map((entry: any) => ({
+      ...entry,
+      public_name: entry.public_name || db.fabric_sku.find((sku: any) => sku.sku_code === entry.sku_code)?.public_name || '',
+    }))
     db.equipment_products = db.equipment_products.map((item: any) => ({ ...item, card_summary: item.card_summary ?? '', visibility: item.visibility ?? 'public', status: item.status ?? 'active', related_sku_ids: Array.isArray(item.related_sku_ids) ? item.related_sku_ids : [] }))
     saveDb()
     if (!db.contact_messages) db.contact_messages = []
@@ -749,17 +754,13 @@ export function initDatabase() {
       }
       saveDb()
     }
-    // Backward compatibility: ensure image_fit exists on equipment_categories
-    if (db.equipment_categories.length > 0 && db.equipment_categories[0].image_fit === undefined) {
-      db.equipment_categories = db.equipment_categories.map((c: any) => ({ ...c, image_fit: 'cover' }))
-      saveDb()
-    }
+    db.equipment_categories = db.equipment_categories.map(({ bg_image: _bgImage, image_fit: _imageFit, ...category }: any) => category)
     // Replace the retired line-name taxonomy with the public application taxonomy.
     if (db.equipment_categories.some((c: any) => ['latent', 'u-line', 'p-line', 'a-line'].includes(c.slug))) {
       db.equipment_categories = [
-        { id: 1, name: '日常休闲', slug: 'daily', description: '面向通勤与日常穿着的舒适、防风雨和轻量应用。', bg_image: null, image_fit: 'cover', order_index: 0 },
-        { id: 2, name: '户外运动', slug: 'outdoor', description: '面向徒步、骑行和多变天气的功能装备应用。', bg_image: null, image_fit: 'cover', order_index: 1 },
-        { id: 3, name: '特种专业', slug: 'special', description: '面向防刺与消防等明确任务的专业装备应用。', bg_image: null, image_fit: 'cover', order_index: 2 },
+        { id: 1, name: '日常休闲', slug: 'daily', description: '面向通勤与日常穿着的舒适、防风雨和轻量应用。', order_index: 0 },
+        { id: 2, name: '户外运动', slug: 'outdoor', description: '面向徒步、骑行和多变天气的功能装备应用。', order_index: 1 },
+        { id: 3, name: '特种专业', slug: 'special', description: '面向防刺与消防等明确任务的专业装备应用。', order_index: 2 },
       ]
       const names = ['通勤防护外套', '夏季轻量外层', '风雨户外服装', '运动防晒服装', '防刺装备', '消防装备']
       db.equipment_products = db.equipment_products.slice(0, 6).map((p: any, index: number) => ({
@@ -917,7 +918,11 @@ export function initDatabase() {
     }
     if (db.home_config?.series_section_title === '三条材料路径，服务不同场景') {
       db.home_config.series_section_title = '三大面料平台'
-      db.home_config.series_section_subtitle = '蓝标 OTTER 与银标 RAYO 面向日常及户外，红标 KAIS 独立服务特种专业场景。'
+      db.home_config.series_section_subtitle = '蓝标 OTTER 与银标 RAYO 面向日常及户外，黑标 KAIS 独立服务特种专业场景。'
+      saveDb()
+    }
+    if (db.home_config?.series_section_subtitle === '蓝标 OTTER 与银标 RAYO 面向日常及户外，红标 KAIS 独立服务特种专业场景。') {
+      db.home_config.series_section_subtitle = '蓝标 OTTER 与银标 RAYO 面向日常及户外，黑标 KAIS 独立服务特种专业场景。'
       saveDb()
     }
     if (db.home_config?.verification_section_title === '验证不是口号') {

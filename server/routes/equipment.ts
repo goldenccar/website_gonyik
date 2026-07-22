@@ -18,6 +18,10 @@ function parseRelatedSkuIds(value: unknown): number[] {
   }
 }
 
+function validRelatedSkuIds(value: unknown) {
+  return parseRelatedSkuIds(value).filter((id) => db.fabric_sku.some((sku) => sku.id === id))
+}
+
 function enrichProduct(product: any) {
   const relatedIds = parseRelatedSkuIds(product.related_sku_ids)
   const related_skus = relatedIds.flatMap((id) => {
@@ -25,7 +29,7 @@ function enrichProduct(product: any) {
     if (!sku) return []
     const series = db.fabric_series.find((item: any) => item.id === sku.series_id)
     if (!series) return []
-    return [{ id: sku.id, sku_code: sku.sku_code, name: sku.name, series_slug: series.slug, series_name: series.name }]
+    return [{ id: sku.id, sku_code: sku.sku_code, public_name: sku.public_name, name: sku.name, series_slug: series.slug, series_name: series.name }]
   })
   return { ...product, related_sku_ids: relatedIds, related_skus }
 }
@@ -45,16 +49,15 @@ router.get('/admin/categories', authMiddleware, (_req, res) => {
   res.json({ data: db.equipment_categories.sort(sortByOrderIndex) })
 })
 
-router.post('/admin/categories', authMiddleware, upload.single('bg_image'), (req: AuthRequest, res) => {
-  const { name, slug, description, image_fit } = req.body
-  const bg_image = req.file ? registerUploadedFile(req.file, 'equipment', '装备分类背景').url : null
+router.post('/admin/categories', authMiddleware, (req: AuthRequest, res) => {
+  const { name, slug, description } = req.body
+  if (!String(name || '').trim() || !String(slug || '').trim()) { res.status(400).json({ error: '分类名称和 Slug 不能为空' }); return }
+  if (db.equipment_categories.some((item) => String(item.slug).toLowerCase() === String(slug).trim().toLowerCase())) { res.status(409).json({ error: 'Slug 已被使用' }); return }
   const newCat = {
     id: getNextId(db.equipment_categories),
-    name,
-    slug,
-    description,
-    bg_image,
-    image_fit: image_fit || 'cover',
+    name: String(name).trim(),
+    slug: String(slug).trim().toLowerCase(),
+    description: String(description || '').trim(),
     order_index: nextOrderIndex(db.equipment_categories),
   }
   db.equipment_categories.push(newCat)
@@ -62,18 +65,18 @@ router.post('/admin/categories', authMiddleware, upload.single('bg_image'), (req
   res.json({ success: true, id: newCat.id })
 })
 
-router.put('/admin/categories/:id', authMiddleware, upload.single('bg_image'), (req: AuthRequest, res) => {
+router.put('/admin/categories/:id', authMiddleware, (req: AuthRequest, res) => {
   const id = Number(req.params.id)
   const existing = db.equipment_categories.find((c) => c.id === id)
   if (!existing) { res.status(404).json({ error: 'Not found' }); return }
-  const { name, slug, description, image_fit } = req.body
-  const bg_image = req.file ? registerUploadedFile(req.file, 'equipment', '装备分类背景').url : (req.body.bg_image || existing.bg_image)
+  const { name, slug, description } = req.body
+  const nextSlug = slug === undefined ? existing.slug : String(slug).trim().toLowerCase()
+  if (!String(name ?? existing.name).trim() || !nextSlug) { res.status(400).json({ error: '分类名称和 Slug 不能为空' }); return }
+  if (db.equipment_categories.some((item) => item.id !== id && String(item.slug).toLowerCase() === nextSlug)) { res.status(409).json({ error: 'Slug 已被使用' }); return }
   updateById(db.equipment_categories, id, {
-    name: name ?? existing.name,
-    slug: slug ?? existing.slug,
-    description: description ?? existing.description,
-    bg_image,
-    image_fit: image_fit || existing.image_fit || 'cover',
+    name: String(name ?? existing.name).trim(),
+    slug: nextSlug,
+    description: description === undefined ? existing.description : String(description).trim(),
   })
   saveDb()
   res.json({ success: true })
@@ -81,6 +84,7 @@ router.put('/admin/categories/:id', authMiddleware, upload.single('bg_image'), (
 
 router.delete('/admin/categories/:id', authMiddleware, (req: AuthRequest, res) => {
   const id = Number(req.params.id)
+  if (!db.equipment_categories.some((category) => category.id === id)) { res.status(404).json({ error: '分类不存在' }); return }
   deleteById(db.equipment_categories, id)
   db.equipment_products = db.equipment_products.filter((p) => p.category_id !== id)
   saveDb()
@@ -95,17 +99,20 @@ router.get('/admin/products', authMiddleware, (req, res) => {
 
 router.post('/admin/products', authMiddleware, upload.single('image'), (req: AuthRequest, res) => {
   const { category_id, name, features, card_summary, visibility, status, related_sku_ids } = req.body
+  const categoryId = Number(category_id)
+  if (!db.equipment_categories.some((category) => category.id === categoryId)) { res.status(400).json({ error: '所属分类不存在' }); return }
+  if (!String(name || '').trim()) { res.status(400).json({ error: '产品名不能为空' }); return }
   const image = req.file ? registerUploadedFile(req.file, 'equipment', '装备产品图片').url : null
   const newProd = {
     id: getNextId(db.equipment_products),
-    category_id: Number(category_id),
-    name,
+    category_id: categoryId,
+    name: String(name).trim(),
     image,
     features,
     card_summary: card_summary || '',
     visibility: visibility || 'public',
     status: status || 'active',
-    related_sku_ids: parseRelatedSkuIds(related_sku_ids),
+    related_sku_ids: validRelatedSkuIds(related_sku_ids),
     order_index: nextOrderIndex(db.equipment_products),
   }
   db.equipment_products.push(newProd)
@@ -115,6 +122,8 @@ router.post('/admin/products', authMiddleware, upload.single('image'), (req: Aut
 
 router.put('/admin/product-order', authMiddleware, (req: AuthRequest, res) => {
   const ids = Array.isArray(req.body.ordered_ids) ? req.body.ordered_ids.map(Number) : []
+  const rows = ids.map((id) => db.equipment_products.find((item) => item.id === id)).filter(Boolean)
+  if (rows.length !== ids.length || new Set(rows.map((item: any) => item.category_id)).size > 1) { res.status(400).json({ error: '排序数据无效' }); return }
   ids.forEach((id: number, order_index: number) => updateById(db.equipment_products, id, { order_index }))
   saveDb()
   res.json({ success: true })
@@ -125,16 +134,20 @@ router.put('/admin/products/:id', authMiddleware, upload.single('image'), (req: 
   const existing = db.equipment_products.find((p) => p.id === id)
   if (!existing) { res.status(404).json({ error: 'Not found' }); return }
   const { category_id, name, features, card_summary, visibility, status, order_index, related_sku_ids } = req.body
-  const image = req.file ? registerUploadedFile(req.file, 'equipment', '装备产品图片').url : (req.body.image || existing.image)
+  const targetCategoryId = category_id ? Number(category_id) : existing.category_id
+  if (!db.equipment_categories.some((category) => category.id === targetCategoryId)) { res.status(400).json({ error: '所属分类不存在' }); return }
+  if (name !== undefined && !String(name).trim()) { res.status(400).json({ error: '产品名不能为空' }); return }
+  const removeImage = req.body.remove_image === 'true'
+  const image = req.file ? registerUploadedFile(req.file, 'equipment', '装备产品图片').url : (removeImage ? null : existing.image)
   updateById(db.equipment_products, id, {
-    category_id: category_id ? Number(category_id) : existing.category_id,
-    name: name ?? existing.name,
+    category_id: targetCategoryId,
+    name: name === undefined ? existing.name : String(name).trim(),
     image,
     features: features ?? existing.features,
     card_summary: card_summary ?? existing.card_summary,
     visibility: visibility ?? existing.visibility,
     status: status ?? existing.status,
-    related_sku_ids: related_sku_ids === undefined ? parseRelatedSkuIds(existing.related_sku_ids) : parseRelatedSkuIds(related_sku_ids),
+    related_sku_ids: related_sku_ids === undefined ? validRelatedSkuIds(existing.related_sku_ids) : validRelatedSkuIds(related_sku_ids),
     order_index: order_index === undefined ? existing.order_index : Number(order_index),
   })
   saveDb()
@@ -142,7 +155,9 @@ router.put('/admin/products/:id', authMiddleware, upload.single('image'), (req: 
 })
 
 router.delete('/admin/products/:id', authMiddleware, (req: AuthRequest, res) => {
-  deleteById(db.equipment_products, Number(req.params.id))
+  const id = Number(req.params.id)
+  if (!db.equipment_products.some((product) => product.id === id)) { res.status(404).json({ error: '产品不存在' }); return }
+  deleteById(db.equipment_products, id)
   saveDb()
   res.json({ success: true })
 })

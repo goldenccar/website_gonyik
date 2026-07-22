@@ -302,7 +302,7 @@ export default function AdminHomeEditor() {
         {textareaField('区块副标题', 'series_section_subtitle')}
 
         <div className="bg-dark border border-white/5 p-4">
-          <div className="mb-4"><p className="text-[13px] text-white mb-2">首页三大面料卡片</p><p className="text-[12px] text-muted">前台固定顺序：蓝标 OTTER、银标 RAYO、红标 KAIS。图片在此处直接上传、替换或移除。</p></div>
+          <div className="mb-4"><p className="text-[13px] text-white mb-2">首页三大面料卡片</p><p className="text-[12px] text-muted">前台固定顺序：蓝标 OTTER、银标 RAYO、黑标 KAIS。图片在此处直接上传、替换或移除。</p></div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {displaySeries.map((s) => (
               <div key={s.id} className="bg-white/5 p-3 border border-white/5">

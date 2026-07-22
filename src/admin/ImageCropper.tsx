@@ -14,6 +14,8 @@ interface ImageCropperProps {
   src: string
   aspect?: number
   maxOutputWidth?: number
+  outputType?: 'image/jpeg' | 'image/png' | 'image/webp'
+  outputQuality?: number
   onComplete: (blob: Blob, previewUrl: string) => void
   onCancel: () => void
 }
@@ -22,7 +24,8 @@ function getCroppedBlob(
   image: HTMLImageElement,
   pixelCrop: PixelCrop,
   mimeType: string,
-  maxOutputWidth: number
+  maxOutputWidth: number,
+  quality: number,
 ): Promise<Blob | null> {
   const canvas = document.createElement('canvas')
   const scale = Math.min(1, maxOutputWidth / pixelCrop.width)
@@ -41,7 +44,7 @@ function getCroppedBlob(
     canvas.width,
     canvas.height
   )
-  return new Promise((resolve) => canvas.toBlob(resolve, mimeType, 0.88))
+  return new Promise((resolve) => canvas.toBlob(resolve, mimeType, quality))
 }
 
 function getInitialCrop(
@@ -67,6 +70,8 @@ export default function ImageCropper({
   src,
   aspect,
   maxOutputWidth = 2560,
+  outputType = 'image/jpeg',
+  outputQuality = 0.88,
   onComplete,
   onCancel,
 }: ImageCropperProps) {
@@ -75,16 +80,6 @@ export default function ImageCropper({
   const [imgSize, setImgSize] = useState({ width: 0, height: 0 })
   const imgRef = useRef<HTMLImageElement | null>(null)
   const previewRef = useRef<HTMLCanvasElement | null>(null)
-
-  const onImageLoad = useCallback(
-    (e: React.SyntheticEvent<HTMLImageElement>) => {
-      const { width, height, naturalWidth, naturalHeight } = e.currentTarget
-      imgRef.current = e.currentTarget
-      setImgSize({ width: naturalWidth, height: naturalHeight })
-      setCrop(getInitialCrop(width, height, aspect))
-    },
-    [aspect]
-  )
 
   const drawPreview = useCallback((pixelCrop: PixelCrop) => {
     if (!imgRef.current || !previewRef.current) return
@@ -107,6 +102,20 @@ export default function ImageCropper({
       canvas.height
     )
   }, [])
+
+  const onImageLoad = useCallback(
+    (e: React.SyntheticEvent<HTMLImageElement>) => {
+      const { width, height, naturalWidth, naturalHeight } = e.currentTarget
+      imgRef.current = e.currentTarget
+      setImgSize({ width: naturalWidth, height: naturalHeight })
+      const initialCrop = getInitialCrop(width, height, aspect)
+      const naturalCrop = convertToPixelCrop(initialCrop, naturalWidth, naturalHeight)
+      setCrop(initialCrop)
+      setCompletedCrop(naturalCrop)
+      window.requestAnimationFrame(() => drawPreview(naturalCrop))
+    },
+    [aspect, drawPreview]
+  )
 
   const handleCropChange = useCallback(
     (_pixelCrop: PixelCrop, percentCrop: PercentCrop) => {
@@ -131,7 +140,7 @@ export default function ImageCropper({
 
   const handleConfirm = async () => {
     if (!imgRef.current || !completedCrop) return
-    const blob = await getCroppedBlob(imgRef.current, completedCrop, 'image/jpeg', maxOutputWidth)
+    const blob = await getCroppedBlob(imgRef.current, completedCrop, outputType, maxOutputWidth, outputQuality)
     if (!blob) return
     const previewUrl = URL.createObjectURL(blob)
     onComplete(blob, previewUrl)
@@ -171,7 +180,9 @@ export default function ImageCropper({
               原图 {imgSize.width} × {imgSize.height}px
             </p>
           </div>
-          <div className="relative aspect-video overflow-hidden border border-white/10 bg-darker"><canvas ref={previewRef} className="absolute inset-0 h-full w-full object-contain" /></div>
+          <div className="relative min-h-[220px] overflow-hidden border border-white/10 bg-darker sm:min-h-[280px]">
+            <canvas ref={previewRef} className="absolute inset-0 h-full w-full object-contain" />
+          </div>
           <p className="text-[12px] text-muted mt-2">
             提示：右侧会实时显示裁切后的效果。
           </p>

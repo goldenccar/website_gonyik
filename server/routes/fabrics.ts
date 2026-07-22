@@ -14,8 +14,30 @@ function toPublicSku(sku: any) {
 }
 
 function getSeriesCode(seriesId: number) {
-  const slug = db.fabric_series.find((series) => series.id === seriesId)?.slug
-  return slug === 'otter' ? 'OT' : slug === 'rayo' ? 'RA' : slug === 'kais' ? 'KA' : null
+  const slug = String(db.fabric_series.find((series) => series.id === seriesId)?.slug || '')
+  if (!slug) return null
+  if (slug === 'otter') return 'OT'
+  if (slug === 'rayo') return 'RA'
+  if (slug === 'kais') return 'KA'
+  return slug.replace(/[^a-z0-9]/gi, '').slice(0, 2).toUpperCase() || 'SK'
+}
+
+function nextLegacySkuCode(seriesId: number) {
+  const prefix = getSeriesCode(seriesId)
+  if (!prefix) return null
+  const usedCodes = [
+    ...db.fabric_sku.map((item) => String(item.sku_code || '')),
+    ...(db.product_code_registry || []).map((item) => String(item.sku_code || '')),
+  ]
+  const max = usedCodes.reduce((current, code) => {
+    const match = code.match(new RegExp(`^${prefix}-(\\d+)$`, 'i'))
+    return match ? Math.max(current, Number(match[1])) : current
+  }, 0)
+  return `${prefix}-${String(max + 1).padStart(2, '0')}`
+}
+
+function normalizeIdentity(value: unknown) {
+  return String(value || '').trim().toLocaleLowerCase()
 }
 
 function readFeatureKeys(value: unknown) {
@@ -76,12 +98,24 @@ router.delete('/admin/capabilities/:id', authMiddleware, (req: AuthRequest, res)
   const existing = db.fabric_capabilities.find((item) => item.id === id)
   if (!existing) { res.status(404).json({ error: 'Not found' }); return }
   deleteById(db.fabric_capabilities, id)
-  db.fabric_sku = db.fabric_sku.map((sku) => ({
-    ...sku,
-    features: JSON.stringify(readFeatureKeys(sku.features).filter((key) => key !== existing.key)),
-  }))
+  const removedValues = new Set([existing.key, existing.label, ...(existing.aliases || [])].map(normalizeIdentity))
+  let affected = 0
+  db.fabric_sku = db.fabric_sku.map((sku) => {
+    const features = readFeatureKeys(sku.features)
+    const nextFeatures = features.filter((value) => !removedValues.has(normalizeIdentity(value)))
+    const summary = readFeatureKeys(sku.card_summary)
+    const nextSummary = summary.filter((value) => !removedValues.has(normalizeIdentity(value)))
+    const summaryChanged = nextSummary.length !== summary.length
+    if (nextFeatures.length === features.length && !summaryChanged) return sku
+    affected += 1
+    return {
+      ...sku,
+      features: JSON.stringify(nextFeatures),
+      card_summary: summaryChanged ? (nextSummary.length ? JSON.stringify(nextSummary) : '') : sku.card_summary,
+    }
+  })
   saveDb()
-  res.json({ success: true })
+  res.json({ success: true, affected })
 })
 
 router.get('/series', (_req, res) => {
@@ -108,13 +142,17 @@ router.get('/admin/series', authMiddleware, (_req, res) => {
 
 router.post('/admin/series', authMiddleware, (req: AuthRequest, res) => {
   const { name, slug, description, tagline, home_image, home_badge_image } = req.body
+  const normalizedName = String(name || '').trim()
+  const normalizedSlug = String(slug || '').trim().toLowerCase()
+  if (!normalizedName || !normalizedSlug) { res.status(400).json({ error: '系列名称和 Slug 不能为空' }); return }
+  if (db.fabric_series.some((series) => String(series.slug).toLowerCase() === normalizedSlug)) { res.status(409).json({ error: 'Slug 已被使用' }); return }
   const normalizedHomeImage = home_image && home_image !== 'undefined' ? home_image : null
   const newSeries = {
     id: getNextId(db.fabric_series),
-    name,
-    slug,
-    description,
-    tagline: tagline || '',
+    name: normalizedName,
+    slug: normalizedSlug,
+    description: String(description || '').trim(),
+    tagline: String(tagline || '').trim(),
     home_image: normalizedHomeImage,
     home_badge_image: home_badge_image || null,
     order_index: nextOrderIndex(db.fabric_series),
@@ -129,12 +167,16 @@ router.put('/admin/series/:id', authMiddleware, (req: AuthRequest, res) => {
   const existing = db.fabric_series.find((s) => s.id === id)
   if (!existing) { res.status(404).json({ error: 'Not found' }); return }
   const { name, slug, description, tagline, home_image, home_badge_image } = req.body
+  const normalizedName = name === undefined ? existing.name : String(name).trim()
+  const normalizedSlug = slug === undefined ? existing.slug : String(slug).trim().toLowerCase()
+  if (!normalizedName || !normalizedSlug) { res.status(400).json({ error: '系列名称和 Slug 不能为空' }); return }
+  if (db.fabric_series.some((series) => series.id !== id && String(series.slug).toLowerCase() === normalizedSlug)) { res.status(409).json({ error: 'Slug 已被使用' }); return }
   const normalizedHomeImage = home_image && home_image !== 'undefined' ? home_image : null
   updateById(db.fabric_series, id, {
-    name: name ?? existing.name,
-    slug: slug ?? existing.slug,
-    description: description ?? existing.description,
-    tagline: tagline ?? existing.tagline,
+    name: normalizedName,
+    slug: normalizedSlug,
+    description: description === undefined ? existing.description : String(description).trim(),
+    tagline: tagline === undefined ? existing.tagline : String(tagline).trim(),
     home_image: normalizedHomeImage ?? existing.home_image,
     home_badge_image: home_badge_image ?? existing.home_badge_image,
   })
@@ -162,8 +204,14 @@ router.delete('/admin/series/:id/home-badge', authMiddleware, (req: AuthRequest,
 
 router.delete('/admin/series/:id', authMiddleware, (req: AuthRequest, res) => {
   const id = Number(req.params.id)
+  if (!db.fabric_series.some((series) => series.id === id)) { res.status(404).json({ error: '系列不存在' }); return }
+  const removedSkuIds = new Set(db.fabric_sku.filter((sku) => sku.series_id === id).map((sku) => sku.id))
   deleteById(db.fabric_series, id)
   db.fabric_sku = db.fabric_sku.filter((k) => k.series_id !== id)
+  db.equipment_products = db.equipment_products.map((product) => ({
+    ...product,
+    related_sku_ids: (Array.isArray(product.related_sku_ids) ? product.related_sku_ids : []).map(Number).filter((skuId: number) => !removedSkuIds.has(skuId)),
+  }))
   saveDb()
   res.json({ success: true })
 })
@@ -175,42 +223,47 @@ router.get('/admin/sku', authMiddleware, (req, res) => {
 })
 
 router.post('/admin/sku', authMiddleware, upload.single('image'), (req: AuthRequest, res) => {
-  const { series_id, name, sku_code, internal_code, public_name, product_type, features, specifications, card_summary, visibility, status } = req.body
-  const externalCode = String(sku_code || '').trim().toUpperCase()
+  const { series_id, name, internal_code, public_name, product_type, features, specifications, card_summary, visibility, status } = req.body
+  const targetSeriesId = Number(series_id)
+  const publicName = String(public_name || '').trim()
   const internalCode = String(internal_code || '').trim().toUpperCase()
-  const seriesCode = getSeriesCode(Number(series_id))
-  if (!/^(OT|RA|KA)-\d{2}$/.test(externalCode)) { res.status(400).json({ error: '对外简码必须使用 OT-01、RA-01 或 KA-01 格式' }); return }
-  if (!internalCode) { res.status(400).json({ error: '内部结构码不能为空' }); return }
-  if (!seriesCode || !externalCode.startsWith(`${seriesCode}-`) || !internalCode.startsWith(seriesCode)) { res.status(400).json({ error: '对外简码和内部结构码必须与所属系列一致' }); return }
-  if ((db.product_code_registry || []).some((item) => item.sku_code === externalCode || item.internal_code === internalCode)) { res.status(409).json({ error: '对外简码或内部结构码已被使用，不得重新分配' }); return }
+  const externalCode = nextLegacySkuCode(targetSeriesId)
+  if (!externalCode) { res.status(400).json({ error: '所属系列不存在' }); return }
+  if (!publicName) { res.status(400).json({ error: '对外商品编号不能为空' }); return }
+  if (!internalCode) { res.status(400).json({ error: '内部编号不能为空' }); return }
+  const registry = db.product_code_registry || []
+  if (db.fabric_sku.some((item) => normalizeIdentity(item.public_name) === normalizeIdentity(publicName)) || registry.some((item: any) => normalizeIdentity(item.public_name) === normalizeIdentity(publicName))) { res.status(409).json({ error: '对外商品编号已被使用' }); return }
+  if (db.fabric_sku.some((item) => normalizeIdentity(item.internal_code) === normalizeIdentity(internalCode)) || registry.some((item) => normalizeIdentity(item.internal_code) === normalizeIdentity(internalCode))) { res.status(409).json({ error: '内部编号已被使用' }); return }
   const image = req.file ? registerUploadedFile(req.file, 'fabrics', '面料 SKU 图片').url : null
   const newSku = {
     id: getNextId(db.fabric_sku),
-    series_id: Number(series_id),
-    name,
+    series_id: targetSeriesId,
+    name: String(name || publicName).trim(),
     sku_code: externalCode,
     internal_code: internalCode,
-    public_name: String(public_name || '').trim(),
+    public_name: publicName,
     product_type: String(product_type || '').trim(),
     position_performance: parsePosition(req.body.position_performance),
     position_durability: parsePosition(req.body.position_durability),
     position_handfeel: parsePosition(req.body.position_handfeel),
     image,
-    features,
-    specifications,
+    features: features || '[]',
+    specifications: specifications || '{}',
     card_summary: card_summary || '',
     visibility: visibility || 'public',
     status: status || 'active',
     order_index: nextOrderIndex(db.fabric_sku),
   }
   db.fabric_sku.push(newSku)
-  db.product_code_registry = [...(db.product_code_registry || []), { sku_code: externalCode, internal_code: internalCode }]
+  db.product_code_registry = [...registry, { sku_code: externalCode, internal_code: internalCode, public_name: publicName }]
   saveDb()
   res.json({ success: true, id: newSku.id })
 })
 
 router.put('/admin/sku-order', authMiddleware, (req: AuthRequest, res) => {
   const ids = Array.isArray(req.body.ordered_ids) ? req.body.ordered_ids.map(Number) : []
+  const rows = ids.map((id) => db.fabric_sku.find((item) => item.id === id)).filter(Boolean)
+  if (rows.length !== ids.length || new Set(rows.map((item: any) => item.series_id)).size > 1) { res.status(400).json({ error: '排序数据无效' }); return }
   ids.forEach((id: number, order_index: number) => updateById(db.fabric_sku, id, { order_index }))
   saveDb()
   res.json({ success: true })
@@ -220,16 +273,21 @@ router.put('/admin/sku/:id', authMiddleware, upload.single('image'), (req: AuthR
   const id = Number(req.params.id)
   const existing = db.fabric_sku.find((k) => k.id === id)
   if (!existing) { res.status(404).json({ error: 'Not found' }); return }
-  const { series_id, name, sku_code, internal_code, public_name, product_type, features, specifications, card_summary, visibility, status, order_index } = req.body
-  const externalCode = sku_code === undefined ? existing.sku_code : String(sku_code).trim().toUpperCase()
+  const { series_id, name, internal_code, public_name, product_type, features, specifications, card_summary, visibility, status, order_index } = req.body
+  const externalCode = existing.sku_code
   const internalCode = internal_code === undefined ? existing.internal_code : String(internal_code).trim().toUpperCase()
+  const publicName = public_name === undefined ? existing.public_name : String(public_name).trim()
   const targetSeriesId = series_id ? Number(series_id) : existing.series_id
-  const seriesCode = getSeriesCode(targetSeriesId)
-  if (!/^(OT|RA|KA)-\d{2}$/.test(externalCode)) { res.status(400).json({ error: '对外简码必须使用 OT-01、RA-01 或 KA-01 格式' }); return }
-  if (!internalCode) { res.status(400).json({ error: '内部结构码不能为空' }); return }
-  if (externalCode !== existing.sku_code || internalCode !== existing.internal_code) { res.status(409).json({ error: '已使用的产品代码不得修改；结构发生实质变化时请新建 SKU' }); return }
-  if (!seriesCode || !externalCode.startsWith(`${seriesCode}-`) || !internalCode.startsWith(seriesCode)) { res.status(400).json({ error: '对外简码和内部结构码必须与所属系列一致' }); return }
-  if (db.fabric_sku.some((item) => item.id !== id && (item.sku_code === externalCode || item.internal_code === internalCode))) { res.status(409).json({ error: '对外简码或内部结构码已被使用' }); return }
+  if (!db.fabric_series.some((series) => series.id === targetSeriesId)) { res.status(400).json({ error: '所属系列不存在' }); return }
+  if (!publicName) { res.status(400).json({ error: '对外商品编号不能为空' }); return }
+  if (!internalCode) { res.status(400).json({ error: '内部编号不能为空' }); return }
+  const publicNameChanged = Boolean(String(existing.public_name || '').trim()) && normalizeIdentity(publicName) !== normalizeIdentity(existing.public_name)
+  const internalCodeChanged = Boolean(String(existing.internal_code || '').trim()) && normalizeIdentity(internalCode) !== normalizeIdentity(existing.internal_code)
+  if (publicNameChanged || internalCodeChanged) { res.status(409).json({ error: '已使用的对外商品编号和内部编号不可修改；请新建面料型号' }); return }
+  if (db.fabric_sku.some((item) => item.id !== id && normalizeIdentity(item.public_name) === normalizeIdentity(publicName))) { res.status(409).json({ error: '对外商品编号已被使用' }); return }
+  if (db.fabric_sku.some((item) => item.id !== id && normalizeIdentity(item.internal_code) === normalizeIdentity(internalCode))) { res.status(409).json({ error: '内部编号已被使用' }); return }
+  if ((db.product_code_registry || []).some((item) => item.sku_code !== existing.sku_code && normalizeIdentity(item.public_name) === normalizeIdentity(publicName))) { res.status(409).json({ error: '对外商品编号已被使用' }); return }
+  if ((db.product_code_registry || []).some((item) => item.sku_code !== existing.sku_code && normalizeIdentity(item.internal_code) === normalizeIdentity(internalCode))) { res.status(409).json({ error: '内部编号已被使用' }); return }
   const removeImage = req.body.remove_image === 'true'
   const image = req.file ? registerUploadedFile(req.file, 'fabrics', '面料 SKU 图片').url : (removeImage ? null : (req.body.image || existing.image))
   updateById(db.fabric_sku, id, {
@@ -237,7 +295,7 @@ router.put('/admin/sku/:id', authMiddleware, upload.single('image'), (req: AuthR
     name: name ?? existing.name,
     sku_code: externalCode,
     internal_code: internalCode,
-    public_name: public_name === undefined ? existing.public_name : String(public_name).trim(),
+    public_name: publicName,
     product_type: product_type === undefined ? existing.product_type : String(product_type).trim(),
     position_performance: req.body.position_performance === undefined ? existing.position_performance : parsePosition(req.body.position_performance),
     position_durability: req.body.position_durability === undefined ? existing.position_durability : parsePosition(req.body.position_durability),
@@ -250,12 +308,20 @@ router.put('/admin/sku/:id', authMiddleware, upload.single('image'), (req: AuthR
     status: status ?? existing.status,
     order_index: order_index === undefined ? existing.order_index : Number(order_index),
   })
+  const registryEntry = (db.product_code_registry || []).find((item) => item.sku_code === existing.sku_code)
+  if (registryEntry) Object.assign(registryEntry, { internal_code: internalCode, public_name: publicName })
   saveDb()
   res.json({ success: true })
 })
 
 router.delete('/admin/sku/:id', authMiddleware, (req: AuthRequest, res) => {
-  deleteById(db.fabric_sku, Number(req.params.id))
+  const id = Number(req.params.id)
+  if (!db.fabric_sku.some((sku) => sku.id === id)) { res.status(404).json({ error: '面料不存在' }); return }
+  deleteById(db.fabric_sku, id)
+  db.equipment_products = db.equipment_products.map((product) => ({
+    ...product,
+    related_sku_ids: (Array.isArray(product.related_sku_ids) ? product.related_sku_ids : []).map(Number).filter((skuId: number) => skuId !== id),
+  }))
   saveDb()
   res.json({ success: true })
 })

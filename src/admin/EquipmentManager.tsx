@@ -10,8 +10,20 @@ import SaveCancelButtons from './components/SaveCancelButtons'
 import PrimaryButton from './components/PrimaryButton'
 import ContentRailEditor, { type RailEndCardConfig } from './components/ContentRailEditor'
 import ResponsiveAdminList from './components/ResponsiveAdminList'
+import CroppedImageField, { type CroppedImageChange } from './components/CroppedImageField'
 
 const DEFAULT_RAIL: RailEndCardConfig = { rail_end_card_visible: true, rail_end_card_title: '新应用开发中', rail_end_card_description: '围绕新的任务与穿着环境持续开发。', rail_end_card_cta_label: '', rail_end_card_cta_href: '/contact' }
+
+function featureText(value: unknown) {
+  if (Array.isArray(value)) return value.map(String).join(' · ')
+  if (typeof value !== 'string' || !value) return ''
+  try {
+    const parsed = JSON.parse(value)
+    return Array.isArray(parsed) ? parsed.map(String).join(' · ') : value
+  } catch {
+    return value
+  }
+}
 
 export default function AdminEquipmentManager() {
   const [categories, setCategories] = useState<any[]>([])
@@ -25,6 +37,11 @@ export default function AdminEquipmentManager() {
   const [rail, setRail] = useState<RailEndCardConfig>(DEFAULT_RAIL)
   const [fabricSeries, setFabricSeries] = useState<any[]>([])
   const [fabricSkus, setFabricSkus] = useState<any[]>([])
+  const [productImage, setProductImage] = useState<CroppedImageChange>({ file: null, removeCurrent: false })
+  const [formError, setFormError] = useState('')
+  const [savingProduct, setSavingProduct] = useState(false)
+  const [categoryError, setCategoryError] = useState('')
+  const [savingCategory, setSavingCategory] = useState(false)
 
   const loadData = async () => {
     const cRes = await api.get('/equipment/admin/categories')
@@ -44,58 +61,85 @@ export default function AdminEquipmentManager() {
     })
   }, [])
 
+  const openProductForm = (product: any | null) => {
+    setEditingProduct(product)
+    setProductImage({ file: null, removeCurrent: false })
+    setFormError('')
+    setShowProdForm(true)
+  }
+
   const handleSaveCategory = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const fd = new FormData(e.currentTarget)
     const data = Object.fromEntries(fd)
-    const formData = new FormData()
-    formData.append('name', data.name as string)
-    formData.append('slug', data.slug as string)
-    formData.append('description', data.description as string)
+    const payload = { name: data.name as string, slug: data.slug as string, description: (data.description as string) || '' }
 
-    if (editingCategory?.id) {
-      await api.put(`/equipment/admin/categories/${editingCategory.id}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
-    } else {
-      await api.post('/equipment/admin/categories', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+    setSavingCategory(true)
+    setCategoryError('')
+    try {
+      if (editingCategory?.id) await api.put(`/equipment/admin/categories/${editingCategory.id}`, payload)
+      else await api.post('/equipment/admin/categories', payload)
+      setShowCatForm(false)
+      setEditingCategory(null)
+      await loadData()
+      setMessage('保存成功')
+      setTimeout(() => setMessage(''), 2000)
+    } catch (error: any) {
+      setCategoryError(error?.response?.data?.error || '保存失败，请检查必填项后重试')
+    } finally {
+      setSavingCategory(false)
     }
-    setShowCatForm(false); setEditingCategory(null); loadData()
-    setMessage('保存成功'); setTimeout(() => setMessage(''), 2000)
   }
 
   const handleSaveProduct = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const fd = new FormData(e.currentTarget)
     const data = Object.fromEntries(fd)
-    const file = (e.currentTarget as any).image.files[0]
     const formData = new FormData()
     formData.append('category_id', String(selectedCategory))
     formData.append('name', data.name as string)
-    formData.append('features', JSON.stringify((data.features as string).split(',').map((f) => f.trim())))
+    formData.append('features', JSON.stringify(String(data.features || '').split(/[,，]/).map((f) => f.trim()).filter(Boolean)))
     formData.append('card_summary', (data.card_summary as string) || '')
     formData.append('visibility', (data.visibility as string) || 'public')
-    formData.append('status', (data.status as string) || 'active')
+    formData.append('status', editingProduct?.status || 'active')
     formData.append('related_sku_ids', JSON.stringify(fd.getAll('related_sku_ids').map(Number).filter(Number.isFinite)))
-    if (file) formData.append('image', file)
-    if (editingProduct?.image && !file) formData.append('image', editingProduct.image)
+    formData.append('remove_image', productImage.removeCurrent ? 'true' : 'false')
+    if (productImage.file) formData.append('image', productImage.file)
 
-    if (editingProduct?.id) {
-      await api.put(`/equipment/admin/products/${editingProduct.id}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
-    } else {
-      await api.post('/equipment/admin/products', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+    setSavingProduct(true)
+    setFormError('')
+    try {
+      if (editingProduct?.id) {
+        await api.put(`/equipment/admin/products/${editingProduct.id}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+      } else {
+        await api.post('/equipment/admin/products', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+      }
+      setShowProdForm(false)
+      setEditingProduct(null)
+      setProductImage({ file: null, removeCurrent: false })
+      await loadData()
+      setMessage('保存成功')
+      setTimeout(() => setMessage(''), 2000)
+    } catch (error: any) {
+      setFormError(error?.response?.data?.error || '保存失败，请检查必填项后重试')
+    } finally {
+      setSavingProduct(false)
     }
-    setShowProdForm(false); setEditingProduct(null); loadData()
-    setMessage('保存成功'); setTimeout(() => setMessage(''), 2000)
   }
 
   const deleteCategory = async (id: number) => {
-    if (!confirm('确定删除？')) return
+    if (!confirm('确定删除该分类及其中全部终端产品？')) return
     await api.delete(`/equipment/admin/categories/${id}`)
-    loadData()
+    if (selectedCategory === id) {
+      setSelectedCategory(null)
+      setProducts([])
+    }
+    await loadData()
   }
   const deleteProduct = async (id: number) => {
-    if (!confirm('确定删除？')) return
+    if (!confirm('确定删除该终端产品？')) return
     await api.delete(`/equipment/admin/products/${id}`)
-    loadData()
+    await loadData()
   }
 
   const moveProduct = async (index: number, direction: -1 | 1) => {
@@ -129,7 +173,7 @@ export default function AdminEquipmentManager() {
         <AdminHeader
           title="终端装备管理"
           action={(
-            <PrimaryButton onClick={() => { setEditingCategory(null); setShowCatForm(true) }} icon={<Plus size={16} />}>新增品类</PrimaryButton>
+            <PrimaryButton onClick={() => { setEditingCategory(null); setCategoryError(''); setShowCatForm(true) }} icon={<Plus size={16} />}>新增品类</PrimaryButton>
           )}
         />
         {message && <p className="text-success text-[13px] mb-4">{message}</p>}
@@ -144,7 +188,7 @@ export default function AdminEquipmentManager() {
                   <td className="px-6 py-4 text-accent">{c.slug}</td>
                   <td className="px-6 py-4 text-accent max-w-[200px] truncate">{c.description}</td>
                   <td className="px-6 py-4 text-right">
-                    <button onClick={(e) => { e.stopPropagation(); setEditingCategory(c); setShowCatForm(true) }} className="text-accent hover:text-white mr-3"><Edit2 size={14} /></button>
+                    <button onClick={(e) => { e.stopPropagation(); setEditingCategory(c); setCategoryError(''); setShowCatForm(true) }} className="text-accent hover:text-white mr-3"><Edit2 size={14} /></button>
                     <button onClick={(e) => { e.stopPropagation(); deleteCategory(c.id) }} className="text-error hover:text-white"><Trash2 size={14} /></button>
                   </td>
                 </tr>
@@ -153,14 +197,14 @@ export default function AdminEquipmentManager() {
           </table>
         </div>
         <div className="mb-8 md:hidden">
-          <ResponsiveAdminList items={categories} getKey={(item) => item.id} onSelect={(item) => setSelectedCategory(item.id)} isSelected={(item) => selectedCategory === item.id} renderTitle={(item) => item.name} renderSubtitle={(item) => `${item.slug}${item.description ? ` · ${item.description}` : ''}`} renderActions={(item) => <><button type="button" onClick={() => { setEditingCategory(item); setShowCatForm(true) }} className="flex h-11 w-11 items-center justify-center text-accent" aria-label={`编辑${item.name}`}><Edit2 size={16} /></button><button type="button" onClick={() => deleteCategory(item.id)} className="flex h-11 w-11 items-center justify-center text-error" aria-label={`删除${item.name}`}><Trash2 size={16} /></button></>} />
+          <ResponsiveAdminList items={categories} getKey={(item) => item.id} onSelect={(item) => setSelectedCategory(item.id)} isSelected={(item) => selectedCategory === item.id} renderTitle={(item) => item.name} renderSubtitle={(item) => `${item.slug}${item.description ? ` · ${item.description}` : ''}`} renderActions={(item) => <><button type="button" onClick={() => { setEditingCategory(item); setCategoryError(''); setShowCatForm(true) }} className="flex h-11 w-11 items-center justify-center text-accent" aria-label={`编辑${item.name}`}><Edit2 size={16} /></button><button type="button" onClick={() => deleteCategory(item.id)} className="flex h-11 w-11 items-center justify-center text-error" aria-label={`删除${item.name}`}><Trash2 size={16} /></button></>} />
         </div>
 
         {selectedCategory && (
           <div>
             <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <h2 className="text-[19px] font-bold text-white sm:text-h4">{categories.find((c) => c.id === selectedCategory)?.name} - 产品管理</h2>
-              <PrimaryButton onClick={() => { setEditingProduct(null); setShowProdForm(true) }} icon={<Plus size={16} />}>新增产品</PrimaryButton>
+              <PrimaryButton onClick={() => openProductForm(null)} icon={<Plus size={16} />}>新增产品</PrimaryButton>
             </div>
             <div className="hidden bg-dark md:block">
               <table className="w-full text-left text-[13px]">
@@ -169,9 +213,9 @@ export default function AdminEquipmentManager() {
                   {products.map((p) => (
                     <tr key={p.id} className="border-b border-white/5">
                       <td className="px-6 py-4 font-medium">{p.name}</td>
-                      <td className="px-6 py-4 text-accent">{p.features}</td>
+                      <td className="px-6 py-4 text-accent">{featureText(p.features)}</td>
                       <td className="px-6 py-4 text-right">
-                        <button onClick={() => { setEditingProduct(p); setShowProdForm(true) }} className="text-accent hover:text-white mr-3"><Edit2 size={14} /></button>
+                        <button onClick={() => openProductForm(p)} className="text-accent hover:text-white mr-3"><Edit2 size={14} /></button>
                         <button onClick={() => deleteProduct(p.id)} className="text-error hover:text-white"><Trash2 size={14} /></button>
                       </td>
                     </tr>
@@ -181,9 +225,9 @@ export default function AdminEquipmentManager() {
               {products.length === 0 && <p className="text-accent text-center py-8">暂无产品</p>}
             </div>
             <div className="md:hidden">
-              <ResponsiveAdminList items={products} getKey={(item) => item.id} emptyLabel="暂无产品" renderTitle={(item) => item.name} renderSubtitle={(item) => { try { return (Array.isArray(item.features) ? item.features : JSON.parse(item.features || '[]')).join(' · ') } catch { return item.features } }} renderActions={(item) => <><button type="button" onClick={() => { setEditingProduct(item); setShowProdForm(true) }} className="flex h-11 w-11 items-center justify-center text-accent" aria-label={`编辑${item.name}`}><Edit2 size={16} /></button><button type="button" onClick={() => deleteProduct(item.id)} className="flex h-11 w-11 items-center justify-center text-error" aria-label={`删除${item.name}`}><Trash2 size={16} /></button></>} />
+              <ResponsiveAdminList items={products} getKey={(item) => item.id} emptyLabel="暂无产品" renderTitle={(item) => item.name} renderSubtitle={(item) => featureText(item.features)} renderActions={(item) => <><button type="button" onClick={() => openProductForm(item)} className="flex h-11 w-11 items-center justify-center text-accent" aria-label={`编辑${item.name}`}><Edit2 size={16} /></button><button type="button" onClick={() => deleteProduct(item.id)} className="flex h-11 w-11 items-center justify-center text-error" aria-label={`删除${item.name}`}><Trash2 size={16} /></button></>} />
             </div>
-            <ContentRailEditor label="终端应用横向轨道" items={products} renderCard={(product) => <ApplicationCard key={product.id} product={product} categoryName={categories.find((item) => item.id === selectedCategory)?.name} />} onEdit={(product) => { setEditingProduct(product); setShowProdForm(true) }} onMove={moveProduct} onVisibility={toggleProductVisibility} endCard={rail} onEndCardChange={(patch) => setRail({ ...rail, ...patch })} onSaveEndCard={saveRail} />
+            <ContentRailEditor label="终端应用卡片组" items={products} renderCard={(product) => <ApplicationCard key={product.id} product={product} categoryName={categories.find((item) => item.id === selectedCategory)?.name} />} onEdit={openProductForm} onMove={moveProduct} onVisibility={toggleProductVisibility} endCard={rail} onEndCardChange={(patch) => setRail({ ...rail, ...patch })} onSaveEndCard={saveRail} />
           </div>
         )}
 
@@ -193,42 +237,40 @@ export default function AdminEquipmentManager() {
               <FormField label="名称" name="name" markup="inline" defaultValue={editingCategory?.name} required />
               <FormField label="Slug" name="slug" defaultValue={editingCategory?.slug} required />
               <FormField label="描述" name="description" markup="inline" defaultValue={editingCategory?.description} textarea />
-              <SaveCancelButtons onCancel={() => setShowCatForm(false)} />
+              {categoryError && <p className="border border-error/40 bg-error/10 px-3 py-2 text-[13px] text-error">{categoryError}</p>}
+              <SaveCancelButtons loading={savingCategory} onCancel={() => setShowCatForm(false)} />
             </form>
           </Modal>
         )}
 
         {showProdForm && (
-          <Modal title={editingProduct ? '编辑产品' : '新增产品'} onClose={() => setShowProdForm(false)}>
+          <Modal title={editingProduct ? '编辑产品' : '新增产品'} onClose={() => setShowProdForm(false)} maxWidth="max-w-[620px]">
             <form onSubmit={handleSaveProduct} className="space-y-4">
               <FormField label="产品名" name="name" markup="inline" defaultValue={editingProduct?.name} required />
               <FormField
                 label="特点（逗号分隔）"
                 name="features"
-                defaultValue={editingProduct?.features ? (Array.isArray(editingProduct.features) ? editingProduct.features : JSON.parse(editingProduct.features)).join(', ') : ''}
+                defaultValue={featureText(editingProduct?.features).replaceAll(' · ', ', ')}
               />
               <FormField label="卡片核心收益" name="card_summary" markup="inline" defaultValue={editingProduct?.card_summary} placeholder="一句话说明应用价值" />
-              <div className="grid gap-3 sm:grid-cols-2"><FormField label="前台显示" name="visibility" select defaultValue={editingProduct?.visibility || 'public'} options={[{ value: 'public', label: '显示' }, { value: 'hidden', label: '隐藏' }]} /><FormField label="内容状态" name="status" select defaultValue={editingProduct?.status || 'active'} options={[{ value: 'active', label: '正常' }, { value: 'archived', label: '归档' }]} /></div>
+              <FormField label="前台显示" name="visibility" select defaultValue={editingProduct?.visibility || 'public'} options={[{ value: 'public', label: '显示' }, { value: 'hidden', label: '隐藏' }]} />
               <fieldset className="border border-white/10 p-4">
-                <legend className="px-1 text-[12px] uppercase tracking-[0.08em] text-secondary">关联具体面料</legend>
-                <p className="mb-3 text-[12px] leading-5 text-accent">前台会显示为可跳转到具体 SKU 的链接；未勾选时不显示关联入口。</p>
+                <legend className="px-1 text-[12px] uppercase tracking-[0.08em] text-secondary">采用面料</legend>
+                <p className="mb-3 text-[12px] leading-5 text-accent">勾选该终端产品实际采用的一个或多个面料；前台可跳转到对应型号。</p>
                 <div className="grid gap-2 sm:grid-cols-2">
                   {fabricSkus.map((sku) => {
                     const series = fabricSeries.find((item) => item.id === sku.series_id)
                     const related = Array.isArray(editingProduct?.related_sku_ids) ? editingProduct.related_sku_ids : []
                     return <label key={sku.id} className="flex cursor-pointer items-start gap-3 border border-white/10 px-3 py-3 text-[13px] text-white hover:border-white/25">
                       <input type="checkbox" name="related_sku_ids" value={sku.id} defaultChecked={related.map(Number).includes(sku.id)} className="mt-0.5 accent-[#69B2C1]" />
-                      <span><span className="font-medium">{series?.name || '未归类'} · {sku.sku_code}</span><span className="mt-0.5 block text-[12px] text-accent">{sku.name}</span></span>
+                      <span><span className="font-medium">{sku.public_name || sku.name}</span><span className="mt-0.5 block text-[12px] text-accent">{series?.name || '未归类'} · {sku.internal_code || '未填写内部编号'}</span></span>
                     </label>
                   })}
                 </div>
               </fieldset>
-              <div>
-                <label className="block text-[12px] text-secondary uppercase mb-1">产品图</label>
-                {editingProduct?.image && <img src={editingProduct.image} alt="当前应用卡片图" className="mb-2 aspect-video w-full object-cover" />}
-                <input type="file" name="image" accept="image/*" className="text-white text-[13px]" />
-              </div>
-              <SaveCancelButtons onCancel={() => setShowProdForm(false)} />
+              <CroppedImageField key={editingProduct?.id || 'new'} label="终端产品图" currentSrc={editingProduct?.image} aspect={1} fileBaseName={`${editingProduct?.name || 'equipment'}`.toLowerCase().replace(/[^a-z0-9]+/g, '-')} outputType="image/png" fit="contain" transparent onChange={setProductImage} help="建议上传带透明通道的产品抠图；裁切后保留 PNG 透明背景，卡片底色由前端统一控制。" />
+              {formError && <p className="border border-error/40 bg-error/10 px-3 py-2 text-[13px] text-error">{formError}</p>}
+              <SaveCancelButtons loading={savingProduct} onCancel={() => setShowProdForm(false)} />
             </form>
           </Modal>
         )}

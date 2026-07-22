@@ -17,15 +17,15 @@ export default function ApplicationCard({ product, categoryName }: { product: Eq
   )
 
   return <CatalogCardShell interactive className="snap-start md:grid md:grid-cols-[42%_1fr]">
-    <CatalogCardMedia src={product.image} alt={product.name} placeholder={fallback} ratio="portrait" fit="contain" className="md:h-full" />
+    <CatalogCardMedia src={product.image} alt={product.name} placeholder={fallback} ratio="portrait" fit="contain" className="!bg-white md:h-full" />
     <div className="flex min-w-0 flex-1 flex-col p-5 md:p-6">
       <p className="label-zh text-secondary"><InlineMarkup text={categoryName} /></p>
       <h3 className="type-card-title mt-2 text-primary"><InlineMarkup text={product.name} /></h3>
       <p className="mt-3 line-clamp-2 text-[14px] leading-6 text-secondary"><InlineMarkup text={summary} /></p>
       {Boolean(product.related_skus?.length) && <div className="mt-auto border-t border-border pt-4">
-        <p className="text-[11px] font-medium tracking-[0.08em] text-secondary">适用面料</p>
+        <p className="text-[11px] font-medium tracking-[0.08em] text-secondary">采用面料</p>
         <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2">
-          {product.related_skus?.map((sku) => <Link key={sku.id} to={`/fabrics?series=${encodeURIComponent(sku.series_slug)}&sku=${sku.id}`} className="text-[13px] font-medium text-primary underline decoration-border underline-offset-4 transition-colors hover:decoration-primary">{sku.series_name} · {sku.sku_code}</Link>)}
+          {product.related_skus?.map((sku) => <Link key={sku.id} to={`/fabrics?series=${encodeURIComponent(sku.series_slug)}&sku=${sku.id}`} className="text-[13px] font-medium text-primary underline decoration-border underline-offset-4 transition-colors hover:decoration-primary">{sku.public_name || sku.name}</Link>)}
         </div>
       </div>}
     </div>

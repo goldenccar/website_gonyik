@@ -120,8 +120,6 @@ export interface EquipmentCategory {
   name: string
   slug: string
   description: string
-  bg_image: string | null
-  image_fit: 'cover' | 'contain'
 }
 
 export interface EquipmentProduct {
@@ -138,6 +136,7 @@ export interface EquipmentProduct {
   related_skus?: Array<{
     id: number
     sku_code: string
+    public_name?: string
     name: string
     series_slug: string
     series_name: string
