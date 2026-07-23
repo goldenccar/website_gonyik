@@ -34,6 +34,7 @@ export interface Database {
   brand_identity_version?: number
   product_dual_code_version?: number
   fabric_card_positioning_version?: number
+  equipment_global_order_version?: number
   service_sections_version?: number
   inquiry_subjects: any[]
   contact_messages: any[]
@@ -296,11 +297,12 @@ function createDefaultDb(): Database {
     equipment_products: [
       { id: 1, category_id: 1, name: '通勤防护外套', image: null, features: '["日常风雨","舒适穿着","Otter"]', related_sku_ids: [1], order_index: 0 },
       { id: 2, category_id: 1, name: '夏季轻量外层', image: null, features: '["防晒","导湿","Rayo"]', related_sku_ids: [], order_index: 1 },
-      { id: 3, category_id: 2, name: '风雨户外服装', image: null, features: '["防水透湿","耐用","Otter"]', related_sku_ids: [1, 2], order_index: 0 },
-      { id: 4, category_id: 2, name: '运动防晒服装', image: null, features: '["轻量","导湿","Rayo"]', related_sku_ids: [], order_index: 1 },
-      { id: 5, category_id: 3, name: '防刺装备', image: null, features: '["明确任务","防刺内层","Kais"]', related_sku_ids: [], order_index: 0 },
-      { id: 6, category_id: 3, name: '消防装备', image: null, features: '["消防场景","专业防护","Kais"]', related_sku_ids: [], order_index: 1 },
+      { id: 3, category_id: 2, name: '风雨户外服装', image: null, features: '["防水透湿","耐用","Otter"]', related_sku_ids: [1, 2], order_index: 2 },
+      { id: 4, category_id: 2, name: '运动防晒服装', image: null, features: '["轻量","导湿","Rayo"]', related_sku_ids: [], order_index: 3 },
+      { id: 5, category_id: 3, name: '防刺装备', image: null, features: '["明确任务","防刺内层","Kais"]', related_sku_ids: [], order_index: 4 },
+      { id: 6, category_id: 3, name: '消防装备', image: null, features: '["消防场景","专业防护","Kais"]', related_sku_ids: [], order_index: 5 },
     ],
+    equipment_global_order_version: 1,
     care_guides: [
       { id: 1, title: '常规清洗', content: '使用中性洗涤剂，水温不超过 30°C，反面洗涤以保护面料功能层。避免使用柔顺剂。', order_index: 0 },
       { id: 2, title: '自然晾干', content: '洗后置于通风阴凉处自然晾干，避免暴晒和高温烘干，以保持面料的防水透气性能。', order_index: 1 },
@@ -955,6 +957,14 @@ export function initDatabase() {
       publicCopyChanged = true
     }
     if (publicCopyChanged) saveDb()
+    if ((db.equipment_global_order_version ?? 0) < 1) {
+      const categoryOrder = new Map([...db.equipment_categories].sort(sortByOrderIndex).map((category: any, index: number) => [category.id, index]))
+      db.equipment_products
+        .sort((a: any, b: any) => (categoryOrder.get(a.category_id) ?? 999) - (categoryOrder.get(b.category_id) ?? 999) || sortByOrderIndex(a, b) || a.id - b.id)
+        .forEach((product: any, index: number) => { product.order_index = index })
+      db.equipment_global_order_version = 1
+      saveDb()
+    }
     // Backward compatibility: ensure cooperation_type exists on existing messages
     if (db.contact_messages.length > 0 && db.contact_messages[0].cooperation_type === undefined) {
       db.contact_messages = db.contact_messages.map((m: any) => ({ ...m, cooperation_type: m.cooperation_type || '' }))

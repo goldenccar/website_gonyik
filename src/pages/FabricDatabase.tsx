@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { getFabricSeries, getFabricSeriesDetail, getPageConfig } from '@/api/client'
-import CatalogCollection from '@/components/CatalogCollection'
+import HorizontalRail from '@/components/HorizontalRail'
 import PageHero from '@/components/PageHero'
 import { PageSection, PageShell } from '@/components/PageLayout'
 import SkuCard, { getSkuDisplayCode } from '@/components/SkuCard'
@@ -9,7 +9,7 @@ import type { FabricSeries, FabricSku, PageConfig } from '@/types'
 import AnimatedDisclosure from '@/components/AnimatedDisclosure'
 import { InlineMarkup } from '@/components/MarkupParser'
 import type { FabricCapabilityDefinition } from '@/config/fabricCapabilities'
-import { CatalogEndCta } from '@/components/CatalogCard'
+import RailEndCard from '@/components/RailEndCard'
 
 function parseSpecs(value: unknown) {
   if (value && typeof value === 'object' && !Array.isArray(value)) return value as Record<string, string>
@@ -112,11 +112,12 @@ export default function FabricDatabase() {
         <div className="min-h-[260px]">
         {detailLoading ? <div className="motion-content-enter border-t border-border py-8 text-body text-secondary">正在加载该系列资料…</div> : detail?.skus?.length ? (
           <>
-          <CatalogCollection label={`${detail.name} 面料型号`}>
+          <HorizontalRail label={`${detail.name} 面料型号`} variant="fabric">
             {detail.skus.map((sku) => {
               return <SkuCard key={`${sku.series_id}-${sku.id}`} sku={sku} seriesName={detail.name} capabilities={detail.capabilities} expanded={skuOpen && selectedSku?.id === sku.id} onClick={() => openSku(sku)} />
             })}
-          </CatalogCollection>
+            {endCardVisible && <RailEndCard config={page || {}} fallbackTitle="新面料开发中" fallbackDescription="针对新的使用环境与性能目标持续开发。" />}
+          </HorizontalRail>
           </>
         ) : <p className="border-t border-border py-8 text-body text-secondary">该系列具体型号正在整理中。</p>}
         </div>
@@ -137,7 +138,6 @@ export default function FabricDatabase() {
             <Link to="/contact" className="mt-4 inline-block text-[14px] font-medium text-primary underline underline-offset-4">获取完整 TDS →</Link>
           </section>}
         </AnimatedDisclosure>
-        {endCardVisible && <CatalogEndCta title={page?.rail_end_card_title ?? '新面料开发中'} description={page?.rail_end_card_description ?? '针对新的使用环境与性能目标持续开发。'} label={page?.rail_end_card_cta_label ?? '提交需求'} href={page?.rail_end_card_cta_href || '/contact'} />}
         </div>
       </PageSection>
     </PageShell>

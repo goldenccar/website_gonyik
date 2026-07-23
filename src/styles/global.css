@@ -189,6 +189,7 @@
 .motion-hero-media { animation: gonyik-hero-media 1200ms var(--motion-ease) both; }
 
 .motion-content-enter { animation: gonyik-content-enter var(--motion-switch) var(--motion-ease) both; }
+.motion-content-fade { animation: gonyik-content-fade var(--motion-instant) var(--motion-ease) both; }
 .motion-disclosure-expand { animation: gonyik-disclosure-expand 240ms var(--motion-ease) both; }
 
 .motion-section { position: relative; }
@@ -225,6 +226,11 @@
 @keyframes gonyik-content-enter {
   from { opacity: 0; transform: translateY(7px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes gonyik-content-fade {
+  from { opacity: .35; }
+  to { opacity: 1; }
 }
 
 @keyframes gonyik-disclosure-expand {

@@ -36,6 +36,11 @@ function nextLegacySkuCode(seriesId: number) {
   return `${prefix}-${String(max + 1).padStart(2, '0')}`
 }
 
+function nextSkuOrderIndex(seriesId: number, excludeId?: number) {
+  const rows = db.fabric_sku.filter((sku) => sku.series_id === seriesId && sku.id !== excludeId)
+  return rows.length ? Math.max(...rows.map((sku) => Number(sku.order_index) || 0)) + 1 : 0
+}
+
 function normalizeIdentity(value: unknown) {
   return String(value || '').trim().toLocaleLowerCase()
 }
@@ -219,7 +224,9 @@ router.delete('/admin/series/:id', authMiddleware, (req: AuthRequest, res) => {
 router.get('/admin/sku', authMiddleware, (req, res) => {
   const seriesId = req.query.series_id
   const rows = seriesId ? db.fabric_sku.filter((k) => k.series_id === Number(seriesId)) : db.fabric_sku
-  res.json({ data: rows.sort(sortByOrderIndex) })
+  if (seriesId) { res.json({ data: [...rows].sort(sortByOrderIndex) }); return }
+  const seriesOrder = new Map([...db.fabric_series].sort(sortByOrderIndex).map((item, index) => [item.id, index]))
+  res.json({ data: [...rows].sort((a, b) => (seriesOrder.get(a.series_id) ?? 999) - (seriesOrder.get(b.series_id) ?? 999) || sortByOrderIndex(a, b)) })
 })
 
 router.post('/admin/sku', authMiddleware, upload.single('image'), (req: AuthRequest, res) => {
@@ -252,7 +259,7 @@ router.post('/admin/sku', authMiddleware, upload.single('image'), (req: AuthRequ
     card_summary: card_summary || '',
     visibility: visibility || 'public',
     status: status || 'active',
-    order_index: nextOrderIndex(db.fabric_sku),
+    order_index: nextSkuOrderIndex(targetSeriesId),
   }
   db.fabric_sku.push(newSku)
   db.product_code_registry = [...registry, { sku_code: externalCode, internal_code: internalCode, public_name: publicName }]
@@ -263,7 +270,10 @@ router.post('/admin/sku', authMiddleware, upload.single('image'), (req: AuthRequ
 router.put('/admin/sku-order', authMiddleware, (req: AuthRequest, res) => {
   const ids = Array.isArray(req.body.ordered_ids) ? req.body.ordered_ids.map(Number) : []
   const rows = ids.map((id) => db.fabric_sku.find((item) => item.id === id)).filter(Boolean)
-  if (rows.length !== ids.length || new Set(rows.map((item: any) => item.series_id)).size > 1) { res.status(400).json({ error: '排序数据无效' }); return }
+  const seriesIds = new Set(rows.map((item: any) => item.series_id))
+  const seriesId = rows[0]?.series_id
+  const scopedIds = seriesId === undefined ? [] : db.fabric_sku.filter((item) => item.series_id === seriesId).map((item) => item.id)
+  if (rows.length !== ids.length || seriesIds.size !== 1 || ids.length !== scopedIds.length || scopedIds.some((id) => !ids.includes(id))) { res.status(400).json({ error: '排序数据无效' }); return }
   ids.forEach((id: number, order_index: number) => updateById(db.fabric_sku, id, { order_index }))
   saveDb()
   res.json({ success: true })
@@ -306,7 +316,9 @@ router.put('/admin/sku/:id', authMiddleware, upload.single('image'), (req: AuthR
     card_summary: card_summary ?? existing.card_summary,
     visibility: visibility ?? existing.visibility,
     status: status ?? existing.status,
-    order_index: order_index === undefined ? existing.order_index : Number(order_index),
+    order_index: order_index === undefined
+      ? (targetSeriesId === existing.series_id ? existing.order_index : nextSkuOrderIndex(targetSeriesId, id))
+      : Number(order_index),
   })
   const registryEntry = (db.product_code_registry || []).find((item) => item.sku_code === existing.sku_code)
   if (registryEntry) Object.assign(registryEntry, { internal_code: internalCode, public_name: publicName })

@@ -20,7 +20,7 @@ export default function RailEndCard({ config, fallbackTitle, fallbackDescription
   if (config.rail_end_card_visible === false) return null
   const cta = config.rail_end_card_cta_label
   return (
-    <CatalogCardShell className="min-h-[260px] snap-start">
+    <CatalogCardShell railEndCard className="min-h-[260px] snap-start">
       <div className="flex h-full flex-1 items-end p-6 md:p-7">
         <div>
         <p className="label-en text-secondary">IN DEVELOPMENT</p>

@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { db, saveDb, getNextId, sortByOrderIndex, updateById, deleteById, nextOrderIndex } from '../db'
+import { db, saveDb, getNextId, sortByOrderIndex, updateById, deleteById } from '../db'
 import { registerUploadedFile } from '../mediaAssets'
 import { authMiddleware, AuthRequest } from '../middleware/auth'
 import { upload } from '../middleware/upload'
@@ -34,8 +34,21 @@ function enrichProduct(product: any) {
   return { ...product, related_sku_ids: relatedIds, related_skus }
 }
 
+function nextProductOrderIndex(excludeId?: number) {
+  const rows = db.equipment_products.filter((product) => product.id !== excludeId)
+  return rows.length ? Math.max(...rows.map((product) => Number(product.order_index) || 0)) + 1 : 0
+}
+
 router.get('/categories', (_req, res) => {
-  res.json({ data: db.equipment_categories.sort(sortByOrderIndex) })
+  res.json({ data: [...db.equipment_categories].sort(sortByOrderIndex) })
+})
+
+router.get('/products', (_req, res) => {
+  const products = db.equipment_products
+    .filter((product) => product.visibility !== 'hidden' && product.status !== 'archived')
+    .sort(sortByOrderIndex)
+    .map(enrichProduct)
+  res.json({ data: { products } })
 })
 
 router.get('/categories/:slug/products', (req, res) => {
@@ -46,55 +59,13 @@ router.get('/categories/:slug/products', (req, res) => {
 })
 
 router.get('/admin/categories', authMiddleware, (_req, res) => {
-  res.json({ data: db.equipment_categories.sort(sortByOrderIndex) })
-})
-
-router.post('/admin/categories', authMiddleware, (req: AuthRequest, res) => {
-  const { name, slug, description } = req.body
-  if (!String(name || '').trim() || !String(slug || '').trim()) { res.status(400).json({ error: '分类名称和 Slug 不能为空' }); return }
-  if (db.equipment_categories.some((item) => String(item.slug).toLowerCase() === String(slug).trim().toLowerCase())) { res.status(409).json({ error: 'Slug 已被使用' }); return }
-  const newCat = {
-    id: getNextId(db.equipment_categories),
-    name: String(name).trim(),
-    slug: String(slug).trim().toLowerCase(),
-    description: String(description || '').trim(),
-    order_index: nextOrderIndex(db.equipment_categories),
-  }
-  db.equipment_categories.push(newCat)
-  saveDb()
-  res.json({ success: true, id: newCat.id })
-})
-
-router.put('/admin/categories/:id', authMiddleware, (req: AuthRequest, res) => {
-  const id = Number(req.params.id)
-  const existing = db.equipment_categories.find((c) => c.id === id)
-  if (!existing) { res.status(404).json({ error: 'Not found' }); return }
-  const { name, slug, description } = req.body
-  const nextSlug = slug === undefined ? existing.slug : String(slug).trim().toLowerCase()
-  if (!String(name ?? existing.name).trim() || !nextSlug) { res.status(400).json({ error: '分类名称和 Slug 不能为空' }); return }
-  if (db.equipment_categories.some((item) => item.id !== id && String(item.slug).toLowerCase() === nextSlug)) { res.status(409).json({ error: 'Slug 已被使用' }); return }
-  updateById(db.equipment_categories, id, {
-    name: String(name ?? existing.name).trim(),
-    slug: nextSlug,
-    description: description === undefined ? existing.description : String(description).trim(),
-  })
-  saveDb()
-  res.json({ success: true })
-})
-
-router.delete('/admin/categories/:id', authMiddleware, (req: AuthRequest, res) => {
-  const id = Number(req.params.id)
-  if (!db.equipment_categories.some((category) => category.id === id)) { res.status(404).json({ error: '分类不存在' }); return }
-  deleteById(db.equipment_categories, id)
-  db.equipment_products = db.equipment_products.filter((p) => p.category_id !== id)
-  saveDb()
-  res.json({ success: true })
+  res.json({ data: [...db.equipment_categories].sort(sortByOrderIndex) })
 })
 
 router.get('/admin/products', authMiddleware, (req, res) => {
   const catId = req.query.category_id
   const rows = catId ? db.equipment_products.filter((p) => p.category_id === Number(catId)) : db.equipment_products
-  res.json({ data: rows.sort(sortByOrderIndex) })
+  res.json({ data: [...rows].sort(sortByOrderIndex) })
 })
 
 router.post('/admin/products', authMiddleware, upload.single('image'), (req: AuthRequest, res) => {
@@ -113,7 +84,7 @@ router.post('/admin/products', authMiddleware, upload.single('image'), (req: Aut
     visibility: visibility || 'public',
     status: status || 'active',
     related_sku_ids: validRelatedSkuIds(related_sku_ids),
-    order_index: nextOrderIndex(db.equipment_products),
+    order_index: nextProductOrderIndex(),
   }
   db.equipment_products.push(newProd)
   saveDb()
@@ -123,7 +94,8 @@ router.post('/admin/products', authMiddleware, upload.single('image'), (req: Aut
 router.put('/admin/product-order', authMiddleware, (req: AuthRequest, res) => {
   const ids = Array.isArray(req.body.ordered_ids) ? req.body.ordered_ids.map(Number) : []
   const rows = ids.map((id) => db.equipment_products.find((item) => item.id === id)).filter(Boolean)
-  if (rows.length !== ids.length || new Set(rows.map((item: any) => item.category_id)).size > 1) { res.status(400).json({ error: '排序数据无效' }); return }
+  const allIds = db.equipment_products.map((item) => item.id)
+  if (rows.length !== ids.length || ids.length !== allIds.length || allIds.some((id) => !ids.includes(id))) { res.status(400).json({ error: '排序数据无效' }); return }
   ids.forEach((id: number, order_index: number) => updateById(db.equipment_products, id, { order_index }))
   saveDb()
   res.json({ success: true })

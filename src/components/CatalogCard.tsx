@@ -2,14 +2,15 @@ import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { InlineMarkup } from './MarkupParser'
 
-export function CatalogCardShell({ children, selected = false, interactive = false, className = '' }: {
+export function CatalogCardShell({ children, selected = false, interactive = false, className = '', railEndCard = false }: {
   children: ReactNode
   selected?: boolean
   interactive?: boolean
   className?: string
+  railEndCard?: boolean
 }) {
   return (
-    <article className={`catalog-card group relative flex h-full min-w-0 flex-col border bg-white/60 transition-[border-color,background-color,box-shadow,transform] duration-[var(--motion-instant)] ease-apple ${selected ? 'border-[#69B2C1] bg-white shadow-[0_10px_30px_rgba(15,45,70,0.07)]' : 'border-border/80'} ${interactive ? 'hover:-translate-y-0.5 hover:border-[#9dcbd4] hover:bg-white hover:shadow-[0_12px_34px_rgba(15,45,70,0.065)] focus-within:border-[#69B2C1]' : ''} ${className}`}>
+    <article data-rail-end-card={railEndCard || undefined} className={`catalog-card group relative flex h-full min-w-0 flex-col border bg-white/60 transition-[border-color,background-color,box-shadow,transform] duration-[var(--motion-instant)] ease-apple ${selected ? 'border-[#69B2C1] bg-white shadow-[0_10px_30px_rgba(15,45,70,0.07)]' : 'border-border/80'} ${interactive ? 'hover:-translate-y-0.5 hover:border-[#9dcbd4] hover:bg-white hover:shadow-[0_12px_34px_rgba(15,45,70,0.065)] focus-within:border-[#69B2C1]' : ''} ${className}`}>
       {children}
     </article>
   )
@@ -48,8 +49,8 @@ export function CatalogCardMedia({ src, alt, placeholder, ratio = 'fabric', fit 
 
 export function CatalogCardSkeleton({ ratio = 'fabric' }: { ratio?: 'fabric' | 'application' | 'equipment' }) {
   if (ratio === 'equipment') return (
-    <div aria-hidden="true" className="overflow-hidden border border-border/80 bg-white/55 md:grid md:grid-cols-[42%_1fr]">
-      <div className="aspect-[4/3] animate-pulse bg-[#e9eef1] md:aspect-[3/4]" />
+    <div aria-hidden="true" className="overflow-hidden border border-border/80 bg-white/55 md:grid md:min-h-[340px] md:grid-cols-[38%_1fr]">
+      <div className="aspect-[4/3] animate-pulse bg-[#e9eef1] md:aspect-auto md:h-full" />
       <div className="space-y-3 p-5 md:p-6">
         <div className="h-3 w-20 animate-pulse bg-[#e2e8eb]" />
         <div className="h-6 w-2/3 animate-pulse bg-[#dce4e8]" />
