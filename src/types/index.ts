@@ -74,6 +74,7 @@ export interface FooterConfig {
   icp_link: string
   police_number: string
   police_link: string
+  police_badge_url?: string | null
   privacy_policy_content: string
 }
 
@@ -156,13 +157,12 @@ export interface FAQ {
   category: string
 }
 
-export interface SupportResource {
+export interface DigitalFabricFormat {
   id: number
-  title: string
-  description?: string
-  file_url: string
-  file_type?: string
-  updated_at?: string
+  platform: string
+  format: string
+  description: string
+  role: 'primary' | 'exchange'
   order_index: number
 }
 

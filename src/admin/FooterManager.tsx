@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { Upload } from 'lucide-react'
-import api, { getFooter, getSocial } from '@/api/client'
+import { Shield, Trash2, Upload } from 'lucide-react'
+import api, { getFooter, getSocial, uploadFile } from '@/api/client'
 import Dashboard from './Dashboard'
 import SaveButton from './components/SaveButton'
 import AdminHeader from './components/AdminHeader'
@@ -16,6 +16,7 @@ export default function AdminFooterManager() {
   const [footer, setFooter] = useState<FooterConfig | null>(null)
   const [socials, setSocials] = useState<SocialMedia[]>([])
   const [saving, setSaving] = useState(false)
+  const [uploadingPoliceBadge, setUploadingPoliceBadge] = useState(false)
   const [message, setMessage] = useState('')
 
   useEffect(() => {
@@ -51,6 +52,20 @@ export default function AdminFooterManager() {
       setTimeout(() => setMessage(''), 2000)
     } catch (err) {
       setMessage('上传失败')
+    }
+  }
+
+  const handlePoliceBadgeUpload = async (file: File) => {
+    if (!footer) return
+    setUploadingPoliceBadge(true)
+    try {
+      const response = await uploadFile(file)
+      setFooter({ ...footer, police_badge_url: response.data.url })
+      setMessage('图标已上传，请点击右上角保存')
+    } catch {
+      setMessage('图标上传失败')
+    } finally {
+      setUploadingPoliceBadge(false)
     }
   }
 
@@ -124,6 +139,50 @@ export default function AdminFooterManager() {
           {field('ICP 链接', 'icp_link')}
           {field('公安联网备案号', 'police_number')}
           {field('公安备案链接', 'police_link')}
+          <div className="mb-6">
+            <label className="mb-2 block text-[12px] uppercase text-secondary">公安备案图标</label>
+            <div className="flex min-h-16 items-center gap-4 border border-borderDark bg-white/5 p-3">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center bg-white">
+                {footer?.police_badge_url ? (
+                  <img src={footer.police_badge_url} alt="公安备案图标预览" className="h-[20px] w-[20px] object-contain" />
+                ) : (
+                  <Shield size={17} strokeWidth={1.6} className="text-primary" aria-hidden="true" />
+                )}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-[12px] leading-5 text-secondary">
+                  请上传公安备案平台提供的原始图标；未上传时前台显示通用盾牌占位。
+                </p>
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  <label className="inline-flex cursor-pointer items-center gap-2 border border-white/15 px-3 py-2 text-[12px] text-white transition-colors hover:bg-white/5">
+                    <Upload size={14} />
+                    <span>{uploadingPoliceBadge ? '上传中…' : footer?.police_badge_url ? '更换图标' : '上传图标'}</span>
+                    <input
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp,image/gif"
+                      disabled={uploadingPoliceBadge}
+                      className="hidden"
+                      onChange={(event) => {
+                        const file = event.target.files?.[0]
+                        event.currentTarget.value = ''
+                        if (file) handlePoliceBadgeUpload(file)
+                      }}
+                    />
+                  </label>
+                  {footer?.police_badge_url && (
+                    <button
+                      type="button"
+                      onClick={() => setFooter({ ...footer, police_badge_url: null })}
+                      className="inline-flex h-9 w-9 items-center justify-center text-error transition-colors hover:bg-white/5 hover:text-white"
+                      aria-label="移除公安备案图标"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
           {field('隐私政策链接', 'privacy_policy_link')}
           {field('隐私政策内容（支持 HTML）', 'privacy_policy_content', true)}
           <p className="text-[12px] text-secondary -mt-4 mb-6">支持 HTML 标签，如 &lt;h2&gt;、&lt;h3&gt;、&lt;p&gt; 等</p>

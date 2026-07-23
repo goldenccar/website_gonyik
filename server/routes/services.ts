@@ -1,17 +1,17 @@
-import { Router } from 'express'
+import { Router, type Request } from 'express'
 import { db, saveDb, getNextId, sortByOrderIndex, updateById, deleteById, nextOrderIndex } from '../db'
 import { authMiddleware, AuthRequest } from '../middleware/auth'
 
 const router = Router()
 
-function registerContentCollection(resource: string, getCollection: () => any[]) {
-  router.get(`/${resource}`, (_req, res) => {
+function registerContentCollection(resource: string, getCollection: () => any[], filter?: (collection: any[], req: Request) => any[]) {
+  router.get(`/${resource}`, (req, res) => {
     const collection = getCollection()
-    res.json({ data: collection.sort(sortByOrderIndex) })
+    res.json({ data: [...(filter ? filter(collection, req) : collection)].sort(sortByOrderIndex) })
   })
-  router.get(`/admin/${resource}`, authMiddleware, (_req, res) => {
+  router.get(`/admin/${resource}`, authMiddleware, (req, res) => {
     const collection = getCollection()
-    res.json({ data: collection.sort(sortByOrderIndex) })
+    res.json({ data: [...(filter ? filter(collection, req) : collection)].sort(sortByOrderIndex) })
   })
   router.post(`/admin/${resource}`, authMiddleware, (req: AuthRequest, res) => {
     const collection = getCollection()
@@ -40,8 +40,12 @@ function registerContentCollection(resource: string, getCollection: () => any[])
   })
 }
 
+registerContentCollection('material-care-guides', () => db.material_care_guides)
 registerContentCollection('care-guides', () => db.care_guides)
-registerContentCollection('faqs', () => db.faqs)
-registerContentCollection('resources', () => db.support_resources)
+registerContentCollection('faqs', () => db.faqs, (collection, req) => {
+  const category = String(req.query.category || '')
+  return category ? collection.filter((item) => item.category === category) : collection
+})
+registerContentCollection('digital-fabric-formats', () => db.digital_fabric_formats)
 
 export default router

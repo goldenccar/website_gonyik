@@ -39,7 +39,7 @@
 | `/fabrics` | 面料选择 | 系列切换、面料卡片、三轴定位、核心性能 |
 | `/equipment` | 终端应用 | 日常、户外、特种分类及采用面料 |
 | `/pfas-free-innovation` | 技术创新 | 无氟体系、膜、纤维整理、复合、供应链、测试 |
-| `/services` | 服务支持 | 洗涤保养、FAQ、联系入口 |
+| `/services/*` | 服务支持 | 材料护理、成衣洗涤、数字面料；共用 Hero |
 | `/contact` | 询盘 | 联系方式、合作主题、表单 |
 | `/admin/*` | CMS | 页面、面料、装备、服务、媒体及站点配置 |
 
@@ -148,7 +148,8 @@ CMS 只维护标签名称。系统生成不可变 Key；历史主题色字段继
 - `CatalogCollection`：终端装备响应式网格；
 - `HorizontalRail / RailEndCard`：面料横向滑轨、阅读进度与开发中尾卡；
 - `ScrollSpySections / ContentTabs / TechnologyDetail`：技术创新吸顶目录、连续阅读与交错图文；
-- `ServiceModule`：洗涤、FAQ、资料下载和联系等任务型模块；
+- `ServicesLayout`：服务页共享 Hero、二级导航和子路由出口；
+- `ServiceSectionHeader / ServiceFaqList`：服务子页共用的标题与本页问答；
 - `InlineMarkup`：受控行内内容标记。
 
 不把 `SkuCard` 与 `ApplicationCard` 合并成万能卡片；两者共享外壳，但保留不同领域语义。
@@ -199,14 +200,12 @@ CMS 只维护标签名称。系统生成不可变 Key；历史主题色字段继
 
 ### 7.5 服务支持
 
-- 顶部使用由 CMS 模块顺序自动生成的吸顶目录，移动端支持横向滑动；
-- 页面采用连续阅读结构，但不套用技术创新页的交错图文规则；
-- 洗涤保养不显示 `CARE PROTOCOL · 04 STEPS`；
-- 删除列表顶部的长黑线；
-- 四项步骤使用浅色细分隔的 2×2 模块，移动端自动单列；
-- 步骤编号仅作轻量导航，不压过标题与说明。
-- FAQ 使用章节说明与手风琴列表；联系模块复用联系配置中的邮箱和电话；
-- 资料下载是可选模块，由 CMS 上传 PDF 或填写外部地址；未添加模块时前台不显示该栏目。
+- `/services/material-care`、`/services/garment-care`、`/services/digital-fabrics` 共用一个 Hero，通过二级导航切换独立页面；联系我们继续使用 `/contact`；
+- 服务子页主标题不使用英文 eyebrow，避免无信息量的装饰标签；
+- 材料护理与成衣洗涤分别维护内容列表及本页 FAQ，前台按类别独立请求，不再存在公共 FAQ 或资料下载模块；
+- 数字面料格式由独立集合维护，首批支持 CLO3D `.zfab`、Style3D `.sfab`，并可配置 `.u3ma` 交换格式；
+- CMS 固定维护三类服务页面，可调整导航顺序、标题、说明与发布状态；不允许添加旧式任意模块；
+- 公共接口仅返回已发布的页面配置；各子页只加载自身业务数据，移动端与桌面端复用同一数据源。
 
 ## 8. UI 规范
 

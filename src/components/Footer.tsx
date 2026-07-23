@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Settings } from 'lucide-react'
+import { Settings, Shield } from 'lucide-react'
 import { getContactConfig, getFooter, getPublicBootstrap, getSocial } from '@/api/client'
 import type { ContactConfig, FooterConfig, NavItem, SocialMedia } from '@/types'
 import { InlineMarkup } from './MarkupParser'
@@ -78,7 +78,21 @@ export default function Footer() {
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
               <Link to={footer?.privacy_policy_link || '/privacy-policy'} className="hover:text-primary">隐私政策</Link>
               {footer?.icp_number && <a href={footer.icp_link || 'https://beian.miit.gov.cn/'} target="_blank" rel="noreferrer" className="hover:text-primary">{footer.icp_number}</a>}
-              {footer?.police_number && <a href={footer.police_link || 'https://beian.mps.gov.cn/'} target="_blank" rel="noreferrer" className="hover:text-primary">{footer.police_number}</a>}
+              {footer?.police_number && (
+                <a
+                  href={footer.police_link || 'https://beian.mps.gov.cn/'}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 hover:text-primary"
+                >
+                  {footer.police_badge_url ? (
+                    <img src={footer.police_badge_url} alt="" width={17} height={17} loading="lazy" decoding="async" className="h-[17px] w-[17px] shrink-0 object-contain" />
+                  ) : (
+                    <Shield size={14} strokeWidth={1.6} aria-hidden="true" className="shrink-0" />
+                  )}
+                  <span>{footer.police_number}</span>
+                </a>
+              )}
             </div>
             <Link to="/admin" aria-label="进入 CMS" title="进入 CMS" className="inline-flex h-7 w-7 items-center justify-center text-secondary hover:text-primary md:ml-4 md:w-11 md:border-l md:border-border md:pl-4">
               <Settings size={14} aria-hidden="true" />

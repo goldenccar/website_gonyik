@@ -39,7 +39,10 @@ const FabricDatabase = lazy(() => import('./pages/FabricDatabase'))
 
 const EndUseEquipment = lazy(() => import('./pages/EndUseEquipment'))
 const FluorineFreeFuture = lazy(() => import('./pages/FluorineFreeFuture'))
-const ServicesSupport = lazy(() => import('./pages/ServicesSupport'))
+const ServicesLayout = lazy(() => import('./pages/services/ServicesLayout'))
+const MaterialCare = lazy(() => import('./pages/services/MaterialCare'))
+const GarmentCare = lazy(() => import('./pages/services/GarmentCare'))
+const DigitalFabrics = lazy(() => import('./pages/services/DigitalFabrics'))
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'))
 
 const Contact = lazy(() => import('./pages/Contact'))
@@ -110,7 +113,12 @@ function App() {
             <Route path="/equipment" element={<EndUseEquipment />} />
             <Route path="/pfas-free-innovation" element={<FluorineFreeFuture />} />
             <Route path="/fluorine-free" element={<Navigate to="/pfas-free-innovation" replace />} />
-            <Route path="/services" element={<ServicesSupport />} />
+            <Route path="/services" element={<ServicesLayout />}>
+              <Route index element={<Navigate to="material-care" replace />} />
+              <Route path="material-care" element={<MaterialCare />} />
+              <Route path="garment-care" element={<GarmentCare />} />
+              <Route path="digital-fabrics" element={<DigitalFabrics />} />
+            </Route>
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/contact" element={<Contact />} />
           </Route>

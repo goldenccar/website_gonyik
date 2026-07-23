@@ -58,9 +58,10 @@ export const getFabricSeriesDetail = (slug: string) => api.get(`/fabrics/series/
 export const getEquipmentCategories = () => cachedGet('/equipment/categories')
 export const getEquipmentProducts = () => cachedGet('/equipment/products')
 export const getCategoryProducts = (slug: string) => cachedGet(`/equipment/categories/${slug}/products`)
+export const getMaterialCareGuides = () => cachedGet('/services/material-care-guides')
 export const getCareGuides = () => cachedGet('/services/care-guides')
-export const getFaqs = () => cachedGet('/services/faqs')
-export const getSupportResources = () => cachedGet('/services/resources')
+export const getFaqs = (category: 'material-care' | 'garment-care') => cachedGet('/services/faqs', { category })
+export const getDigitalFabricFormats = () => cachedGet('/services/digital-fabric-formats')
 
 export const getContactConfig = () => cachedGet('/contact-config')
 

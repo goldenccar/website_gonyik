@@ -25,9 +25,10 @@ export interface Database {
   test_reports: any[]
   equipment_categories: any[]
   equipment_products: any[]
+  material_care_guides: any[]
   care_guides: any[]
   faqs: any[]
-  support_resources: any[]
+  digital_fabric_formats: any[]
   contact_config: any
   fluorine_sections: any[]
   technology_sections_version?: number
@@ -40,6 +41,49 @@ export interface Database {
   inquiry_subjects: any[]
   contact_messages: any[]
   users: any[]
+}
+
+function createDefaultServiceFaqs() {
+  return [
+    { id: 1, question: 'DWR 在面料系统中负责什么？', answer: 'DWR 是面层的防泼水整理，主要减少水在表面的铺展和吸附。真正阻挡液态水的是复合结构中的功能层，以及成衣接缝和压胶系统。两者共同影响雨水环境下的穿着状态，但不能混为一谈。', category: 'material-care', order_index: 0 },
+    { id: 2, question: '面层不再形成水珠，先看什么？', answer: '先观察衣物内侧是否仍然干燥。只有面层颜色变深或吸水，多数与表面污染、洗涤剂残留或 DWR 衰减有关；若内侧同时出现水迹，则应进一步检查接缝、压胶和功能层。', category: 'material-care', order_index: 1 },
+    { id: 3, question: '为什么应先清洁，再考虑补充护理剂？', answer: '汗液、油脂、防晒霜和灰尘会改变面层状态，也可能影响水汽交换。未清洁就直接增加护理剂，容易把污染物留在材料表面，且难以判断性能变化的真正来源。', category: 'material-care', order_index: 2 },
+    { id: 4, question: '日常洗涤真正需要避免的是什么？', answer: '风险通常不来自清洗本身，而来自不合适的化学品和处理强度，例如柔顺剂、漂白剂、强碱性产品、高温或剧烈脱水。按照成衣洗标完成正常清洁，通常比长期积累污垢更有利于维持材料状态。', category: 'material-care', order_index: 3 },
+    { id: 5, question: '如何完成一次基础的面层状态检查？', answer: '先清洗、充分漂洗并彻底干燥，再在面层洒少量清水。洗标允许时，可先采用低温方式热激活；如果水仍快速铺开并被吸收，再评估是否需要补充兼容的无氟 DWR。', category: 'material-care', order_index: 4 },
+    { id: 6, question: '哪些现象不适合继续自行恢复？', answer: '持续渗漏、压胶开裂、局部起泡、层间剥离或明显破损，都不属于简单的表面拒水问题。此时继续叠加护理剂意义不大，应停止处理并交由成衣品牌或材料技术人员判断。', category: 'material-care', order_index: 5 },
+    { id: 7, question: '怎样让材料判断更准确？', answer: '提交咨询时，建议一并提供面料或成衣型号、生产批次、使用环境、问题位置、清晰照片，以及最近的洗涤和护理记录。这些信息有助于区分表面状态、成衣结构和材料本体问题。', category: 'material-care', order_index: 6 },
+    { id: 8, question: '洗前需要完成哪些准备？', answer: '先确认成衣洗标，清空口袋，拉好前襟和口袋拉链，并固定魔术贴、襟片与调节带。若已经出现破损、开胶或明显剥离，应先处理异常，不宜直接机洗。', category: 'garment-care', order_index: 0 },
+    { id: 9, question: '什么时候清洗，比洗了多少次更重要', answer: '清洗频率取决于使用强度和污染程度。出现汗液、油脂、烟尘、异味或明显污渍，或者面层比以往更容易润湿，就可以安排清洗，无需等待固定周期。', category: 'garment-care', order_index: 1 },
+    { id: 10, question: '没有专用程序时怎么选？', answer: '按照洗标允许的范围，选择轻柔或化纤类程序，并适当降低脱水转速，减少过度扭转。高温、强洗和长时间浸泡不会必然带来更好的清洁效果，反而可能增加成衣结构的负担。', category: 'garment-care', order_index: 2 },
+    { id: 11, question: '洗涤剂应该怎样控制？', answer: '使用少量液体中性洗涤剂或功能服装专用清洁剂即可。用量应结合水质、衣物数量和脏污程度，不宜为了增强清洁而过量添加；洗衣粉残留较难控制，也不建议使用。', category: 'garment-care', order_index: 3 },
+    { id: 12, question: '可以和普通衣物一起洗吗？', answer: '可以与颜色相近、护理条件一致且污渍较轻的衣物同洗。应避开易掉毛、带尖锐五金或严重脏污的衣物，同时不要把滚筒塞得过满，给漂洗留出空间。', category: 'garment-care', order_index: 4 },
+    { id: 13, question: '怎样判断漂洗是否充分？', answer: '洗后仍有明显泡沫、洗涤剂气味或滑腻感，通常说明残留较多。可使用额外漂洗功能再处理一次；充分漂洗比机械地规定漂洗次数更重要。', category: 'garment-care', order_index: 5 },
+    { id: 14, question: '局部脏污需要单独处理吗？', answer: '可先在污渍处少量使用同一种液体中性洗涤剂，轻柔预处理后再正常清洗。不要用硬刷反复摩擦，也不要随意使用溶剂型去污剂或长时间浸泡。', category: 'garment-care', order_index: 6 },
+    { id: 15, question: '哪些洗护产品应当避开？', answer: '除非洗标明确允许，一般不使用柔顺剂、漂白剂、强力去污剂或消毒剂。这些产品可能在表面留下附着物，或影响颜色、DWR、功能层及成衣辅料。', category: 'garment-care', order_index: 7 },
+    { id: 16, question: '晾干还是烘干？', answer: '先看成衣洗标。自然晾干更温和；允许烘干时，可采用低温柔和程序帮助均匀干燥，并可能恢复部分面层拒水状态。高温并不适合所有压胶、复合结构和辅料。', category: 'garment-care', order_index: 8 },
+    { id: 17, question: '低温熨烫可以代替烘干吗？', answer: '仅在洗标允许时考虑。使用低温、无蒸汽设置，并在熨斗与衣物之间垫一块干净布；印花、反光材料和压胶区域不宜长时间受热。', category: 'garment-care', order_index: 9 },
+    { id: 18, question: 'DWR 的恢复顺序是什么？', answer: '先完成清洗和充分漂洗，再按洗标干燥并尝试热激活。只有在面层仍明显吸水时，才考虑补充无氟 DWR；护理剂必须与具体面料和成衣结构兼容。', category: 'garment-care', order_index: 10 },
+    { id: 19, question: '喷涂式和洗入式护理剂有什么差别？', answer: '喷涂式便于把处理范围集中在外侧面层，洗入式会接触整件衣物。带吸湿内衬或多种辅料的成衣，不宜脱离品牌建议自行选择；两种方式都应遵循护理剂说明。', category: 'garment-care', order_index: 11 },
+    { id: 20, question: '干洗前需要确认什么？', answer: '面料可以接触某种溶剂，不代表整件成衣适合干洗。压胶、印花、拉链和其他辅料都有独立限制；洗标没有明确允许时，不建议干洗，也不使用家庭干洗套装。', category: 'garment-care', order_index: 12 },
+  ]
+}
+
+function createDefaultMaterialCareGuides() {
+  return [
+    { id: 1, title: '清洁是性能维护的一部分', content: '污垢、汗液、油脂和洗涤剂残留会覆盖面层并影响穿着舒适性。适时清洁不是对功能面料的额外消耗，而是日常维护的一部分。', order_index: 0 },
+    { id: 2, title: '分清防泼水与防水', content: '面层的防泼水整理使水形成水珠并滚落；复合结构中的功能层负责阻挡液态水。表面开始吸水，不等于面料已经漏水。', order_index: 1 },
+    { id: 3, title: '在清洁干燥后判断状态', content: '先按照成衣洗标完成清洗、充分漂洗和干燥，再观察水滴状态。若只是面层润湿，可考虑恢复防泼水；若内侧持续进水，则需要进一步排查。', order_index: 2 },
+    { id: 4, title: '恢复无效时停止自行处理', content: '若按洗标允许的方式热激活或补充兼容的无氟 DWR 后仍无改善，或出现压胶开裂、复合层起泡剥离，应保留产品信息并联系品牌方或送检。', order_index: 3 },
+  ]
+}
+
+function createDefaultGarmentCareGuides() {
+  return [
+    { id: 1, title: '查看洗标，整理外套', content: '清空口袋，拉好前襟和口袋拉链，扣合魔术贴、襟片与调节带。先检查破损和压胶状态，再按照成衣洗标选择后续护理方式。', order_index: 0 },
+    { id: 2, title: '使用少量液体洗涤剂', content: '按洗标选择温和程序，使用少量液体中性洗涤剂或功能服装专用清洁剂，并充分漂洗。避免柔顺剂、漂白剂、强力去污剂及洗衣粉残留。', order_index: 1 },
+    { id: 3, title: '按照洗标完成干燥', content: '可自然晾干；若洗标允许，可低温柔和烘干。避免未经确认的高温、蒸汽熨烫或干洗，以免影响压胶、功能层和辅料。', order_index: 2 },
+    { id: 4, title: '检查并恢复表面拒水', content: '完全干燥后，将少量清水洒在面层观察是否形成水珠。若表面容易吸水，可先按洗标允许的方式热激活；仍无改善时，再使用兼容的无氟 DWR 并遵循产品说明。', order_index: 3 },
+  ]
 }
 
 function createDefaultDb(): Database {
@@ -112,7 +156,7 @@ function createDefaultDb(): Database {
       { id: 1, page_key: 'fabrics', page_tag: 'FABRIC DATABASE', page_title: '按使用环境，找到合适的材料', page_subtitle: '从日常与户外使用到特种专业场景，查看材料系列、具体型号与验证依据。', hero_background: null, core_performance_title: '核心性能' },
       { id: 2, page_key: 'equipment', page_tag: 'END-USE APPLICATIONS', page_title: '从面料到真实应用', page_subtitle: '查看不同装备采用的港翼面料，以及材料如何构成完整的穿着体验。', hero_background: null },
       { id: 3, page_key: 'pfas-free-innovation', page_tag: 'TECHNOLOGY INNOVATION', page_title: '技术，从材料开始', page_subtitle: '探索膜、复合、功能整理、供应链与测试验证。', hero_background: null },
-      { id: 4, page_key: 'services', page_tag: 'CARE & SUPPORT', page_title: '服务与支持', page_subtitle: '从洗涤保养到常见问题，为材料使用与项目沟通提供支持。', hero_background: null },
+      { id: 4, page_key: 'services', page_tag: '', page_title: '服务与支持', page_subtitle: '从面料护理、成衣洗涤到数字化应用，为材料使用和产品开发提供支持。', hero_background: null },
       { id: 5, page_key: 'contact', page_tag: 'CONTACT US', page_title: '联系我们', page_subtitle: '如有材料需求或合作意向，欢迎与我们取得联系。', hero_background: null },
     ],
     navigation: [
@@ -137,6 +181,7 @@ function createDefaultDb(): Database {
       icp_link: 'https://beian.miit.gov.cn/',
       police_number: '粤公网安备44011502001610号',
       police_link: 'https://beian.mps.gov.cn/#/query/webSearch?code=44011502001610',
+      police_badge_url: null,
       privacy_policy_content: '<h2>隐私政策</h2><p>港翼科技（GONYIK）重视您的隐私保护。本政策说明我们如何收集、使用和保护您的个人信息。</p><h3>信息收集</h3><p>我们可能收集您在使用我们服务时自愿提供的信息，包括但不限于姓名、联系方式、公司名称等。</p><h3>信息使用</h3><p>我们仅将收集的信息用于提供和改善服务、回复您的咨询、发送相关产品信息等目的。</p><h3>信息保护</h3><p>我们采用行业标准的安全措施保护您的个人信息，防止未经授权的访问、使用或泄露。</p><h3>联系我们</h3><p>如您对隐私政策有任何疑问，请通过网站联系方式与我们取得联系。</p>',
     },
     contact_config: {
@@ -223,42 +268,39 @@ function createDefaultDb(): Database {
       {
         id: 7,
         page_key: 'services',
-        section_key: 'care',
-        module_type: 'care',
+        section_key: 'material-care',
+        module_type: 'material-care',
         order_index: 0,
-        nav_label: '洗涤保养',
-        eyebrow: 'CARE',
-        title: '洗涤与保养',
-        subtitle: '正确清洗与保养，有助于维持材料的防护和舒适表现。',
-        content: '',
+        nav_label: '面料护理',
+        title: '面料护理与性能判断',
+        subtitle: '了解清洁、表面拒水与材料防水之间的关系，才能在性能变化时采取正确的处理方式。',
+        content: '以下为功能面料的一般护理原则。具体产品仍应以面料型号、成衣洗标和整件测试结果为准。',
         image_url: null,
         image_fit: 'cover',
       },
       {
         id: 8,
         page_key: 'services',
-        section_key: 'faq',
-        module_type: 'faq',
+        section_key: 'garment-care',
+        module_type: 'garment-care',
         order_index: 1,
-        nav_label: '常见问题',
-        eyebrow: 'Q&A',
-        title: '常见问题',
-        subtitle: '',
-        content: '',
+        nav_label: '成衣洗涤',
+        title: '功能外套清洁与保养',
+        subtitle: '正确清洗有助于去除污垢、汗液与洗涤剂残留，并维持面料的拒水、透湿和穿着舒适性。',
+        content: '开始前请先查看成衣洗标。不同面料、里布、压胶和辅料可能对应不同的水温、程序与干燥条件。',
         image_url: null,
         image_fit: 'cover',
       },
       {
         id: 9,
         page_key: 'services',
-        section_key: 'contact',
-        module_type: 'contact',
+        section_key: 'digital-fabrics',
+        module_type: 'digital-fabrics',
         order_index: 2,
-        nav_label: '联系我们',
-        eyebrow: 'CONTACT',
-        title: '材料建议、样品与合作咨询',
-        subtitle: '告诉我们使用环境、目标性能和项目阶段，我们会根据已有材料或开发需求提供对应支持。',
-        content: '',
+        nav_label: '数字面料',
+        title: '数字面料资产',
+        subtitle: '面向 CLO3D 与 Style3D 工作流，逐步建立可用于数字打样的材料文件。',
+        content: '数字资产将按具体面料型号和版本交付，并同步记录视觉参数、物理属性与适用软件版本。',
         image_url: null,
         image_fit: 'cover',
       },
@@ -268,7 +310,7 @@ function createDefaultDb(): Database {
     brand_identity_version: 1,
     product_dual_code_version: 1,
     fabric_card_positioning_version: 1,
-    service_sections_version: 1,
+    service_sections_version: 9,
     social_media: [
       { id: 1, platform: 'wechat', account: '港翼科技GONYIK', qrcode_url: null },
       { id: 2, platform: 'xiaohongshu', account: '港翼科技GONYIK', qrcode_url: null },
@@ -304,21 +346,14 @@ function createDefaultDb(): Database {
       { id: 6, category_id: 3, name: '消防装备', image: null, features: '["消防场景","专业防护","Kais"]', related_sku_ids: [], order_index: 5 },
     ],
     equipment_global_order_version: 1,
-    care_guides: [
-      { id: 1, title: '常规清洗', content: '使用中性洗涤剂，水温不超过 30°C，反面洗涤以保护面料功能层。避免使用柔顺剂。', order_index: 0 },
-      { id: 2, title: '自然晾干', content: '洗后置于通风阴凉处自然晾干，避免暴晒和高温烘干，以保持面料的防水透气性能。', order_index: 1 },
-      { id: 3, title: '恢复防泼水', content: '随着穿着和洗涤，防泼水效果会逐渐减弱。低温熨烫或使用专业 DWR 喷雾可恢复。', order_index: 2 },
-      { id: 4, title: '避免事项', content: '请勿干洗、漂白或干烘。避免接触油性物质和尖锐物品，以防损伤面料表层。', order_index: 3 },
+    material_care_guides: createDefaultMaterialCareGuides(),
+    care_guides: createDefaultGarmentCareGuides(),
+    faqs: createDefaultServiceFaqs(),
+    digital_fabric_formats: [
+      { id: 1, platform: 'CLO3D', format: '.zfab', description: '包含材质贴图、颜色与物理属性的 CLO 面料文件。', role: 'primary', order_index: 0 },
+      { id: 2, platform: 'Style3D', format: '.sfab', description: '用于 Style3D Fabric、Studio 与云端工作流的专用面料文件。', role: 'primary', order_index: 1 },
+      { id: 3, platform: '交换格式', format: '.u3ma', description: '用于跨软件协作与兼容性交付的补充格式。', role: 'exchange', order_index: 2 },
     ],
-    faqs: [
-      { id: 1, question: '如何索取面料样品？', answer: '您可以通过服务与支持页面的联系表单提交样品申请，或直接与我们的销售团队联系。通常在 3-5 个工作日内寄出。', category: null, order_index: 0 },
-      { id: 2, question: '最小起订量（MOQ）是多少？', answer: '不同系列的 MOQ 有所不同，常规系列通常为 500 米起订，具体请与业务人员确认。', category: null, order_index: 1 },
-      { id: 3, question: '打样周期需要多久？', answer: '标准打样周期为 7-15 个工作日，复杂工艺或定制开发可能需要更长时间。', category: null, order_index: 2 },
-      { id: 4, question: '是否支持定制开发？', answer: '是的，我们拥有完整的研发实验室，支持从纤维选材到后整理的全流程定制开发。', category: null, order_index: 3 },
-      { id: 5, question: '面料的环保认证有哪些？', answer: '我们的产品已通过 bluesign®、OEKO-TEX® Standard 100、GRS 等多项国际环保认证。', category: null, order_index: 4 },
-      { id: 6, question: '如何验证面料的真伪？', answer: '每批面料均配有唯一批次号，可通过官网或联系客服进行溯源验证。', category: null, order_index: 5 },
-    ],
-    support_resources: [],
     contact_messages: [],
     users: [
       { id: 1, username: 'admin', password_hash: bcrypt.hashSync('888888', 10), must_change_password: 0, created_at: new Date().toISOString() },
@@ -488,7 +523,7 @@ export function initDatabase() {
       db.fabric_card_positioning_version = 1
       saveDb()
     }
-    const deprecatedCollections = ['fabric_scenes', 'digital_assets', 'equipment_scenes', 'about_us', 'philosophies', 'milestones', 'news']
+    const deprecatedCollections = ['fabric_scenes', 'digital_assets', 'equipment_scenes', 'about_us', 'philosophies', 'milestones', 'news', 'support_resources']
     const deprecatedHomeFields = ['hero_features', 'scenarios', 'scenarios_section_title']
     let deprecatedDataRemoved = false
     for (const key of deprecatedCollections) {
@@ -511,8 +546,9 @@ export function initDatabase() {
     if (!db.contact_config) {
       db.contact_config = { id: 1, email: 'contact@gangyi.tech', phone: '400-XXX-XXXX', address: '上海市', response_text: '提交表单后，我们的面料顾问将在 3 个工作日内与您取得联系' }
     }
-    if (!db.support_resources) {
-      db.support_resources = []
+    if (!db.digital_fabric_formats) db.digital_fabric_formats = []
+    if (!db.material_care_guides) {
+      db.material_care_guides = []
       saveDb()
     }
     if (!db.fluorine_sections) db.fluorine_sections = []
@@ -548,6 +584,152 @@ export function initDatabase() {
         contentSectionsChanged = true
       }
       db.service_sections_version = 1
+      contentSectionsChanged = true
+    }
+    if ((db.service_sections_version ?? 0) < 2) {
+      const materialCareDefaults = [
+        { id: 1, title: '确认材料条件', content: '不同膜结构、复合方式、面层和后整理体系可能对应不同的护理边界，应先确认具体面料型号及版本。', order_index: 0 },
+        { id: 2, title: '完成成衣验证', content: '最终洗标需结合里布、辅料、压胶、印花与成衣结构，通过整件产品测试后确定。', order_index: 1 },
+        { id: 3, title: '维持功能表现', content: '适当清洁有助于减少污垢、油脂和洗涤剂残留对拒水、导湿及舒适表现的影响。', order_index: 2 },
+        { id: 4, title: '判断异常来源', content: '区分面层润湿、接缝渗漏、膜层损伤与复合异常，再决定恢复处理、维修或送检。', order_index: 3 },
+      ]
+      if (db.material_care_guides.length === 0) db.material_care_guides = materialCareDefaults
+
+      const garmentCareDefaults = [
+        { title: '洗前准备', content: '优先查看成衣洗标。清空口袋，闭合拉链、魔术贴和调节带，并检查成衣是否存在明显破损。' },
+        { title: '温和清洗', content: '按照洗标选择水温和程序，使用少量液体中性洗涤剂或功能服装专用清洁剂，并充分漂洗。' },
+        { title: '正确干燥', content: '按照洗标自然晾干；若洗标允许，可采用低温柔和烘干。避免未经确认的高温处理。' },
+        { title: '检查与恢复', content: '干燥后测试面层拒水状态。若水珠不能凝聚滚落，可先按洗标允许的方式热激活；仍无改善时，再使用兼容的无氟 DWR 恢复产品。' },
+      ]
+      garmentCareDefaults.forEach((item, order_index) => {
+        const existing = db.care_guides.sort(sortByOrderIndex)[order_index]
+        if (existing) Object.assign(existing, item, { order_index })
+        else db.care_guides.push({ id: getNextId(db.care_guides), ...item, order_index })
+      })
+
+      const services = db.fluorine_sections.filter((section: any) => section.page_key === 'services').sort(sortByOrderIndex)
+      const existingCare = services.find((section: any) => section.module_type === 'care')
+      if (existingCare) Object.assign(existingCare, {
+        section_key: 'garment-care',
+        nav_label: '成衣洗涤',
+        eyebrow: 'GARMENT CARE',
+        title: '功能成衣洗涤指南',
+        subtitle: '正确清洁有助于减少污垢与洗涤剂残留对面层拒水和穿着舒适性的影响。',
+        content: '优先遵循成衣洗标。不同面料、辅料与成衣结构的护理条件可能不同。/h避免使用：柔顺剂、漂白剂、强力去污剂，以及未经洗标允许的干洗或高温处理。',
+      })
+      if (!services.some((section: any) => section.module_type === 'material-care')) {
+        db.fluorine_sections.push({
+          id: getNextId(db.fluorine_sections),
+          page_key: 'services',
+          section_key: 'material-care',
+          module_type: 'material-care',
+          order_index: 0,
+          nav_label: '材料护理',
+          eyebrow: 'MATERIAL CARE',
+          title: '材料护理与洗标建议',
+          subtitle: '从材料结构、成衣组合与测试结果出发，建立适合具体产品的护理条件。',
+          content: '本模块提供材料层面的通用建议，不替代具体产品 TDS、成衣洗标和整件测试结果。',
+          image_url: null,
+          image_fit: 'cover',
+          status: 'published',
+        })
+      }
+      db.fluorine_sections
+        .filter((section: any) => section.page_key === 'services')
+        .sort((a: any, b: any) => {
+          const rank = (item: any) => item.module_type === 'material-care' ? 0 : item.module_type === 'care' ? 1 : item.order_index + 2
+          return rank(a) - rank(b)
+        })
+        .forEach((section: any, order_index: number) => { section.order_index = order_index })
+      db.service_sections_version = 2
+      contentSectionsChanged = true
+    }
+    if ((db.service_sections_version ?? 0) < 3) {
+      const garmentCare = db.fluorine_sections.find((section: any) => section.page_key === 'services' && section.module_type === 'care')
+      if (garmentCare?.content === '优先遵循成衣洗标。不同面料、辅料与成衣结构的护理条件可能不同。') {
+        garmentCare.content = '优先遵循成衣洗标。不同面料、辅料与成衣结构的护理条件可能不同。/h避免使用：柔顺剂、漂白剂、强力去污剂，以及未经洗标允许的干洗或高温处理。'
+      }
+      db.service_sections_version = 3
+      contentSectionsChanged = true
+    }
+    if ((db.service_sections_version ?? 0) < 4) {
+      const serviceSections = db.fluorine_sections.filter((section: any) => section.page_key === 'services')
+      const materialCare = serviceSections.find((section: any) => section.module_type === 'material-care')
+      const garmentCare = serviceSections.find((section: any) => section.module_type === 'care' || section.module_type === 'garment-care')
+      if (materialCare) Object.assign(materialCare, { section_key: 'material-care', module_type: 'material-care', order_index: 0, status: 'published' })
+      if (garmentCare) Object.assign(garmentCare, { section_key: 'garment-care', module_type: 'garment-care', order_index: 1, status: 'published' })
+      const digitalDefaults = {
+        page_key: 'services',
+        section_key: 'digital-fabrics',
+        module_type: 'digital-fabrics',
+        order_index: 2,
+        nav_label: '数字面料',
+        eyebrow: 'DIGITAL FABRIC ASSETS',
+        title: '数字面料资产',
+        subtitle: '面向 CLO3D 与 Style3D 工作流，逐步建立可用于数字打样的材料文件。',
+        content: '数字资产将按具体面料型号和版本交付，并同步记录视觉参数、物理属性与适用软件版本。',
+        image_url: null,
+        image_fit: 'cover',
+        status: 'published',
+      }
+      const digital = serviceSections.find((section: any) => section.module_type === 'digital-fabrics')
+      if (digital) Object.assign(digital, digitalDefaults)
+      else db.fluorine_sections.push({ id: getNextId(db.fluorine_sections), ...digitalDefaults })
+      const activeTypes = new Set(['material-care', 'garment-care', 'digital-fabrics'])
+      db.fluorine_sections = db.fluorine_sections.filter((section: any) => section.page_key !== 'services' || activeTypes.has(section.module_type))
+      db.faqs = createDefaultServiceFaqs()
+      if (db.digital_fabric_formats.length === 0) {
+        db.digital_fabric_formats = [
+          { id: 1, platform: 'CLO3D', format: '.zfab', description: '包含材质贴图、颜色与物理属性的 CLO 面料文件。', role: 'primary', order_index: 0 },
+          { id: 2, platform: 'Style3D', format: '.sfab', description: '用于 Style3D Fabric、Studio 与云端工作流的专用面料文件。', role: 'primary', order_index: 1 },
+          { id: 3, platform: '交换格式', format: '.u3ma', description: '用于跨软件协作与兼容性交付的补充格式。', role: 'exchange', order_index: 2 },
+        ]
+      }
+      db.service_sections_version = 4
+      contentSectionsChanged = true
+    }
+    if ((db.service_sections_version ?? 0) < 5) {
+      const serviceSections = db.fluorine_sections.filter((section: any) => section.page_key === 'services')
+      const materialCare = serviceSections.find((section: any) => section.module_type === 'material-care')
+      const garmentCare = serviceSections.find((section: any) => section.module_type === 'garment-care')
+      if (materialCare) Object.assign(materialCare, {
+        nav_label: '面料护理',
+        title: '面料护理与性能判断',
+        subtitle: '了解清洁、表面拒水与材料防水之间的关系，才能在性能变化时采取正确的处理方式。',
+        content: '以下为功能面料的一般护理原则。具体产品仍应以面料型号、成衣洗标和整件测试结果为准。',
+      })
+      if (garmentCare) Object.assign(garmentCare, {
+        title: '功能外套清洁与保养',
+        subtitle: '正确清洗有助于去除污垢、汗液与洗涤剂残留，并维持面料的拒水、透湿和穿着舒适性。',
+        content: '开始前请先查看成衣洗标。不同面料、里布、压胶和辅料可能对应不同的水温、程序与干燥条件。',
+      })
+      serviceSections.forEach((section: any) => { delete section.eyebrow })
+      db.material_care_guides = createDefaultMaterialCareGuides()
+      db.care_guides = createDefaultGarmentCareGuides()
+      db.faqs = createDefaultServiceFaqs()
+      db.service_sections_version = 5
+      contentSectionsChanged = true
+    }
+    if ((db.service_sections_version ?? 0) < 6) {
+      const servicesPage = db.page_configs.find((page: any) => page.page_key === 'services')
+      if (servicesPage) servicesPage.page_tag = ''
+      db.service_sections_version = 6
+      contentSectionsChanged = true
+    }
+    if ((db.service_sections_version ?? 0) < 7) {
+      const servicesPage = db.page_configs.find((page: any) => page.page_key === 'services')
+      if (servicesPage) servicesPage.page_subtitle = '从面料护理、成衣洗涤到数字化应用，为材料使用和产品开发提供支持。'
+      db.service_sections_version = 7
+      contentSectionsChanged = true
+    }
+    if ((db.service_sections_version ?? 0) < 8) {
+      db.faqs = createDefaultServiceFaqs()
+      db.service_sections_version = 8
+      contentSectionsChanged = true
+    }
+    if ((db.service_sections_version ?? 0) < 9) {
+      db.faqs = createDefaultServiceFaqs()
+      db.service_sections_version = 9
       contentSectionsChanged = true
     }
     if (contentSectionsChanged) saveDb()
@@ -590,7 +772,7 @@ export function initDatabase() {
         { id: 1, page_key: 'fabrics', page_tag: 'FABRIC DATABASE', page_title: '按使用环境，找到合适的材料', page_subtitle: '从日常与户外使用到特种专业场景，查看材料系列、具体型号与验证依据。', hero_background: null },
         { id: 2, page_key: 'equipment', page_tag: 'END USE & EQUIPMENT', page_title: '终端装备', page_subtitle: '四大品类，覆盖全场景功能需求', hero_background: null },
         { id: 3, page_key: 'pfas-free-innovation', page_tag: 'RPO MATERIAL PLATFORM', page_title: 'RPO材料平台 · 探索无氟未来', page_subtitle: '以科技创新推动可持续发展，告别 PFAS，拥抱绿色未来', hero_background: null },
-        { id: 4, page_key: 'services', page_tag: 'CARE & SUPPORT', page_title: '服务与支持', page_subtitle: '从洗涤保养到常见问题，为材料使用与项目沟通提供支持。', hero_background: null },
+        { id: 4, page_key: 'services', page_tag: '', page_title: '服务与支持', page_subtitle: '从面料护理、成衣洗涤到数字化应用，为材料使用和产品开发提供支持。', hero_background: null },
         { id: 5, page_key: 'contact', page_tag: 'CONTACT US', page_title: '联系我们', page_subtitle: '如有材料需求或合作意向，欢迎与我们取得联系。', hero_background: null },
       ]
       saveDb()
@@ -608,7 +790,7 @@ export function initDatabase() {
       { id: 1, page_key: 'fabrics', page_tag: 'FABRIC DATABASE', page_title: '按使用环境，找到合适的材料', page_subtitle: '从日常与户外使用到特种专业场景，查看材料系列、具体型号与验证依据。', hero_background: null },
       { id: 2, page_key: 'equipment', page_tag: 'END-USE APPLICATIONS', page_title: '从面料到真实应用', page_subtitle: '查看不同装备采用的港翼面料，以及材料如何构成完整的穿着体验。', hero_background: null },
       { id: 3, page_key: 'pfas-free-innovation', page_tag: 'TECHNOLOGY INNOVATION', page_title: '技术，从材料开始', page_subtitle: '探索膜、复合、功能整理、供应链与测试验证。', hero_background: null },
-      { id: 4, page_key: 'services', page_tag: 'CARE & SUPPORT', page_title: '服务与支持', page_subtitle: '从洗涤保养到常见问题，为材料使用与项目沟通提供支持。', hero_background: null },
+      { id: 4, page_key: 'services', page_tag: '', page_title: '服务与支持', page_subtitle: '从面料护理、成衣洗涤到数字化应用，为材料使用和产品开发提供支持。', hero_background: null },
       { id: 5, page_key: 'contact', page_tag: 'CONTACT US', page_title: '联系我们', page_subtitle: '如有材料需求或合作意向，欢迎与我们取得联系。', hero_background: null },
     ]
     for (const item of pageDefaults) if (!db.page_configs.some((page: any) => page.page_key === item.page_key)) db.page_configs.push(item)
@@ -757,6 +939,7 @@ export function initDatabase() {
         support_title: '服务与支持',
         contact_title: '联系',
         contact_subtitle: '材料与合作咨询',
+        police_badge_url: null,
       }
       for (const [key, value] of Object.entries(footerDefaults)) {
         if (db.footer_config[key] === undefined) db.footer_config[key] = value
