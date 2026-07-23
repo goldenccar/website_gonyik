@@ -156,6 +156,16 @@ export interface FAQ {
   category: string
 }
 
+export interface SupportResource {
+  id: number
+  title: string
+  description?: string
+  file_url: string
+  file_type?: string
+  updated_at?: string
+  order_index: number
+}
+
 export interface ContactConfig {
   id: number
   email: string
@@ -182,6 +192,7 @@ export interface ContentSection {
   content: string
   image_url: string | null
   image_fit: 'cover' | 'contain' | 'original'
+  status?: 'draft' | 'published'
 }
 
 export type FluorineSection = ContentSection

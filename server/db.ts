@@ -27,6 +27,7 @@ export interface Database {
   equipment_products: any[]
   care_guides: any[]
   faqs: any[]
+  support_resources: any[]
   contact_config: any
   fluorine_sections: any[]
   technology_sections_version?: number
@@ -317,6 +318,7 @@ function createDefaultDb(): Database {
       { id: 5, question: '面料的环保认证有哪些？', answer: '我们的产品已通过 bluesign®、OEKO-TEX® Standard 100、GRS 等多项国际环保认证。', category: null, order_index: 4 },
       { id: 6, question: '如何验证面料的真伪？', answer: '每批面料均配有唯一批次号，可通过官网或联系客服进行溯源验证。', category: null, order_index: 5 },
     ],
+    support_resources: [],
     contact_messages: [],
     users: [
       { id: 1, username: 'admin', password_hash: bcrypt.hashSync('888888', 10), must_change_password: 0, created_at: new Date().toISOString() },
@@ -509,6 +511,10 @@ export function initDatabase() {
     if (!db.contact_config) {
       db.contact_config = { id: 1, email: 'contact@gangyi.tech', phone: '400-XXX-XXXX', address: '上海市', response_text: '提交表单后，我们的面料顾问将在 3 个工作日内与您取得联系' }
     }
+    if (!db.support_resources) {
+      db.support_resources = []
+      saveDb()
+    }
     if (!db.fluorine_sections) db.fluorine_sections = []
     if ('fluorine_value_chain' in db) {
       delete (db as any).fluorine_value_chain
@@ -523,6 +529,7 @@ export function initDatabase() {
       .filter((section: any) => section.page_key === 'pfas-free-innovation')
       .forEach((section: any) => {
         if (section.nav_label === undefined) { section.nav_label = section.title; contentSectionsChanged = true }
+        if (section.status === undefined) { section.status = 'published'; contentSectionsChanged = true }
         if (section.title === '高性能纤维' && section.nav_label === '纤维与功能整理') {
           section.nav_label = '高性能纤维'
           contentSectionsChanged = true

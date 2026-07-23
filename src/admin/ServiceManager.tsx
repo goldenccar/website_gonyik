@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { ArrowDown, ArrowUp, Edit2, Plus, Trash2 } from 'lucide-react'
-import api, { getContentSections } from '@/api/client'
+import api from '@/api/client'
 import { getServiceModuleDefinition, isServiceModuleType, SERVICE_MODULE_DEFINITIONS, type ServiceModuleType } from '@/config/serviceModules'
 import type { ContentSection } from '@/types'
 import Dashboard from './Dashboard'
@@ -19,7 +19,7 @@ export default function AdminServiceManager() {
   const [newModuleType, setNewModuleType] = useState<ServiceModuleType | ''>('')
 
   const loadSections = async () => {
-    const response = await getContentSections('services')
+    const response = await api.get('/admin/content-sections/services')
     setSections(response.data.data || [])
   }
 

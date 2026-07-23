@@ -76,6 +76,10 @@ router.put('/admin/contact-config', authMiddleware, (req: AuthRequest, res) => {
 })
 
 router.get('/content-sections/:pageKey', (req, res) => {
+  res.json({ data: db.fluorine_sections.filter((section) => section.page_key === req.params.pageKey && section.status !== 'draft').sort(sortByOrderIndex) })
+})
+
+router.get('/admin/content-sections/:pageKey', authMiddleware, (req, res) => {
   res.json({ data: db.fluorine_sections.filter((section) => section.page_key === req.params.pageKey).sort(sortByOrderIndex) })
 })
 
@@ -86,6 +90,14 @@ router.post('/admin/content-sections/:pageKey', authMiddleware, (req: AuthReques
   const pageKey = req.params.pageKey
   const pageSections = db.fluorine_sections.filter((section) => section.page_key === pageKey)
   const moduleType = String(req.body.module_type || 'rich').trim()
+  const status = pageKey === 'pfas-free-innovation'
+    ? (req.body.status === 'published' ? 'published' : 'draft')
+    : (req.body.status === 'draft' ? 'draft' : 'published')
+  const imageUrl = req.body.image_url || null
+  if (pageKey === 'pfas-free-innovation' && status === 'published' && !imageUrl) {
+    res.status(400).json({ error: '发布技术模块前请先上传配图' })
+    return
+  }
   if (pageKey === 'services' && pageSections.some((section) => section.module_type === moduleType)) {
     res.status(409).json({ error: '该服务模块已存在' })
     return
@@ -101,8 +113,9 @@ router.post('/admin/content-sections/:pageKey', authMiddleware, (req: AuthReques
     title,
     subtitle: String(req.body.subtitle || '').trim(),
     content: String(req.body.content || ''),
-    image_url: req.body.image_url || null,
+    image_url: imageUrl,
     image_fit: req.body.image_fit === 'contain' ? 'contain' : 'cover',
+    status,
   }
   db.fluorine_sections.push(newSection)
   saveDb()
@@ -115,14 +128,21 @@ router.put('/admin/content-sections/:pageKey/:id', authMiddleware, (req: AuthReq
   if (!existing) { res.status(404).json({ error: 'Not found' }); return }
   const title = String(req.body.title ?? existing.title).trim()
   if (!title) { res.status(400).json({ error: '标题不能为空' }); return }
+  const imageUrl = Object.prototype.hasOwnProperty.call(req.body, 'image_url') ? (req.body.image_url || null) : existing.image_url
+  const status = req.body.status === 'draft' ? 'draft' : req.body.status === 'published' ? 'published' : (existing.status || 'published')
+  if (req.params.pageKey === 'pfas-free-innovation' && existing.status === 'draft' && status === 'published' && !imageUrl) {
+    res.status(400).json({ error: '发布技术模块前请先上传配图' })
+    return
+  }
   updateById(db.fluorine_sections, id, {
     nav_label: String(req.body.nav_label ?? existing.nav_label ?? title).trim(),
     eyebrow: String(req.body.eyebrow ?? existing.eyebrow ?? '').trim(),
     title,
     subtitle: String(req.body.subtitle ?? existing.subtitle).trim(),
     content: String(req.body.content ?? existing.content),
-    image_url: Object.prototype.hasOwnProperty.call(req.body, 'image_url') ? (req.body.image_url || null) : existing.image_url,
+    image_url: imageUrl,
     image_fit: req.body.image_fit === 'contain' ? 'contain' : 'cover',
+    status,
   })
   saveDb()
   res.json({ success: true })

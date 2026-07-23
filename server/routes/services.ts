@@ -42,5 +42,6 @@ function registerContentCollection(resource: string, getCollection: () => any[])
 
 registerContentCollection('care-guides', () => db.care_guides)
 registerContentCollection('faqs', () => db.faqs)
+registerContentCollection('resources', () => db.support_resources)
 
 export default router

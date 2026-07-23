@@ -8,12 +8,13 @@ interface ScrollSpyItem {
   content: ReactNode
 }
 
-export default function ScrollSpySections({ items, label, idPrefix, showIndex = true, compactNav = false }: {
+export default function ScrollSpySections({ items, label, idPrefix, showIndex = true, compactNav = false, topNav = false }: {
   items: ScrollSpyItem[]
   label: string
   idPrefix: string
   showIndex?: boolean
   compactNav?: boolean
+  topNav?: boolean
 }) {
   const [activeId, setActiveId] = useState('')
   const itemKey = items.map((item) => item.id).join('|')
@@ -63,20 +64,31 @@ export default function ScrollSpySections({ items, label, idPrefix, showIndex = 
 
   if (!items.length) return null
 
+  const sectionList = <div>
+    {items.map((item) => <section
+      key={item.id}
+      id={`${idPrefix}-${item.id}`}
+      data-section-id={item.id}
+      className="motion-section scroll-mt-[124px] border-t border-transparent py-14 first:border-t-0 last:pb-24 lg:scroll-mt-[124px] lg:py-24 lg:first:pt-16"
+    >{item.content}</section>)}
+  </div>
+
+  if (topNav) {
+    return (
+      <PageSection className="!py-0">
+        <ContentTabs variant="top-scrollspy" label={label} items={items.map(({ id, label: itemLabel }) => ({ id, label: itemLabel }))} active={activeId} onChange={scrollToSection} showIndex={showIndex} />
+        {sectionList}
+      </PageSection>
+    )
+  }
+
   return (
     <PageSection className="!py-0">
       <div className={`relative lg:grid ${compactNav ? 'lg:grid-cols-[190px_minmax(0,1fr)] lg:gap-10 xl:grid-cols-[210px_minmax(0,1fr)] xl:gap-14' : 'lg:grid-cols-12 lg:gap-12 xl:gap-14'}`}>
         <div className={`contents lg:block ${compactNav ? '' : 'lg:col-span-3'}`}>
           <ContentTabs variant="scrollspy" label={label} items={items.map(({ id, label: itemLabel }) => ({ id, label: itemLabel }))} active={activeId} onChange={scrollToSection} showIndex={showIndex} />
         </div>
-        <div className={compactNav ? 'min-w-0' : 'lg:col-span-9 lg:col-start-4'}>
-          {items.map((item) => <section
-            key={item.id}
-            id={`${idPrefix}-${item.id}`}
-            data-section-id={item.id}
-            className="motion-section scroll-mt-[124px] border-t border-transparent py-14 first:border-t-0 last:pb-24 lg:scroll-mt-[88px] lg:py-20 lg:first:pt-12"
-          >{item.content}</section>)}
-        </div>
+        <div className={compactNav ? 'min-w-0' : 'lg:col-span-9 lg:col-start-4'}>{sectionList}</div>
       </div>
     </PageSection>
   )

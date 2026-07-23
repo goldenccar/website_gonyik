@@ -1,15 +1,17 @@
 import { Link } from 'react-router-dom'
 import type { ComponentType } from 'react'
-import { ArrowUpRight } from 'lucide-react'
+import { ArrowDownToLine, ArrowUpRight, FileText } from 'lucide-react'
 import AnimatedDisclosure from '@/components/AnimatedDisclosure'
 import { isServiceModuleType, type ServiceModuleType } from '@/config/serviceModules'
-import type { CareGuide, ContentSection, FAQ } from '@/types'
+import type { CareGuide, ContactConfig, ContentSection, FAQ, SupportResource } from '@/types'
 import { InlineMarkup } from '@/components/MarkupParser'
 
 interface ServiceModuleProps {
   section: ContentSection
   care: CareGuide[]
   faqs: FAQ[]
+  resources: SupportResource[]
+  contact: ContactConfig | null
   openFaqId: number | null
   onToggleFaq: (id: number) => void
 }
@@ -38,9 +40,9 @@ function CareModule({ section, care }: ServiceModuleProps) {
 }
 
 function FaqModule({ section, faqs, openFaqId, onToggleFaq }: ServiceModuleProps) {
-  return <div>
-    <ServiceSectionHeader section={section} />
-    <div className="mt-7 border-t border-border">
+  return <div className="lg:grid lg:grid-cols-12 lg:gap-12 xl:gap-16">
+    <div className="lg:col-span-4"><ServiceSectionHeader section={section} /></div>
+    <div className="mt-8 border-t border-border lg:col-span-8 lg:mt-0">
       {faqs.map((item) => {
         const isOpen = openFaqId === item.id
         return <article key={item.id} className="border-b border-border">
@@ -54,16 +56,36 @@ function FaqModule({ section, faqs, openFaqId, onToggleFaq }: ServiceModuleProps
   </div>
 }
 
-function ContactModule({ section }: ServiceModuleProps) {
-  return <div className="bg-dark px-6 py-9 md:px-10 md:py-12 lg:flex lg:items-end lg:justify-between lg:gap-12">
-    <div><ServiceSectionHeader section={section} light /></div>
-    <Link to="/contact" className="mt-8 inline-flex shrink-0 items-center gap-3 border border-white/25 px-5 py-3 text-[14px] font-medium text-white transition-colors hover:border-white hover:bg-white hover:text-primary lg:mt-0">进入联系页面 <ArrowUpRight size={16} /></Link>
+function ResourcesModule({ section, resources }: ServiceModuleProps) {
+  return <div className="lg:grid lg:grid-cols-12 lg:gap-12 xl:gap-16">
+    <div className="lg:col-span-4"><ServiceSectionHeader section={section} /></div>
+    <div className="mt-8 border-t border-border lg:col-span-8 lg:mt-0">
+      {resources.length > 0 ? resources.map((item) => <a key={item.id} href={item.file_url} target="_blank" rel="noreferrer" className="group grid gap-4 border-b border-border py-5 transition-colors hover:bg-white/60 sm:grid-cols-[44px_minmax(0,1fr)_auto] sm:items-center sm:px-3 md:py-6">
+        <span className="flex h-11 w-11 items-center justify-center border border-border text-[#4e9bab]"><FileText size={19} /></span>
+        <span className="min-w-0"><strong className="block text-[16px] font-medium text-primary"><InlineMarkup text={item.title} /></strong>{item.description && <span className="mt-1 block text-[13px] leading-6 text-secondary"><InlineMarkup text={item.description} /></span>}</span>
+        <span className="flex items-center gap-3 text-[12px] font-medium tracking-[0.08em] text-secondary group-hover:text-primary"><span>{item.file_type || 'FILE'}</span><ArrowDownToLine size={16} /></span>
+      </a>) : <p className="border-b border-border py-6 text-[14px] text-secondary">暂无公开资料。如需 TDS 或测试文件，请通过联系页面提交需求。</p>}
+    </div>
+  </div>
+}
+
+function ContactModule({ section, contact }: ServiceModuleProps) {
+  return <div className="grid overflow-hidden bg-dark lg:grid-cols-12">
+    <div className="px-6 py-9 md:px-10 md:py-12 lg:col-span-7"><ServiceSectionHeader section={section} light /></div>
+    <div className="border-t border-white/15 px-6 py-8 md:px-10 lg:col-span-5 lg:border-l lg:border-t-0 lg:py-12">
+      <dl className="space-y-4 text-[13px] text-white/75">
+        {contact?.email && <div><dt className="label-en text-white/45">EMAIL</dt><dd className="mt-1.5 text-[15px] text-white"><a href={`mailto:${contact.email}`}>{contact.email}</a></dd></div>}
+        {contact?.phone && <div><dt className="label-en text-white/45">PHONE</dt><dd className="mt-1.5 text-[15px] text-white"><InlineMarkup text={contact.phone} /></dd></div>}
+      </dl>
+      <Link to="/contact" className="mt-7 inline-flex items-center gap-3 border border-white/25 px-5 py-3 text-[14px] font-medium text-white transition-colors hover:border-white hover:bg-white hover:text-primary">提交项目需求 <ArrowUpRight size={16} /></Link>
+    </div>
   </div>
 }
 
 const serviceModuleComponents: Record<ServiceModuleType, ComponentType<ServiceModuleProps>> = {
   care: CareModule,
   faq: FaqModule,
+  resources: ResourcesModule,
   contact: ContactModule,
 }
 

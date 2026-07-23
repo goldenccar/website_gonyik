@@ -18,6 +18,15 @@ export const SERVICE_MODULE_DEFINITIONS = [
     collection: { endpoint: 'faqs', itemLabel: '问题', titleLabel: '问题' },
   },
   {
+    type: 'resources',
+    sectionKey: 'resources',
+    label: '资料下载',
+    eyebrow: 'DOWNLOADS',
+    title: '技术资料与文件',
+    subtitle: '集中查看可公开获取的产品资料、技术说明与相关文件。',
+    collection: { endpoint: 'resources', itemLabel: '资料', titleLabel: '资料名称' },
+  },
+  {
     type: 'contact',
     sectionKey: 'contact',
     label: '联系我们',

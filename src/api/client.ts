@@ -60,6 +60,7 @@ export const getEquipmentProducts = () => cachedGet('/equipment/products')
 export const getCategoryProducts = (slug: string) => cachedGet(`/equipment/categories/${slug}/products`)
 export const getCareGuides = () => cachedGet('/services/care-guides')
 export const getFaqs = () => cachedGet('/services/faqs')
+export const getSupportResources = () => cachedGet('/services/resources')
 
 export const getContactConfig = () => cachedGet('/contact-config')
 
