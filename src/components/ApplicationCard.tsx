@@ -16,7 +16,7 @@ export default function ApplicationCard({ product, categoryName }: { product: Eq
     </div>
   )
 
-  return <CatalogCardShell interactive className="snap-start md:grid md:min-h-[340px] md:grid-cols-[38%_1fr]">
+  return <CatalogCardShell interactive className="snap-start md:grid md:min-h-[340px] md:grid-cols-[44%_1fr] xl:grid-cols-[48%_1fr]">
     <CatalogCardMedia src={product.image} alt={product.name} placeholder={fallback} ratio="portrait" fit="contain" className="!bg-white md:!aspect-auto md:h-full" />
     <div className="flex min-w-0 flex-1 flex-col p-5 md:p-6">
       <p className="label-zh text-secondary"><InlineMarkup text={categoryName} /></p>

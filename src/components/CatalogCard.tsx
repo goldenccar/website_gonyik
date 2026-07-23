@@ -49,7 +49,7 @@ export function CatalogCardMedia({ src, alt, placeholder, ratio = 'fabric', fit 
 
 export function CatalogCardSkeleton({ ratio = 'fabric' }: { ratio?: 'fabric' | 'application' | 'equipment' }) {
   if (ratio === 'equipment') return (
-    <div aria-hidden="true" className="overflow-hidden border border-border/80 bg-white/55 md:grid md:min-h-[340px] md:grid-cols-[38%_1fr]">
+    <div aria-hidden="true" className="overflow-hidden border border-border/80 bg-white/55 md:grid md:min-h-[340px] md:grid-cols-[44%_1fr] xl:grid-cols-[48%_1fr]">
       <div className="aspect-[4/3] animate-pulse bg-[#e9eef1] md:aspect-auto md:h-full" />
       <div className="space-y-3 p-5 md:p-6">
         <div className="h-3 w-20 animate-pulse bg-[#e2e8eb]" />
