@@ -50,6 +50,8 @@ export const getSiteConfig = () => cachedGet('/site-config')
 export const getPageConfig = (key: string) => cachedGet(`/page/${key}`)
 export const updatePageConfig = (key: string, data: any) => api.put(`/admin/page/${key}`, data)
 export const getNavigation = () => cachedGet('/navigation')
+export const getAdminCmsConfig = () => api.get('/admin/cms-config')
+export const updateAdminCmsConfig = (data: { module_order: string[] }) => api.put('/admin/cms-config', data)
 export const getFooter = () => cachedGet('/footer')
 export const getSocial = () => cachedGet('/social')
 

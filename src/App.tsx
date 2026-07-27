@@ -62,6 +62,7 @@ const AdminInquirySubjectManager = lazy(() => import('./admin/InquirySubjectMana
 const AdminContactMessageManager = lazy(() => import('./admin/ContactMessageManager'))
 const AdminFluorineManager = lazy(() => import('./admin/FluorineManager'))
 const AdminPageConfigManager = lazy(() => import('./admin/PageConfigManager'))
+const AdminCmsManager = lazy(() => import('./admin/CmsManager'))
 
 function App() {
   useEffect(() => {
@@ -104,6 +105,7 @@ function App() {
           <Route path="/admin/fluorine/config" element={<AdminPageConfigManager pageKey="pfas-free-innovation" />} />
           <Route path="/admin/services/config" element={<AdminPageConfigManager pageKey="services" />} />
           <Route path="/admin/contact/config" element={<AdminPageConfigManager pageKey="contact" />} />
+          <Route path="/admin/cms" element={<AdminCmsManager />} />
 
           {/* Public routes */}
           <Route element={<PublicLayout />}>

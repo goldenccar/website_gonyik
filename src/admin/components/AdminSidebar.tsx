@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { ChevronDown, LogOut, PanelLeft, PanelLeftClose, X } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { ADMIN_MENU_GROUPS } from '../navigation'
+import { getAdminCmsConfig } from '@/api/client'
+import { getAdminMenuGroups, type AdminMenuGroup } from '../navigation'
 
 interface AdminSidebarProps {
   pathname: string
@@ -14,11 +15,18 @@ interface AdminSidebarProps {
 export default function AdminSidebar({ pathname, mobileOpen, onClose, onLogout, username }: AdminSidebarProps) {
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
   const [collapsed, setCollapsed] = useState(false)
+  const [menuGroups, setMenuGroups] = useState<AdminMenuGroup[]>(() => getAdminMenuGroups())
 
   useEffect(() => {
-    const currentGroup = ADMIN_MENU_GROUPS.find((group) => group.children.some((item) => item.path === pathname))
+    getAdminCmsConfig()
+      .then((response) => setMenuGroups(getAdminMenuGroups(response.data.data?.module_order || [])))
+      .catch(() => setMenuGroups(getAdminMenuGroups()))
+  }, [])
+
+  useEffect(() => {
+    const currentGroup = menuGroups.find((group) => group.children.some((item) => item.path === pathname))
     if (currentGroup) setExpanded((previous) => new Set(previous).add(currentGroup.label))
-  }, [pathname])
+  }, [menuGroups, pathname])
 
   const toggleGroup = (label: string) => {
     if (collapsed) {
@@ -46,7 +54,7 @@ export default function AdminSidebar({ pathname, mobileOpen, onClose, onLogout, 
 
       <nav className="flex-1 overflow-y-auto overflow-x-hidden px-3 py-4">
         <div className="space-y-1">
-          {ADMIN_MENU_GROUPS.map((group) => {
+          {menuGroups.map((group) => {
             const isSingle = group.children.length === 1
             const isExpanded = expanded.has(group.label)
             const hasActiveChild = group.children.some((item) => item.path === pathname)

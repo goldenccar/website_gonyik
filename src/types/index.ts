@@ -57,6 +57,22 @@ export interface NavItem {
   label: string
   link: string
   order_index: number
+  mega_menu?: NavMenuGroup[]
+}
+
+export interface NavMenuLink {
+  id: string
+  label: string
+  link: string
+  order_index: number
+}
+
+export interface NavMenuGroup {
+  id: string
+  title: string
+  link?: string
+  order_index: number
+  items: NavMenuLink[]
 }
 
 export interface FooterConfig {

@@ -203,7 +203,64 @@ router.put('/admin/page/:pageKey', authMiddleware, (req: AuthRequest, res) => {
 })
 
 router.put('/admin/navigation', authMiddleware, (req: AuthRequest, res) => {
-  db.navigation = (req.body.items || []).map((item: any, i: number) => ({ ...item, order_index: i }))
+  if (!Array.isArray(req.body.items) || req.body.items.length === 0) {
+    res.status(400).json({ error: '至少需要保留一个一级菜单' })
+    return
+  }
+  const cleanText = (value: unknown) => String(value || '').trim()
+  let nextNavigationId = getNextId(db.navigation)
+  const sanitized = req.body.items.map((item: any, i: number) => {
+    const id = Number(item.id) || nextNavigationId++
+    return {
+      id,
+      label: cleanText(item.label),
+      link: cleanText(item.link),
+      order_index: i,
+      mega_menu: (Array.isArray(item.mega_menu) ? item.mega_menu : [])
+        .map((group: any, groupIndex: number) => ({
+          id: cleanText(group.id) || `nav-${id}-group-${groupIndex + 1}`,
+          title: cleanText(group.title),
+          link: cleanText(group.link),
+          order_index: groupIndex,
+          items: (Array.isArray(group.items) ? group.items : [])
+            .map((link: any, linkIndex: number) => ({
+              id: cleanText(link.id) || `nav-${id}-group-${groupIndex + 1}-item-${linkIndex + 1}`,
+              label: cleanText(link.label),
+              link: cleanText(link.link),
+              order_index: linkIndex,
+            }))
+            .filter((link: any) => link.label && link.link),
+        }))
+        .filter((group: any) => group.title && (group.link || group.items.length)),
+    }
+  })
+  if (sanitized.some((item: any) => !item.label || !item.link)) {
+    res.status(400).json({ error: '一级菜单名称和链接不能为空' })
+    return
+  }
+  if (new Set(sanitized.map((item: any) => item.link)).size !== sanitized.length) {
+    res.status(400).json({ error: '一级菜单链接不能重复' })
+    return
+  }
+  db.navigation = sanitized
+  saveDb()
+  res.json({ success: true })
+})
+
+router.get('/admin/cms-config', authMiddleware, (_req, res) => {
+  res.json({ data: db.cms_config })
+})
+
+router.put('/admin/cms-config', authMiddleware, (req: AuthRequest, res) => {
+  const allowedModules = ['home', 'fabrics', 'equipment', 'technology', 'services', 'contact', 'media']
+  const submittedOrder = Array.isArray(req.body.module_order)
+    ? req.body.module_order.map((value: unknown) => String(value)).filter((value: string) => allowedModules.includes(value))
+    : []
+  const uniqueOrder = [...new Set(submittedOrder)]
+  db.cms_config = {
+    ...db.cms_config,
+    module_order: [...uniqueOrder, ...allowedModules.filter((value) => !uniqueOrder.includes(value))],
+  }
   saveDb()
   res.json({ success: true })
 })

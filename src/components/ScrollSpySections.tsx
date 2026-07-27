@@ -1,4 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react'
+import { useLocation } from 'react-router-dom'
 import ContentTabs from './ContentTabs'
 import { PageSection } from './PageLayout'
 
@@ -17,13 +18,14 @@ export default function ScrollSpySections({ items, label, idPrefix, showIndex = 
   topNav?: boolean
 }) {
   const [activeId, setActiveId] = useState('')
+  const { hash } = useLocation()
   const itemKey = items.map((item) => item.id).join('|')
 
   useEffect(() => {
     if (!items.length) return
-    const hashId = window.location.hash.replace(`#${idPrefix}-`, '')
+    const hashId = hash.replace(`#${idPrefix}-`, '')
     setActiveId(items.some((item) => item.id === hashId) ? hashId : items[0].id)
-  }, [idPrefix, itemKey])
+  }, [hash, idPrefix, itemKey])
 
   useEffect(() => {
     if (!items.length) return
@@ -48,10 +50,10 @@ export default function ScrollSpySections({ items, label, idPrefix, showIndex = 
   }, [idPrefix, itemKey])
 
   useEffect(() => {
-    if (!items.length || !window.location.hash.startsWith(`#${idPrefix}-`)) return
-    const element = document.querySelector<HTMLElement>(window.location.hash)
+    if (!items.length || !hash.startsWith(`#${idPrefix}-`)) return
+    const element = document.querySelector<HTMLElement>(hash)
     if (element) requestAnimationFrame(() => element.scrollIntoView({ block: 'start' }))
-  }, [idPrefix, itemKey])
+  }, [hash, idPrefix, itemKey])
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(`${idPrefix}-${id}`)

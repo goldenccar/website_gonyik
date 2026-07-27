@@ -1,26 +1,53 @@
-import { useEffect, useState, type CSSProperties, type MouseEvent } from 'react'
+import { useEffect, useMemo, useState, type CSSProperties, type MouseEvent } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Menu, X } from 'lucide-react'
+import { ChevronDown, Menu, X } from 'lucide-react'
 import { getPublicBootstrap } from '@/api/client'
 import type { NavItem } from '@/types'
 import { InlineMarkup } from './MarkupParser'
+
+interface MegaMenuLink {
+  label: string
+  href: string
+}
+
+interface MegaMenuGroup {
+  title: string
+  href?: string
+  links: MegaMenuLink[]
+}
 
 export default function Header() {
   const [navItems, setNavItems] = useState<NavItem[]>([])
   const [siteConfig, setSiteConfig] = useState<any>({})
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [mobileExpanded, setMobileExpanded] = useState<string | null>(null)
+  const [desktopMenu, setDesktopMenu] = useState<string | null>(null)
+  const [renderedDesktopMenu, setRenderedDesktopMenu] = useState<string | null>(null)
   const [scrolled, setScrolled] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
 
   useEffect(() => {
-    getPublicBootstrap().then((response) => {
-      setNavItems(response.data.navigation || [])
-      setSiteConfig(response.data.site_config || {})
+    getPublicBootstrap().then((bootstrap) => {
+      setNavItems(bootstrap.data.navigation || [])
+      setSiteConfig(bootstrap.data.site_config || {})
     })
   }, [])
 
-  useEffect(() => setMobileOpen(false), [location.pathname])
+  useEffect(() => {
+    setMobileOpen(false)
+    setMobileExpanded(null)
+    setDesktopMenu(null)
+  }, [location.pathname, location.search, location.hash])
+
+  useEffect(() => {
+    if (desktopMenu) {
+      setRenderedDesktopMenu(desktopMenu)
+      return
+    }
+    const timer = window.setTimeout(() => setRenderedDesktopMenu(null), 240)
+    return () => window.clearTimeout(timer)
+  }, [desktopMenu])
 
   useEffect(() => {
     if (!mobileOpen) return
@@ -35,6 +62,15 @@ export default function Header() {
       window.removeEventListener('keydown', closeOnEscape)
     }
   }, [mobileOpen])
+
+  useEffect(() => {
+    if (!desktopMenu) return
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setDesktopMenu(null)
+    }
+    window.addEventListener('keydown', closeOnEscape)
+    return () => window.removeEventListener('keydown', closeOnEscape)
+  }, [desktopMenu])
 
   useEffect(() => {
     const update = () => setScrolled(window.scrollY > 12)
@@ -54,8 +90,43 @@ export default function Header() {
     }
   }
 
+  const megaMenus = useMemo<Record<string, MegaMenuGroup[]>>(() => {
+    return Object.fromEntries(navItems.map((item) => [
+      item.link,
+      [...(item.mega_menu || [])]
+        .sort((a, b) => a.order_index - b.order_index)
+        .map((group) => ({
+          title: group.title,
+          href: group.link,
+          links: [...group.items]
+            .sort((a, b) => a.order_index - b.order_index)
+            .map((link) => ({ label: link.label, href: link.link })),
+        }))
+        .filter((group) => group.title && (group.href || group.links.length)),
+    ]))
+  }, [navItems])
+
+  const activeMenuItem = navItems.find((item) => item.link === renderedDesktopMenu)
+  const activeMenuGroups = renderedDesktopMenu ? megaMenus[renderedDesktopMenu] || [] : []
+  const menuOpen = Boolean(desktopMenu && activeMenuItem && activeMenuGroups.length)
+  const menuMounted = Boolean(activeMenuItem && activeMenuGroups.length)
+  const menuWidthClass = activeMenuGroups.length >= 4
+    ? 'max-w-[920px]'
+    : activeMenuGroups.length === 3
+      ? 'max-w-[760px]'
+      : activeMenuGroups.length === 2
+        ? 'max-w-[560px]'
+        : 'max-w-[360px]'
+  const menuGridClass = activeMenuGroups.length >= 4
+    ? 'grid-cols-4'
+    : activeMenuGroups.length === 3
+      ? 'grid-cols-3'
+      : activeMenuGroups.length === 2
+        ? 'grid-cols-2'
+        : 'grid-cols-1'
+
   return (
-    <header className={`fixed left-0 top-0 z-50 h-[60px] w-screen px-6 transition-colors duration-300 ${scrolled ? 'border-b border-white/15 bg-[#041F38]' : 'border-b border-transparent bg-transparent'}`}>
+    <header className={`fixed left-0 top-0 z-50 h-[60px] w-screen px-6 transition-colors duration-300 ${menuMounted || scrolled ? 'border-b border-white/15 bg-[#041F38]' : 'border-b border-transparent bg-transparent'}`}>
       <div className="mx-auto flex h-full w-full max-w-[1760px] items-center px-0 lg:px-10">
         <Link to="/" className="flex shrink-0 items-center" aria-label="港翼科技首页">
           {siteConfig.logo_url ? <img src={siteConfig.logo_url} alt="GONYIK" className="mr-2 h-7 w-auto" /> : <span className="mr-2 grid h-7 w-7 place-items-center bg-white text-[10px] font-semibold text-[#041F38]">GY</span>}
@@ -65,24 +136,116 @@ export default function Header() {
         <nav className="ml-auto hidden h-full items-center gap-8 md:flex" aria-label="主导航">
           {navItems.map((item) => {
             const active = location.pathname === item.link || (item.link !== '/' && location.pathname.startsWith(`${item.link}/`))
-            return <Link key={item.id} to={item.link} className={`group/nav relative flex h-full items-center text-[13px] font-medium tracking-[0.06em] transition-colors duration-[var(--motion-instant)] ${active ? 'text-white' : 'text-white/75 hover:text-white'}`}><InlineMarkup text={item.label} /><span className={`absolute inset-x-0 bottom-0 h-[3px] origin-left bg-[#69B2C1] transition-transform duration-[var(--motion-instant)] ease-apple ${active ? 'scale-x-100' : 'scale-x-0 group-hover/nav:scale-x-100'}`} /></Link>
+            const groups = megaMenus[item.link] || []
+            const expanded = desktopMenu === item.link
+            const commonClass = `group/nav relative -mx-3 flex h-full items-center gap-1.5 px-3 text-[13px] font-medium tracking-[0.05em] transition-colors duration-[var(--motion-instant)] focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-[-1px] focus-visible:outline-[#69B2C1] ${
+              menuOpen
+                ? expanded ? 'bg-white/10 text-white' : active ? 'text-white' : 'text-white/65 hover:text-white'
+                : active ? 'text-white' : 'text-white/75 hover:text-white'
+            }`
+            if (groups.length > 0) {
+              return <button
+                key={item.id}
+                type="button"
+                aria-current={active ? 'page' : undefined}
+                aria-expanded={expanded}
+                aria-controls={`mega-menu-${item.id}`}
+                onClick={() => setDesktopMenu(expanded ? null : item.link)}
+                className={commonClass}
+              >
+                <InlineMarkup text={item.label} />
+                <span className={`absolute inset-x-0 bottom-0 h-[3px] bg-[#69B2C1] transition-opacity duration-[var(--motion-instant)] ${active ? 'opacity-100' : 'opacity-0'}`} />
+              </button>
+            }
+            return <Link key={item.id} to={item.link} aria-current={active ? 'page' : undefined} className={commonClass}><InlineMarkup text={item.label} /><span className={`absolute inset-x-0 bottom-0 h-[3px] bg-[#69B2C1] transition-opacity duration-[var(--motion-instant)] ${active ? 'opacity-100' : 'opacity-0'}`} /></Link>
           })}
         </nav>
 
         <button type="button" aria-label="打开导航" aria-expanded={mobileOpen} aria-controls="mobile-navigation" className="ml-auto flex h-11 w-11 items-center justify-center text-white md:hidden" onClick={() => setMobileOpen(true)}><Menu size={25} /></button>
       </div>
 
+      {menuMounted && activeMenuItem && <>
+        <button
+          type="button"
+          aria-label="关闭下拉导航"
+          tabIndex={menuOpen ? 0 : -1}
+          onClick={() => setDesktopMenu(null)}
+          className={`fixed inset-x-0 bottom-0 top-[60px] z-40 hidden cursor-default bg-[#041f38]/22 backdrop-blur-[1px] transition-opacity duration-[240ms] ease-apple md:block ${menuOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'}`}
+        />
+        <section
+          id={`mega-menu-${activeMenuItem.id}`}
+          aria-label={`${activeMenuItem.label}下拉导航`}
+          aria-hidden={!menuOpen}
+          className={`fixed inset-x-0 top-[60px] z-50 hidden px-6 transition-[opacity,transform] duration-[240ms] ease-apple md:block ${menuOpen ? 'pointer-events-auto translate-y-0 opacity-100' : 'pointer-events-none -translate-y-2 opacity-0'}`}
+        >
+          <div className="mx-auto flex w-full max-w-[1760px] justify-end px-0 lg:px-10">
+          <div className={`w-full ${menuWidthClass} origin-top border-b border-border bg-[#fbfcfd] shadow-[0_22px_52px_rgba(4,31,56,0.13)]`}>
+            <div className="px-6 pb-4 pt-3 lg:px-7">
+              <div className="mb-3 flex min-h-8 items-start justify-end border-b border-border pb-2">
+                <Link to={activeMenuItem.link} onClick={() => setDesktopMenu(null)} className="shrink-0 text-[13px] font-semibold leading-6 tracking-[0.02em] text-primary transition-colors duration-[var(--motion-instant)] hover:text-[#2f8191] focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-[#69B2C1]">查看全部<InlineMarkup text={activeMenuItem.label} /> →</Link>
+              </div>
+              <div className={`grid gap-x-8 gap-y-5 ${menuGridClass}`}>
+                {activeMenuGroups.map((group) => (
+                  <div key={group.title}>
+                    <div className="mb-1.5 border-b border-border pb-2 text-[12px] font-medium leading-[18px] tracking-[0.06em] text-secondary">
+                      {group.href
+                        ? <Link to={group.href} onClick={() => setDesktopMenu(null)} className="inline-flex items-center gap-1.5 transition-colors duration-200 hover:text-[#2f8191] focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-[#69B2C1]"><InlineMarkup text={group.title} /><span aria-hidden="true">→</span></Link>
+                        : <InlineMarkup text={group.title} />}
+                    </div>
+                    <div>
+                      {group.links.map((link) => (
+                        <Link key={link.href} to={link.href} onClick={() => setDesktopMenu(null)} className="group/link relative flex min-h-9 items-center text-[14px] font-medium leading-5 tracking-[0.01em] text-primary transition-colors duration-200 ease-out hover:text-[#2f8191] focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-[-1px] focus-visible:outline-[#69B2C1]">
+                          <InlineMarkup text={link.label} />
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          </div>
+        </section>
+      </>}
+
       <div aria-hidden={!mobileOpen} className={`fixed inset-0 z-[60] md:hidden ${mobileOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}>
         <button type="button" tabIndex={mobileOpen ? 0 : -1} aria-label="关闭导航" onClick={() => setMobileOpen(false)} className={`absolute inset-0 bg-[#041F38]/55 transition-opacity duration-[var(--motion-switch)] ease-apple ${mobileOpen ? 'opacity-100' : 'opacity-0'}`} />
-        <div id="mobile-navigation" role="dialog" aria-modal="true" aria-label="主导航" className={`absolute inset-y-0 right-0 w-[min(86vw,360px)] bg-[#041F38] px-6 shadow-[-18px_0_50px_rgba(4,31,56,0.2)] transition-transform duration-[320ms] ease-apple ${mobileOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+        <div id="mobile-navigation" role="dialog" aria-modal="true" aria-label="主导航" className={`absolute inset-y-0 right-0 flex w-[min(86vw,360px)] flex-col bg-[#041F38] px-6 shadow-[-18px_0_50px_rgba(4,31,56,0.2)] transition-transform duration-[320ms] ease-apple ${mobileOpen ? 'translate-x-0' : 'translate-x-full'}`}>
           <div className="flex h-[60px] items-center justify-between border-b border-white/15">
             <span className="label-en text-white/75">MENU</span>
             <button type="button" tabIndex={mobileOpen ? 0 : -1} aria-label="关闭导航" className="flex h-11 w-11 items-center justify-center text-white" onClick={() => setMobileOpen(false)}><X size={24} /></button>
           </div>
-          <nav className="flex flex-col pt-5" aria-label="移动端主导航">
+          <nav className="flex min-h-0 flex-1 flex-col overflow-y-auto pb-8 pt-5" aria-label="移动端主导航">
             {navItems.map((item, index) => {
               const active = location.pathname === item.link || (item.link !== '/' && location.pathname.startsWith(`${item.link}/`))
-              return <Link key={item.id} to={item.link} tabIndex={mobileOpen ? 0 : -1} onClick={(event) => handleMobileNavigation(event, item.link)} style={{ transitionDelay: mobileOpen ? `${80 + index * 35}ms` : '0ms' } as CSSProperties} className={`flex items-center justify-between border-b border-white/10 py-5 text-[18px] font-medium tracking-[0.04em] transition-[opacity,transform,color] duration-[var(--motion-switch)] ease-apple ${mobileOpen ? 'translate-x-0 opacity-100' : 'translate-x-3 opacity-0'} ${active ? 'text-white' : 'text-white/75'}`}><span><InlineMarkup text={item.label} /></span>{active && <span aria-hidden="true" className="h-px w-6 bg-[#69B2C1]" />}</Link>
+              const groups = megaMenus[item.link] || []
+              const expanded = mobileExpanded === item.link
+              return <div key={item.id} style={{ transitionDelay: mobileOpen ? `${80 + index * 35}ms` : '0ms' } as CSSProperties} className={`border-b border-white/10 transition-[opacity,transform] duration-[var(--motion-switch)] ease-apple ${mobileOpen ? 'translate-x-0 opacity-100' : 'translate-x-3 opacity-0'}`}>
+                <div className="flex items-center">
+                  <Link to={item.link} tabIndex={mobileOpen ? 0 : -1} onClick={(event) => handleMobileNavigation(event, item.link)} className={`flex min-h-16 flex-1 items-center text-[18px] font-medium tracking-[0.04em] ${active ? 'text-white' : 'text-white/75'}`}><InlineMarkup text={item.label} /></Link>
+                  {groups.length > 0 ? <button type="button" tabIndex={mobileOpen ? 0 : -1} aria-label={`${expanded ? '收起' : '展开'}${item.label}`} aria-expanded={expanded} onClick={() => setMobileExpanded(expanded ? null : item.link)} className="grid size-12 place-items-center text-white/75">
+                    <ChevronDown aria-hidden="true" size={18} className={`transition-transform duration-[var(--motion-switch)] ${expanded ? 'rotate-180' : ''}`} />
+                  </button> : active && <span aria-hidden="true" className="mr-3 h-px w-6 bg-[#69B2C1]" />}
+                </div>
+                <div className={`grid transition-[grid-template-rows] duration-[var(--motion-switch)] ease-apple ${expanded ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
+                  <div className="overflow-hidden">
+                    <div className="space-y-5 pb-5 pl-4">
+                      {groups.map((group) => (
+                        <div key={group.title}>
+                          <div className="mb-2 text-[10px] font-medium tracking-[0.12em] text-white/45">
+                            {group.href
+                              ? <Link to={group.href} tabIndex={mobileOpen && expanded ? 0 : -1} onClick={(event) => handleMobileNavigation(event, group.href || '/')} className="inline-flex items-center gap-1.5"><InlineMarkup text={group.title} /><span aria-hidden="true">→</span></Link>
+                              : <InlineMarkup text={group.title} />}
+                          </div>
+                          <div className="flex flex-col">
+                            {group.links.map((link) => <Link key={link.href} to={link.href} tabIndex={mobileOpen && expanded ? 0 : -1} onClick={(event) => handleMobileNavigation(event, link.href)} className="py-2 text-[14px] text-white/75"><InlineMarkup text={link.label} /></Link>)}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
             })}
           </nav>
         </div>

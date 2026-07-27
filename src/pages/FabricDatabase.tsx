@@ -10,6 +10,7 @@ import AnimatedDisclosure from '@/components/AnimatedDisclosure'
 import { InlineMarkup } from '@/components/MarkupParser'
 import type { FabricCapabilityDefinition } from '@/config/fabricCapabilities'
 import RailEndCard from '@/components/RailEndCard'
+import CatalogSelectorBar from '@/components/CatalogSelectorBar'
 
 function parseSpecs(value: unknown) {
   if (value && typeof value === 'object' && !Array.isArray(value)) return value as Record<string, string>
@@ -84,22 +85,21 @@ export default function FabricDatabase() {
     <PageShell>
       <PageHero tag={page?.page_tag || 'FABRIC DATABASE'} title={page?.page_title || '按使用环境，找到合适的材料'} subtitle={page?.page_subtitle || '从日常与户外使用到特种专业场景，查看材料系列、具体型号与验证依据。'} image={page?.hero_background} imageAlt="复合面料与膜层结构微距" />
 
-      <div className="sticky top-[60px] z-40 bg-white">
-      <PageSection tone="white" className="!py-5 shadow-[0_1px_0_rgba(13,38,61,0.08)] md:!py-6">
-        <nav aria-label="面料系列" className="flex flex-col gap-4 md:flex-row md:items-center md:gap-8">
-          <div className="flex items-center gap-5">
-            <span className="shrink-0 text-[12px] text-secondary">日常与户外使用</span>
-            <div className="flex items-center gap-5">
-              {['otter', 'rayo'].map((slug) => <button key={slug} onClick={() => selectSeries(slug)} className={`relative py-2 text-[13px] font-semibold uppercase tracking-[0.06em] transition-colors duration-[var(--motion-instant)] after:absolute after:inset-x-0 after:-bottom-0.5 after:h-0.5 after:origin-left after:bg-[#69B2C1] after:transition-transform after:duration-[var(--motion-switch)] ${active === slug ? 'text-primary after:scale-x-100' : 'text-secondary after:scale-x-0 hover:text-primary'}`}>{slug}</button>)}
-            </div>
-          </div>
-          <div className="flex items-center gap-5 border-t border-border pt-4 md:border-l md:border-t-0 md:pl-8 md:pt-0">
-            <span className="shrink-0 text-[12px] text-secondary">特种场景</span>
-            <button onClick={() => selectSeries('kais')} className={`relative py-2 text-[13px] font-semibold uppercase tracking-[0.06em] transition-colors duration-[var(--motion-instant)] after:absolute after:inset-x-0 after:-bottom-0.5 after:h-0.5 after:origin-left after:bg-[#69B2C1] after:transition-transform after:duration-[var(--motion-switch)] ${active === 'kais' ? 'text-primary after:scale-x-100' : 'text-secondary after:scale-x-0 hover:text-primary'}`}>kais</button>
-          </div>
-        </nav>
-      </PageSection>
-      </div>
+      <CatalogSelectorBar
+        label="面料系列"
+        groups={[
+          {
+            label: '日常与户外使用',
+            uppercase: true,
+            items: ['otter', 'rayo'].map((slug) => ({ key: slug, label: slug, active: active === slug, onSelect: () => selectSeries(slug) })),
+          },
+          {
+            label: '特种场景',
+            uppercase: true,
+            items: [{ key: 'kais', label: 'kais', active: active === 'kais', onSelect: () => selectSeries('kais') }],
+          },
+        ]}
+      />
 
       <PageSection id="series-content">
         <div key={active} className="motion-content-enter">

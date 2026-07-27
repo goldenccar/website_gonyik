@@ -14,6 +14,7 @@ if (!fs.existsSync(UPLOADS_DIR)) {
 export interface Database {
   home_config: any
   site_config: any
+  cms_config: any
   page_configs: any[]
   navigation: any[]
   footer_config: any
@@ -43,6 +44,7 @@ export interface Database {
   material_platforms_version?: number
   service_sections_version?: number
   footer_badge_version?: number
+  header_mega_menu_version?: number
   inquiry_subjects: any[]
   contact_messages: any[]
   users: any[]
@@ -156,6 +158,9 @@ function createDefaultDb(): Database {
       logo_url: null,
       logo_text: '港翼科技',
       favicon_url: null,
+    },
+    cms_config: {
+      module_order: ['home', 'fabrics', 'equipment', 'technology', 'services', 'contact', 'media'],
     },
     page_configs: [
       { id: 1, page_key: 'fabrics', page_tag: 'FABRIC DATABASE', page_title: '按使用环境，找到合适的材料', page_subtitle: '从日常与户外使用到特种专业场景，查看材料系列、具体型号与验证依据。', hero_background: null, core_performance_title: '核心性能' },
@@ -1367,6 +1372,193 @@ export function initDatabase() {
     }
   } else {
     db = createDefaultDb()
+  }
+
+  if (!db.cms_config) {
+    db.cms_config = {
+      module_order: ['home', 'fabrics', 'equipment', 'technology', 'services', 'contact', 'media'],
+    }
+    saveDb()
+  }
+
+  if ((db.header_mega_menu_version ?? 0) < 1 || db.navigation.some((item: any) => item.link !== '/contact' && !Array.isArray(item.mega_menu))) {
+    const menuId = (scope: string, index: number) => `${scope}-${index + 1}`
+    const navByLink = new Map(db.navigation.map((item: any) => [item.link, item]))
+    const setMenu = (link: string, groups: Array<{ title: string; items: Array<{ label: string; link: string }> }>) => {
+      const navItem = navByLink.get(link)
+      if (!navItem) return
+      navItem.mega_menu = groups
+        .filter((group) => group.items.length)
+        .map((group, groupIndex) => ({
+          id: menuId(`${navItem.id}-group`, groupIndex),
+          title: group.title,
+          order_index: groupIndex,
+          items: group.items.map((item, itemIndex) => ({
+            id: menuId(`${navItem.id}-${groupIndex}-item`, itemIndex),
+            ...item,
+            order_index: itemIndex,
+          })),
+        }))
+    }
+
+    const publicEquipmentCategories = [...(db.equipment_categories || [])]
+      .filter((category: any) => category.visibility !== 'hidden')
+      .sort(sortByOrderIndex)
+    const equipmentRoots = publicEquipmentCategories.filter((category: any) => category.parent_id == null)
+    setMenu('/equipment', [
+      {
+        title: '产品类别',
+        items: equipmentRoots.map((category: any) => ({
+          label: category.name,
+          link: `/equipment?type=${encodeURIComponent(category.slug)}`,
+        })),
+      },
+      ...equipmentRoots.map((root: any) => ({
+        title: root.name,
+        items: publicEquipmentCategories
+          .filter((category: any) => category.parent_id === root.id)
+          .map((category: any) => ({
+            label: category.name,
+            link: `/equipment?type=${encodeURIComponent(root.slug)}&category=${encodeURIComponent(category.slug)}`,
+          })),
+      })),
+    ])
+
+    const series = [...(db.fabric_series || [])].sort(sortByOrderIndex)
+    setMenu('/fabrics', [
+      {
+        title: '日常与户外使用',
+        items: series.filter((item: any) => item.slug !== 'kais').map((item: any) => ({
+          label: item.name || item.slug,
+          link: `/fabrics?series=${encodeURIComponent(item.slug)}`,
+        })),
+      },
+      {
+        title: '特种场景',
+        items: series.filter((item: any) => item.slug === 'kais').map((item: any) => ({
+          label: item.name || item.slug,
+          link: `/fabrics?series=${encodeURIComponent(item.slug)}`,
+        })),
+      },
+    ])
+
+    const technology = [...(db.fluorine_sections || [])]
+      .filter((section: any) => section.page_key === 'pfas-free-innovation' && section.status !== 'draft')
+      .sort(sortByOrderIndex)
+    const isVerification = (section: any) => /test|valid|certif/i.test(`${section.section_key} ${section.module_type}`)
+    const isProcess = (section: any) => !isVerification(section)
+      && /laminat|composite|supply|chain|manufact|复合|供应链/i.test(`${section.section_key} ${section.module_type} ${section.title}`)
+    const technologyLink = (section: any) => ({
+      label: section.nav_label || section.title,
+      link: `/pfas-free-innovation#technology-${encodeURIComponent(section.section_key || String(section.id))}`,
+    })
+    setMenu('/pfas-free-innovation', [
+      { title: '材料平台', items: technology.filter((section: any) => !isVerification(section) && !isProcess(section)).map(technologyLink) },
+      { title: '工艺与制造', items: technology.filter(isProcess).map(technologyLink) },
+      { title: '验证与认证', items: technology.filter(isVerification).map(technologyLink) },
+    ])
+
+    const serviceRoutes: Record<string, string> = {
+      'material-care': 'material-care',
+      'garment-care': 'garment-care',
+      'digital-fabrics': 'digital-fabrics',
+    }
+    const services = [...(db.fluorine_sections || [])]
+      .filter((section: any) => section.page_key === 'services' && section.status !== 'draft' && serviceRoutes[section.module_type])
+      .sort(sortByOrderIndex)
+    setMenu('/services', [
+      {
+        title: '专业支持',
+        items: services.map((section: any) => ({
+          label: section.nav_label || section.title,
+          link: `/services/${serviceRoutes[section.module_type]}`,
+        })),
+      },
+      { title: '合作入口', items: [{ label: '联系我们', link: '/contact' }] },
+    ])
+
+    const contactNav = navByLink.get('/contact')
+    if (contactNav) contactNav.mega_menu = []
+    db.header_mega_menu_version = 1
+    saveDb()
+  }
+
+  if ((db.header_mega_menu_version ?? 0) < 2) {
+    const equipmentNav = db.navigation.find((item: any) => item.link === '/equipment')
+    if (equipmentNav) {
+      const publicCategories = [...(db.equipment_categories || [])]
+        .filter((category: any) => category.visibility !== 'hidden')
+        .sort(sortByOrderIndex)
+      const roots = publicCategories.filter((category: any) => category.parent_id == null)
+      equipmentNav.mega_menu = roots.map((root: any, groupIndex: number) => ({
+        id: `${equipmentNav.id}-equipment-group-${groupIndex + 1}`,
+        title: root.name,
+        link: `/equipment?type=${encodeURIComponent(root.slug)}`,
+        order_index: groupIndex,
+        items: publicCategories
+          .filter((category: any) => category.parent_id === root.id)
+          .map((category: any, itemIndex: number) => ({
+            id: `${equipmentNav.id}-equipment-${groupIndex + 1}-item-${itemIndex + 1}`,
+            label: category.name,
+            link: `/equipment?type=${encodeURIComponent(root.slug)}&category=${encodeURIComponent(category.slug)}`,
+            order_index: itemIndex,
+          })),
+      }))
+    }
+    db.header_mega_menu_version = 2
+    saveDb()
+  }
+
+  if ((db.header_mega_menu_version ?? 0) < 3) {
+    const menuItemId = (navId: number, groupIndex: number, itemIndex: number) =>
+      `${navId}-v3-${groupIndex + 1}-item-${itemIndex + 1}`
+    const technologyNav = db.navigation.find((item: any) => item.link === '/pfas-free-innovation')
+    if (technologyNav) {
+      const technologySections = [...(db.fluorine_sections || [])]
+        .filter((section: any) => section.page_key === 'pfas-free-innovation' && section.status !== 'draft')
+        .sort(sortByOrderIndex)
+      const findSection = (pattern: RegExp) => technologySections.find((section: any) =>
+        pattern.test(`${section.section_key || ''} ${section.nav_label || ''} ${section.title || ''}`))
+      const toLink = (section: any) => ({
+        label: section.nav_label || section.title,
+        link: `/pfas-free-innovation#technology-${encodeURIComponent(section.section_key || String(section.id))}`,
+      })
+      const groupDefinitions = [
+        {
+          title: '技术体系',
+          sections: [findSection(/无氟技术体系/), findSection(/RPO.*材料平台|rpo-material-platform/i)],
+        },
+        {
+          title: '核心材料与工艺',
+          sections: [findSection(/膜技术/), findSection(/高性能纤维/), findSection(/面料复合/)],
+        },
+        {
+          title: '产业化保障',
+          sections: [findSection(/供应链管理/), findSection(/测试与验证|测试与认证|testing-certification/i)],
+        },
+      ]
+      technologyNav.mega_menu = groupDefinitions.map((group, groupIndex) => ({
+        id: `${technologyNav.id}-v3-group-${groupIndex + 1}`,
+        title: group.title,
+        order_index: groupIndex,
+        items: group.sections
+          .filter(Boolean)
+          .map((section: any, itemIndex: number) => ({
+            id: menuItemId(technologyNav.id, groupIndex, itemIndex),
+            ...toLink(section),
+            order_index: itemIndex,
+          })),
+      }))
+    }
+
+    const servicesNav = db.navigation.find((item: any) => item.link === '/services')
+    if (servicesNav) {
+      servicesNav.mega_menu = (servicesNav.mega_menu || [])
+        .filter((group: any) => group.title !== '合作入口')
+        .map((group: any, groupIndex: number) => ({ ...group, order_index: groupIndex }))
+    }
+    db.header_mega_menu_version = 3
+    saveDb()
   }
 }
 
