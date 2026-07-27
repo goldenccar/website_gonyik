@@ -316,8 +316,8 @@ function createDefaultDb(): Database {
         order_index: 2,
         nav_label: '数字面料',
         title: '数字面料资产',
-        subtitle: '面向 CLO3D 与 Style3D 工作流，逐步建立可用于数字打样的材料文件。',
-        content: '数字资产将按具体面料型号和版本交付，并同步记录视觉参数、物理属性与适用软件版本。',
+        subtitle: '将真实面料转化为可用于 CLO3D 与 Style3D 数字打样的材料文件。',
+        content: '围绕具体面料型号整合颜色、纹理与物理属性，使虚拟样衣更准确地呈现材料外观、悬垂与形变表现。',
         image_url: null,
         image_fit: 'cover',
       },
@@ -328,7 +328,7 @@ function createDefaultDb(): Database {
     brand_identity_version: 1,
     product_dual_code_version: 1,
     fabric_card_positioning_version: 1,
-    service_sections_version: 9,
+    service_sections_version: 10,
     footer_badge_version: 1,
     social_media: [
       { id: 1, platform: 'wechat', account: '港翼科技GONYIK', qrcode_url: null },
@@ -700,8 +700,8 @@ export function initDatabase() {
         nav_label: '数字面料',
         eyebrow: 'DIGITAL FABRIC ASSETS',
         title: '数字面料资产',
-        subtitle: '面向 CLO3D 与 Style3D 工作流，逐步建立可用于数字打样的材料文件。',
-        content: '数字资产将按具体面料型号和版本交付，并同步记录视觉参数、物理属性与适用软件版本。',
+        subtitle: '将真实面料转化为可用于 CLO3D 与 Style3D 数字打样的材料文件。',
+        content: '围绕具体面料型号整合颜色、纹理与物理属性，使虚拟样衣更准确地呈现材料外观、悬垂与形变表现。',
         image_url: null,
         image_fit: 'cover',
         status: 'published',
@@ -764,6 +764,18 @@ export function initDatabase() {
     if ((db.service_sections_version ?? 0) < 9) {
       db.faqs = createDefaultServiceFaqs()
       db.service_sections_version = 9
+      contentSectionsChanged = true
+    }
+    if ((db.service_sections_version ?? 0) < 10) {
+      const digitalFabrics = db.fluorine_sections.find((section: any) => (
+        section.page_key === 'services'
+        && section.module_type === 'digital-fabrics'
+      ))
+      if (digitalFabrics) {
+        digitalFabrics.subtitle = '将真实面料转化为可用于 CLO3D 与 Style3D 数字打样的材料文件。'
+        digitalFabrics.content = '围绕具体面料型号整合颜色、纹理与物理属性，使虚拟样衣更准确地呈现材料外观、悬垂与形变表现。'
+      }
+      db.service_sections_version = 10
       contentSectionsChanged = true
     }
     if (contentSectionsChanged) saveDb()

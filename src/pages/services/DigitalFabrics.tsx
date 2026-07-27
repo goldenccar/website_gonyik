@@ -29,12 +29,9 @@ export default function DigitalFabrics() {
     <PageSection tone="white" className="space-y-16 md:space-y-20">
       <ServiceSectionHeader section={section} />
       <section>
-        <div className="mb-6 flex items-end justify-between gap-6">
-          <div>
-            <p className="label-en text-secondary">SUPPORTED FORMATS</p>
-            <h2 className="mt-3 text-[24px] font-medium text-primary md:text-[30px]">面向两套主流工作流</h2>
-          </div>
-          <span className="border border-border px-3 py-1.5 text-[11px] tracking-[0.12em] text-secondary">建立中</span>
+        <div className="mb-6">
+          <p className="label-en text-secondary">SUPPORTED FORMATS</p>
+          <h2 className="mt-3 text-[24px] font-medium text-primary md:text-[30px]">支持主流数字服装工作流</h2>
         </div>
         <div className="grid gap-px border border-border bg-border sm:grid-cols-3">
           {formats.map((item) => (
@@ -59,7 +56,7 @@ export default function DigitalFabrics() {
         <div>
           <p className="label-en text-secondary">PROJECT ACCESS</p>
           <h2 className="mt-3 text-[24px] font-medium text-primary">需要指定面料的数字模型？</h2>
-          <p className="mt-3 max-w-[680px] text-[14px] leading-7 text-secondary">请提供目标面料型号、使用软件及项目阶段，我们将确认现有资产或数字化排期。</p>
+          <p className="mt-3 max-w-[680px] text-[14px] leading-7 text-secondary">请提供目标面料型号、使用软件与应用场景，我们将为项目匹配相应的数字面料文件与技术资料。</p>
         </div>
         <Link to="/contact" className="inline-flex shrink-0 items-center gap-3 border border-primary px-5 py-3 text-[14px] font-medium text-primary transition-colors hover:bg-primary hover:text-white">提交需求 <ArrowUpRight size={16} /></Link>
       </section>
