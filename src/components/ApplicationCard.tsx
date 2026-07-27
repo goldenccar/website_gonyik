@@ -2,6 +2,7 @@ import type { EquipmentProduct } from '@/types'
 import { Link } from 'react-router-dom'
 import { InlineMarkup } from './MarkupParser'
 import { CatalogCardMedia, CatalogCardShell } from './CatalogCard'
+import { materialPlatformLabel } from '@/config/materialPlatforms'
 
 function parseFeatures(value: string) {
   try { return JSON.parse(value) as string[] } catch { return [] }
@@ -19,7 +20,10 @@ export default function ApplicationCard({ product, categoryName }: { product: Eq
   return <CatalogCardShell interactive className="snap-start md:grid md:min-h-[340px] md:grid-cols-[44%_1fr] xl:grid-cols-[48%_1fr]">
     <CatalogCardMedia src={product.image} alt={product.name} placeholder={fallback} ratio="portrait" fit="contain" className="!bg-white md:!aspect-auto md:h-full" />
     <div className="flex min-w-0 flex-1 flex-col p-5 md:p-6">
-      <p className="label-zh text-secondary"><InlineMarkup text={categoryName} /></p>
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+        <p className="label-zh text-secondary"><InlineMarkup text={categoryName} /></p>
+        {product.material_platforms.map((platform) => <span key={platform} className="border border-[#8fc6d1] bg-[#eef8fa] px-2 py-1 text-[10px] font-semibold tracking-[0.08em] text-[#235d69]">{materialPlatformLabel(platform, 'badge')}</span>)}
+      </div>
       <h3 className="type-card-title mt-2 text-primary"><InlineMarkup text={product.name} /></h3>
       <p className="mt-3 line-clamp-2 text-[14px] leading-6 text-secondary"><InlineMarkup text={summary} /></p>
       {Boolean(product.related_skus?.length) && <div className="mt-10 border-t border-border/80 pt-4 md:mt-12">

@@ -57,7 +57,6 @@ export const getFabricSeries = () => api.get('/fabrics/series', { params: { sche
 export const getFabricSeriesDetail = (slug: string) => api.get(`/fabrics/series/${slug}`, { params: { schema: 'dual-code-v1' } })
 export const getEquipmentCategories = () => cachedGet('/equipment/categories')
 export const getEquipmentProducts = () => cachedGet('/equipment/products')
-export const getCategoryProducts = (slug: string) => cachedGet(`/equipment/categories/${slug}/products`)
 export const getMaterialCareGuides = () => cachedGet('/services/material-care-guides')
 export const getCareGuides = () => cachedGet('/services/care-guides')
 export const getFaqs = (category: 'material-care' | 'garment-care') => cachedGet('/services/faqs', { category })

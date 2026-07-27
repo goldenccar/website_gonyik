@@ -118,21 +118,27 @@ export interface FabricSku {
 
 export interface EquipmentCategory {
   id: number
+  parent_id: number | null
   name: string
   slug: string
   description: string
+  visibility: 'public' | 'hidden'
+  order_index: number
+  product_count?: number
 }
 
 export interface EquipmentProduct {
   id: number
-  category_id: number
   name: string
   image: string | null
   features: string // JSON
   card_summary?: string
+  material_platforms: string[]
   visibility?: 'public' | 'hidden'
   status?: 'active' | 'archived'
   order_index: number
+  category_ids: number[]
+  categories?: EquipmentCategory[]
   related_sku_ids?: number[]
   related_skus?: Array<{
     id: number

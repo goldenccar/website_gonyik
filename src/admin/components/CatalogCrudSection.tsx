@@ -69,12 +69,12 @@ export default function CatalogCrudSection<T extends CatalogCrudItem>({
         <p className="mt-1 max-w-[720px] text-[12px] leading-5 text-muted">{description}</p>
       </div>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-        <label className="block min-w-[190px]">
+        {filters.length > 1 && <label className="block min-w-[190px]">
           <span className="mb-1 block text-[12px] uppercase text-secondary">筛选归属</span>
           <select value={filterValue} onChange={(event) => onFilterChange(event.target.value)} className="min-h-11 w-full border border-borderDark bg-white/5 px-3 py-2 text-[13px] text-white focus:border-white focus:outline-none">
             {filters.map((filter) => <option key={filter.value} value={filter.value} className="bg-dark">{filter.label}</option>)}
           </select>
-        </label>
+        </label>}
         <PrimaryButton onClick={onAdd} icon={<Plus size={16} />}>{actionLabel}</PrimaryButton>
       </div>
     </div>
