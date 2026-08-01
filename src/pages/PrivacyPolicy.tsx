@@ -9,7 +9,7 @@ export default function PrivacyPolicy() {
     getFooter().then((res) => setFooter(res.data.data))
   }, [])
 
-  const content = footer?.privacy_policy_content || '<p>隐私政策内容尚未配置。</p>'
+  const content = footer?.privacy_policy_content || '<p>我们仅在回应咨询、提供材料建议与推进合作所必需的范围内处理您主动提交的信息，并采取合理措施保护这些信息。</p>'
 
   return (
     <div className="bg-darker flex-1 flex flex-col">

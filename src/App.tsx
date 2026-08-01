@@ -5,6 +5,7 @@ import Footer from './components/Footer'
 import PageScrollProgress from './components/PageScrollProgress'
 import { getPublicBootstrap } from './api/client'
 import Home from './pages/Home'
+import { SiteLocaleProvider } from './i18n/SiteLocale'
 
 function PublicLayout() {
   const location = useLocation()
@@ -15,14 +16,20 @@ function PublicLayout() {
     window.scrollTo({ top: 0, left: 0, behavior: smoothScroll ? 'smooth' : 'auto' })
   }, [pathname])
 
+  useEffect(() => {
+    document.documentElement.lang = pathname === '/en' || pathname.startsWith('/en/') ? 'en' : 'zh-CN'
+  }, [pathname])
+
   return (
-    <div className="flex flex-col min-h-[100dvh]">
-      <Header />
-      <main className="flex flex-1 flex-col">
-        <Outlet />
-      </main>
-      <Footer />
-    </div>
+    <SiteLocaleProvider>
+      <div className="flex flex-col min-h-[100dvh]">
+        <Header />
+        <main className="flex flex-1 flex-col">
+          <Outlet />
+        </main>
+        <Footer />
+      </div>
+    </SiteLocaleProvider>
   )
 }
 
@@ -36,9 +43,10 @@ function PageLoader() {
 
 // Public pages
 const FabricDatabase = lazy(() => import('./pages/FabricDatabase'))
+const FabricSeriesStory = lazy(() => import('./pages/FabricSeriesStory'))
 
 const EndUseEquipment = lazy(() => import('./pages/EndUseEquipment'))
-const FluorineFreeFuture = lazy(() => import('./pages/FluorineFreeFuture'))
+const TechnologyPage = lazy(() => import('./pages/TechnologyPage'))
 const ServicesLayout = lazy(() => import('./pages/services/ServicesLayout'))
 const MaterialCare = lazy(() => import('./pages/services/MaterialCare'))
 const GarmentCare = lazy(() => import('./pages/services/GarmentCare'))
@@ -63,6 +71,7 @@ const AdminContactMessageManager = lazy(() => import('./admin/ContactMessageMana
 const AdminFluorineManager = lazy(() => import('./admin/FluorineManager'))
 const AdminPageConfigManager = lazy(() => import('./admin/PageConfigManager'))
 const AdminCmsManager = lazy(() => import('./admin/CmsManager'))
+const AdminLocalizationManager = lazy(() => import('./admin/LocalizationManager'))
 
 function App() {
   useEffect(() => {
@@ -102,18 +111,21 @@ function App() {
           <Route path="/admin/fluorine" element={<AdminFluorineManager />} />
           <Route path="/admin/fabrics/config" element={<AdminPageConfigManager pageKey="fabrics" />} />
           <Route path="/admin/equipment/config" element={<AdminPageConfigManager pageKey="equipment" />} />
-          <Route path="/admin/fluorine/config" element={<AdminPageConfigManager pageKey="pfas-free-innovation" />} />
+          <Route path="/admin/fluorine/config" element={<Navigate to="/admin/fluorine" replace />} />
           <Route path="/admin/services/config" element={<AdminPageConfigManager pageKey="services" />} />
           <Route path="/admin/contact/config" element={<AdminPageConfigManager pageKey="contact" />} />
           <Route path="/admin/cms" element={<AdminCmsManager />} />
+          <Route path="/admin/localizations" element={<AdminLocalizationManager />} />
 
           {/* Public routes */}
           <Route element={<PublicLayout />}>
             <Route path="/" element={<Home />} />
             <Route path="/fabrics" element={<FabricDatabase />} />
+            <Route path="/fabrics/series/:seriesSlug" element={<FabricSeriesStory />} />
 
             <Route path="/equipment" element={<EndUseEquipment />} />
-            <Route path="/pfas-free-innovation" element={<FluorineFreeFuture />} />
+            <Route path="/pfas-free-innovation" element={<Navigate to="/pfas-free-innovation/pfas-free-system" replace />} />
+            <Route path="/pfas-free-innovation/:technologyKey" element={<TechnologyPage />} />
             <Route path="/fluorine-free" element={<Navigate to="/pfas-free-innovation" replace />} />
             <Route path="/services" element={<ServicesLayout />}>
               <Route index element={<Navigate to="material-care" replace />} />
@@ -123,6 +135,22 @@ function App() {
             </Route>
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/contact" element={<Contact />} />
+
+            <Route path="/en" element={<Home />} />
+            <Route path="/en/fabrics" element={<FabricDatabase />} />
+            <Route path="/en/fabrics/series/:seriesSlug" element={<FabricSeriesStory />} />
+            <Route path="/en/equipment" element={<EndUseEquipment />} />
+            <Route path="/en/pfas-free-innovation" element={<Navigate to="/en/pfas-free-innovation/pfas-free-system" replace />} />
+            <Route path="/en/pfas-free-innovation/:technologyKey" element={<TechnologyPage />} />
+            <Route path="/en/fluorine-free" element={<Navigate to="/en/pfas-free-innovation" replace />} />
+            <Route path="/en/services" element={<ServicesLayout />}>
+              <Route index element={<Navigate to="material-care" replace />} />
+              <Route path="material-care" element={<MaterialCare />} />
+              <Route path="garment-care" element={<GarmentCare />} />
+              <Route path="digital-fabrics" element={<DigitalFabrics />} />
+            </Route>
+            <Route path="/en/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/en/contact" element={<Contact />} />
           </Route>
         </Routes>
       </Suspense>

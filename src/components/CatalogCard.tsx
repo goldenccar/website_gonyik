@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { InlineMarkup } from './MarkupParser'
+import { useSiteLocale } from '@/i18n/SiteLocale'
 
 export function CatalogCardShell({ children, selected = false, interactive = false, className = '', railEndCard = false }: {
   children: ReactNode
@@ -76,13 +77,14 @@ export function CatalogEndCta({ title, description, label, href = '/contact' }: 
   label?: string
   href?: string
 }) {
+  const { path: localePath } = useSiteLocale()
   return (
     <aside className="mt-5 flex flex-col gap-5 border-y border-border bg-white/45 px-5 py-5 md:mt-6 md:flex-row md:items-center md:justify-between md:px-6">
       <div className="min-w-0">
         <h3 className="text-[17px] font-semibold text-primary"><InlineMarkup text={title} /></h3>
         {description && <p className="mt-1.5 text-[13px] leading-6 text-secondary"><InlineMarkup text={description} /></p>}
       </div>
-      {label && <Link to={href} className="shrink-0 text-[14px] font-medium text-primary underline underline-offset-4"><InlineMarkup text={label} /> →</Link>}
+      {label && <Link to={localePath(href)} className="shrink-0 text-[14px] font-medium text-primary underline underline-offset-4"><InlineMarkup text={label} /> →</Link>}
     </aside>
   )
 }

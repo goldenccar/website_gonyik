@@ -45,6 +45,9 @@ api.interceptors.response.use(
 export default api
 
 export const getPublicBootstrap = () => cachedGet('/bootstrap')
+export const getTranslations = (locale: 'en') => cachedGet(`/translations/${locale}`)
+export const getAdminLocalizations = () => api.get('/admin/localizations')
+export const updateEnglishLocalizations = (translations: Record<string, string>) => api.put('/admin/localizations/en', { translations })
 export const getHomeConfig = () => cachedGet('/home')
 export const getSiteConfig = () => cachedGet('/site-config')
 export const getPageConfig = (key: string) => cachedGet(`/page/${key}`)
@@ -55,8 +58,8 @@ export const updateAdminCmsConfig = (data: { module_order: string[] }) => api.pu
 export const getFooter = () => cachedGet('/footer')
 export const getSocial = () => cachedGet('/social')
 
-export const getFabricSeries = () => api.get('/fabrics/series', { params: { schema: 'dual-code-v1' } })
-export const getFabricSeriesDetail = (slug: string) => api.get(`/fabrics/series/${slug}`, { params: { schema: 'dual-code-v1' } })
+export const getFabricSeries = () => cachedGet('/fabrics/series', { schema: 'dual-code-v1' })
+export const getFabricSeriesDetail = (slug: string) => cachedGet(`/fabrics/series/${slug}`, { schema: 'dual-code-v1' })
 export const getEquipmentCategories = () => cachedGet('/equipment/categories')
 export const getEquipmentProducts = () => cachedGet('/equipment/products')
 export const getMaterialCareGuides = () => cachedGet('/services/material-care-guides')

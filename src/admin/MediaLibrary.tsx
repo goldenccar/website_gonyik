@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { Trash2, Copy, Upload, Edit2, Image, FileText, Film, Music, File } from 'lucide-react'
+import { Trash2, Copy, Upload, Edit2, Image, FileText, Film, Music, File, Download, Search } from 'lucide-react'
 import api from '@/api/client'
 import Dashboard from './Dashboard'
 import PrimaryButton from './components/PrimaryButton'
@@ -56,6 +56,9 @@ interface MediaItem {
   file_type: string
   size: number
   created_at: string
+  origin: 'upload' | 'site'
+  references: string[]
+  in_use: boolean
 }
 
 export default function AdminMediaLibrary() {
@@ -64,6 +67,7 @@ export default function AdminMediaLibrary() {
   const [message, setMessage] = useState('')
   const [showUpload, setShowUpload] = useState(false)
   const [editing, setEditing] = useState<MediaItem | null>(null)
+  const [query, setQuery] = useState('')
 
   const load = async () => {
     const res = await api.get('/media/admin')
@@ -73,9 +77,14 @@ export default function AdminMediaLibrary() {
   useEffect(() => { load() }, [])
 
   const filtered = useMemo(() => {
-    if (activeCategory === 'all') return items
-    return items.filter((i) => i.category === activeCategory)
-  }, [items, activeCategory])
+    const normalizedQuery = query.trim().toLowerCase()
+    return items.filter((item) => {
+      if (activeCategory !== 'all' && item.category !== activeCategory) return false
+      if (!normalizedQuery) return true
+      return [item.filename, item.description, item.url, ...item.references]
+        .some((value) => String(value || '').toLowerCase().includes(normalizedQuery))
+    })
+  }, [items, activeCategory, query])
 
   const handleUpload = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -102,13 +111,37 @@ export default function AdminMediaLibrary() {
 
   const del = async (id: number) => {
     if (!confirm('确定删除？文件和记录将同时删除。')) return
-    await api.delete(`/media/${id}`)
-    load()
+    try {
+      await api.delete(`/media/${id}`)
+      load()
+    } catch (error: any) {
+      setMessage(error.response?.data?.error || '删除失败')
+    }
   }
 
   const copyUrl = (url: string) => {
     navigator.clipboard.writeText(window.location.origin + url)
     setMessage('链接已复制'); setTimeout(() => setMessage(''), 2000)
+  }
+
+  const downloadFile = async (item: MediaItem) => {
+    try {
+      const response = await api.get('/media/admin/download', { params: { url: item.url }, responseType: 'blob' })
+      const objectUrl = URL.createObjectURL(response.data)
+      const anchor = document.createElement('a')
+      anchor.href = objectUrl
+      anchor.download = item.filename
+      document.body.appendChild(anchor)
+      anchor.click()
+      anchor.remove()
+      // Give the browser time to consume the blob before releasing it. Immediate
+      // revocation can cancel larger downloads in WebKit-based browsers.
+      window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000)
+      setMessage('已开始保存到本地')
+      window.setTimeout(() => setMessage(''), 2000)
+    } catch {
+      setMessage('下载失败，资源文件可能已被移动')
+    }
   }
 
   return (
@@ -117,6 +150,11 @@ export default function AdminMediaLibrary() {
         <AdminHeader title="多媒体资源库" action={<PrimaryButton onClick={() => setShowUpload(true)} icon={<Upload size={16} />}>上传文件</PrimaryButton>} />
 
         {message && <p className="text-success text-[13px] mb-4">{message}</p>}
+
+        <div className="relative mb-5 max-w-[440px]">
+          <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-white/35" />
+          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜索文件名、说明或使用位置" className="min-h-11 w-full border border-white/10 bg-white/5 pl-10 pr-3 text-[14px] text-white outline-none transition-colors placeholder:text-white/30 focus:border-accent" />
+        </div>
 
         {/* Category Tabs */}
         <div className="mb-6 flex gap-2 overflow-x-auto pb-1 md:flex-wrap">
@@ -149,7 +187,7 @@ export default function AdminMediaLibrary() {
                 {/* Preview */}
                 <div className="aspect-square bg-white/5 flex items-center justify-center relative overflow-hidden">
                   {isImage(item.file_type, item.filename) ? (
-                    <img src={item.url} alt={item.filename} className="w-full h-full object-cover" />
+                    <img src={item.url} alt={item.filename} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                   ) : (
                     <div className="text-center p-4">
                       <Icon size={32} className="mx-auto text-accent mb-2" />
@@ -158,18 +196,23 @@ export default function AdminMediaLibrary() {
                   )}
                   <div className="absolute inset-x-0 bottom-0 flex items-center justify-center gap-2 bg-black/70 py-2 opacity-100 transition-opacity md:inset-0 md:py-0 md:opacity-0 md:group-hover:opacity-100">
                     <button onClick={() => copyUrl(item.url)} className="p-2 bg-white/10 hover:bg-white/20 text-white" title="复制链接"><Copy size={14} /></button>
+                    <button onClick={() => downloadFile(item)} className="p-2 bg-white/10 hover:bg-white/20 text-white" title="保存到本地"><Download size={14} /></button>
                     <button onClick={() => setEditing(item)} className="p-2 bg-white/10 hover:bg-white/20 text-white" title="编辑信息"><Edit2 size={14} /></button>
-                    <button onClick={() => del(item.id)} className="p-2 bg-error/20 hover:bg-error/40 text-error" title="删除"><Trash2 size={14} /></button>
+                    {item.origin === 'upload' && <button onClick={() => del(item.id)} className="p-2 bg-error/20 hover:bg-error/40 text-error" title="删除"><Trash2 size={14} /></button>}
                   </div>
                 </div>
                 {/* Info */}
                 <div className="p-3 flex-1 flex flex-col">
                   <div className="flex items-center gap-2 mb-1.5">
                     <span className="text-[10px] px-1.5 py-0.5 text-white" style={{ backgroundColor: catColor }}>{catLabel}</span>
+                    <span className={`text-[10px] ${item.in_use ? 'text-accent' : 'text-white/35'}`}>{item.in_use ? `使用中 · ${item.references.length}处` : '未引用'}</span>
                   </div>
                   <p className="text-[11px] text-accent truncate" title={item.filename}>{item.filename}</p>
                   {item.description && <p className="text-[10px] text-muted mt-1 line-clamp-2" title={item.description}>{item.description}</p>}
-                  <p className="text-[10px] text-muted mt-auto pt-2">{(item.size / 1024).toFixed(1)} KB</p>
+                  <div className="mt-auto flex items-center justify-between gap-2 pt-2 text-[10px] text-muted">
+                    <span>{(item.size / 1024).toFixed(1)} KB</span>
+                    <span>{item.origin === 'site' ? '站内资源' : '后台上传'}</span>
+                  </div>
                 </div>
               </div>
             )

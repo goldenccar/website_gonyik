@@ -1,19 +1,31 @@
 import { Request, Response, NextFunction } from 'express'
 import jwt from 'jsonwebtoken'
 
-const JWT_SECRET = process.env.JWT_SECRET || 'gonyik-secret-key-2026'
+const DEVELOPMENT_JWT_SECRET = 'gonyik-local-development-only'
+
+function jwtSecret() {
+  const configured = process.env.JWT_SECRET?.trim()
+  if (process.env.NODE_ENV === 'production' && (!configured || configured.length < 32)) {
+    throw new Error('JWT_SECRET must be configured with at least 32 characters in production')
+  }
+  return configured || DEVELOPMENT_JWT_SECRET
+}
+
+export function assertAuthConfiguration() {
+  jwtSecret()
+}
 
 export interface AuthRequest extends Request {
   user?: { id: number; username: string }
 }
 
 export function generateToken(userId: number, username: string): string {
-  return jwt.sign({ id: userId, username }, JWT_SECRET, { expiresIn: '7d' })
+  return jwt.sign({ id: userId, username }, jwtSecret(), { expiresIn: '7d' })
 }
 
 export function verifyToken(token: string): { id: number; username: string } | null {
   try {
-    return jwt.verify(token, JWT_SECRET) as { id: number; username: string }
+    return jwt.verify(token, jwtSecret()) as { id: number; username: string }
   } catch {
     return null
   }

@@ -3,12 +3,14 @@ import { Link } from 'react-router-dom'
 import { InlineMarkup } from './MarkupParser'
 import { CatalogCardMedia, CatalogCardShell } from './CatalogCard'
 import { materialPlatformLabel } from '@/config/materialPlatforms'
+import { useSiteLocale } from '@/i18n/SiteLocale'
 
 function parseFeatures(value: string) {
   try { return JSON.parse(value) as string[] } catch { return [] }
 }
 
 export default function ApplicationCard({ product, categoryName }: { product: EquipmentProduct; categoryName?: string }) {
+  const { path: localePath } = useSiteLocale()
   const summary = product.card_summary || parseFeatures(product.features).slice(0, 3).join(' · ')
   const fallback = (
     <div className="gonyik-application-placeholder flex h-full w-full flex-col justify-end p-5">
@@ -29,7 +31,7 @@ export default function ApplicationCard({ product, categoryName }: { product: Eq
       {Boolean(product.related_skus?.length) && <div className="mt-10 border-t border-border/80 pt-4 md:mt-12">
         <p className="text-[11px] font-medium tracking-[0.08em] text-secondary">采用面料</p>
         <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2">
-          {product.related_skus?.map((sku) => <Link key={sku.id} to={`/fabrics?series=${encodeURIComponent(sku.series_slug)}&sku=${sku.id}`} className="text-[13px] font-medium text-primary underline decoration-border underline-offset-4 transition-colors hover:decoration-primary">{sku.public_name || sku.name}</Link>)}
+          {product.related_skus?.map((sku) => <Link key={sku.id} to={localePath(`/fabrics?series=${encodeURIComponent(sku.series_slug)}&sku=${sku.id}`)} className="text-[13px] font-medium text-primary underline decoration-border underline-offset-4 transition-colors hover:decoration-primary">{sku.public_name || sku.name}</Link>)}
         </div>
       </div>}
     </div>

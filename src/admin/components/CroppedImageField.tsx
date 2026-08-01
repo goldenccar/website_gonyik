@@ -5,6 +5,7 @@ import ImageCropper from '../ImageCropper'
 export interface CroppedImageChange {
   file: File | null
   removeCurrent: boolean
+  previewUrl?: string | null
 }
 
 interface CroppedImageFieldProps {
@@ -96,6 +97,7 @@ export default function CroppedImageField({
     onChange({
       file: new File([blob], `${safeBaseName}.${extension}`, { type: outputType }),
       removeCurrent: false,
+      previewUrl,
     })
   }
 
@@ -105,7 +107,7 @@ export default function CroppedImageField({
     setPreviewSrc(null)
     setRemoved(true)
     setError('')
-    onChange({ file: null, removeCurrent: true })
+    onChange({ file: null, removeCurrent: true, previewUrl: null })
   }
 
   if (cropSrc) {

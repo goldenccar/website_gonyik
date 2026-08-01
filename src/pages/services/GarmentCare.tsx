@@ -7,8 +7,10 @@ import ServiceSectionHeader from '@/components/service/ServiceSectionHeader'
 import { InlineMarkup } from '@/components/MarkupParser'
 import type { CareGuide, FAQ } from '@/types'
 import type { ServicesOutletContext } from './ServicesLayout'
+import { useSiteLocale } from '@/i18n/SiteLocale'
 
 export default function GarmentCare() {
+  const { path: localePath } = useSiteLocale()
   const { sections } = useOutletContext<ServicesOutletContext>()
   const section = sections.find((item) => item.module_type === 'garment-care')
   const [guides, setGuides] = useState<CareGuide[]>([])
@@ -21,7 +23,7 @@ export default function GarmentCare() {
     })
   }, [])
 
-  if (!section) return <Navigate to="/services" replace />
+  if (!section) return <Navigate to={localePath('/services')} replace />
 
   return (
     <PageSection tone="white" className="space-y-16 md:space-y-20">
@@ -31,7 +33,7 @@ export default function GarmentCare() {
           <li key={item.id} className="grid gap-3 border-b border-border py-7 sm:grid-cols-[64px_180px_minmax(0,1fr)] sm:gap-6 md:py-9">
             <span className="label-en pt-1 text-[#4e9bab]">{String(index + 1).padStart(2, '0')}</span>
             <h2 className="text-[18px] font-medium leading-7 text-primary"><InlineMarkup text={item.title} /></h2>
-            <p className="max-w-[700px] text-[14px] leading-7 text-secondary"><InlineMarkup text={item.content} /></p>
+            <p className="max-w-[700px] text-[16px] leading-[1.75] text-secondary"><InlineMarkup text={item.content} /></p>
           </li>
         ))}
       </ol>

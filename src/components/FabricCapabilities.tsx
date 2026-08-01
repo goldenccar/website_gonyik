@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useSiteLocale } from '@/i18n/SiteLocale'
 import {
   DEFAULT_FABRIC_CAPABILITIES,
   FABRIC_CAPABILITY_THEME_CLASSES,
@@ -28,6 +29,7 @@ export function getFabricCapabilityIds(features?: unknown, legacySummary?: unkno
 }
 
 export function FabricCapabilityTags({ features, legacySummary, capabilities = DEFAULT_FABRIC_CAPABILITIES, limit = 4, align = 'end', variant = 'themed' }: { features?: unknown; legacySummary?: unknown; capabilities?: FabricCapabilityDefinition[]; limit?: number; align?: 'start' | 'end'; variant?: 'themed' | 'quiet' | 'editorial' }) {
+  const { t } = useSiteLocale()
   const selected = getFabricCapabilityIds(features, legacySummary, capabilities)
     .map((key) => capabilities.find((item) => item.key === key))
     .filter((item): item is FabricCapabilityDefinition => Boolean(item))
@@ -39,7 +41,7 @@ export function FabricCapabilityTags({ features, legacySummary, capabilities = D
     <ul className={`flex flex-wrap items-center ${variant === 'editorial' ? 'gap-x-2.5 gap-y-2' : 'gap-1.5'} ${align === 'start' ? 'justify-start' : 'justify-end'}`} aria-label={selected.map((item) => item.label).join('、')}>
       {selected.map(({ key, label, theme }) => (
         <li key={key} className={`flex items-center whitespace-nowrap text-[12px] leading-none ${variant === 'editorial' ? 'h-auto border-0 bg-transparent p-0 text-[#536d7d]' : variant === 'quiet' ? 'h-7 border border-[#c7d2d9] bg-[#f7f9fa] px-2.5 text-[#466174]' : `h-7 border px-2.5 ${FABRIC_CAPABILITY_THEME_CLASSES[theme] || FABRIC_CAPABILITY_THEME_CLASSES.neutral}`}`}>
-          {label}
+          {t(label)}
         </li>
       ))}
     </ul>

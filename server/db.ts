@@ -3,6 +3,7 @@ import path from 'path'
 import bcrypt from 'bcryptjs'
 import { DEFAULT_FABRIC_CAPABILITIES } from '../src/config/fabricCapabilities'
 import { normalizeMaterialPlatforms } from '../src/config/materialPlatforms'
+import { getTechnologyPagePath, TECHNOLOGY_GROUPS, TECHNOLOGY_PAGES } from '../src/config/technologyPages'
 
 const DB_PATH = path.resolve(process.cwd(), 'db.json')
 const UPLOADS_DIR = path.resolve(process.cwd(), 'public/uploads')
@@ -45,9 +46,73 @@ export interface Database {
   service_sections_version?: number
   footer_badge_version?: number
   header_mega_menu_version?: number
+  site_architecture_version?: number
+  home_story_version?: number
+  fabric_series_story_version?: number
+  home_verification_gallery_version?: number
+  visual_asset_version?: number
+  public_copy_version?: number
   inquiry_subjects: any[]
   contact_messages: any[]
   users: any[]
+  translations: Record<string, Record<string, string>>
+}
+
+const PFAS_SYSTEM_PAGE_COPY = {
+  title: '无氟技术体系',
+  subtitle: '从新的材料体系出发，重建高性能防护的结构与体验。',
+  content: '过去数十年，许多高性能防水透湿产品依赖含氟膜材料与含氟拒水整理。随着部分 PFAS 的环境持久性、潜在健康影响及相关风险得到进一步确认，行业需要在减少含氟依赖的同时，保留真正有价值的性能与穿着体验。',
+  image_url: '/visuals/pfas-system-hero-v8.jpg',
+  image_fit: 'cover',
+  hero_statement: '性能，不应以对持久性含氟化学体系的长期依赖为前提。',
+  hero_scroll_label: '了解新的无氟性能路径',
+  content_blocks: [
+    {
+      key: 'why-change',
+      title: '高性能材料，需要一条新的路径',
+      content: '过去数十年，许多高性能防水透湿产品依赖含氟膜材料与含氟拒水整理，以获得稳定的防水、透湿和表面防护表现。/h随着部分 PFAS 的环境持久性、潜在健康影响及相关风险得到进一步确认，全球监管正在持续收紧。行业需要解决的，已经不只是去掉某一种化学品，而是在减少含氟依赖的同时，保留真正有价值的性能与穿着体验。',
+      highlights: ['环境危害', '健康风险', '监管收紧', '性能要求'],
+    },
+    {
+      key: 'system-rebuild',
+      title: '从单点替代，转向系统协同',
+      content: '无氟不是简单替换一张膜或一种整理剂。化学体系的变化，会同时影响防水、透湿、粘合、手感、耐久与制造稳定性。/h港翼把材料、结构、工艺和验证放在同一条开发路径中，让各环节围绕最终使用体验共同校准，而不是把性能压力留给某一个孤立部件。',
+      items: [
+        { title: '材料基础', content: '围绕无氟膜、高性能纤维与胶黏体系建立底层能力。' },
+        { title: '结构与工艺', content: '协同织物结构、复合方式与无氟功能整理。' },
+        { title: '制造适配', content: '把实验室方案转化为可重复、可追溯的生产条件。' },
+        { title: '验证闭环', content: '从材料、面料到成品逐级确认性能与耐久表现。' },
+      ],
+    },
+    {
+      key: 'from-material-to-product',
+      title: '从一片功能膜，走向完整的产品体系',
+      content: '港翼以 RPO-SOTEX 超微孔功能膜等核心材料为基础，将织物结构、复合工艺、无氟整理与供应链协同纳入同一开发体系。/h这套体系最终形成可制造、可验证的功能面料，并进一步服务于成衣、鞋履材料和专业装备等终端应用。',
+    },
+  ],
+}
+
+const MEMBRANE_STRUCTURE_BLOCK = {
+  key: 'transport-mechanism',
+  title: '水汽如何穿过一层防水膜',
+  content: '防水透湿膜需要完成两件看似相反的事：阻挡外部液态水，同时让人体产生的水汽持续向外释放。不同膜结构实现透湿的路径并不相同。/h传统无孔膜依靠材料对水分子的吸附、扩散与解吸完成传递；RPO-SOTEX 则在连续膜体内部形成细小、不规则且相互连通的超微孔，让水汽经孔道向外扩散。',
+}
+
+const MEMBRANE_WATERPROOF_BLOCK = {
+  key: 'waterproof-mechanism',
+  title: '透气膜怎么防水',
+  content: '水汽可以沿连通微孔向外扩散，液态水面对的却是另一套界面条件。RPO-SOTEX 的疏水微孔远小于液滴，水在孔口形成弯月面；只有当外部水压超过孔隙对应的进入压力，液态水才可能进入膜层。/h因此，防水能力并不是把孔完全封死，而是通过材料表面性质、孔径分布与膜层均匀性共同建立稳定的液态水屏障。',
+}
+
+const MEMBRANE_PERFORMANCE_BLOCK = {
+  key: 'performance-foundation',
+  title: '一张膜，需要同时成立的性能',
+  content: 'RPO-SOTEX 基于增韧聚烯烃材料体系与微孔结构调控，将无氟材料本体、连通超微孔和高强韧膜体结合在同一结构中。/h它追求的不是某一个孤立指标的峰值，而是在复合加工与长期使用中，持续维持防水、透湿、强韧和耐候之间的平衡。',
+  items: [
+    { title: '材料本体无氟', content: '采用无氟聚烯烃材料体系，从核心膜层减少对含氟材料的依赖，并已通过 SGS PFAS-Free 检测。' },
+    { title: '超微孔直接传递', content: '膜体内部形成细小、连续的微孔结构，为水汽提供直接的传递通道，减少对材料吸湿扩散过程的依赖。' },
+    { title: '强韧与耐候基础', content: '高强韧膜体为后续复合加工、反复弯折、磨损和环境变化中的稳定表现提供材料基础。' },
+  ],
 }
 
 function createDefaultServiceFaqs() {
@@ -97,9 +162,9 @@ function createDefaultDb(): Database {
   const defaultDb: Database = {
     home_config: {
       id: 1,
-      hero_tag: 'PFAS-FREE PERFORMANCE MATERIALS',
-      hero_title: '以固纳 RPO 无氟材料科技\n创造更安全的高性能织物',
-      hero_slogan: '固纳 RPO 无氟材料平台，融合先进复合技术与结构设计，赋予面料持久防护、舒适透气与多功能表现。',
+      hero_tag: 'PERFORMANCE TEXTILE TECHNOLOGY',
+      hero_title: '以材料科技\n重构高性能面料',
+      hero_slogan: '港翼围绕底层材料、结构设计、制造与验证，开发面向真实应用的功能面料和材料解决方案。',
       hero_background: null,
       hero_mobile_background: null,
       primary_btn_text: '探索材料平台',
@@ -142,9 +207,10 @@ function createDefaultDb(): Database {
       ],
       series_section_title: '核心面料平台',
       series_section_subtitle: '面向多元应用的材料平台，让高性能更可持续。',
-      series_section_link_text: '查看全部系列',
+      series_section_link_text: '查看全部面料产品',
       series_section_link: '/fabrics',
       verification_image: null,
+      verification_images: [],
       verification_section_title: '测试与认证',
       verification_section_subtitle: '内部验证用于研发与过程控制，关键结果由独立第三方检测提供依据。',
       verification_section_link_text: '查看测试与认证',
@@ -170,11 +236,11 @@ function createDefaultDb(): Database {
       { id: 5, page_key: 'contact', page_tag: 'CONTACT US', page_title: '联系我们', page_subtitle: '如有材料需求或合作意向，欢迎与我们取得联系。', hero_background: null },
     ],
     navigation: [
-      { id: 2, label: '面料数据库', link: '/fabrics', order_index: 0 },
-      { id: 3, label: '终端装备', link: '/equipment', order_index: 1 },
-      { id: 4, label: '技术创新', link: '/pfas-free-innovation', order_index: 2 },
-      { id: 5, label: '服务与支持', link: '/services', order_index: 3 },
-      { id: 6, label: '联系我们', link: '/contact', order_index: 4 },
+      { id: 4, label: '材料科技', link: '/pfas-free-innovation', order_index: 0 },
+      { id: 2, label: '面料系列', link: '/fabrics', order_index: 1 },
+      { id: 3, label: '产品应用', link: '/equipment', order_index: 2 },
+      { id: 5, label: '专业支持', link: '/services', order_index: 3 },
+      { id: 6, label: '合作咨询', link: '/contact', order_index: 4 },
     ],
     footer_config: {
       id: 1,
@@ -218,11 +284,7 @@ function createDefaultDb(): Database {
         id: 1,
         page_key: 'pfas-free-innovation',
         order_index: 0,
-        title: '无氟技术体系',
-        subtitle: '从单项替代，走向材料系统重构',
-        content: 'PFAS 曾被广泛用于纺织品的防泼水、防油和防污处理。稳定的碳—氟结构使部分 PFAS 难以在环境中降解，并可能通过水体、土壤和食物链持续迁移。现有研究显示，特定 PFAS 的长期暴露与胆固醇升高、免疫反应降低、肝功能变化，以及部分生殖发育和癌症风险相关。/h港翼以 RPO-SOTEX 高性能材料平台为基础，从功能膜、高性能纤维、无氟整理、胶黏体系和复合工艺等环节重新组织材料技术路径。无氟不是对某一种含氟材料的简单替代，而是在防护、舒适、耐久和制造稳定性之间重建完整的材料系统。',
-        image_url: null,
-        image_fit: 'cover',
+        ...PFAS_SYSTEM_PAGE_COPY,
       },
       {
         id: 2,
@@ -243,8 +305,9 @@ function createDefaultDb(): Database {
         title: '高性能膜技术',
         subtitle: '构建防水、透湿与强度兼备的功能界面',
         content: '港翼通过 RPO-SOTEX 无氟超微孔纳米膜构建连续、轻薄的功能界面。膜内相互连通的超微孔为气态水分子的扩散提供通道；面对液态水时，疏水孔隙结构与水的表面张力共同形成毛细阻力，使液体需要达到一定进入压力才能穿透膜层。/h除了防水与水汽传递能力，RPO 纳米膜本身也具有突出的物理性能。其材料结构在极低密度下仍可达到接近部分铝合金等级的拉伸强度，呈现优异的比强度、耐拉伸表现和结构稳定性，为轻量面料与高可靠防护结构提供更大的设计空间。/h膜材的最终表现还取决于孔隙分布、厚度、均匀性，以及与面层、底布和复合工艺的匹配。港翼围绕膜材制备、结构控制与应用适配持续开发，使 RPO-SOTEX 功能层能够稳定进入不同面料系统。',
-        image_url: null,
+        image_url: '/visuals/technology-membrane-production-hero-v1.webp',
         image_fit: 'cover',
+        content_blocks: [MEMBRANE_STRUCTURE_BLOCK, MEMBRANE_WATERPROOF_BLOCK, MEMBRANE_PERFORMANCE_BLOCK],
       },
       {
         id: 4,
@@ -253,7 +316,7 @@ function createDefaultDb(): Database {
         title: '高性能纤维',
         subtitle: '让纤维本身承担防护性能',
         content: '在 RPO-SOTEX 平台中，高性能纤维并不只是功能膜的支撑材料。针对高强、耐磨、轻量和专业防护需求，纤维本身可以承担载荷分散、结构增强和抗切割等核心作用，直接决定面料的基础性能边界。/h港翼根据不同应用选择纤维材料、纱线规格和织物组织，并协同织造、染整与后整理工艺，在强度、克重、手感、柔韧性和耐久性之间建立适合最终产品的结构方案。高性能纤维可以独立形成防护材料，也可以与功能膜共同构成多层系统。',
-        image_url: null,
+        image_url: '/visuals/technology-fiber-production-hero-v2.webp',
         image_fit: 'cover',
       },
       {
@@ -283,7 +346,7 @@ function createDefaultDb(): Database {
         order_index: 6,
         title: '测试与验证',
         subtitle: '从材料研发到第三方验证',
-        content: '港翼依托固纳 RPO Lab、香港科技大学（广州）多功能高聚物薄膜中央实验室，以及合作伙伴东莞升佳的织造与染整实验条件，对原料、纤维、膜材、复合结构、工艺窗口和耐久表现开展分阶段测试。/h从实验室配方、材料小样和工艺试制，到量产批次与成品性能，港翼通过连续测试确认技术方案的稳定性。对于防水、透湿、耐磨及专业防护等关键指标，可根据项目要求委托 SGS、中纺标 CTTC 等机构进行独立检测，使材料性能建立在可重复、可验证的数据基础之上。',
+        content: '港翼结合材料研发实验室、香港科技大学（广州）多功能高聚物薄膜中央实验室及合作实验条件，对原料、纤维、膜材、复合结构、工艺窗口和耐久表现开展分阶段测试。/h从实验室配方、材料小样和工艺试制，到量产批次与成品性能，港翼通过连续测试确认技术方案的稳定性。对于防水、透湿、耐磨及专业防护等关键指标，可根据项目要求委托 SGS、中纺标 CTTC 等机构进行独立检测，使材料性能建立在可重复、可验证的数据基础之上。',
         image_url: null,
         image_fit: 'cover',
       },
@@ -335,6 +398,9 @@ function createDefaultDb(): Database {
     fabric_card_positioning_version: 1,
     service_sections_version: 10,
     footer_badge_version: 1,
+    home_verification_gallery_version: 1,
+    home_story_version: 3,
+    visual_asset_version: 1,
     social_media: [
       { id: 1, platform: 'wechat', account: '港翼科技GONYIK', qrcode_url: null },
       { id: 2, platform: 'xiaohongshu', account: '港翼科技GONYIK', qrcode_url: null },
@@ -342,13 +408,13 @@ function createDefaultDb(): Database {
     ],
     fabric_capabilities: DEFAULT_FABRIC_CAPABILITIES.map((item, index) => ({ ...item, id: index + 1, order_index: index })),
     fabric_series: [
-      { id: 1, name: 'Otter', slug: 'otter', description: '无氟高性能复合面料 3L，Solidgood RPO Membrane 中间层，香港科技大学前沿纳米材料 / 日内瓦国际发明展金奖技术', tagline: '新一代无氟防护', home_image: null, home_badge_image: '/brandmarks/otter-label.svg', order_index: 0 },
-      { id: 2, name: 'Kais', slug: 'kais', description: '专业防护平台，基于 UHMWPE 纤维基材的防刺/防火/防化解决方案', tagline: '专业防护平台 · 防刺/防火/防化', home_image: null, home_badge_image: '/brandmarks/kais-label.svg', order_index: 1 },
-      { id: 3, name: 'Rayo', slug: 'rayo', description: '原生防晒导湿系列，Coolmax + TiO2 原纱处理，UPF 150+', tagline: '原生防晒 · 导湿凉感', home_image: null, home_badge_image: '/brandmarks/rayo-label.svg', order_index: 2 },
+      { id: 1, name: 'Otter', slug: 'otter', description: '无氟高性能复合面料 3L，Solidgood RPO Membrane 中间层，香港科技大学前沿纳米材料 / 日内瓦国际发明展金奖技术', tagline: '新一代无氟防护', story_title: '为复杂天气与长期使用建立可靠防护', story_intro: 'OTTER 将无氟防水透湿结构、持久防风与耐磨面层整合为可制造、可验证的复合面料系统，面向全天候防护与高频使用。', story_highlights: ['全天候防护', '防水与透湿兼顾', '面向长期使用的耐磨结构'], home_image: null, home_badge_image: '/brandmarks/otter-label.svg', order_index: 0 },
+      { id: 2, name: 'Kais', slug: 'kais', description: '专业防护平台，基于 UHMWPE 纤维基材的防刺/防火/防化解决方案', tagline: '专业防护平台 · 防刺/防火/防化', story_title: '让高强材料进入明确的专业任务', story_intro: 'KAIS 围绕高强纤维、织物结构与应用适配展开材料开发，为防刺、防火及其他专业防护方向提供可进一步验证的材料基础。', story_highlights: ['高强材料基础', '轻量防护方向', '专业任务适配'], home_image: null, home_badge_image: '/brandmarks/kais-label.svg', order_index: 1 },
+      { id: 3, name: 'Rayo', slug: 'rayo', description: '原生防晒导湿系列，Coolmax + TiO2 原纱处理，UPF 150+', tagline: '原生防晒 · 导湿凉感', story_title: '从纤维与结构出发，建立轻量舒适体验', story_intro: 'RAYO 面向日常与运动场景，通过纤维、织物结构与无氟整理的协同设计，形成防晒、导湿和速干等具体功能。', story_highlights: ['轻量穿着体验', '导湿与速干', '原生防晒能力'], home_image: null, home_badge_image: '/brandmarks/rayo-label.svg', order_index: 2 },
     ],
     media_items: [],
     fabric_sku: [
-      { id: 1, series_id: 1, name: 'OT-01（原T31）', sku_code: 'OT-01', internal_code: 'OT3-PAEL70-V15-PES50-B', public_name: 'OTTER T70', product_type: '三层防护复合面料', position_performance: 7, position_durability: 7, position_handfeel: 4, image: '/visuals/otter-t70-texture.png', features: '["durable-waterproof","high-moisture-permeability","all-weather-protection"]', specifications: '{"结构":"3L Tri-layer","面层":"70D锦氨梭织面料","理论克重":"253 g/m²","中层":"V1.5膜 · 4 g/m²","底层":"50D纯涤佳积布 · 95 g/m²","胶量":"两面各12 g/m²，合计24 g/m²","复合纹路":"篮球纹"}', card_summary: '', visibility: 'public', status: 'active', order_index: 0 },
+      { id: 1, series_id: 1, name: 'OT-01（原T31）', sku_code: 'OT-01', internal_code: 'OT3-PAEL70-V15-PES50-B', public_name: 'OTTER T70', product_type: '三层防护复合面料', position_performance: 7, position_durability: 7, position_handfeel: 4, image: '/visuals/otter-t70-texture-v1.webp', features: '["durable-waterproof","high-moisture-permeability","all-weather-protection"]', specifications: '{"结构":"3L Tri-layer","面层":"70D锦氨梭织面料","理论克重":"253 g/m²","中层":"V1.5膜 · 4 g/m²","底层":"50D纯涤佳积布 · 95 g/m²","胶量":"两面各12 g/m²，合计24 g/m²","复合纹路":"篮球纹"}', card_summary: '', visibility: 'public', status: 'active', order_index: 0 },
       { id: 2, series_id: 1, name: 'OT-02', sku_code: 'OT-02', internal_code: 'OT3-PAEL50-V20-PES30-D', public_name: 'OTTER T50', product_type: '轻量三层防护复合面料', position_performance: null, position_durability: null, position_handfeel: null, image: null, features: '["无氟","3L复合","RPO膜"]', specifications: '{"结构":"3L Tri-layer","面层":"50D锦氨梭织面料","理论克重":"183 g/m²","中层":"V2.0膜 · 4 g/m²","底层":"30D纯涤高密精编可特 · 55 g/m²","胶量":"两面各12 g/m²，合计24 g/m²","复合纹路":"小菱形纹"}', card_summary: '', visibility: 'public', status: 'active', order_index: 1 },
     ],
     product_code_registry: [
@@ -397,6 +463,7 @@ function createDefaultDb(): Database {
     users: [
       { id: 1, username: 'admin', password_hash: bcrypt.hashSync('888888', 10), must_change_password: 0, created_at: new Date().toISOString() },
     ],
+    translations: { en: {} },
   }
 
   fs.writeFileSync(DB_PATH, JSON.stringify(defaultDb, null, 2))
@@ -525,7 +592,7 @@ function migrateFabricProductCards(database: Database) {
       position_performance: 7,
       position_durability: 7,
       position_handfeel: 4,
-      image: t70.image || '/visuals/otter-t70-texture.png',
+      image: t70.image || '/visuals/otter-t70-texture-v1.webp',
     })
     updateCoreSpecs(t70, '70D锦氨梭织面料', '253 g/m²')
   }
@@ -542,6 +609,15 @@ function migrateFabricProductCards(database: Database) {
 export function initDatabase() {
   if (fs.existsSync(DB_PATH)) {
     db = JSON.parse(fs.readFileSync(DB_PATH, 'utf-8'))
+    if ((db.visual_asset_version ?? 0) < 1) {
+      db.fabric_sku.forEach((sku: any) => {
+        if (sku.image === '/visuals/otter-t70-texture.png') {
+          sku.image = '/visuals/otter-t70-texture-v1.webp'
+        }
+      })
+      db.visual_asset_version = 1
+      saveDb()
+    }
     if ((db.rpo_sotex_naming_version ?? 0) < 1) {
       replaceLegacyRpoName(db)
       db.rpo_sotex_naming_version = 1
@@ -853,16 +929,16 @@ export function initDatabase() {
     if (fabricsRail) Object.assign(fabricsRail, {
       core_performance_title: fabricsRail.core_performance_title ?? '核心性能',
       rail_end_card_visible: fabricsRail.rail_end_card_visible ?? true,
-      rail_end_card_title: fabricsRail.rail_end_card_title ?? '新面料开发中',
-      rail_end_card_description: fabricsRail.rail_end_card_description ?? '针对新的使用环境与性能目标持续开发。',
-      rail_end_card_cta_label: fabricsRail.rail_end_card_cta_label ?? '提交需求',
+      rail_end_card_title: fabricsRail.rail_end_card_title ?? '面料定制与联合开发',
+      rail_end_card_description: fabricsRail.rail_end_card_description ?? '围绕应用环境与目标性能，提供选材建议、打样与联合开发支持。',
+      rail_end_card_cta_label: fabricsRail.rail_end_card_cta_label ?? '咨询开发方案',
       rail_end_card_cta_href: fabricsRail.rail_end_card_cta_href ?? '/contact',
     })
     const equipmentRail = db.page_configs.find((page: any) => page.page_key === 'equipment')
     if (equipmentRail) Object.assign(equipmentRail, {
       rail_end_card_visible: equipmentRail.rail_end_card_visible ?? true,
-      rail_end_card_title: equipmentRail.rail_end_card_title ?? '新应用开发中',
-      rail_end_card_description: equipmentRail.rail_end_card_description ?? '围绕新的任务与穿着环境持续开发。',
+      rail_end_card_title: equipmentRail.rail_end_card_title ?? '应用合作咨询',
+      rail_end_card_description: equipmentRail.rail_end_card_description ?? '围绕任务环境、材料需求与产品形态，提供应用建议与合作支持。',
       rail_end_card_cta_label: equipmentRail.rail_end_card_cta_label ?? '',
       rail_end_card_cta_href: equipmentRail.rail_end_card_cta_href ?? '/contact',
     })
@@ -892,7 +968,7 @@ export function initDatabase() {
         ],
         series_section_title: '核心面料平台',
         series_section_subtitle: '面向多元应用的材料平台，让高性能更可持续。',
-        series_section_link_text: '查看全部系列',
+        series_section_link_text: '查看全部面料产品',
         series_section_link: '/fabrics',
         verification_section_title: '验证与标准',
         verification_section_subtitle: '平台级验证，安心选择。',
@@ -1198,7 +1274,7 @@ export function initDatabase() {
         {
           title: '测试与验证',
           subtitle: '从材料研发到第三方验证',
-          content: '港翼依托固纳 RPO Lab、香港科技大学（广州）多功能高聚物薄膜中央实验室，以及合作伙伴东莞升佳的织造与染整实验条件，对原料、纤维、膜材、复合结构、工艺窗口和耐久表现开展分阶段测试。/h从实验室配方、材料小样和工艺试制，到量产批次与成品性能，港翼通过连续测试确认技术方案的稳定性。对于防水、透湿、耐磨及专业防护等关键指标，可根据项目要求委托 SGS、中纺标 CTTC 等机构进行独立检测，使材料性能建立在可重复、可验证的数据基础之上。',
+          content: '港翼结合材料研发实验室、香港科技大学（广州）多功能高聚物薄膜中央实验室及合作实验条件，对原料、纤维、膜材、复合结构、工艺窗口和耐久表现开展分阶段测试。/h从实验室配方、材料小样和工艺试制，到量产批次与成品性能，港翼通过连续测试确认技术方案的稳定性。对于防水、透湿、耐磨及专业防护等关键指标，可根据项目要求委托 SGS、中纺标 CTTC 等机构进行独立检测，使材料性能建立在可重复、可验证的数据基础之上。',
         },
       ]
 
@@ -1268,6 +1344,249 @@ export function initDatabase() {
         rpoSection.content = '高性能面料的能力，首先来自底层材料。RPO 材料平台围绕 RPO-SOTEX 超微孔功能膜、RPO高性能纤维展开，通过对材料结构、形态与加工适配性的持续开发，在轻量、强度、耐久与功能界面之间建立新的性能基础。/h港翼根据不同应用，将 RPO 材料与织物结构、无氟整理和复合工艺协同设计，使材料从实验室形态进入可制造、可验证的面料系统，并进一步服务于防水透湿、轻量防护、高强耐磨等产品方向。'
       }
       db.technology_sections_version = 7
+      saveDb()
+    }
+    if ((db.technology_sections_version ?? 0) < 8) {
+      const sections = db.fluorine_sections
+        .filter((section: any) => section.page_key === 'pfas-free-innovation')
+        .sort(sortByOrderIndex)
+      TECHNOLOGY_PAGES.forEach((definition, orderIndex) => {
+        const section = sections.find((item: any) => (
+          item.section_key === definition.sectionKey
+          || definition.legacyTitles.includes(String(item.title || ''))
+        ))
+        if (!section) return
+        section.section_key = definition.sectionKey
+        section.module_type = 'technology-page'
+        section.nav_label = section.nav_label || definition.menuLabel
+        section.order_index = orderIndex
+        section.status = section.status === 'draft' ? 'draft' : 'published'
+      })
+      db.technology_sections_version = 8
+      saveDb()
+    }
+    if ((db.technology_sections_version ?? 0) < 9) {
+      const pfasSystemSection = db.fluorine_sections.find((section: any) => (
+        section.page_key === 'pfas-free-innovation'
+        && section.section_key === 'pfas-free-system'
+      ))
+      if (pfasSystemSection) {
+        Object.assign(pfasSystemSection, PFAS_SYSTEM_PAGE_COPY)
+      }
+      db.technology_sections_version = 9
+      saveDb()
+    }
+    if ((db.technology_sections_version ?? 0) < 10) {
+      const pfasSystemSection = db.fluorine_sections.find((section: any) => (
+        section.page_key === 'pfas-free-innovation'
+        && section.section_key === 'pfas-free-system'
+      ))
+      const whyChangeBlock = pfasSystemSection?.content_blocks?.find((block: any) => block.key === 'why-change')
+      if (whyChangeBlock) {
+        whyChangeBlock.highlights = ['环境危害', '健康风险', '监管收紧', '性能要求']
+      }
+      db.technology_sections_version = 10
+      saveDb()
+    }
+    if ((db.technology_sections_version ?? 0) < 11) {
+      const pfasSystemSection = db.fluorine_sections.find((section: any) => (
+        section.page_key === 'pfas-free-innovation'
+        && section.section_key === 'pfas-free-system'
+      ))
+      const previousStructureBlock = pfasSystemSection?.content_blocks?.find((block: any) => (
+        block.key === 'new-structure' || block.key === 'system-rebuild'
+      ))
+      if (previousStructureBlock) {
+        Object.assign(previousStructureBlock, PFAS_SYSTEM_PAGE_COPY.content_blocks[1])
+      }
+
+      const membraneSection = db.fluorine_sections.find((section: any) => (
+        section.page_key === 'pfas-free-innovation'
+        && section.section_key === 'rpo-sotex-membrane'
+      ))
+      if (membraneSection) {
+        const otherBlocks = (membraneSection.content_blocks || []).filter((block: any) => block.key !== 'transport-mechanism')
+        membraneSection.content_blocks = [MEMBRANE_STRUCTURE_BLOCK, ...otherBlocks]
+      }
+      db.technology_sections_version = 11
+      saveDb()
+    }
+    if ((db.technology_sections_version ?? 0) < 12) {
+      const pfasSystemSection = db.fluorine_sections.find((section: any) => (
+        section.page_key === 'pfas-free-innovation'
+        && section.section_key === 'pfas-free-system'
+      ))
+      if (
+        pfasSystemSection?.image_url === '/visuals/pfas-system-hero-v1.webp'
+        || pfasSystemSection?.image_url === '/visuals/pfas-system-hero-v2.webp'
+      ) {
+        pfasSystemSection.image_url = '/visuals/pfas-system-hero-v3.webp'
+      }
+      db.technology_sections_version = 12
+      saveDb()
+    }
+    if ((db.technology_sections_version ?? 0) < 13) {
+      const pfasSystemSection = db.fluorine_sections.find((section: any) => (
+        section.page_key === 'pfas-free-innovation'
+        && section.section_key === 'pfas-free-system'
+      ))
+      if (pfasSystemSection?.image_url === '/visuals/pfas-system-hero-v2.webp') {
+        pfasSystemSection.image_url = '/visuals/pfas-system-hero-v3.webp'
+      }
+      db.technology_sections_version = 13
+      saveDb()
+    }
+    if ((db.technology_sections_version ?? 0) < 14) {
+      const pfasSystemSection = db.fluorine_sections.find((section: any) => (
+        section.page_key === 'pfas-free-innovation'
+        && section.section_key === 'pfas-free-system'
+      ))
+      if ([
+        '/visuals/pfas-system-hero-v1.webp',
+        '/visuals/pfas-system-hero-v2.webp',
+        '/visuals/pfas-system-hero-v3.webp',
+      ].includes(pfasSystemSection?.image_url)) {
+        pfasSystemSection.image_url = ''
+      }
+      db.technology_sections_version = 14
+      saveDb()
+    }
+    if ((db.technology_sections_version ?? 0) < 15) {
+      const pfasSystemSection = db.fluorine_sections.find((section: any) => (
+        section.page_key === 'pfas-free-innovation'
+        && section.section_key === 'pfas-free-system'
+      ))
+      if (
+        !pfasSystemSection?.image_url
+        || pfasSystemSection.image_url === '/visuals/pfas-system-hero-v2.webp'
+        || pfasSystemSection.image_url === '/visuals/pfas-system-hero-v3.webp'
+      ) {
+        pfasSystemSection.image_url = '/visuals/pfas-system-hero-v1.webp'
+      }
+      db.technology_sections_version = 15
+      saveDb()
+    }
+    if ((db.technology_sections_version ?? 0) < 16) {
+      const membraneSection = db.fluorine_sections.find((section: any) => (
+        section.page_key === 'pfas-free-innovation'
+        && section.section_key === 'rpo-sotex-membrane'
+      ))
+      if (membraneSection) {
+        const otherBlocks = (membraneSection.content_blocks || []).filter((block: any) => (
+          block.key !== 'transport-mechanism'
+          && block.key !== 'performance-foundation'
+        ))
+        membraneSection.content_blocks = [
+          MEMBRANE_STRUCTURE_BLOCK,
+          MEMBRANE_PERFORMANCE_BLOCK,
+          ...otherBlocks,
+        ]
+      }
+      db.technology_sections_version = 16
+      saveDb()
+    }
+    if ((db.technology_sections_version ?? 0) < 17) {
+      const technologyHeroImages: Record<string, string> = {
+        'rpo-sotex-membrane': '/visuals/technology-membrane-production-hero-v1.webp',
+        'high-performance-fiber': '/visuals/technology-fiber-production-hero-v1.webp',
+      }
+      Object.entries(technologyHeroImages).forEach(([sectionKey, imageUrl]) => {
+        const section = db.fluorine_sections.find((item: any) => (
+          item.page_key === 'pfas-free-innovation'
+          && item.section_key === sectionKey
+        ))
+        if (section && !section.image_url) {
+          section.image_url = imageUrl
+          section.image_fit = 'cover'
+        }
+      })
+      db.technology_sections_version = 17
+      saveDb()
+    }
+    if ((db.technology_sections_version ?? 0) < 18) {
+      const technologyHeroImages: Record<string, string> = {
+        'pfas-free-system': '/visuals/pfas-system-hero-v8.jpg',
+        'rpo-material-platform': '/visuals/technology-rpo-platform-hero-v1.webp',
+        'rpo-sotex-membrane': '/visuals/technology-membrane-production-hero-v1.webp',
+        'high-performance-fiber': '/visuals/technology-fiber-production-hero-v2.webp',
+        'lamination': '/visuals/technology-lamination-hero-v1.webp',
+        'supply-chain': '/visuals/technology-supply-chain-hero-v1.webp',
+        'testing-certification': '/visuals/technology-testing-hero-v2.jpg',
+      }
+      const replaceableImages: Record<string, string[]> = {
+        'pfas-free-system': [
+          '/visuals/pfas-system-hero-v1.webp',
+          '/visuals/pfas-system-hero-v2.webp',
+          '/visuals/pfas-system-hero-v3.webp',
+        ],
+        'high-performance-fiber': ['/visuals/technology-fiber-production-hero-v1.webp'],
+      }
+      Object.entries(technologyHeroImages).forEach(([sectionKey, imageUrl]) => {
+        const section = db.fluorine_sections.find((item: any) => (
+          item.page_key === 'pfas-free-innovation'
+          && item.section_key === sectionKey
+        ))
+        if (!section) return
+        const replaceable = replaceableImages[sectionKey] || []
+        if (!section.image_url || replaceable.includes(section.image_url)) {
+          section.image_url = imageUrl
+          section.image_fit = 'cover'
+        }
+      })
+      db.technology_sections_version = 18
+      saveDb()
+    }
+    if ((db.technology_sections_version ?? 0) < 19) {
+      const membraneSection = db.fluorine_sections.find((section: any) => (
+        section.page_key === 'pfas-free-innovation'
+        && section.section_key === 'rpo-sotex-membrane'
+      ))
+      if (membraneSection) {
+        const otherBlocks = (membraneSection.content_blocks || []).filter((block: any) => (
+          !['transport-mechanism', 'waterproof-mechanism', 'performance-foundation'].includes(block.key)
+        ))
+        membraneSection.content_blocks = [
+          MEMBRANE_STRUCTURE_BLOCK,
+          MEMBRANE_WATERPROOF_BLOCK,
+          MEMBRANE_PERFORMANCE_BLOCK,
+          ...otherBlocks,
+        ]
+      }
+      const testingSection = db.fluorine_sections.find((section: any) => (
+        section.page_key === 'pfas-free-innovation'
+        && section.section_key === 'testing-certification'
+      ))
+      if (testingSection?.image_url === '/visuals/technology-testing-hero-v1.webp') {
+        testingSection.image_url = '/visuals/technology-testing-hero-v2.jpg'
+      }
+      db.technology_sections_version = 19
+      saveDb()
+    }
+    if ((db.public_copy_version ?? 0) < 1) {
+      const fabricsPage = db.page_configs.find((page: any) => page.page_key === 'fabrics')
+      if (fabricsPage?.rail_end_card_title === '新面料开发中') {
+        fabricsPage.rail_end_card_title = '面料定制与联合开发'
+        fabricsPage.rail_end_card_description = '围绕应用环境与目标性能，提供选材建议、打样与联合开发支持。'
+        fabricsPage.rail_end_card_cta_label = '咨询开发方案'
+      }
+      const equipmentPage = db.page_configs.find((page: any) => page.page_key === 'equipment')
+      if (['新产品开发中', '新应用开发中'].includes(equipmentPage?.rail_end_card_title)) {
+        equipmentPage.rail_end_card_title = '应用合作咨询'
+        equipmentPage.rail_end_card_description = '围绕任务环境、材料需求与产品形态，提供应用建议与合作支持。'
+      }
+      const legacyLabCopy = '港翼依托固纳 RPO Lab、香港科技大学（广州）多功能高聚物薄膜中央实验室，以及合作伙伴东莞升佳的织造与染整实验条件，对原料、纤维、膜材、复合结构、工艺窗口和耐久表现开展分阶段测试。'
+      const publicLabCopy = '港翼结合材料研发实验室、香港科技大学（广州）多功能高聚物薄膜中央实验室及合作实验条件，对原料、纤维、膜材、复合结构、工艺窗口和耐久表现开展分阶段测试。'
+      if (typeof db.home_config?.verification_content === 'string') {
+        db.home_config.verification_content = db.home_config.verification_content.replace(legacyLabCopy, publicLabCopy)
+      }
+      const testingSection = db.fluorine_sections.find((section: any) => (
+        section.page_key === 'pfas-free-innovation'
+        && section.section_key === 'testing-certification'
+      ))
+      if (typeof testingSection?.content === 'string') {
+        testingSection.content = testingSection.content.replace(legacyLabCopy, publicLabCopy)
+      }
+      db.public_copy_version = 1
       saveDb()
     }
     const technologyPage = db.page_configs?.find((page: any) => page.page_key === 'pfas-free-innovation')
@@ -1378,6 +1697,36 @@ export function initDatabase() {
     db.cms_config = {
       module_order: ['home', 'fabrics', 'equipment', 'technology', 'services', 'contact', 'media'],
     }
+    saveDb()
+  }
+
+  if (!db.translations || typeof db.translations !== 'object') {
+    db.translations = { en: {} }
+    saveDb()
+  } else if (!db.translations.en || typeof db.translations.en !== 'object') {
+    db.translations.en = {}
+    saveDb()
+  }
+
+  if ((db.home_verification_gallery_version ?? 0) < 1) {
+    const existingImage = String(db.home_config?.verification_image || '').trim()
+    if (!Array.isArray(db.home_config?.verification_images)) {
+      db.home_config.verification_images = existingImage
+        ? [{ id: 'legacy-verification-image', url: existingImage, order_index: 0 }]
+        : []
+    }
+    db.home_verification_gallery_version = 1
+    saveDb()
+  }
+
+  if ((db.fabric_series_story_version ?? 0) < 1) {
+    db.fabric_series = (db.fabric_series || []).map((series: any) => ({
+      ...series,
+      story_title: String(series.story_title || ''),
+      story_intro: String(series.story_intro || ''),
+      story_highlights: Array.isArray(series.story_highlights) ? series.story_highlights : [],
+    }))
+    db.fabric_series_story_version = 1
     saveDb()
   }
 
@@ -1558,6 +1907,276 @@ export function initDatabase() {
         .map((group: any, groupIndex: number) => ({ ...group, order_index: groupIndex }))
     }
     db.header_mega_menu_version = 3
+    saveDb()
+  }
+
+  if ((db.header_mega_menu_version ?? 0) < 4) {
+    const technologyNav = db.navigation.find((item: any) => item.link === '/pfas-free-innovation')
+    if (technologyNav) {
+      const sectionByKey = new Map(
+        db.fluorine_sections
+          .filter((section: any) => section.page_key === 'pfas-free-innovation' && section.status !== 'draft')
+          .map((section: any) => [section.section_key, section]),
+      )
+      technologyNav.mega_menu = TECHNOLOGY_GROUPS.map((group, groupIndex) => ({
+        id: `${technologyNav.id}-v4-group-${groupIndex + 1}`,
+        title: group.label,
+        order_index: groupIndex,
+        items: group.pages
+          .filter((page) => sectionByKey.has(page.sectionKey))
+          .map((page, itemIndex) => {
+            const section: any = sectionByKey.get(page.sectionKey)
+            return {
+              id: `${technologyNav.id}-v4-${groupIndex + 1}-item-${itemIndex + 1}`,
+              label: section?.nav_label || page.menuLabel,
+              link: getTechnologyPagePath(page.sectionKey),
+              order_index: itemIndex,
+            }
+          }),
+      }))
+    }
+    if (db.home_config?.verification_section_link?.includes('#technology-testing-certification')) {
+      db.home_config.verification_section_link = getTechnologyPagePath('testing-certification')
+    }
+    db.header_mega_menu_version = 4
+    saveDb()
+  }
+
+  if ((db.header_mega_menu_version ?? 0) < 5) {
+    const technologyNav = db.navigation.find((item: any) => item.link === '/pfas-free-innovation')
+    if (technologyNav) {
+      const retainedGroups = (technologyNav.mega_menu || []).filter((group: any) => group.title !== '面料系列')
+      const seriesItems = [...(db.fabric_series || [])]
+        .sort(sortByOrderIndex)
+        .map((series: any, itemIndex: number) => ({
+          id: `${technologyNav.id}-v5-series-item-${itemIndex + 1}`,
+          label: `${String(series.name || series.slug).toUpperCase()} 系列`,
+          link: `/fabrics/series/${encodeURIComponent(series.slug)}`,
+          order_index: itemIndex,
+        }))
+      technologyNav.mega_menu = [
+        ...retainedGroups.map((group: any, groupIndex: number) => ({ ...group, order_index: groupIndex })),
+        {
+          id: `${technologyNav.id}-v5-series-group`,
+          title: '面料系列',
+          order_index: retainedGroups.length,
+          items: seriesItems,
+        },
+      ]
+    }
+    db.header_mega_menu_version = 5
+    saveDb()
+  }
+
+  if ((db.header_mega_menu_version ?? 0) < 8) {
+    const technologyNav = db.navigation.find((item: any) => item.link === '/pfas-free-innovation')
+    if (technologyNav) {
+      const sectionByKey = new Map(
+        db.fluorine_sections
+          .filter((section: any) => section.page_key === 'pfas-free-innovation' && section.status !== 'draft')
+          .map((section: any) => [section.section_key, section]),
+      )
+      technologyNav.mega_menu = TECHNOLOGY_GROUPS.map((group, groupIndex) => ({
+        id: `${technologyNav.id}-v8-group-${groupIndex + 1}`,
+        title: group.label,
+        order_index: groupIndex,
+        items: group.pages
+          .filter((page) => sectionByKey.has(page.sectionKey))
+          .map((page, itemIndex) => {
+            const section: any = sectionByKey.get(page.sectionKey)
+            return {
+              id: `${technologyNav.id}-v8-${groupIndex + 1}-item-${itemIndex + 1}`,
+              label: section?.nav_label || page.menuLabel,
+              link: getTechnologyPagePath(page.sectionKey),
+              order_index: itemIndex,
+            }
+          }),
+      }))
+    }
+
+    const fabricsNav = db.navigation.find((item: any) => item.link === '/fabrics')
+    if (fabricsNav) {
+      const seriesItems = [...(db.fabric_series || [])]
+        .sort((a: any, b: any) => {
+          const preferredOrder = ['otter', 'rayo', 'kais']
+          const aIndex = preferredOrder.indexOf(String(a.slug))
+          const bIndex = preferredOrder.indexOf(String(b.slug))
+          if (aIndex !== -1 || bIndex !== -1) {
+            if (aIndex === -1) return 1
+            if (bIndex === -1) return -1
+            return aIndex - bIndex
+          }
+          return sortByOrderIndex(a, b)
+        })
+        .map((series: any, itemIndex: number) => ({
+          id: `${fabricsNav.id}-v8-series-item-${itemIndex + 1}`,
+          label: `${String(series.name || series.slug).toUpperCase()} 系列`,
+          link: `/fabrics/series/${encodeURIComponent(series.slug)}`,
+          order_index: itemIndex,
+        }))
+      fabricsNav.mega_menu = [{
+        id: `${fabricsNav.id}-v8-series-group`,
+        title: '系列平台',
+        order_index: 0,
+        items: seriesItems,
+      }]
+    }
+    db.header_mega_menu_version = 8
+    saveDb()
+  }
+
+  if ((db.site_architecture_version ?? 0) < 2) {
+    const navLabels: Record<string, string> = {
+      '/pfas-free-innovation': '技术与材料',
+      '/fabrics': '面料产品',
+      '/equipment': '应用与装备',
+      '/services': '服务与资源',
+      '/contact': '联系合作',
+    }
+    const navOrder: Record<string, number> = {
+      '/pfas-free-innovation': 0,
+      '/fabrics': 1,
+      '/equipment': 2,
+      '/services': 3,
+      '/contact': 4,
+    }
+    db.navigation.forEach((item: any) => {
+      if (navLabels[item.link]) item.label = navLabels[item.link]
+      if (navOrder[item.link] !== undefined) item.order_index = navOrder[item.link]
+    })
+
+    const technologyPage = db.page_configs.find((page: any) => page.page_key === 'pfas-free-innovation')
+    if (technologyPage) {
+      technologyPage.page_title = '技术与材料'
+      technologyPage.page_subtitle = '从无氟技术体系与底层材料出发，进入可制造、可验证的面料与应用。'
+    }
+    const equipmentPage = db.page_configs.find((page: any) => page.page_key === 'equipment')
+    if (equipmentPage) {
+      equipmentPage.page_title = '应用与装备'
+      equipmentPage.page_subtitle = '查看港翼面料在成衣、鞋履与配件中的应用，以及材料与产品之间的对应关系。'
+    }
+    const servicesPage = db.page_configs.find((page: any) => page.page_key === 'services')
+    if (servicesPage) {
+      servicesPage.page_title = '服务与资源'
+      servicesPage.page_subtitle = '围绕材料选用、数字打样与使用养护，为产品开发和长期使用提供支持。'
+    }
+    const serviceNavLabels: Record<string, string> = {
+      'material-care': '材料与性能支持',
+      'garment-care': '使用与养护',
+      'digital-fabrics': '数字面料与虚拟打样',
+    }
+    db.fluorine_sections
+      .filter((section: any) => section.page_key === 'services')
+      .forEach((section: any) => {
+        if (serviceNavLabels[section.section_key]) section.nav_label = serviceNavLabels[section.section_key]
+      })
+    const servicesNav = db.navigation.find((item: any) => item.link === '/services')
+    servicesNav?.mega_menu?.forEach((group: any) => {
+      group.items?.forEach((item: any) => {
+        const route = String(item.link || '').split('/').filter(Boolean).pop()
+        if (route && serviceNavLabels[route]) item.label = serviceNavLabels[route]
+      })
+    })
+    db.site_architecture_version = 2
+    saveDb()
+  }
+
+  if ((db.site_architecture_version ?? 0) < 3) {
+    const navLabels: Record<string, string> = {
+      '/pfas-free-innovation': '材料科技',
+      '/fabrics': '面料系列',
+      '/equipment': '产品应用',
+      '/services': '专业支持',
+      '/contact': '合作咨询',
+    }
+    db.navigation.forEach((item: any) => {
+      if (navLabels[item.link]) item.label = navLabels[item.link]
+    })
+
+    const pageTitles: Record<string, string> = {
+      'pfas-free-innovation': '材料科技',
+      equipment: '产品应用',
+      services: '专业支持',
+      contact: '合作咨询',
+    }
+    db.page_configs.forEach((page: any) => {
+      if (pageTitles[page.page_key]) page.page_title = pageTitles[page.page_key]
+    })
+
+    if (db.home_config?.primary_btn_link === '/fabrics') {
+      db.home_config.primary_btn_text = '探索面料系列'
+    }
+    if (db.home_config?.secondary_btn_link === '/pfas-free-innovation') {
+      db.home_config.secondary_btn_text = '了解材料科技'
+    }
+    db.site_architecture_version = 3
+    saveDb()
+  }
+
+  if ((db.home_story_version ?? 0) < 1) {
+    if (db.home_config?.platform_section_title === '技术，从材料开始') {
+      db.home_config.platform_section_title = 'RPO 高性能材料平台'
+      db.home_config.platform_section_subtitle = '从底层材料、复合结构到供应链协同，让无氟高性能进入可制造、可验证的面料系统。'
+      db.home_config.platform_section_link_text = '了解 RPO 材料平台'
+      db.home_config.platform_section_link = '/pfas-free-innovation/rpo-material-platform'
+    }
+    const supplyCard = Array.isArray(db.home_config?.platform_cards)
+      ? db.home_config.platform_cards.find((card: any) => card.title === '无氟染整')
+      : null
+    if (supplyCard) {
+      supplyCard.title = '供应链协同'
+      supplyCard.subtitle = '让材料、工艺与制造条件在同一体系中协同'
+      supplyCard.description = '支持稳定生产、验证与交付'
+      supplyCard.footer = 'SUPPLY CHAIN'
+    }
+    db.home_story_version = 1
+    saveDb()
+  }
+
+  if ((db.home_story_version ?? 0) < 2) {
+    if (
+      db.home_config?.hero_title === '以固纳 RPO 无氟材料科技\n创造更安全的高性能织物'
+      && db.home_config?.hero_slogan === '固纳 RPO 无氟材料平台，融合先进复合技术与结构设计，赋予面料持久防护、舒适透气与多功能表现。'
+    ) {
+      db.home_config.hero_tag = 'PFAS-FREE PERFORMANCE MATERIALS'
+      db.home_config.hero_title = '无氟，不等于降低性能'
+      db.home_config.hero_slogan = '高性能防护不应长期依赖含氟化学体系。港翼从底层材料、结构和制造路径重新出发，在减少 PFAS 依赖的同时，保留防水、透湿、耐久与真实穿着体验。'
+      db.home_config.primary_btn_text = '了解无氟技术体系'
+      db.home_config.primary_btn_link = '/pfas-free-innovation/pfas-free-system'
+      db.home_config.secondary_btn_text = '查看面料产品'
+      db.home_config.secondary_btn_link = '/fabrics'
+    }
+    delete db.home_config.pfas_section_title
+    delete db.home_config.pfas_section_body
+    delete db.home_config.pfas_section_image
+    delete db.home_config.pfas_section_link_text
+    delete db.home_config.pfas_section_link
+    db.home_story_version = 2
+    saveDb()
+  }
+
+  if ((db.home_story_version ?? 0) < 3) {
+    if (db.home_config?.hero_title === '无氟，不等于降低性能') {
+      db.home_config.hero_tag = 'PERFORMANCE TEXTILE TECHNOLOGY'
+      db.home_config.hero_title = '以材料科技\n重构高性能面料'
+      db.home_config.hero_slogan = '港翼围绕底层材料、结构设计、制造与验证，开发面向真实应用的功能面料和材料解决方案。'
+      db.home_config.primary_btn_text = '探索面料产品'
+      db.home_config.primary_btn_link = '/fabrics'
+      db.home_config.secondary_btn_text = '了解技术与材料'
+      db.home_config.secondary_btn_link = '/pfas-free-innovation'
+    }
+    db.home_story_version = 3
+    saveDb()
+  }
+
+  if ((db.home_story_version ?? 0) < 4) {
+    if (
+      !db.home_config?.series_section_link_text
+      || db.home_config.series_section_link_text === '查看全部系列'
+    ) {
+      db.home_config.series_section_link_text = '查看全部面料产品'
+    }
+    db.home_story_version = 4
     saveDb()
   }
 }

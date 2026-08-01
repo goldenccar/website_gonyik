@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Settings, Shield } from 'lucide-react'
 import { getContactConfig, getFooter, getPublicBootstrap, getSocial } from '@/api/client'
+import { useSiteLocale } from '@/i18n/SiteLocale'
 import type { ContactConfig, FooterConfig, NavItem, SocialMedia } from '@/types'
 import { InlineMarkup } from './MarkupParser'
 
@@ -17,6 +18,7 @@ export default function Footer() {
   const [contact, setContact] = useState<ContactConfig | null>(null)
   const [socials, setSocials] = useState<SocialMedia[]>([])
   const [navigation, setNavigation] = useState<NavItem[]>([])
+  const { path: localePath } = useSiteLocale()
 
   useEffect(() => {
     let cancelled = false
@@ -76,7 +78,7 @@ export default function Footer() {
           <span className="block"><InlineMarkup text={footer?.copyright || '© 2026 港翼科技 GONYIK 版权所有'} /></span>
           <div className="mt-5 grid grid-cols-[minmax(0,1fr)_28px] items-end gap-x-4 md:mt-0 md:flex md:items-center md:gap-0">
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-              <Link to={footer?.privacy_policy_link || '/privacy-policy'} className="hover:text-primary">隐私政策</Link>
+              <Link to={localePath(footer?.privacy_policy_link || '/privacy-policy')} className="hover:text-primary"><InlineMarkup text="隐私政策" /></Link>
               {footer?.icp_number && <a href={footer.icp_link || 'https://beian.miit.gov.cn/'} target="_blank" rel="noreferrer" className="hover:text-primary">{footer.icp_number}</a>}
               {footer?.police_number && (
                 <a
@@ -106,14 +108,16 @@ export default function Footer() {
 
 function SocialLink({ item }: { item: SocialMedia }) {
   const label = SOCIAL_LABELS[item.platform] || item.platform
+  const { t } = useSiteLocale()
+  const publicLabel = t(label)
 
   return (
     <span className="group relative inline-flex">
-      <button type="button" className="label-zh text-secondary hover:text-primary focus:outline-none focus-visible:text-primary" aria-label={`查看${label}账号`}>
-        {label}
+      <button type="button" className="label-zh text-secondary hover:text-primary focus:outline-none focus-visible:text-primary" aria-label={t(`查看${label}账号`)}>
+        {publicLabel}
       </button>
       <span className="pointer-events-none absolute bottom-full right-0 z-20 mb-3 hidden w-[168px] border border-border bg-white p-3 text-center shadow-lg group-hover:block group-focus-within:block">
-        {item.qrcode_url && <img src={item.qrcode_url} alt={`${label}二维码`} loading="lazy" decoding="async" className="mx-auto h-[136px] w-[136px] object-contain" />}
+        {item.qrcode_url && <img src={item.qrcode_url} alt={t(`${label}二维码`)} loading="lazy" decoding="async" className="mx-auto h-[136px] w-[136px] object-contain" />}
         {item.account && <span className={`${item.qrcode_url ? 'mt-2' : ''} block break-words text-[12px] leading-5 text-primary`}>{item.account}</span>}
       </span>
     </span>
@@ -121,10 +125,11 @@ function SocialLink({ item }: { item: SocialMedia }) {
 }
 
 function FooterColumn({ title, links }: { title: string; links: NavItem[] }) {
+  const { path: localePath } = useSiteLocale()
   return (
     <div className="min-w-0 lg:col-span-2">
       <p className="label-zh border-b border-border pb-3 text-secondary md:pb-4"><InlineMarkup text={title} /></p>
-      <nav className="mt-4 flex flex-col gap-3 md:mt-5 md:gap-4">{links.map((item) => <Link key={item.id} to={item.link} className="w-fit text-[13px] hover:underline hover:underline-offset-4 md:text-[14px]"><InlineMarkup text={item.label} /></Link>)}</nav>
+      <nav className="mt-4 flex flex-col gap-3 md:mt-5 md:gap-4">{links.map((item) => <Link key={item.id} to={localePath(item.link)} className="w-fit text-[13px] hover:underline hover:underline-offset-4 md:text-[14px]"><InlineMarkup text={item.label} /></Link>)}</nav>
     </div>
   )
 }

@@ -9,7 +9,6 @@ import AdminPagePreview from './components/AdminPagePreview'
 
 interface PageConfigItem {
   page_key: string
-  page_tag: string
   page_title: string
   page_subtitle: string
   hero_background: string | null
@@ -19,7 +18,6 @@ interface PageConfigItem {
 const PAGE_KEY_MAP: Record<string, { label: string; publicPath: string }> = {
   fabrics: { label: '面料数据库', publicPath: '/fabrics' },
   equipment: { label: '终端装备', publicPath: '/equipment' },
-  'pfas-free-innovation': { label: '技术创新', publicPath: '/pfas-free-innovation' },
   services: { label: '服务与支持', publicPath: '/services' },
   contact: { label: '联系我们', publicPath: '/contact' },
 }
@@ -52,7 +50,6 @@ export default function PageConfigManager({ pageKey }: PageConfigManagerProps = 
     setSaving(true)
     try {
       await updatePageConfig(targetKey, {
-        ...(targetKey !== 'services' ? { page_tag: config.page_tag } : {}),
         page_title: config.page_title,
         page_subtitle: config.page_subtitle,
         hero_background: config.hero_background,
@@ -104,8 +101,7 @@ export default function PageConfigManager({ pageKey }: PageConfigManagerProps = 
 
         <div className="bg-dark p-4 sm:p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {targetKey !== 'services' && <FormField label="英文标签" name="page_tag" markup="inline" value={config.page_tag} onChange={(event) => setConfig({ ...config, page_tag: event.target.value })} />}
-            <FormField className={targetKey === 'services' ? 'md:col-span-2' : ''} label="页面标题" name="page_title" markup="inline" value={config.page_title} onChange={(event) => setConfig({ ...config, page_title: event.target.value })} />
+            <FormField className="md:col-span-2" label="页面标题" name="page_title" markup="inline" value={config.page_title} onChange={(event) => setConfig({ ...config, page_title: event.target.value })} />
             <FormField className="md:col-span-2" label="副标题" name="page_subtitle" markup="inline" value={config.page_subtitle} onChange={(event) => setConfig({ ...config, page_subtitle: event.target.value })} />
             {targetKey === 'fabrics' && <FormField className="md:col-span-2" label="SKU 性能区标题" name="core_performance_title" markup="inline" value={config.core_performance_title || '核心性能'} onChange={(event) => setConfig({ ...config, core_performance_title: event.target.value })} />}
             <div className="md:col-span-2">

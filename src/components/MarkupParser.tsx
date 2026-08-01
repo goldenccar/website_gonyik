@@ -1,4 +1,5 @@
 import { useState, type ReactNode } from 'react'
+import { useSiteLocale } from '@/i18n/SiteLocale'
 
 interface MarkupParserProps {
   text: string
@@ -16,10 +17,12 @@ interface MarkupParserProps {
  * /h           → 换行（段落分隔）
  */
 export default function MarkupParser({ text, className = '' }: MarkupParserProps) {
+  const { t } = useSiteLocale()
   if (!text) return null
+  const localizedText = t(text)
 
   // 先按 /h 分割为段落
-  const paragraphs = text.split('/h').filter((p) => p.trim())
+  const paragraphs = localizedText.split('/h').filter((p) => p.trim())
 
   return (
     <div className={className}>
@@ -33,8 +36,9 @@ export default function MarkupParser({ text, className = '' }: MarkupParserProps
 }
 
 export function InlineMarkup({ text }: { text?: string | null }) {
+  const { t } = useSiteLocale()
   if (!text) return null
-  return <>{parseInlineMarkup(text)}</>
+  return <>{parseInlineMarkup(t(text))}</>
 }
 
 export function parseInlineMarkup(text: string): ReactNode[] {

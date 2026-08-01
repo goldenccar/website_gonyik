@@ -146,8 +146,8 @@ CMS 只维护标签名称。系统生成不可变 Key；历史主题色字段继
 - `SkuCard`：面料领域卡片及三轴定位；
 - `ApplicationCard`：终端装备及采用面料；
 - `CatalogCollection`：终端装备响应式网格；
-- `HorizontalRail / RailEndCard`：面料横向滑轨、阅读进度与开发中尾卡；
-- `ScrollSpySections / ContentTabs / TechnologyDetail`：技术创新吸顶目录、连续阅读与交错图文；
+- `SkuCard / RailEndCard`：面料双列翻面卡片与开发中占位卡；
+- `CatalogSelectorBar / TechnologyPage`：技术页面选择器、独立技术内容与响应式阅读结构；
 - `ServicesLayout`：服务页共享 Hero、二级导航和子路由出口；
 - `ServiceSectionHeader / ServiceFaqList`：服务子页共用的标题与本页问答；
 - `InlineMarkup`：受控行内内容标记。

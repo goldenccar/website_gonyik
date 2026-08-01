@@ -1,89 +1,150 @@
-import { useEffect, useRef, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { Link, useLocation, useSearchParams } from 'react-router-dom'
 import { getFabricSeries, getFabricSeriesDetail, getPageConfig } from '@/api/client'
-import HorizontalRail from '@/components/HorizontalRail'
+import CatalogSelectorBar from '@/components/CatalogSelectorBar'
+import { InlineMarkup } from '@/components/MarkupParser'
 import PageHero from '@/components/PageHero'
 import { PageSection, PageShell } from '@/components/PageLayout'
-import SkuCard, { getSkuDisplayCode } from '@/components/SkuCard'
-import type { FabricSeries, FabricSku, PageConfig } from '@/types'
-import AnimatedDisclosure from '@/components/AnimatedDisclosure'
-import { InlineMarkup } from '@/components/MarkupParser'
-import type { FabricCapabilityDefinition } from '@/config/fabricCapabilities'
 import RailEndCard from '@/components/RailEndCard'
-import CatalogSelectorBar from '@/components/CatalogSelectorBar'
+import SkuCard from '@/components/SkuCard'
+import type { FabricCapabilityDefinition } from '@/config/fabricCapabilities'
+import type { FabricSeries, FabricSku, PageConfig } from '@/types'
+import { useSiteLocale } from '@/i18n/SiteLocale'
 
-function parseSpecs(value: unknown) {
-  if (value && typeof value === 'object' && !Array.isArray(value)) return value as Record<string, string>
-  if (typeof value !== 'string') return {}
-  try { return JSON.parse(value) as Record<string, string> } catch { return {} }
+const SERIES_ORDER = ['otter', 'rayo', 'kais'] as const
+type SeriesSlug = typeof SERIES_ORDER[number]
+type SeriesDetail = FabricSeries & { skus: FabricSku[]; capabilities?: FabricCapabilityDefinition[] }
+
+function isSeriesSlug(value: string | null): value is SeriesSlug {
+  return Boolean(value && SERIES_ORDER.includes(value as SeriesSlug))
 }
 
 export default function FabricDatabase() {
+  const { path: localePath } = useSiteLocale()
   const [params, setParams] = useSearchParams()
+  const location = useLocation()
   const [page, setPage] = useState<PageConfig | null>(null)
   const [series, setSeries] = useState<FabricSeries[]>([])
-  const [active, setActive] = useState(params.get('series') || 'otter')
-  const [detail, setDetail] = useState<(FabricSeries & { skus: FabricSku[]; capabilities?: FabricCapabilityDefinition[] }) | null>(null)
-  const [detailLoading, setDetailLoading] = useState(false)
-  const [selectedSku, setSelectedSku] = useState<FabricSku | null>(null)
-  const [skuOpen, setSkuOpen] = useState(false)
+  const [details, setDetails] = useState<Partial<Record<SeriesSlug, SeriesDetail>>>({})
+  const [detailLoading, setDetailLoading] = useState(true)
+  const [active, setActive] = useState<SeriesSlug>(isSeriesSlug(params.get('series')) ? params.get('series') as SeriesSlug : 'otter')
+  const [openSkuIds, setOpenSkuIds] = useState<Set<number>>(() => new Set())
+  const seriesRefs = useRef<Partial<Record<SeriesSlug, HTMLElement | null>>>({})
   const handledRequestedSku = useRef('')
-
-  useEffect(() => {
-    Promise.all([getPageConfig('fabrics'), getFabricSeries()]).then(([config, list]) => {
-      setPage(config.data.data)
-      setSeries(list.data.data || [])
-    })
-  }, [])
+  const handledRequestedSeries = useRef('')
+  const programmaticTarget = useRef<SeriesSlug | null>(null)
 
   useEffect(() => {
     let current = true
-    setSelectedSku(null)
-    setSkuOpen(false)
     setDetailLoading(true)
-    getFabricSeriesDetail(active).then((res) => {
-      if (current) setDetail(res.data.data)
+    Promise.all([
+      getPageConfig('fabrics'),
+      getFabricSeries(),
+      ...SERIES_ORDER.map((slug) => getFabricSeriesDetail(slug)),
+    ]).then(([config, list, ...responses]) => {
+      if (!current) return
+      setPage(config.data.data)
+      setSeries(list.data.data || [])
+      setDetails(Object.fromEntries(SERIES_ORDER.map((slug, index) => [slug, responses[index].data.data])) as Record<SeriesSlug, SeriesDetail>)
     }).finally(() => {
       if (current) setDetailLoading(false)
     })
     return () => { current = false }
-  }, [active])
+  }, [])
 
   useEffect(() => {
     const requested = params.get('series')
-    if (requested && ['otter', 'rayo', 'kais'].includes(requested) && requested !== active) setActive(requested)
-  }, [active, params])
+    if (isSeriesSlug(requested)) setActive(requested)
+  }, [params])
 
   useEffect(() => {
+    if (detailLoading) return
+    const requestedSeries = params.get('series')
     const requestedId = Number(params.get('sku'))
-    const requestKey = `${active}:${requestedId}`
-    if (!requestedId || !detail?.skus?.length || handledRequestedSku.current === requestKey) return
-    const match = detail.skus.find((sku) => sku.id === requestedId)
+    const requestKey = `${requestedSeries}:${requestedId}`
+    if (!isSeriesSlug(requestedSeries) || !requestedId || handledRequestedSku.current === requestKey) return
+    const match = details[requestedSeries]?.skus?.find((sku) => sku.id === requestedId)
     if (!match) return
     handledRequestedSku.current = requestKey
-    setSelectedSku(match)
-    setSkuOpen(true)
-  }, [active, detail, params])
+    programmaticTarget.current = requestedSeries
+    setActive(requestedSeries)
+    setOpenSkuIds((currentIds) => new Set(currentIds).add(match.id))
+    window.requestAnimationFrame(() => seriesRefs.current[requestedSeries]?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
+  }, [detailLoading, details, params])
 
-  const activeSeries = series.find((item) => item.slug === active)
-  const isSpecial = active === 'kais'
-  const endCardVisible = page?.rail_end_card_visible !== false
-  const selectSeries = (slug: string) => {
+  useEffect(() => {
+    if (detailLoading) return
+    const requestedSeries = params.get('series')
+    const expectedHash = requestedSeries ? `#series-${requestedSeries}` : ''
+    if (!isSeriesSlug(requestedSeries) || location.hash !== expectedHash || handledRequestedSeries.current === expectedHash) return
+    handledRequestedSeries.current = expectedHash
+    programmaticTarget.current = requestedSeries
+    setActive(requestedSeries)
+    window.requestAnimationFrame(() => seriesRefs.current[requestedSeries]?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
+  }, [detailLoading, location.hash, params])
+
+  useEffect(() => {
+    if (detailLoading) return
+    let frame = 0
+    const update = () => {
+      frame = 0
+      const anchor = 128
+      const target = programmaticTarget.current
+      if (target) {
+        const targetTop = seriesRefs.current[target]?.getBoundingClientRect().top
+        if (targetTop !== undefined && Math.abs(targetTop - anchor) < 18) programmaticTarget.current = null
+        else {
+          setActive(target)
+          return
+        }
+      }
+      const positions = SERIES_ORDER
+        .map((slug) => ({ slug, top: seriesRefs.current[slug]?.getBoundingClientRect().top ?? Number.POSITIVE_INFINITY }))
+        .filter((item) => Number.isFinite(item.top))
+      const passed = positions.filter((item) => item.top <= anchor)
+      const next = passed.length ? passed[passed.length - 1]?.slug : positions[0]?.slug
+      if (next) setActive(next)
+    }
+    const schedule = () => {
+      if (!frame) frame = window.requestAnimationFrame(update)
+    }
+    update()
+    window.addEventListener('scroll', schedule, { passive: true })
+    window.addEventListener('resize', schedule)
+    return () => {
+      window.removeEventListener('scroll', schedule)
+      window.removeEventListener('resize', schedule)
+      if (frame) window.cancelAnimationFrame(frame)
+    }
+  }, [detailLoading])
+
+  const orderedSeries = useMemo(
+    () => SERIES_ORDER.map((slug) => series.find((item) => item.slug === slug) || details[slug]).filter(Boolean) as FabricSeries[],
+    [details, series],
+  )
+
+  const selectSeries = (slug: SeriesSlug) => {
+    programmaticTarget.current = slug
     setActive(slug)
     setParams({ series: slug }, { replace: true })
+    window.requestAnimationFrame(() => seriesRefs.current[slug]?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
   }
-  const openSku = (sku: FabricSku) => {
-    if (selectedSku?.id === sku.id && skuOpen) {
-      setSkuOpen(false)
-      return
-    }
-    setSelectedSku(sku)
-    setSkuOpen(true)
+
+  const openSku = (slug: SeriesSlug, sku: FabricSku) => {
+    setActive(slug)
+    setOpenSkuIds((currentIds) => {
+      const next = new Set(currentIds)
+      if (next.has(sku.id)) next.delete(sku.id)
+      else next.add(sku.id)
+      const remaining = [...next]
+      setParams(remaining.length ? { series: slug, sku: String(remaining[remaining.length - 1]) } : { series: slug }, { replace: true })
+      return next
+    })
   }
 
   return (
     <PageShell>
-      <PageHero tag={page?.page_tag || 'FABRIC DATABASE'} title={page?.page_title || '按使用环境，找到合适的材料'} subtitle={page?.page_subtitle || '从日常与户外使用到特种专业场景，查看材料系列、具体型号与验证依据。'} image={page?.hero_background} imageAlt="复合面料与膜层结构微距" />
+      <PageHero title={page?.page_title || '按使用环境，找到合适的材料'} subtitle={page?.page_subtitle || '从日常与户外使用到特种专业场景，查看材料系列、具体型号与验证依据。'} image={page?.hero_background} imageAlt="复合面料与膜层结构微距" />
 
       <CatalogSelectorBar
         label="面料系列"
@@ -91,7 +152,7 @@ export default function FabricDatabase() {
           {
             label: '日常与户外使用',
             uppercase: true,
-            items: ['otter', 'rayo'].map((slug) => ({ key: slug, label: slug, active: active === slug, onSelect: () => selectSeries(slug) })),
+            items: ['otter', 'rayo'].map((slug) => ({ key: slug, label: slug, active: active === slug, onSelect: () => selectSeries(slug as SeriesSlug) })),
           },
           {
             label: '特种场景',
@@ -101,44 +162,60 @@ export default function FabricDatabase() {
         ]}
       />
 
-      <PageSection id="series-content">
-        <div key={active} className="motion-content-enter">
-        <div className="mb-8 max-w-[760px] md:mb-10">
-          <p className="label-en -ml-px text-secondary"><InlineMarkup text={activeSeries?.name || active} /></p>
-          <h2 className="type-section-title mt-3 text-primary"><InlineMarkup text={activeSeries?.tagline || (isSpecial ? '面向明确任务的专业防护' : '面向真实使用环境的功能材料')} /></h2>
-          <p className="body-copy mt-4 text-secondary"><InlineMarkup text={activeSeries?.description} /></p>
-        </div>
+      <PageSection id="series-content" className="!pt-8 md:!pt-12">
+        {detailLoading && <div className="border-t border-border py-10 text-body text-secondary">正在加载面料资料…</div>}
+        {!detailLoading && <div className="divide-y divide-border">
+          {orderedSeries.map((seriesItem, index) => {
+            const slug = seriesItem.slug as SeriesSlug
+            const detail = details[slug]
+            return (
+              <section
+                key={slug}
+                ref={(node) => { seriesRefs.current[slug] = node }}
+                data-series={slug}
+                id={`series-${slug}`}
+                className={`fabric-series-section scroll-mt-[118px] ${index === 0 ? 'pb-16 md:pb-20' : 'py-16 md:py-20'}`}
+              >
+                <div className="mb-8 grid gap-4 md:mb-10 md:grid-cols-[minmax(220px,0.65fr)_minmax(320px,1fr)] md:items-end md:gap-12">
+                  <div>
+                    <p className="label-en -ml-px text-secondary"><InlineMarkup text={seriesItem.name || slug} /></p>
+                    <h2 className="type-section-title mt-3 text-primary"><InlineMarkup text={seriesItem.tagline || '面向真实使用环境的功能材料'} /></h2>
+                    <Link
+                      to={localePath(`/fabrics/series/${slug}`)}
+                      className="fabric-series-story-link group mt-5 inline-flex items-center pb-1 text-[13px] font-medium text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+                      aria-label={`探索 ${seriesItem.name} 系列`}
+                    >
+                      <span>探索 {seriesItem.name.toUpperCase()} 系列</span>
+                      <span aria-hidden="true" className="ml-2 inline-block transition-transform duration-[var(--motion-instant)] group-hover:translate-x-1">→</span>
+                    </Link>
+                  </div>
+                  <p className="body-copy max-w-[680px] text-secondary"><InlineMarkup text={seriesItem.description} /></p>
+                </div>
 
-        <div className="min-h-[260px]">
-        {detailLoading ? <div className="motion-content-enter border-t border-border py-8 text-body text-secondary">正在加载该系列资料…</div> : detail?.skus?.length ? (
-          <>
-          <HorizontalRail label={`${detail.name} 面料型号`} variant="fabric">
-            {detail.skus.map((sku) => {
-              return <SkuCard key={`${sku.series_id}-${sku.id}`} sku={sku} seriesName={detail.name} capabilities={detail.capabilities} expanded={skuOpen && selectedSku?.id === sku.id} onClick={() => openSku(sku)} />
-            })}
-            {endCardVisible && <RailEndCard config={page || {}} fallbackTitle="新面料开发中" fallbackDescription="针对新的使用环境与性能目标持续开发。" />}
-          </HorizontalRail>
-          </>
-        ) : <p className="border-t border-border py-8 text-body text-secondary">该系列具体型号正在整理中。</p>}
-        </div>
-
-        <AnimatedDisclosure
-          open={skuOpen && Boolean(selectedSku)}
-          replayKey={selectedSku?.id}
-          scrollOnExpand
-          className="mt-6 scroll-mt-[84px]"
-        >
-          {selectedSku && <section className="border-y border-border bg-white px-5 py-8 md:px-7 md:py-10" aria-live="polite">
-            <p className="label-en text-secondary"><InlineMarkup text={detail?.name} /> / {selectedSku.public_name || getSkuDisplayCode(selectedSku.sku_code, detail?.name)}</p>
-            <h3 className="type-module-title mt-3 text-primary"><InlineMarkup text={page?.core_performance_title || '核心性能'} /></h3>
-            <div className="mt-8 grid gap-x-8 gap-y-6 md:grid-cols-3">
-              {Object.entries(parseSpecs(selectedSku.specifications)).slice(0, 3).map(([label, value]) => <div key={label} className="border-t border-border pt-4"><p className="text-[13px] font-medium text-secondary"><InlineMarkup text={label} /></p><p className="mt-2 text-[18px] font-medium text-primary"><InlineMarkup text={value} /></p></div>)}
-            </div>
-            <p className="mt-7 max-w-[760px] text-[13px] text-secondary">页面数据为代表性样品的典型值。不同测试标准、版本及测试条件下的结果可能存在差异，具体规格、测试方法和适用条件以对应 TDS 为准。如需 GB、JIS、ISO 等标准资料，请联系我们。</p>
-            <Link to="/contact" className="mt-4 inline-block text-[14px] font-medium text-primary underline underline-offset-4">获取完整 TDS →</Link>
-          </section>}
-        </AnimatedDisclosure>
-        </div>
+                {detail?.skus?.length ? (
+                  <div role="list" aria-label={`${detail.name} 面料型号`} className="grid max-w-[1384px] items-start gap-5 md:grid-cols-2 md:gap-6">
+                    {detail.skus.map((sku) => (
+                      <div role="listitem" key={`${sku.series_id}-${sku.id}`} className="min-w-0">
+                        <SkuCard
+                          sku={sku}
+                          seriesName={detail.name}
+                          capabilities={detail.capabilities}
+                          expanded={openSkuIds.has(sku.id)}
+                          detailTitle={page?.core_performance_title || '核心性能'}
+                          onClick={() => openSku(slug, sku)}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="max-w-[520px]">
+                    <RailEndCard config={page || {}} fallbackTitle="新面料开发" fallbackDescription="如有明确的使用环境与性能目标，欢迎提交材料需求。" />
+                  </div>
+                )}
+              </section>
+            )
+          })}
+        </div>}
       </PageSection>
     </PageShell>
   )

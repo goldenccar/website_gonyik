@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { ChevronDown, LogOut, PanelLeft, PanelLeftClose, X } from 'lucide-react'
+import { ChevronDown, House, LogOut, PanelLeft, PanelLeftClose, X } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { getAdminCmsConfig } from '@/api/client'
 import { getAdminMenuGroups, type AdminMenuGroup } from '../navigation'
@@ -78,6 +78,7 @@ export default function AdminSidebar({ pathname, mobileOpen, onClose, onLogout, 
       </nav>
 
       <div className="border-t border-white/10 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+        <Link to="/" onClick={onClose} title="返回前台首页" className={`mb-1 flex min-h-11 w-full items-center gap-3 px-3 text-[13px] text-white/65 transition-colors hover:bg-white/5 hover:text-white ${collapsed ? 'md:justify-center md:px-0' : ''}`}><House size={17} /><span className={collapsed ? 'md:hidden' : ''}>返回前台首页</span></Link>
         <button type="button" onClick={onLogout} title="退出登录" className={`flex min-h-11 w-full items-center gap-3 px-3 text-[13px] text-white/55 transition-colors hover:bg-white/5 hover:text-white ${collapsed ? 'md:justify-center md:px-0' : ''}`}><LogOut size={17} /><span className={collapsed ? 'md:hidden' : ''}>{username} · 退出</span></button>
       </div>
     </aside>

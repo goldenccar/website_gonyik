@@ -22,6 +22,7 @@ type InputFieldProps = CommonProps & {
   rows?: never
   accept?: string
   readOnly?: boolean
+  maxLength?: number
 }
 
 type TextareaFieldProps = CommonProps & {
@@ -34,6 +35,7 @@ type TextareaFieldProps = CommonProps & {
   onChange?: TextareaHTMLAttributes<HTMLTextAreaElement>['onChange']
   placeholder?: string
   rows?: number
+  maxLength?: number
 }
 
 type SelectFieldProps = CommonProps & {
@@ -83,6 +85,7 @@ export default function FormField(props: FormFieldProps) {
           onChange={props.onChange}
           placeholder={props.placeholder}
           rows={props.rows || 3}
+          maxLength={props.maxLength}
           className={inputClass}
         />
       ) : (
@@ -96,6 +99,7 @@ export default function FormField(props: FormFieldProps) {
           placeholder={props.placeholder}
           accept={props.accept}
           readOnly={props.readOnly}
+          maxLength={props.maxLength}
           className={inputClass}
         />
       )}

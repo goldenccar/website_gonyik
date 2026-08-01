@@ -136,7 +136,11 @@ router.get('/series/:slug', (req, res) => {
 })
 
 router.get('/sku/:id', (req, res) => {
-  const row = db.fabric_sku.find((k) => k.id === Number(req.params.id))
+  const row = db.fabric_sku.find((k) => (
+    k.id === Number(req.params.id)
+    && k.visibility !== 'hidden'
+    && k.status !== 'archived'
+  ))
   if (!row) { res.status(404).json({ error: 'SKU not found' }); return }
   res.json({ data: toPublicSku(row) })
 })
@@ -146,7 +150,7 @@ router.get('/admin/series', authMiddleware, (_req, res) => {
 })
 
 router.post('/admin/series', authMiddleware, (req: AuthRequest, res) => {
-  const { name, slug, description, tagline, home_image, home_badge_image } = req.body
+  const { name, slug, description, tagline, story_title, story_intro, story_highlights, home_image, home_badge_image } = req.body
   const normalizedName = String(name || '').trim()
   const normalizedSlug = String(slug || '').trim().toLowerCase()
   if (!normalizedName || !normalizedSlug) { res.status(400).json({ error: '系列名称和 Slug 不能为空' }); return }
@@ -158,6 +162,9 @@ router.post('/admin/series', authMiddleware, (req: AuthRequest, res) => {
     slug: normalizedSlug,
     description: String(description || '').trim(),
     tagline: String(tagline || '').trim(),
+    story_title: String(story_title || '').trim(),
+    story_intro: String(story_intro || '').trim(),
+    story_highlights: Array.isArray(story_highlights) ? story_highlights.map(String).map((item) => item.trim()).filter(Boolean).slice(0, 6) : [],
     home_image: normalizedHomeImage,
     home_badge_image: home_badge_image || null,
     order_index: nextOrderIndex(db.fabric_series),
@@ -171,7 +178,7 @@ router.put('/admin/series/:id', authMiddleware, (req: AuthRequest, res) => {
   const id = Number(req.params.id)
   const existing = db.fabric_series.find((s) => s.id === id)
   if (!existing) { res.status(404).json({ error: 'Not found' }); return }
-  const { name, slug, description, tagline, home_image, home_badge_image } = req.body
+  const { name, slug, description, tagline, story_title, story_intro, story_highlights, home_image, home_badge_image } = req.body
   const normalizedName = name === undefined ? existing.name : String(name).trim()
   const normalizedSlug = slug === undefined ? existing.slug : String(slug).trim().toLowerCase()
   if (!normalizedName || !normalizedSlug) { res.status(400).json({ error: '系列名称和 Slug 不能为空' }); return }
@@ -182,6 +189,11 @@ router.put('/admin/series/:id', authMiddleware, (req: AuthRequest, res) => {
     slug: normalizedSlug,
     description: description === undefined ? existing.description : String(description).trim(),
     tagline: tagline === undefined ? existing.tagline : String(tagline).trim(),
+    story_title: story_title === undefined ? existing.story_title : String(story_title).trim(),
+    story_intro: story_intro === undefined ? existing.story_intro : String(story_intro).trim(),
+    story_highlights: story_highlights === undefined
+      ? existing.story_highlights
+      : (Array.isArray(story_highlights) ? story_highlights : String(story_highlights).split(/[、,，\n]/)).map(String).map((item) => item.trim()).filter(Boolean).slice(0, 6),
     home_image: normalizedHomeImage ?? existing.home_image,
     home_badge_image: home_badge_image ?? existing.home_badge_image,
   })
@@ -268,7 +280,7 @@ router.post('/admin/sku', authMiddleware, upload.single('image'), (req: AuthRequ
 })
 
 router.put('/admin/sku-order', authMiddleware, (req: AuthRequest, res) => {
-  const ids = Array.isArray(req.body.ordered_ids) ? req.body.ordered_ids.map(Number) : []
+  const ids: number[] = Array.isArray(req.body.ordered_ids) ? req.body.ordered_ids.map(Number) : []
   const rows = ids.map((id) => db.fabric_sku.find((item) => item.id === id)).filter(Boolean)
   const seriesIds = new Set(rows.map((item: any) => item.series_id))
   const seriesId = rows[0]?.series_id

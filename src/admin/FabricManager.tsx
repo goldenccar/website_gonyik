@@ -17,7 +17,7 @@ import CroppedImageField, { type CroppedImageChange } from './components/Cropped
 import type { FabricCapabilityDefinition } from '@/config/fabricCapabilities'
 import type { RailEndCardConfig } from '@/components/RailEndCard'
 
-const DEFAULT_RAIL: RailEndCardConfig = { rail_end_card_visible: true, rail_end_card_title: '新面料开发中', rail_end_card_description: '针对新的使用环境与性能目标持续开发。', rail_end_card_cta_label: '提交需求', rail_end_card_cta_href: '/contact' }
+const DEFAULT_RAIL: RailEndCardConfig = { rail_end_card_visible: true, rail_end_card_title: '面料定制与联合开发', rail_end_card_description: '围绕应用环境与目标性能，提供选材建议、打样与联合开发支持。', rail_end_card_cta_label: '咨询开发方案', rail_end_card_cta_href: '/contact' }
 const POSITION_OPTIONS = [
   { value: '', label: '暂不显示' },
   ...Array.from({ length: 9 }, (_, index) => ({ value: String(index + 1), label: `${index + 1} / 9` })),
@@ -86,7 +86,16 @@ export default function AdminFabricManager() {
         const up = await uploadFile(seriesImage.file)
         home_image = up.data.url || up.data.data?.url || ''
       }
-      const payload = { name: data.name as string, slug: data.slug as string, tagline: (data.tagline as string) || '', description: (data.description as string) || '', home_image }
+      const payload = {
+        name: data.name as string,
+        slug: data.slug as string,
+        tagline: (data.tagline as string) || '',
+        description: (data.description as string) || '',
+        story_title: (data.story_title as string) || '',
+        story_intro: (data.story_intro as string) || '',
+        story_highlights: String(data.story_highlights || '').split(/[、,，\n]/).map((item) => item.trim()).filter(Boolean).slice(0, 6),
+        home_image,
+      }
       if (editingSeries?.id) await api.put(`/fabrics/admin/series/${editingSeries.id}`, payload)
       else await api.post('/fabrics/admin/series', payload)
       setShowSeriesForm(false)
@@ -293,6 +302,14 @@ export default function AdminFabricManager() {
               <FormField label="Slug" name="slug" defaultValue={editingSeries?.slug} required />
               <FormField label="标语 Tagline" name="tagline" markup="inline" defaultValue={editingSeries?.tagline} />
               <FormField label="描述" name="description" markup="inline" defaultValue={editingSeries?.description} textarea />
+              <details className="border border-white/10 p-4" open={Boolean(editingSeries?.story_title || editingSeries?.story_intro)}>
+                <summary className="cursor-pointer text-[13px] font-medium text-white">系列故事页</summary>
+                <div className="mt-4 space-y-4">
+                  <FormField label="故事页主标题" name="story_title" markup="inline" defaultValue={editingSeries?.story_title} placeholder="留空时使用系统暂定文案" />
+                  <FormField label="故事页导语" name="story_intro" markup="inline" defaultValue={editingSeries?.story_intro} textarea placeholder="留空时使用系统暂定文案" />
+                  <FormField label="核心能力（最多 6 项）" name="story_highlights" defaultValue={Array.isArray(editingSeries?.story_highlights) ? editingSeries.story_highlights.join('、') : ''} placeholder="例如 全天候防护、持久防水、耐磨耐久" />
+                </div>
+              </details>
               <div>
                 {editingSeries?.id ? (
                   <SeriesHomeImageEditor series={editingSeries} onChange={(patch) => {

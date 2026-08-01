@@ -7,8 +7,10 @@ import ServiceSectionHeader from '@/components/service/ServiceSectionHeader'
 import { InlineMarkup } from '@/components/MarkupParser'
 import type { CareGuide, FAQ } from '@/types'
 import type { ServicesOutletContext } from './ServicesLayout'
+import { useSiteLocale } from '@/i18n/SiteLocale'
 
 export default function MaterialCare() {
+  const { path: localePath } = useSiteLocale()
   const { sections } = useOutletContext<ServicesOutletContext>()
   const section = sections.find((item) => item.module_type === 'material-care')
   const [guides, setGuides] = useState<CareGuide[]>([])
@@ -21,7 +23,7 @@ export default function MaterialCare() {
     })
   }, [])
 
-  if (!section) return <Navigate to="/services" replace />
+  if (!section) return <Navigate to={localePath('/services')} replace />
 
   return (
     <PageSection tone="white" className="space-y-16 md:space-y-20">
@@ -31,7 +33,7 @@ export default function MaterialCare() {
           <li key={item.id} className="min-w-0 bg-white px-6 py-7 md:px-8 md:py-9">
             <span className="label-en text-[#4e9bab]">{String(index + 1).padStart(2, '0')}</span>
             <h2 className="mt-5 text-[18px] font-medium leading-7 text-primary"><InlineMarkup text={item.title} /></h2>
-            <p className="mt-3 max-w-[580px] text-[14px] leading-7 text-secondary"><InlineMarkup text={item.content} /></p>
+            <p className="mt-3 max-w-[580px] text-[16px] leading-[1.75] text-secondary"><InlineMarkup text={item.content} /></p>
           </li>
         ))}
       </ol>

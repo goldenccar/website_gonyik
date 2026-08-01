@@ -6,6 +6,89 @@ import { authMiddleware, AuthRequest } from '../middleware/auth'
 import { upload } from '../middleware/upload'
 
 const router = Router()
+const TECHNOLOGY_NAV_LABEL_MAX_LENGTH = 12
+
+const NON_TRANSLATABLE_KEYS = new Set([
+  'id', 'order_index', 'page_key', 'section_key', 'module_type', 'image_url', 'image_fit',
+  'hero_background', 'hero_mobile_background', 'verification_image', 'url', 'link', 'href',
+  'slug', 'sku_code', 'internal_code', 'email', 'phone', 'qrcode_url', 'logo_url', 'favicon_url',
+  'status', 'visibility', 'role', 'platform', 'format', 'smtp_host', 'smtp_user', 'smtp_pass',
+])
+
+function collectTranslatableStrings(value: unknown, output = new Set<string>(), key = ''): Set<string> {
+  if (NON_TRANSLATABLE_KEYS.has(key)) return output
+  if (typeof value === 'string') {
+    const normalized = value.trim()
+    if (normalized && /[\u3400-\u9fff]/.test(normalized) && !normalized.startsWith('data:')) output.add(normalized)
+    return output
+  }
+  if (Array.isArray(value)) {
+    value.forEach((item) => collectTranslatableStrings(item, output, key))
+    return output
+  }
+  if (value && typeof value === 'object') {
+    Object.entries(value as Record<string, unknown>).forEach(([childKey, childValue]) => {
+      collectTranslatableStrings(childValue, output, childKey)
+    })
+  }
+  return output
+}
+
+function publicTranslationSources() {
+  const publicContent = {
+    home_config: db.home_config,
+    site_config: db.site_config,
+    page_configs: db.page_configs,
+    navigation: db.navigation,
+    footer_config: db.footer_config,
+    fabric_series: db.fabric_series,
+    fabric_capabilities: db.fabric_capabilities,
+    fabric_sku: db.fabric_sku,
+    equipment_categories: db.equipment_categories,
+    equipment_products: db.equipment_products,
+    material_care_guides: db.material_care_guides,
+    care_guides: db.care_guides,
+    faqs: db.faqs,
+    digital_fabric_formats: db.digital_fabric_formats,
+    contact_config: {
+      address: db.contact_config?.address,
+      response_text: db.contact_config?.response_text,
+    },
+    fluorine_sections: db.fluorine_sections,
+    inquiry_subjects: db.inquiry_subjects,
+  }
+  return [...collectTranslatableStrings(publicContent)].sort((a, b) => a.localeCompare(b, 'zh-CN'))
+}
+
+function characterLength(value: string) {
+  return Array.from(value).length
+}
+
+function validateTechnologyNavLabel(value: unknown, fallback: string) {
+  const label = String(value || fallback).trim()
+  if (characterLength(label) > TECHNOLOGY_NAV_LABEL_MAX_LENGTH) {
+    return { error: `导航名称不能超过 ${TECHNOLOGY_NAV_LABEL_MAX_LENGTH} 个字符` }
+  }
+  return { value: label }
+}
+
+function normalizeTechnologyContentBlocks(value: unknown) {
+  if (!Array.isArray(value)) return undefined
+  return value.slice(0, 8).map((block: any, index: number) => ({
+    key: String(block?.key || `section-${index + 1}`).trim(),
+    title: String(block?.title || '').trim(),
+    content: String(block?.content || ''),
+    highlights: Array.isArray(block?.highlights)
+      ? block.highlights.slice(0, 8).map((item: unknown) => String(item).trim()).filter(Boolean)
+      : undefined,
+    items: Array.isArray(block?.items)
+      ? block.items.slice(0, 8).map((item: any) => ({
+          title: String(item?.title || '').trim(),
+          content: String(item?.content || ''),
+        })).filter((item: any) => item.title || item.content)
+      : undefined,
+  })).filter((block) => block.title || block.content)
+}
 
 router.get('/home', (_req, res) => {
   res.json({
@@ -21,6 +104,39 @@ router.get('/bootstrap', (_req, res) => {
     home_config: db.home_config,
     series: [...db.fabric_series].sort(sortByOrderIndex),
   })
+})
+
+router.get('/translations/:locale', (req, res) => {
+  const locale = req.params.locale
+  res.json({ data: locale === 'en' ? (db.translations?.en || {}) : {} })
+})
+
+router.get('/admin/localizations', authMiddleware, (_req, res) => {
+  res.json({
+    data: {
+      sources: publicTranslationSources(),
+      translations: db.translations?.en || {},
+    },
+  })
+})
+
+router.put('/admin/localizations/en', authMiddleware, (req: AuthRequest, res) => {
+  const incoming = req.body?.translations
+  if (!incoming || typeof incoming !== 'object' || Array.isArray(incoming)) {
+    res.status(400).json({ error: '翻译数据格式无效' })
+    return
+  }
+  const allowedSources = new Set(publicTranslationSources())
+  const next: Record<string, string> = {}
+  for (const [source, translation] of Object.entries(incoming as Record<string, unknown>)) {
+    const normalizedSource = String(source).trim()
+    const normalizedTranslation = String(translation || '').trim()
+    if (!allowedSources.has(normalizedSource) || !normalizedTranslation || normalizedTranslation.length > 8000) continue
+    next[normalizedSource] = normalizedTranslation
+  }
+  db.translations.en = next
+  saveDb()
+  res.json({ success: true, count: Object.keys(next).length })
 })
 
 router.get('/site-config', (_req, res) => {
@@ -88,6 +204,10 @@ router.post('/admin/content-sections/:pageKey', authMiddleware, (req: AuthReques
   if (!title) { res.status(400).json({ error: '标题不能为空' }); return }
 
   const pageKey = req.params.pageKey
+  const navLabelResult = pageKey === 'pfas-free-innovation'
+    ? validateTechnologyNavLabel(req.body.nav_label, title)
+    : { value: String(req.body.nav_label || title).trim() }
+  if ('error' in navLabelResult) { res.status(400).json({ error: navLabelResult.error }); return }
   const pageSections = db.fluorine_sections.filter((section) => section.page_key === pageKey)
   const moduleType = String(req.body.module_type || 'rich').trim()
   const status = pageKey === 'pfas-free-innovation'
@@ -108,7 +228,7 @@ router.post('/admin/content-sections/:pageKey', authMiddleware, (req: AuthReques
     order_index: nextOrderIndex(pageSections),
     section_key: String(req.body.section_key || '').trim(),
     module_type: moduleType,
-    nav_label: String(req.body.nav_label || title).trim(),
+    nav_label: navLabelResult.value,
     eyebrow: String(req.body.eyebrow || '').trim(),
     title,
     subtitle: String(req.body.subtitle || '').trim(),
@@ -116,6 +236,9 @@ router.post('/admin/content-sections/:pageKey', authMiddleware, (req: AuthReques
     image_url: imageUrl,
     image_fit: req.body.image_fit === 'contain' ? 'contain' : 'cover',
     status,
+    hero_statement: String(req.body.hero_statement || '').trim(),
+    hero_scroll_label: String(req.body.hero_scroll_label || '').trim(),
+    content_blocks: normalizeTechnologyContentBlocks(req.body.content_blocks),
   }
   db.fluorine_sections.push(newSection)
   saveDb()
@@ -128,6 +251,10 @@ router.put('/admin/content-sections/:pageKey/:id', authMiddleware, (req: AuthReq
   if (!existing) { res.status(404).json({ error: 'Not found' }); return }
   const title = String(req.body.title ?? existing.title).trim()
   if (!title) { res.status(400).json({ error: '标题不能为空' }); return }
+  const navLabelResult = req.params.pageKey === 'pfas-free-innovation'
+    ? validateTechnologyNavLabel(req.body.nav_label ?? existing.nav_label, title)
+    : { value: String(req.body.nav_label ?? existing.nav_label ?? title).trim() }
+  if ('error' in navLabelResult) { res.status(400).json({ error: navLabelResult.error }); return }
   const imageUrl = Object.prototype.hasOwnProperty.call(req.body, 'image_url') ? (req.body.image_url || null) : existing.image_url
   const status = req.body.status === 'draft' ? 'draft' : req.body.status === 'published' ? 'published' : (existing.status || 'published')
   if (req.params.pageKey === 'pfas-free-innovation' && existing.status === 'draft' && status === 'published' && !imageUrl) {
@@ -135,7 +262,7 @@ router.put('/admin/content-sections/:pageKey/:id', authMiddleware, (req: AuthReq
     return
   }
   updateById(db.fluorine_sections, id, {
-    nav_label: String(req.body.nav_label ?? existing.nav_label ?? title).trim(),
+    nav_label: navLabelResult.value,
     eyebrow: String(req.body.eyebrow ?? existing.eyebrow ?? '').trim(),
     title,
     subtitle: String(req.body.subtitle ?? existing.subtitle).trim(),
@@ -143,6 +270,11 @@ router.put('/admin/content-sections/:pageKey/:id', authMiddleware, (req: AuthReq
     image_url: imageUrl,
     image_fit: req.body.image_fit === 'contain' ? 'contain' : 'cover',
     status,
+    hero_statement: String(req.body.hero_statement ?? existing.hero_statement ?? '').trim(),
+    hero_scroll_label: String(req.body.hero_scroll_label ?? existing.hero_scroll_label ?? '').trim(),
+    content_blocks: Object.prototype.hasOwnProperty.call(req.body, 'content_blocks')
+      ? normalizeTechnologyContentBlocks(req.body.content_blocks)
+      : existing.content_blocks,
   })
   saveDb()
   res.json({ success: true })

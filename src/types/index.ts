@@ -9,6 +9,12 @@ export interface HomeVerification {
   subtitle: string
 }
 
+export interface HomeVerificationImage {
+  id: string
+  url: string
+  order_index: number
+}
+
 export interface HomeConfig {
   id: number
   hero_tag: string
@@ -30,6 +36,7 @@ export interface HomeConfig {
   series_section_link_text: string
   series_section_link: string
   verification_image: string | null
+  verification_images?: HomeVerificationImage[]
   verification_section_title: string
   verification_section_subtitle: string
   verification_section_link_text: string
@@ -40,7 +47,6 @@ export interface HomeConfig {
 export interface PageConfig {
   id: number
   page_key: string
-  page_tag: string
   page_title: string
   page_subtitle: string
   hero_background: string | null
@@ -107,6 +113,9 @@ export interface FabricSeries {
   slug: string
   description: string
   tagline: string
+  story_title?: string
+  story_intro?: string
+  story_highlights?: string[]
   home_image: string | null
   home_badge_image: string | null
   order_index: number
@@ -215,6 +224,22 @@ export interface ContentSection {
   image_url: string | null
   image_fit: 'cover' | 'contain' | 'original'
   status?: 'draft' | 'published'
+  hero_statement?: string
+  hero_scroll_label?: string
+  content_blocks?: TechnologyContentBlock[]
+}
+
+export interface TechnologyContentItem {
+  title: string
+  content: string
+}
+
+export interface TechnologyContentBlock {
+  key: string
+  title: string
+  content: string
+  highlights?: string[]
+  items?: TechnologyContentItem[]
 }
 
 export type FluorineSection = ContentSection

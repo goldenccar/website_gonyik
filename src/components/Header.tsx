@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState, type CSSProperties, type MouseEvent } from 'react'
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type MouseEvent } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { ChevronDown, Menu, X } from 'lucide-react'
+import { ChevronDown, ChevronUp, Globe2, Menu, X } from 'lucide-react'
 import { getPublicBootstrap } from '@/api/client'
+import { localizePath, stripEnglishPrefix, useSiteLocale } from '@/i18n/SiteLocale'
 import type { NavItem } from '@/types'
 import { InlineMarkup } from './MarkupParser'
 
@@ -23,9 +24,16 @@ export default function Header() {
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null)
   const [desktopMenu, setDesktopMenu] = useState<string | null>(null)
   const [renderedDesktopMenu, setRenderedDesktopMenu] = useState<string | null>(null)
+  const [desktopPanelVisible, setDesktopPanelVisible] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const desktopMenuWasOpenRef = useRef(false)
   const location = useLocation()
   const navigate = useNavigate()
+  const { locale, path: localePath } = useSiteLocale()
+  const publicPath = stripEnglishPrefix(location.pathname)
+  const currentPublicLocation = `${publicPath}${location.search}${location.hash}`
+  const chinesePath = localizePath(currentPublicLocation, 'zh')
+  const englishPath = localizePath(currentPublicLocation, 'en')
 
   useEffect(() => {
     getPublicBootstrap().then((bootstrap) => {
@@ -43,9 +51,21 @@ export default function Header() {
   useEffect(() => {
     if (desktopMenu) {
       setRenderedDesktopMenu(desktopMenu)
-      return
+      if (desktopMenuWasOpenRef.current) return
+      desktopMenuWasOpenRef.current = true
+      setDesktopPanelVisible(false)
+      let secondFrame = 0
+      const firstFrame = window.requestAnimationFrame(() => {
+        secondFrame = window.requestAnimationFrame(() => setDesktopPanelVisible(true))
+      })
+      return () => {
+        window.cancelAnimationFrame(firstFrame)
+        if (secondFrame) window.cancelAnimationFrame(secondFrame)
+      }
     }
-    const timer = window.setTimeout(() => setRenderedDesktopMenu(null), 240)
+    desktopMenuWasOpenRef.current = false
+    setDesktopPanelVisible(false)
+    const timer = window.setTimeout(() => setRenderedDesktopMenu(null), 380)
     return () => window.clearTimeout(timer)
   }, [desktopMenu])
 
@@ -83,10 +103,11 @@ export default function Header() {
     event.preventDefault()
     setMobileOpen(false)
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    if (location.pathname === link) {
+    const target = localePath(link)
+    if (location.pathname === target) {
       window.scrollTo({ top: 0, left: 0, behavior: reduceMotion ? 'auto' : 'smooth' })
     } else {
-      navigate(link, { state: { smoothScroll: !reduceMotion } })
+      navigate(target, { state: { smoothScroll: !reduceMotion } })
     }
   }
 
@@ -108,7 +129,7 @@ export default function Header() {
 
   const activeMenuItem = navItems.find((item) => item.link === renderedDesktopMenu)
   const activeMenuGroups = renderedDesktopMenu ? megaMenus[renderedDesktopMenu] || [] : []
-  const menuOpen = Boolean(desktopMenu && activeMenuItem && activeMenuGroups.length)
+  const menuOpen = Boolean(desktopPanelVisible && desktopMenu && activeMenuItem && activeMenuGroups.length)
   const menuMounted = Boolean(activeMenuItem && activeMenuGroups.length)
   const menuWidthClass = activeMenuGroups.length >= 4
     ? 'max-w-[920px]'
@@ -128,14 +149,14 @@ export default function Header() {
   return (
     <header className={`fixed left-0 top-0 z-50 h-[60px] w-screen px-6 transition-colors duration-300 ${menuMounted || scrolled ? 'border-b border-white/15 bg-[#041F38]' : 'border-b border-transparent bg-transparent'}`}>
       <div className="mx-auto flex h-full w-full max-w-[1760px] items-center px-0 lg:px-10">
-        <Link to="/" className="flex shrink-0 items-center" aria-label="港翼科技首页">
+        <Link to={localePath('/')} className="flex shrink-0 items-center" aria-label={locale === 'en' ? 'GONYIK home' : '港翼科技首页'}>
           {siteConfig.logo_url ? <img src={siteConfig.logo_url} alt="GONYIK" className="mr-2 h-7 w-auto" /> : <span className="mr-2 grid h-7 w-7 place-items-center bg-white text-[10px] font-semibold text-[#041F38]">GY</span>}
           <span className="text-[15px] font-semibold text-white"><InlineMarkup text={siteConfig.logo_text || '港翼科技'} /></span>
         </Link>
 
         <nav className="ml-auto hidden h-full items-center gap-8 md:flex" aria-label="主导航">
           {navItems.map((item) => {
-            const active = location.pathname === item.link || (item.link !== '/' && location.pathname.startsWith(`${item.link}/`))
+            const active = publicPath === item.link || (item.link !== '/' && publicPath.startsWith(`${item.link}/`))
             const groups = megaMenus[item.link] || []
             const expanded = desktopMenu === item.link
             const commonClass = `group/nav relative -mx-3 flex h-full items-center gap-1.5 px-3 text-[13px] font-medium tracking-[0.05em] transition-colors duration-[var(--motion-instant)] focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-[-1px] focus-visible:outline-[#69B2C1] ${
@@ -157,11 +178,23 @@ export default function Header() {
                 <span className={`absolute inset-x-0 bottom-0 h-[3px] bg-[#69B2C1] transition-opacity duration-[var(--motion-instant)] ${active ? 'opacity-100' : 'opacity-0'}`} />
               </button>
             }
-            return <Link key={item.id} to={item.link} aria-current={active ? 'page' : undefined} className={commonClass}><InlineMarkup text={item.label} /><span className={`absolute inset-x-0 bottom-0 h-[3px] bg-[#69B2C1] transition-opacity duration-[var(--motion-instant)] ${active ? 'opacity-100' : 'opacity-0'}`} /></Link>
+            return <Link key={item.id} to={localePath(item.link)} aria-current={active ? 'page' : undefined} className={commonClass}><InlineMarkup text={item.label} /><span className={`absolute inset-x-0 bottom-0 h-[3px] bg-[#69B2C1] transition-opacity duration-[var(--motion-instant)] ${active ? 'opacity-100' : 'opacity-0'}`} /></Link>
           })}
         </nav>
 
-        <button type="button" aria-label="打开导航" aria-expanded={mobileOpen} aria-controls="mobile-navigation" className="ml-auto flex h-11 w-11 items-center justify-center text-white md:hidden" onClick={() => setMobileOpen(true)}><Menu size={25} /></button>
+        <div aria-label={locale === 'en' ? 'Language' : '语言'} className="ml-5 hidden h-8 items-center gap-2.5 border-l border-white/20 pl-5 md:flex">
+          <Globe2 size={15} strokeWidth={1.6} className="text-white/55" aria-hidden="true" />
+          <Link to={chinesePath} aria-current={locale === 'zh' ? 'page' : undefined} className={`relative py-1 text-[11px] font-medium tracking-[0.05em] transition-colors ${locale === 'zh' ? 'text-white' : 'text-white/45 hover:text-white/80'}`}>中文<span className={`absolute inset-x-0 -bottom-0.5 h-px bg-[#69B2C1] transition-opacity ${locale === 'zh' ? 'opacity-100' : 'opacity-0'}`} /></Link>
+          <span aria-hidden="true" className="h-3 w-px bg-white/18" />
+          <Link to={englishPath} aria-current={locale === 'en' ? 'page' : undefined} className={`relative py-1 text-[11px] font-medium tracking-[0.08em] transition-colors ${locale === 'en' ? 'text-white' : 'text-white/45 hover:text-white/80'}`}>EN<span className={`absolute inset-x-0 -bottom-0.5 h-px bg-[#69B2C1] transition-opacity ${locale === 'en' ? 'opacity-100' : 'opacity-0'}`} /></Link>
+        </div>
+        <div aria-label={locale === 'en' ? 'Language' : '语言'} className="ml-auto flex h-11 items-center gap-2 text-[11px] font-medium md:hidden">
+          <Globe2 size={17} strokeWidth={1.6} className="text-white/55" aria-hidden="true" />
+          <Link to={chinesePath} aria-current={locale === 'zh' ? 'page' : undefined} className={locale === 'zh' ? 'text-white' : 'text-white/45'}>中</Link>
+          <span className="text-white/20">/</span>
+          <Link to={englishPath} aria-current={locale === 'en' ? 'page' : undefined} className={locale === 'en' ? 'text-white' : 'text-white/45'}>EN</Link>
+        </div>
+        <button type="button" aria-label={locale === 'en' ? 'Open navigation' : '打开导航'} aria-expanded={mobileOpen} aria-controls="mobile-navigation" className="ml-1 flex h-11 w-11 items-center justify-center text-white md:hidden" onClick={() => setMobileOpen(true)}><Menu size={25} /></button>
       </div>
 
       {menuMounted && activeMenuItem && <>
@@ -170,31 +203,32 @@ export default function Header() {
           aria-label="关闭下拉导航"
           tabIndex={menuOpen ? 0 : -1}
           onClick={() => setDesktopMenu(null)}
-          className={`fixed inset-x-0 bottom-0 top-[60px] z-40 hidden cursor-default bg-[#041f38]/22 backdrop-blur-[1px] transition-opacity duration-[240ms] ease-apple md:block ${menuOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'}`}
+          className={`fixed inset-x-0 bottom-0 top-[60px] z-40 hidden cursor-default bg-[#041f38]/12 transition-opacity duration-[300ms] ease-apple motion-reduce:transition-none md:block ${menuOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'}`}
         />
         <section
           id={`mega-menu-${activeMenuItem.id}`}
           aria-label={`${activeMenuItem.label}下拉导航`}
           aria-hidden={!menuOpen}
-          className={`fixed inset-x-0 top-[60px] z-50 hidden px-6 transition-[opacity,transform] duration-[240ms] ease-apple md:block ${menuOpen ? 'pointer-events-auto translate-y-0 opacity-100' : 'pointer-events-none -translate-y-2 opacity-0'}`}
+          className={`fixed inset-x-0 top-[60px] z-50 hidden px-6 md:block ${menuOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}
         >
           <div className="mx-auto flex w-full max-w-[1760px] justify-end px-0 lg:px-10">
-          <div className={`w-full ${menuWidthClass} origin-top border-b border-border bg-[#fbfcfd] shadow-[0_22px_52px_rgba(4,31,56,0.13)]`}>
-            <div className="px-6 pb-4 pt-3 lg:px-7">
+          <div className={`w-full ${menuWidthClass} origin-top overflow-hidden border-b border-border bg-[#fbfcfd] shadow-[0_22px_52px_rgba(4,31,56,0.13)] transition-[clip-path] duration-[360ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${menuOpen ? '[clip-path:inset(0_0_0_0)]' : '[clip-path:inset(0_0_100%_0)]'}`}>
+            <div className={`transition-[opacity,transform] ease-out motion-reduce:transition-none ${menuOpen ? 'translate-y-0 opacity-100 delay-[90ms] duration-[420ms]' : '-translate-y-1 opacity-0 delay-0 duration-[120ms]'}`}>
+            <div className="px-6 pb-3 pt-3 lg:px-7">
               <div className="mb-3 flex min-h-8 items-start justify-end border-b border-border pb-2">
-                <Link to={activeMenuItem.link} onClick={() => setDesktopMenu(null)} className="shrink-0 text-[13px] font-semibold leading-6 tracking-[0.02em] text-primary transition-colors duration-[var(--motion-instant)] hover:text-[#2f8191] focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-[#69B2C1]">查看全部<InlineMarkup text={activeMenuItem.label} /> →</Link>
+                <Link to={localePath(activeMenuItem.link)} onClick={() => setDesktopMenu(null)} className="shrink-0 text-[13px] font-semibold leading-6 tracking-[0.02em] text-primary transition-colors duration-[var(--motion-instant)] hover:text-[#2f8191] focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-[#69B2C1]">{locale === 'en' ? 'View all ' : '查看全部'}<InlineMarkup text={activeMenuItem.label} /> →</Link>
               </div>
               <div className={`grid gap-x-8 gap-y-5 ${menuGridClass}`}>
                 {activeMenuGroups.map((group) => (
                   <div key={group.title}>
                     <div className="mb-1.5 border-b border-border pb-2 text-[12px] font-medium leading-[18px] tracking-[0.06em] text-secondary">
                       {group.href
-                        ? <Link to={group.href} onClick={() => setDesktopMenu(null)} className="inline-flex items-center gap-1.5 transition-colors duration-200 hover:text-[#2f8191] focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-[#69B2C1]"><InlineMarkup text={group.title} /><span aria-hidden="true">→</span></Link>
+                        ? <Link to={localePath(group.href)} onClick={() => setDesktopMenu(null)} className="inline-flex items-center gap-1.5 transition-colors duration-200 hover:text-[#2f8191] focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-[#69B2C1]"><InlineMarkup text={group.title} /><span aria-hidden="true">→</span></Link>
                         : <InlineMarkup text={group.title} />}
                     </div>
                     <div>
                       {group.links.map((link) => (
-                        <Link key={link.href} to={link.href} onClick={() => setDesktopMenu(null)} className="group/link relative flex min-h-9 items-center text-[14px] font-medium leading-5 tracking-[0.01em] text-primary transition-colors duration-200 ease-out hover:text-[#2f8191] focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-[-1px] focus-visible:outline-[#69B2C1]">
+                        <Link key={link.href} to={localePath(link.href)} onClick={() => setDesktopMenu(null)} className="group/link relative flex min-h-9 items-center text-[14px] font-medium leading-5 tracking-[0.01em] text-primary transition-colors duration-200 ease-out hover:text-[#2f8191] focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-[-1px] focus-visible:outline-[#69B2C1]">
                           <InlineMarkup text={link.label} />
                         </Link>
                       ))}
@@ -202,6 +236,15 @@ export default function Header() {
                   </div>
                 ))}
               </div>
+            </div>
+            <button
+              type="button"
+              aria-label={`收起${activeMenuItem.label}导航`}
+              onClick={() => setDesktopMenu(null)}
+              className="mx-auto flex h-10 w-14 items-center justify-center text-secondary transition-colors duration-[var(--motion-instant)] hover:text-primary focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-[-2px] focus-visible:outline-[#69B2C1]"
+            >
+              <ChevronUp aria-hidden="true" size={17} strokeWidth={1.5} />
+            </button>
             </div>
           </div>
           </div>
@@ -217,12 +260,12 @@ export default function Header() {
           </div>
           <nav className="flex min-h-0 flex-1 flex-col overflow-y-auto pb-8 pt-5" aria-label="移动端主导航">
             {navItems.map((item, index) => {
-              const active = location.pathname === item.link || (item.link !== '/' && location.pathname.startsWith(`${item.link}/`))
+            const active = publicPath === item.link || (item.link !== '/' && publicPath.startsWith(`${item.link}/`))
               const groups = megaMenus[item.link] || []
               const expanded = mobileExpanded === item.link
               return <div key={item.id} style={{ transitionDelay: mobileOpen ? `${80 + index * 35}ms` : '0ms' } as CSSProperties} className={`border-b border-white/10 transition-[opacity,transform] duration-[var(--motion-switch)] ease-apple ${mobileOpen ? 'translate-x-0 opacity-100' : 'translate-x-3 opacity-0'}`}>
                 <div className="flex items-center">
-                  <Link to={item.link} tabIndex={mobileOpen ? 0 : -1} onClick={(event) => handleMobileNavigation(event, item.link)} className={`flex min-h-16 flex-1 items-center text-[18px] font-medium tracking-[0.04em] ${active ? 'text-white' : 'text-white/75'}`}><InlineMarkup text={item.label} /></Link>
+                  <Link to={localePath(item.link)} tabIndex={mobileOpen ? 0 : -1} onClick={(event) => handleMobileNavigation(event, item.link)} className={`flex min-h-16 flex-1 items-center text-[18px] font-medium tracking-[0.04em] ${active ? 'text-white' : 'text-white/75'}`}><InlineMarkup text={item.label} /></Link>
                   {groups.length > 0 ? <button type="button" tabIndex={mobileOpen ? 0 : -1} aria-label={`${expanded ? '收起' : '展开'}${item.label}`} aria-expanded={expanded} onClick={() => setMobileExpanded(expanded ? null : item.link)} className="grid size-12 place-items-center text-white/75">
                     <ChevronDown aria-hidden="true" size={18} className={`transition-transform duration-[var(--motion-switch)] ${expanded ? 'rotate-180' : ''}`} />
                   </button> : active && <span aria-hidden="true" className="mr-3 h-px w-6 bg-[#69B2C1]" />}
@@ -234,11 +277,11 @@ export default function Header() {
                         <div key={group.title}>
                           <div className="mb-2 text-[10px] font-medium tracking-[0.12em] text-white/45">
                             {group.href
-                              ? <Link to={group.href} tabIndex={mobileOpen && expanded ? 0 : -1} onClick={(event) => handleMobileNavigation(event, group.href || '/')} className="inline-flex items-center gap-1.5"><InlineMarkup text={group.title} /><span aria-hidden="true">→</span></Link>
+                              ? <Link to={localePath(group.href)} tabIndex={mobileOpen && expanded ? 0 : -1} onClick={(event) => handleMobileNavigation(event, group.href || '/')} className="inline-flex items-center gap-1.5"><InlineMarkup text={group.title} /><span aria-hidden="true">→</span></Link>
                               : <InlineMarkup text={group.title} />}
                           </div>
                           <div className="flex flex-col">
-                            {group.links.map((link) => <Link key={link.href} to={link.href} tabIndex={mobileOpen && expanded ? 0 : -1} onClick={(event) => handleMobileNavigation(event, link.href)} className="py-2 text-[14px] text-white/75"><InlineMarkup text={link.label} /></Link>)}
+                            {group.links.map((link) => <Link key={link.href} to={localePath(link.href)} tabIndex={mobileOpen && expanded ? 0 : -1} onClick={(event) => handleMobileNavigation(event, link.href)} className="py-2 text-[14px] text-white/75"><InlineMarkup text={link.label} /></Link>)}
                           </div>
                         </div>
                       ))}

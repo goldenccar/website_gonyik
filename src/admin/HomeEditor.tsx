@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Home, Layers, Shirt, Award, Plus, Upload } from 'lucide-react'
+import { Home, Layers, Shirt, Award, ArrowDown, ArrowUp, Plus, Trash2, Upload } from 'lucide-react'
 import api, { getHomeConfig, getFabricSeries, uploadFile } from '@/api/client'
 import Dashboard from './Dashboard'
 import SaveButton from './components/SaveButton'
@@ -31,6 +31,7 @@ export default function AdminHomeEditor() {
   const [cropPreview, setCropPreview] = useState<string | null>(null)
   const [validationCropSource, setValidationCropSource] = useState<string | null>(null)
   const [validationUploading, setValidationUploading] = useState(false)
+  const [validationEditingIndex, setValidationEditingIndex] = useState<number | null>(null)
   const [previewVersion, setPreviewVersion] = useState(0)
 
   useEffect(() => {
@@ -41,7 +42,19 @@ export default function AdminHomeEditor() {
         { title: '第三方测试认证', subtitle: '根据具体产品与项目要求，委托 SGS、中纺标 CTTC 等专业机构检测，结果以正式报告为准。' },
       ]
       const verifications = verificationDefaults.map((fallback, index) => ({ ...fallback, ...(ensureArray(data.verifications)[index] || {}) }))
-      setForm({ ...data, platform_cards: ensureArray(data.platform_cards).slice(0, 3), verifications })
+      const verificationImages = ensureArray(data.verification_images)
+        .filter((item) => item?.url)
+        .sort((a, b) => (a.order_index ?? 0) - (b.order_index ?? 0))
+        .slice(0, 5)
+      if (!verificationImages.length && data.verification_image) {
+        verificationImages.push({ id: 'legacy-verification-image', url: data.verification_image, order_index: 0 })
+      }
+      setForm({
+        ...data,
+        platform_cards: ensureArray(data.platform_cards).slice(0, 3),
+        verifications,
+        verification_images: verificationImages,
+      })
     })
     getFabricSeries().then((res) => setSeries(res.data.data || []))
   }, [])
@@ -126,18 +139,62 @@ export default function AdminHomeEditor() {
   const cancelValidationCrop = () => {
     if (validationCropSource) URL.revokeObjectURL(validationCropSource)
     setValidationCropSource(null)
+    setValidationEditingIndex(null)
   }
 
   const applyValidationCrop = async (blob: Blob) => {
     setValidationUploading(true)
+    const editingIndex = validationEditingIndex
     try {
       const file = new File([blob], `home-lab-${Date.now()}.jpg`, { type: 'image/jpeg' })
       const response = await uploadFile(file)
-      setForm((current: any) => ({ ...current, verification_image: response.data.url || response.data.data?.url }))
+      const url = response.data.url || response.data.data?.url
+      if (!url) throw new Error('图片上传失败')
+      setForm((current: any) => {
+        const images = ensureArray(current.verification_images)
+          .filter((item) => item?.url)
+          .slice(0, 5)
+          .map((item) => ({ ...item }))
+        if (editingIndex !== null && images[editingIndex]) {
+          images[editingIndex] = { ...images[editingIndex], url }
+        } else if (images.length < 5) {
+          images.push({ id: crypto.randomUUID(), url, order_index: images.length })
+        }
+        const normalized = images.map((item, index) => ({ ...item, order_index: index }))
+        return {
+          ...current,
+          verification_images: normalized,
+          verification_image: normalized[0]?.url || null,
+        }
+      })
     } finally {
       setValidationUploading(false)
       cancelValidationCrop()
     }
+  }
+
+  const setVerificationImages = (update: (images: any[]) => any[]) => {
+    setForm((current: any) => {
+      const images = update(ensureArray(current.verification_images).map((item) => ({ ...item })))
+        .filter((item) => item?.url)
+        .slice(0, 5)
+        .map((item, index) => ({ ...item, order_index: index }))
+      return {
+        ...current,
+        verification_images: images,
+        verification_image: images[0]?.url || null,
+      }
+    })
+  }
+
+  const moveVerificationImage = (index: number, direction: -1 | 1) => {
+    setVerificationImages((images) => {
+      const target = index + direction
+      if (target < 0 || target >= images.length) return images
+      const next = [...images]
+      ;[next[index], next[target]] = [next[target], next[index]]
+      return next
+    })
   }
 
   const updateArrayItem = (key: string, idx: number, patch: any) => {
@@ -325,19 +382,33 @@ export default function AdminHomeEditor() {
       {textareaField('区块副标题', 'verification_section_subtitle')}
 
       <div className="border border-white/5 bg-dark p-4">
-        <label className="mb-3 block text-[12px] uppercase text-secondary">内部实验室长条图片（16:7）</label>
+        <label className="mb-3 block text-[12px] uppercase text-secondary">内部实验室图片（最多 5 张）</label>
         {validationCropSource ? (
-          <ImageCropper src={validationCropSource} aspect={16 / 7} onComplete={(blob) => applyValidationCrop(blob)} onCancel={cancelValidationCrop} />
-        ) : form.verification_image ? (
-          <div className="relative aspect-[16/7] max-w-[720px] overflow-hidden bg-white/5">
-            <img src={form.verification_image} alt="内部实验室预览" className="h-full w-full object-cover" />
-            <button type="button" onClick={() => setForm({ ...form, verification_image: null })} className="absolute right-2 top-2 bg-black/70 px-3 py-2 text-[12px] text-white">移除</button>
+          <ImageCropper src={validationCropSource} aspect={16 / 6} onComplete={(blob) => applyValidationCrop(blob)} onCancel={cancelValidationCrop} />
+        ) : ensureArray(form.verification_images).length ? (
+          <div className="grid gap-3 sm:grid-cols-2">
+            {ensureArray(form.verification_images).map((item: any, index: number) => (
+              <div key={item.id || `${item.url}-${index}`} className="border border-white/10 bg-white/[0.03] p-2">
+                <div className="aspect-[16/6] overflow-hidden bg-white/5">
+                  <img src={item.url} alt={`内部实验室图片 ${index + 1}`} className="h-full w-full object-cover" />
+                </div>
+                <div className="mt-2 flex items-center justify-between gap-2">
+                  <span className="text-[11px] text-muted">{String(index + 1).padStart(2, '0')} / {String(ensureArray(form.verification_images).length).padStart(2, '0')}</span>
+                  <div className="flex items-center gap-1">
+                    <button type="button" title="向前移动" disabled={index === 0} onClick={() => moveVerificationImage(index, -1)} className="p-2 text-white/60 transition-colors hover:bg-white/5 hover:text-white disabled:cursor-not-allowed disabled:opacity-25"><ArrowUp size={14} /></button>
+                    <button type="button" title="向后移动" disabled={index === ensureArray(form.verification_images).length - 1} onClick={() => moveVerificationImage(index, 1)} className="p-2 text-white/60 transition-colors hover:bg-white/5 hover:text-white disabled:cursor-not-allowed disabled:opacity-25"><ArrowDown size={14} /></button>
+                    <button type="button" onClick={() => { setValidationEditingIndex(index); document.getElementById('home-validation-image')?.click() }} className="px-2 py-1.5 text-[11px] text-white/70 transition-colors hover:bg-white/5 hover:text-white">替换</button>
+                    <button type="button" title="移除图片" onClick={() => setVerificationImages((images) => images.filter((_, itemIndex) => itemIndex !== index))} className="p-2 text-error transition-colors hover:bg-white/5 hover:text-white"><Trash2 size={14} /></button>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
-        ) : <div className="flex aspect-[16/7] max-w-[720px] items-end border border-dashed border-borderDark bg-white/[0.03] p-4 text-[12px] text-muted">16:7 实验室图片占位</div>}
-        {!validationCropSource && <div className="mt-3 flex items-center gap-3">
-          <PrimaryButton type="button" onClick={() => document.getElementById('home-validation-image')?.click()} size="sm" loading={validationUploading} icon={<Upload size={14} />}>{form.verification_image ? '更换图片' : '上传图片'}</PrimaryButton>
+        ) : <div className="flex aspect-[16/6] max-w-[720px] items-end border border-dashed border-borderDark bg-white/[0.03] p-4 text-[12px] text-muted">内部实验室图片占位</div>}
+        {!validationCropSource && <div className="mt-3 flex flex-wrap items-center gap-3">
+          {ensureArray(form.verification_images).length < 5 && <PrimaryButton type="button" onClick={() => { setValidationEditingIndex(null); document.getElementById('home-validation-image')?.click() }} size="sm" loading={validationUploading} icon={<Upload size={14} />}>{ensureArray(form.verification_images).length ? '添加图片' : '上传图片'}</PrimaryButton>}
           <input id="home-validation-image" type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={(event) => { const file = event.target.files?.[0]; if (file) startValidationCrop(file); event.currentTarget.value = '' }} />
-          <span className="text-[11px] text-muted">建议宽度不低于 1280px，上传后固定按 16:7 裁切。</span>
+          <span className="text-[11px] text-muted">建议宽度不低于 1280px，上传后按当前前台 16:6 比例裁切；前台按此处顺序轮播。</span>
         </div>}
       </div>
 

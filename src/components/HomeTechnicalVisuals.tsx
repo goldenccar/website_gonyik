@@ -1,6 +1,6 @@
-import { useEffect, useId, useState, type CSSProperties, type ReactNode } from 'react'
+import { useEffect, useId, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import type { HomePlatformCard, HomeVerification } from '@/types'
+import type { HomePlatformCard, HomeVerification, HomeVerificationImage } from '@/types'
 import MotionInView from './MotionInView'
 import { InlineMarkup } from './MarkupParser'
 
@@ -19,12 +19,22 @@ const TECHNICAL_VISUAL_ASSETS = [
   '/visuals/supply-chain-node-material-v2.webp',
 ] as const
 
-function useTechnicalVisualsReady() {
+export const SUPPLY_CHAIN_ASSETS = [
+  '/visuals/supply-chain-ribbon-v2.webp',
+  '/visuals/supply-chain-node-lab-v2.webp',
+  '/visuals/supply-chain-node-factory-v2.webp',
+  '/visuals/supply-chain-node-retail-v2.webp',
+  '/visuals/supply-chain-node-materials-v2.webp',
+  '/visuals/supply-chain-node-material-v2.webp',
+] as const
+
+function useImagesReady(assets: readonly string[]) {
   const [ready, setReady] = useState(false)
 
   useEffect(() => {
     let active = true
-    const timeout = window.setTimeout(() => active && setReady(true), 5000)
+    let readinessTimeout = 0
+    let preloadTimeout = 0
     const loadImage = (src: string) => new Promise<void>((resolve) => {
       const image = new Image()
       let settled = false
@@ -41,18 +51,32 @@ function useTechnicalVisualsReady() {
       if (image.complete) finish()
     })
 
-    Promise.all(TECHNICAL_VISUAL_ASSETS.map(loadImage)).then(() => {
-      window.clearTimeout(timeout)
-      if (active) setReady(true)
-    })
+    // Keep below-the-fold technical media from competing with the hero image.
+    // A short defer still warms the browser cache before most users reach it.
+    preloadTimeout = window.setTimeout(() => {
+      readinessTimeout = window.setTimeout(() => active && setReady(true), 5000)
+      Promise.all(assets.map(loadImage)).then(() => {
+        window.clearTimeout(readinessTimeout)
+        if (active) setReady(true)
+      })
+    }, 450)
 
     return () => {
       active = false
-      window.clearTimeout(timeout)
+      window.clearTimeout(preloadTimeout)
+      window.clearTimeout(readinessTimeout)
     }
-  }, [])
+  }, [assets])
 
   return ready
+}
+
+function useTechnicalVisualsReady() {
+  return useImagesReady(TECHNICAL_VISUAL_ASSETS)
+}
+
+export function useSupplyChainReady() {
+  return useImagesReady(SUPPLY_CHAIN_ASSETS)
 }
 
 type FlowPoint = { x: number; y: number; scale: number; delay: number }
@@ -83,9 +107,9 @@ function MaterialScene({ kind, image, layers, label, children }: {
   return (
     <div className={`material-render material-render-${kind}`} role="img" aria-label={label}>
       <div className="material-render-stage" aria-hidden="true">
-        {image && <img src={image} alt="" loading="eager" decoding="async" fetchPriority="low" className="material-render-image" />}
+        {image && <img src={image} alt="" loading="lazy" decoding="async" fetchPriority="low" className="material-render-image" />}
         {layers?.map((layer) => (
-          <img key={layer.src} src={layer.src} alt="" loading="eager" decoding="async" fetchPriority="low" className={`material-render-layer ${layer.className}`} />
+          <img key={layer.src} src={layer.src} alt="" loading="lazy" decoding="async" fetchPriority="low" className={`material-render-layer ${layer.className}`} />
         ))}
       </div>
       {children && (
@@ -176,13 +200,13 @@ const SUPPLY_CHAIN_NODES = [
   { key: 'material', src: '/visuals/supply-chain-node-material-v2.webp', delay: -4.212 },
 ] as const
 
-function SupplyChainDiagram() {
+export function SupplyChainDiagram() {
   const uid = useId().replace(/:/g, '')
   const glowId = `supply-glow-${uid}`
   return (
     <div className="supply-chain-scene" role="img" aria-label="从原料、材料、实验验证、制造到终端应用的无氟供应链闭环示意图">
       <div className="supply-chain-canvas" aria-hidden="true">
-        <img src="/visuals/supply-chain-ribbon-v2.webp" alt="" loading="eager" decoding="async" fetchPriority="low" className="supply-chain-ribbon" />
+        <img src="/visuals/supply-chain-ribbon-v2.webp" alt="" loading="lazy" decoding="async" fetchPriority="low" className="supply-chain-ribbon" />
         <svg viewBox="0 0 1746 901" className="supply-chain-flow" fill="none">
           <defs>
             <filter id={glowId} x="-60%" y="-80%" width="220%" height="260%">
@@ -198,7 +222,7 @@ function SupplyChainDiagram() {
             className={`supply-chain-node supply-chain-node-${node.key}`}
             style={{ '--supply-delay': `${node.delay}s` } as CSSProperties}
           >
-            <img src={node.src} alt="" loading="eager" decoding="async" fetchPriority="low" />
+            <img src={node.src} alt="" loading="lazy" decoding="async" fetchPriority="low" />
           </div>
         ))}
         <div className="supply-chain-center"><span>PFAS FREE</span></div>
@@ -215,14 +239,14 @@ function MaterialDiagram({ kind }: { kind: MaterialKind }) {
   return <SupplyChainDiagram />
 }
 
-export function MaterialSystemVisual({ items, href }: { items: HomePlatformCard[]; href: string }) {
+export function MaterialSystemVisual({ items, href, itemHrefs }: { items: HomePlatformCard[]; href: string; itemHrefs?: string[] }) {
   const mediaReady = useTechnicalVisualsReady()
   return (
-    <MotionInView className={`material-system-visual ${mediaReady ? 'media-ready' : ''} grid border-y border-border bg-white lg:col-span-8 lg:col-start-5 lg:row-span-2 lg:row-start-1 lg:mt-[34px]`}>
+    <MotionInView className={`material-system-visual supply-chain-motion ${mediaReady ? 'media-ready' : ''} grid border-y border-border bg-white lg:col-span-8 lg:col-start-5 lg:row-span-2 lg:row-start-1 lg:mt-[34px]`}>
       {items.slice(0, 3).map((item, index) => (
         <Link
           key={`${item.title}-${index}`}
-          to={href}
+          to={itemHrefs?.[index] || href}
           data-motion-item
           style={{ '--motion-delay': `${index * 90}ms` } as CSSProperties}
           className="material-system-row group relative isolate grid min-h-[218px] overflow-hidden border-t border-border bg-transparent px-5 py-4 first:border-t-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent md:grid-cols-[minmax(220px,0.9fr)_minmax(0,1.35fr)] md:items-center md:gap-5 md:px-10 lg:min-h-[218px]"
@@ -241,8 +265,103 @@ export function MaterialSystemVisual({ items, href }: { items: HomePlatformCard[
   )
 }
 
+function VerificationGallery({
+  images,
+  fallbackImage,
+  alt,
+}: {
+  images: HomeVerificationImage[]
+  fallbackImage: string | null
+  alt: string
+}) {
+  const slides = useMemo(() => {
+    const normalized = [...images]
+      .filter((item) => item?.url)
+      .sort((a, b) => (a.order_index ?? 0) - (b.order_index ?? 0))
+      .slice(0, 5)
+    if (!normalized.length && fallbackImage) {
+      normalized.push({ id: 'legacy-verification-image', url: fallbackImage, order_index: 0 })
+    }
+    return normalized
+  }, [fallbackImage, images])
+  const [activeIndex, setActiveIndex] = useState(0)
+  const [pointerPaused, setPointerPaused] = useState(false)
+  const [focusPaused, setFocusPaused] = useState(false)
+  const [manualPaused, setManualPaused] = useState(false)
+  const manualTimer = useRef<number | null>(null)
+
+  useEffect(() => {
+    if (activeIndex >= slides.length) setActiveIndex(0)
+  }, [activeIndex, slides.length])
+
+  useEffect(() => {
+    if (slides.length < 2 || pointerPaused || focusPaused || manualPaused || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const interval = window.setInterval(() => {
+      if (!document.hidden) setActiveIndex((index) => (index + 1) % slides.length)
+    }, 6000)
+    return () => window.clearInterval(interval)
+  }, [focusPaused, manualPaused, pointerPaused, slides.length])
+
+  useEffect(() => {
+    if (slides.length < 2) return
+    const nextImage = new Image()
+    nextImage.decoding = 'async'
+    nextImage.src = slides[(activeIndex + 1) % slides.length].url
+  }, [activeIndex, slides])
+
+  useEffect(() => () => {
+    if (manualTimer.current !== null) window.clearTimeout(manualTimer.current)
+  }, [])
+
+  const selectSlide = (index: number) => {
+    setActiveIndex((index + slides.length) % slides.length)
+    setManualPaused(true)
+    if (manualTimer.current !== null) window.clearTimeout(manualTimer.current)
+    manualTimer.current = window.setTimeout(() => setManualPaused(false), 10000)
+  }
+
+  if (!slides.length) return <div className="gonyik-material-placeholder h-full w-full" />
+
+  return (
+    <div
+      className="group relative h-full w-full overflow-hidden bg-[#e8edf0]"
+      onMouseEnter={() => setPointerPaused(true)}
+      onMouseLeave={() => setPointerPaused(false)}
+      onFocusCapture={() => setFocusPaused(true)}
+      onBlurCapture={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setFocusPaused(false)
+      }}
+    >
+      {slides.map((slide, index) => (
+        <img
+          key={slide.id || `${slide.url}-${index}`}
+          src={slide.url}
+          alt={index === activeIndex ? alt : ''}
+          aria-hidden={index !== activeIndex}
+          loading={index === 0 ? 'eager' : 'lazy'}
+          decoding="async"
+          className={`absolute inset-0 h-full w-full object-cover transition-[opacity,transform] duration-700 ease-apple motion-reduce:transition-none ${
+            index === activeIndex ? 'scale-100 opacity-100' : 'pointer-events-none scale-[1.006] opacity-0'
+          }`}
+        />
+      ))}
+      {slides.length > 1 && (
+        <>
+          <span className="sr-only" aria-live="polite">正在显示第 {activeIndex + 1} 张，共 {slides.length} 张</span>
+          <div className="absolute bottom-3 right-3 flex items-center gap-1 border border-white/50 bg-primary/70 p-1 text-white shadow-sm backdrop-blur-md">
+            <button type="button" onClick={() => selectSlide(activeIndex - 1)} aria-label="上一张实验室图片" className="grid h-7 w-7 place-items-center text-[16px] transition-colors hover:bg-white/15 focus-visible:outline focus-visible:outline-1 focus-visible:outline-white">←</button>
+            <span className="min-w-[42px] text-center text-[10px] tabular-nums tracking-[0.12em]">{String(activeIndex + 1).padStart(2, '0')} / {String(slides.length).padStart(2, '0')}</span>
+            <button type="button" onClick={() => selectSlide(activeIndex + 1)} aria-label="下一张实验室图片" className="grid h-7 w-7 place-items-center text-[16px] transition-colors hover:bg-white/15 focus-visible:outline focus-visible:outline-1 focus-visible:outline-white">→</button>
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
 export function MaterialValidationSummary({
   image,
+  images,
   title,
   subtitle,
   items,
@@ -250,6 +369,7 @@ export function MaterialValidationSummary({
   linkTo,
 }: {
   image: string | null
+  images: HomeVerificationImage[]
   title: string
   subtitle: string
   items: HomeVerification[]
@@ -265,9 +385,7 @@ export function MaterialValidationSummary({
         {subtitle && <p className="mt-1.5 text-[13px] leading-5 text-secondary"><InlineMarkup text={subtitle} /></p>}
       </div>
       <div data-motion-item style={{ '--motion-delay': '70ms' } as CSSProperties} className="mt-3 aspect-[16/6] overflow-hidden bg-[#e8edf0]">
-        {image
-          ? <img src={image} alt={internal?.title || '内部实验室'} loading="lazy" decoding="async" className="h-full w-full object-cover" />
-          : <div className="gonyik-material-placeholder h-full w-full" />}
+        <VerificationGallery images={images} fallbackImage={image} alt={internal?.title || '内部实验室'} />
       </div>
       {internal && <div data-motion-item style={{ '--motion-delay': '120ms' } as CSSProperties} className="border-b border-border py-3">
         <h4 className="text-[15px] font-medium leading-6 text-primary"><InlineMarkup text={internal.title} /></h4>

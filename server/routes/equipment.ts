@@ -256,7 +256,7 @@ router.post('/admin/products', authMiddleware, upload.single('image'), (req: Aut
 })
 
 router.put('/admin/product-order', authMiddleware, (req: AuthRequest, res) => {
-  const ids = Array.isArray(req.body.ordered_ids) ? req.body.ordered_ids.map(Number) : []
+  const ids: number[] = Array.isArray(req.body.ordered_ids) ? req.body.ordered_ids.map(Number) : []
   const rows = ids.map((id) => db.equipment_products.find((item) => item.id === id)).filter(Boolean)
   const allIds = db.equipment_products.map((item) => item.id)
   if (rows.length !== ids.length || ids.length !== allIds.length || allIds.some((id) => !ids.includes(id))) {
