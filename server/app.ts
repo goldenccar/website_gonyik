@@ -23,10 +23,14 @@ function initializeDatabaseOnce() {
 }
 
 function allowedOrigins() {
-  const configured = String(process.env.ALLOWED_ORIGINS || '')
-    .split(',')
-    .map((origin) => origin.trim())
-    .filter(Boolean)
+  const configured = [
+    'https://gonyik.com',
+    'https://www.gonyik.com',
+    ...String(process.env.ALLOWED_ORIGINS || '')
+      .split(',')
+      .map((origin) => origin.trim())
+      .filter(Boolean),
+  ]
   if (process.env.NODE_ENV !== 'production') {
     configured.push(
       'http://localhost:5173',
@@ -40,6 +44,20 @@ function allowedOrigins() {
     )
   }
   return new Set(configured)
+}
+
+export function isAllowedApiOrigin(origin: string | undefined, host: string | undefined, origins: Set<string>) {
+  if (!origin) return true
+  if (origins.has(origin)) return true
+  if (!host) return false
+  try {
+    // Compare the authority rather than reconstructing the origin from
+    // req.protocol. TLS is terminated by Nginx in production, so Express can
+    // otherwise see http://gonyik.com for a genuine https://gonyik.com request.
+    return new URL(origin).host.toLowerCase() === host.toLowerCase()
+  } catch {
+    return false
+  }
 }
 
 export function apiCacheControl(req: express.Request, res: express.Response, next: express.NextFunction) {
@@ -71,8 +89,10 @@ export function createApp() {
   app.use((req, res, next) => {
     const origin = req.get('origin')
     const host = req.get('host')
-    const sameOrigin = Boolean(origin && host && origin === `${req.protocol}://${host}`)
-    if (origin && !sameOrigin && !origins.has(origin)) {
+    // Origin validation protects mutable/API traffic. Applying it to document
+    // and asset requests can blank the whole site in browsers that attach an
+    // Origin header to same-site subresources.
+    if (req.path.startsWith('/api') && !isAllowedApiOrigin(origin, host, origins)) {
       res.status(403).json({ error: 'Origin not allowed' })
       return
     }

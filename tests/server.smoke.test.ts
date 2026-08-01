@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import fs from 'node:fs'
 import path from 'node:path'
 import { test } from 'node:test'
-import { apiCacheControl, createApp } from '../server/app'
+import { apiCacheControl, createApp, isAllowedApiOrigin } from '../server/app'
 import { db, initDatabase } from '../server/db'
 import { createRateLimit, securityHeaders } from '../server/middleware/security'
 import { assertAuthConfiguration } from '../server/middleware/auth'
@@ -27,6 +27,14 @@ function mockResponse() {
 test('Express app boots with fingerprinting disabled', () => {
   const app = createApp()
   assert.equal(app.disabled('x-powered-by'), true)
+})
+
+test('production same-site origin survives TLS termination at the reverse proxy', () => {
+  const origins = new Set(['https://gonyik.com', 'https://www.gonyik.com'])
+  assert.equal(isAllowedApiOrigin('https://gonyik.com', 'gonyik.com', origins), true)
+  assert.equal(isAllowedApiOrigin('https://www.gonyik.com', 'www.gonyik.com', origins), true)
+  assert.equal(isAllowedApiOrigin('https://attacker.example', 'gonyik.com', origins), false)
+  assert.equal(isAllowedApiOrigin(undefined, 'gonyik.com', origins), true)
 })
 
 test('public GET API data revalidates while admin and mutations are not stored', () => {
