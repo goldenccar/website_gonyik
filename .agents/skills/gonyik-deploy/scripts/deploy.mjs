@@ -126,6 +126,7 @@ async function deployRemote(password) {
     "if git diff --name-only HEAD@{1} HEAD | grep -qE 'package(-lock)?\\.json'; then npm ci; else echo '依赖未变更，跳过 npm ci'; fi",
     'npm run build',
     'mkdir -p logs',
+    "if [ ! -f .env.production ]; then node -e \"require('node:fs').writeFileSync('.env.production', 'JWT_SECRET=' + require('node:crypto').randomBytes(48).toString('hex') + '\\n', { mode: 0o600 })\"; fi",
     'pm2 reload ecosystem.config.cjs || pm2 start ecosystem.config.cjs',
     'pm2 save',
     '(for i in 1 2 3 4 5; do curl -s http://localhost:3001/api/health && exit 0; sleep 2; done; exit 1)',
