@@ -4,6 +4,7 @@ import { registerUploadedFile } from '../mediaAssets'
 import { authMiddleware, AuthRequest } from '../middleware/auth'
 import { upload } from '../middleware/upload'
 import { FABRIC_CAPABILITY_THEMES } from '../../src/config/fabricCapabilities'
+import { pageVisible, requestMarket } from '../market'
 
 const router = Router()
 const capabilityThemes = new Set(FABRIC_CAPABILITY_THEMES.map((item) => item.value))
@@ -123,11 +124,13 @@ router.delete('/admin/capabilities/:id', authMiddleware, (req: AuthRequest, res)
   res.json({ success: true, affected })
 })
 
-router.get('/series', (_req, res) => {
+router.get('/series', (req, res) => {
+  if (!pageVisible('fabrics', requestMarket(req))) { res.json({ data: [] }); return }
   res.json({ data: db.fabric_series.sort(sortByOrderIndex) })
 })
 
 router.get('/series/:slug', (req, res) => {
+  if (!pageVisible('fabrics', requestMarket(req))) { res.status(404).json({ error: 'Series not found' }); return }
   const slug = req.params.slug
   const series = db.fabric_series.find((s) => s.slug === slug)
   if (!series) { res.status(404).json({ error: 'Series not found' }); return }
@@ -136,6 +139,7 @@ router.get('/series/:slug', (req, res) => {
 })
 
 router.get('/sku/:id', (req, res) => {
+  if (!pageVisible('fabrics', requestMarket(req))) { res.status(404).json({ error: 'SKU not found' }); return }
   const row = db.fabric_sku.find((k) => (
     k.id === Number(req.params.id)
     && k.visibility !== 'hidden'

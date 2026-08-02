@@ -1,4 +1,5 @@
 import axios, { type AxiosResponse } from 'axios'
+import { marketCodeFromPath, type SiteLocale, type SiteMarket, type MarketVisibility } from '@/config/markets'
 
 const api = axios.create({
   baseURL: '/api',
@@ -10,11 +11,13 @@ const api = axios.create({
 const inFlightGets = new Map<string, Promise<AxiosResponse>>()
 
 function cachedGet<T = any>(url: string, params?: Record<string, unknown>): Promise<AxiosResponse<T>> {
-  const key = `${url}:${JSON.stringify(params || {})}`
+  const market = typeof window === 'undefined' ? 'cn' : marketCodeFromPath(window.location.pathname)
+  const requestParams = { market, ...params }
+  const key = `${url}:${JSON.stringify(requestParams)}`
   const pending = inFlightGets.get(key)
   if (pending) return pending as Promise<AxiosResponse<T>>
 
-  const request = api.get<T>(url, { params })
+  const request = api.get<T>(url, { params: requestParams })
     .finally(() => inFlightGets.delete(key))
 
   inFlightGets.set(key, request)
@@ -45,9 +48,15 @@ api.interceptors.response.use(
 export default api
 
 export const getPublicBootstrap = () => cachedGet('/bootstrap')
-export const getTranslations = (locale: 'en') => cachedGet(`/translations/${locale}`)
-export const getAdminLocalizations = () => api.get('/admin/localizations')
-export const updateEnglishLocalizations = (translations: Record<string, string>) => api.put('/admin/localizations/en', { translations })
+export const getTranslations = (locale: SiteLocale) => cachedGet(`/translations/${locale}`)
+export const getAdminLocalizations = (locale: Exclude<SiteLocale, 'zh-CN'>) => api.get('/admin/localizations', { params: { locale } })
+export const updateLocalizations = (locale: Exclude<SiteLocale, 'zh-CN'>, translations: Record<string, string>) => api.put(`/admin/localizations/${locale}`, { translations })
+export const getAdminMarkets = () => api.get('/admin/markets')
+export const updateAdminMarkets = (data: {
+  markets: SiteMarket[]
+  page_visibility: Record<string, Record<string, MarketVisibility>>
+  section_visibility: Record<string, Record<string, MarketVisibility>>
+}) => api.put('/admin/markets', data)
 export const getHomeConfig = () => cachedGet('/home')
 export const getSiteConfig = () => cachedGet('/site-config')
 export const getPageConfig = (key: string) => cachedGet(`/page/${key}`)

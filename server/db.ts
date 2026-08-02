@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs'
 import { DEFAULT_FABRIC_CAPABILITIES } from '../src/config/fabricCapabilities'
 import { normalizeMaterialPlatforms } from '../src/config/materialPlatforms'
 import { getTechnologyPagePath, TECHNOLOGY_GROUPS, TECHNOLOGY_PAGES } from '../src/config/technologyPages'
+import { DEFAULT_SITE_MARKETS } from '../src/config/markets'
 
 const DB_PATH = path.resolve(process.cwd(), 'db.json')
 const UPLOADS_DIR = path.resolve(process.cwd(), 'public/uploads')
@@ -56,6 +57,8 @@ export interface Database {
   contact_messages: any[]
   users: any[]
   translations: Record<string, Record<string, string>>
+  markets: any[]
+  market_content_version?: number
 }
 
 const PFAS_SYSTEM_PAGE_COPY = {
@@ -464,6 +467,7 @@ function createDefaultDb(): Database {
       { id: 1, username: 'admin', password_hash: bcrypt.hashSync('888888', 10), must_change_password: 0, created_at: new Date().toISOString() },
     ],
     translations: { en: {} },
+    markets: DEFAULT_SITE_MARKETS,
   }
 
   fs.writeFileSync(DB_PATH, JSON.stringify(defaultDb, null, 2))
@@ -609,6 +613,15 @@ function migrateFabricProductCards(database: Database) {
 export function initDatabase() {
   if (fs.existsSync(DB_PATH)) {
     db = JSON.parse(fs.readFileSync(DB_PATH, 'utf-8'))
+    if ((db.market_content_version ?? 0) < 1) {
+      db.markets = Array.isArray(db.markets) && db.markets.length ? db.markets : DEFAULT_SITE_MARKETS
+      db.translations ||= { en: {} }
+      db.translations.en ||= {}
+      db.page_configs.forEach((page: any) => { page.market_visibility ||= {} })
+      db.fluorine_sections.forEach((section: any) => { section.market_visibility ||= {} })
+      db.market_content_version = 1
+      saveDb()
+    }
     if ((db.visual_asset_version ?? 0) < 1) {
       db.fabric_sku.forEach((sku: any) => {
         if (sku.image === '/visuals/otter-t70-texture.png') {

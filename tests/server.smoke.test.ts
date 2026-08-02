@@ -7,6 +7,8 @@ import { db, initDatabase } from '../server/db'
 import { createRateLimit, securityHeaders } from '../server/middleware/security'
 import { assertAuthConfiguration } from '../server/middleware/auth'
 import { getLocalMediaReferences, resolveLocalMediaPath } from '../server/mediaAssets'
+import { visibleInMarket } from '../server/market'
+import { marketCodeFromPath, marketPath, stripMarketPrefix } from '../src/config/markets'
 import { localizePath } from '../src/i18n/SiteLocale'
 
 initDatabase()
@@ -123,8 +125,22 @@ test('media inventory discovers referenced site visuals and blocks path traversa
   assert.match(resolveLocalMediaPath('/visuals/pfas-system-hero-v8.jpg') || '', /public\/visuals\/pfas-system-hero-v8\.jpg$/)
 })
 
-test('English route helper preserves query strings and hashes', () => {
-  assert.equal(localizePath('/fabrics?series=otter#sku', 'en'), '/en/fabrics?series=otter#sku')
-  assert.equal(localizePath('/en/fabrics', 'zh'), '/fabrics')
+test('market route helper preserves query strings, hashes, and legacy English links', () => {
+  assert.equal(localizePath('/fabrics?series=otter#sku', 'en'), '/global/fabrics?series=otter#sku')
+  assert.equal(localizePath('/en/fabrics', 'zh-CN'), '/fabrics')
   assert.equal(localizePath('/admin', 'en'), '/admin')
+  assert.equal(marketPath('/global/fabrics?series=otter#sku', 'cn'), '/fabrics?series=otter#sku')
+  assert.equal(marketPath('/fabrics?series=otter#sku', 'global'), '/global/fabrics?series=otter#sku')
+  assert.equal(marketCodeFromPath('/jp/fabrics'), 'jp')
+  assert.equal(stripMarketPrefix('/jp/fabrics'), '/fabrics')
+})
+
+test('market visibility uses explicit content rules before the market default', () => {
+  const globalMarket = {
+    code: 'global', label: 'Global', locale: 'en', enabled: true,
+    is_default: false, default_visibility: 'hidden', order_index: 1,
+  } as const
+  assert.equal(visibleInMarket({}, globalMarket), false)
+  assert.equal(visibleInMarket({ market_visibility: { global: 'public' } }, globalMarket), true)
+  assert.equal(visibleInMarket({ market_visibility: { global: 'hidden' } }, { ...globalMarket, default_visibility: 'public' }), false)
 })

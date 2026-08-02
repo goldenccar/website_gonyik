@@ -6,6 +6,7 @@ import PageScrollProgress from './components/PageScrollProgress'
 import { getPublicBootstrap } from './api/client'
 import Home from './pages/Home'
 import { SiteLocaleProvider } from './i18n/SiteLocale'
+import { stripMarketPrefix } from './config/markets'
 
 function PublicLayout() {
   const location = useLocation()
@@ -14,10 +15,6 @@ function PublicLayout() {
   useEffect(() => {
     const smoothScroll = Boolean((location.state as { smoothScroll?: boolean } | null)?.smoothScroll)
     window.scrollTo({ top: 0, left: 0, behavior: smoothScroll ? 'smooth' : 'auto' })
-  }, [pathname])
-
-  useEffect(() => {
-    document.documentElement.lang = pathname === '/en' || pathname.startsWith('/en/') ? 'en' : 'zh-CN'
   }, [pathname])
 
   return (
@@ -72,6 +69,13 @@ const AdminFluorineManager = lazy(() => import('./admin/FluorineManager'))
 const AdminPageConfigManager = lazy(() => import('./admin/PageConfigManager'))
 const AdminCmsManager = lazy(() => import('./admin/CmsManager'))
 const AdminLocalizationManager = lazy(() => import('./admin/LocalizationManager'))
+const AdminMarketManager = lazy(() => import('./admin/MarketManager'))
+
+function LegacyEnglishRedirect() {
+  const location = useLocation()
+  const destination = `/global${stripMarketPrefix(location.pathname) === '/' ? '' : stripMarketPrefix(location.pathname)}${location.search}${location.hash}`
+  return <Navigate to={destination} replace />
+}
 
 function App() {
   useEffect(() => {
@@ -116,6 +120,7 @@ function App() {
           <Route path="/admin/contact/config" element={<AdminPageConfigManager pageKey="contact" />} />
           <Route path="/admin/cms" element={<AdminCmsManager />} />
           <Route path="/admin/localizations" element={<AdminLocalizationManager />} />
+          <Route path="/admin/markets" element={<AdminMarketManager />} />
 
           {/* Public routes */}
           <Route element={<PublicLayout />}>
@@ -136,21 +141,39 @@ function App() {
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/contact" element={<Contact />} />
 
-            <Route path="/en" element={<Home />} />
-            <Route path="/en/fabrics" element={<FabricDatabase />} />
-            <Route path="/en/fabrics/series/:seriesSlug" element={<FabricSeriesStory />} />
-            <Route path="/en/equipment" element={<EndUseEquipment />} />
-            <Route path="/en/pfas-free-innovation" element={<Navigate to="/en/pfas-free-innovation/pfas-free-system" replace />} />
-            <Route path="/en/pfas-free-innovation/:technologyKey" element={<TechnologyPage />} />
-            <Route path="/en/fluorine-free" element={<Navigate to="/en/pfas-free-innovation" replace />} />
-            <Route path="/en/services" element={<ServicesLayout />}>
+            <Route path="/global" element={<Home />} />
+            <Route path="/global/fabrics" element={<FabricDatabase />} />
+            <Route path="/global/fabrics/series/:seriesSlug" element={<FabricSeriesStory />} />
+            <Route path="/global/equipment" element={<EndUseEquipment />} />
+            <Route path="/global/pfas-free-innovation" element={<Navigate to="/global/pfas-free-innovation/pfas-free-system" replace />} />
+            <Route path="/global/pfas-free-innovation/:technologyKey" element={<TechnologyPage />} />
+            <Route path="/global/fluorine-free" element={<Navigate to="/global/pfas-free-innovation" replace />} />
+            <Route path="/global/services" element={<ServicesLayout />}>
               <Route index element={<Navigate to="material-care" replace />} />
               <Route path="material-care" element={<MaterialCare />} />
               <Route path="garment-care" element={<GarmentCare />} />
               <Route path="digital-fabrics" element={<DigitalFabrics />} />
             </Route>
-            <Route path="/en/privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="/en/contact" element={<Contact />} />
+            <Route path="/global/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/global/contact" element={<Contact />} />
+            <Route path="/en/*" element={<LegacyEnglishRedirect />} />
+
+            {/* Additional CMS-defined markets use the same pages; their configured locale and visibility come from the API. */}
+            <Route path="/:marketCode" element={<Home />} />
+            <Route path="/:marketCode/fabrics" element={<FabricDatabase />} />
+            <Route path="/:marketCode/fabrics/series/:seriesSlug" element={<FabricSeriesStory />} />
+            <Route path="/:marketCode/equipment" element={<EndUseEquipment />} />
+            <Route path="/:marketCode/pfas-free-innovation" element={<Navigate to="pfas-free-system" replace />} />
+            <Route path="/:marketCode/pfas-free-innovation/:technologyKey" element={<TechnologyPage />} />
+            <Route path="/:marketCode/fluorine-free" element={<Navigate to="../pfas-free-innovation" replace />} />
+            <Route path="/:marketCode/services" element={<ServicesLayout />}>
+              <Route index element={<Navigate to="material-care" replace />} />
+              <Route path="material-care" element={<MaterialCare />} />
+              <Route path="garment-care" element={<GarmentCare />} />
+              <Route path="digital-fabrics" element={<DigitalFabrics />} />
+            </Route>
+            <Route path="/:marketCode/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/:marketCode/contact" element={<Contact />} />
           </Route>
         </Routes>
       </Suspense>

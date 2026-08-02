@@ -4,6 +4,7 @@ import { registerUploadedFile } from '../mediaAssets'
 import { authMiddleware, AuthRequest } from '../middleware/auth'
 import { upload } from '../middleware/upload'
 import { normalizeMaterialPlatforms } from '../../src/config/materialPlatforms'
+import { pageVisible, requestMarket } from '../market'
 
 const router = Router()
 
@@ -108,11 +109,13 @@ function validateSlug(value: unknown, excludeId?: number) {
   return { slug }
 }
 
-router.get('/categories', (_req, res) => {
+router.get('/categories', (req, res) => {
+  if (!pageVisible('equipment', requestMarket(req))) { res.json({ data: [] }); return }
   res.json({ data: visibleCategories().map(categoryPayload) })
 })
 
-router.get('/products', (_req, res) => {
+router.get('/products', (req, res) => {
+  if (!pageVisible('equipment', requestMarket(req))) { res.json({ data: { products: [] } }); return }
   const products = db.equipment_products
     .filter((product) => product.visibility !== 'hidden' && product.status !== 'archived')
     .sort(sortByOrderIndex)

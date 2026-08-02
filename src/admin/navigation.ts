@@ -13,6 +13,7 @@ import {
   SlidersHorizontal,
   Sun,
   Languages,
+  Globe2,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -38,6 +39,7 @@ export const ADMIN_FIXED_START: AdminMenuGroup[] = [
       { label: '品牌设置', icon: Palette, path: '/admin/brand' },
       { label: 'Header 管理', icon: Settings, path: '/admin/header' },
       { label: 'Footer 管理', icon: Dock, path: '/admin/footer' },
+      { label: '地区与内容开放', icon: Globe2, path: '/admin/markets' },
     ],
   },
 ]
@@ -54,7 +56,7 @@ export const ADMIN_REORDERABLE_GROUPS: AdminMenuGroup[] = [
 
 export const ADMIN_FIXED_END: AdminMenuGroup[] = [
   { id: 'cms', label: 'CMS 管理', icon: SlidersHorizontal, children: [
-    { label: '英文内容', icon: Languages, path: '/admin/localizations' },
+    { label: '多语言内容', icon: Languages, path: '/admin/localizations' },
     { label: '模块排序', icon: SlidersHorizontal, path: '/admin/cms' },
   ] },
 ]

@@ -4,9 +4,48 @@ import { db, saveDb, getNextId, sortByOrderIndex, updateById, deleteById, nextOr
 import { registerUploadedFile } from '../mediaAssets'
 import { authMiddleware, AuthRequest } from '../middleware/auth'
 import { upload } from '../middleware/upload'
+import { SITE_LOCALES, type MarketVisibility, type SiteMarket } from '../../src/config/markets'
+import { configuredMarkets, pageKeyForLink, pageVisible, requestMarket, visibleInMarket } from '../market'
 
 const router = Router()
 const TECHNOLOGY_NAV_LABEL_MAX_LENGTH = 12
+const MARKET_VISIBILITIES = new Set<MarketVisibility>(['inherit', 'public', 'hidden'])
+
+function technologyVisibleForLink(link: string, market: SiteMarket) {
+  const prefix = '/pfas-free-innovation/'
+  if (!link.startsWith(prefix)) return true
+  const sectionKey = link.slice(prefix.length).split(/[?#/]/)[0]
+  const section = db.fluorine_sections.find((item) => (
+    item.page_key === 'pfas-free-innovation' && item.section_key === sectionKey
+  ))
+  return !section || visibleInMarket(section, market)
+}
+
+function navigationForMarket(market: SiteMarket) {
+  return [...db.navigation]
+    .sort(sortByOrderIndex)
+    .filter((item) => pageVisible(pageKeyForLink(item.link), market))
+    .map((item) => ({
+      ...item,
+      mega_menu: (item.mega_menu || [])
+        .map((group: any) => ({
+          ...group,
+          items: (group.items || []).filter((link: any) => (
+            pageVisible(pageKeyForLink(link.link), market) && technologyVisibleForLink(link.link, market)
+          )),
+        }))
+        .filter((group: any) => (
+          (!group.link || pageVisible(pageKeyForLink(group.link), market))
+          && (group.link || group.items.length > 0)
+        )),
+    }))
+}
+
+function sanitizeVisibilityMap(value: unknown, validMarketCodes: Set<string>) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return {}
+  return Object.fromEntries(Object.entries(value as Record<string, unknown>)
+    .filter(([code, visibility]) => validMarketCodes.has(code) && MARKET_VISIBILITIES.has(visibility as MarketVisibility)))
+}
 
 const NON_TRANSLATABLE_KEYS = new Set([
   'id', 'order_index', 'page_key', 'section_key', 'module_type', 'image_url', 'image_fit',
@@ -97,30 +136,40 @@ router.get('/home', (_req, res) => {
   })
 })
 
-router.get('/bootstrap', (_req, res) => {
+router.get('/bootstrap', (req, res) => {
+  const market = requestMarket(req)
   res.json({
     site_config: db.site_config,
-    navigation: [...db.navigation].sort(sortByOrderIndex),
+    navigation: navigationForMarket(market),
     home_config: db.home_config,
     series: [...db.fabric_series].sort(sortByOrderIndex),
+    markets: configuredMarkets().filter((item) => item.enabled).map(({ code, label, locale, is_default }) => ({ code, label, locale, is_default })),
+    current_market: market.code,
+    current_locale: market.locale,
   })
 })
 
 router.get('/translations/:locale', (req, res) => {
   const locale = req.params.locale
-  res.json({ data: locale === 'en' ? (db.translations?.en || {}) : {} })
+  if (!SITE_LOCALES.includes(locale as any)) { res.status(404).json({ error: '不支持的语言' }); return }
+  res.json({ data: locale === 'zh-CN' ? {} : (db.translations?.[locale] || {}) })
 })
 
-router.get('/admin/localizations', authMiddleware, (_req, res) => {
+router.get('/admin/localizations', authMiddleware, (req, res) => {
+  const locale = String(req.query.locale || 'en')
+  if (!SITE_LOCALES.includes(locale as any) || locale === 'zh-CN') { res.status(400).json({ error: '不支持的目标语言' }); return }
   res.json({
     data: {
+      locale,
       sources: publicTranslationSources(),
-      translations: db.translations?.en || {},
+      translations: db.translations?.[locale] || {},
     },
   })
 })
 
-router.put('/admin/localizations/en', authMiddleware, (req: AuthRequest, res) => {
+router.put('/admin/localizations/:locale', authMiddleware, (req: AuthRequest, res) => {
+  const locale = String(req.params.locale)
+  if (!SITE_LOCALES.includes(locale as any) || locale === 'zh-CN') { res.status(400).json({ error: '不支持的目标语言' }); return }
   const incoming = req.body?.translations
   if (!incoming || typeof incoming !== 'object' || Array.isArray(incoming)) {
     res.status(400).json({ error: '翻译数据格式无效' })
@@ -134,9 +183,48 @@ router.put('/admin/localizations/en', authMiddleware, (req: AuthRequest, res) =>
     if (!allowedSources.has(normalizedSource) || !normalizedTranslation || normalizedTranslation.length > 8000) continue
     next[normalizedSource] = normalizedTranslation
   }
-  db.translations.en = next
+  db.translations[locale] = next
   saveDb()
   res.json({ success: true, count: Object.keys(next).length })
+})
+
+router.get('/admin/markets', authMiddleware, (_req, res) => {
+  res.json({
+    data: {
+      markets: configuredMarkets(),
+      pages: db.page_configs.map((page) => ({ page_key: page.page_key, title: page.title || page.page_key, market_visibility: page.market_visibility || {} })),
+      sections: db.fluorine_sections
+        .filter((section) => section.page_key === 'pfas-free-innovation')
+        .sort(sortByOrderIndex)
+        .map((section) => ({ id: section.id, title: section.nav_label || section.title, market_visibility: section.market_visibility || {} })),
+    },
+  })
+})
+
+router.put('/admin/markets', authMiddleware, (req: AuthRequest, res) => {
+  const incoming = Array.isArray(req.body.markets) ? req.body.markets : []
+  if (!incoming.length) { res.status(400).json({ error: '至少保留一个地区' }); return }
+  const markets: SiteMarket[] = incoming.map((item: any, index: number) => ({
+    code: String(item.code || '').trim().toLowerCase(),
+    label: String(item.label || '').trim(),
+    locale: String(item.locale || '') as SiteMarket['locale'],
+    enabled: item.enabled !== false,
+    is_default: Boolean(item.is_default),
+    default_visibility: item.default_visibility === 'hidden' ? 'hidden' as const : 'public' as const,
+    order_index: index,
+  }))
+  if (markets.some((item) => !/^[a-z][a-z0-9-]{1,20}$/.test(item.code) || !item.label || !SITE_LOCALES.includes(item.locale as any))) {
+    res.status(400).json({ error: '地区代码、名称或语言无效' }); return
+  }
+  if (new Set(markets.map((item) => item.code)).size !== markets.length) { res.status(400).json({ error: '地区代码不能重复' }); return }
+  if (markets.filter((item) => item.enabled && item.is_default).length !== 1) { res.status(400).json({ error: '必须且只能设置一个启用的默认地区' }); return }
+  if (!markets.some((item) => item.enabled)) { res.status(400).json({ error: '至少启用一个地区' }); return }
+  const codes = new Set(markets.map((item) => item.code))
+  db.markets = markets
+  for (const page of db.page_configs) page.market_visibility = sanitizeVisibilityMap(req.body.page_visibility?.[page.page_key] ?? page.market_visibility, codes)
+  for (const section of db.fluorine_sections) section.market_visibility = sanitizeVisibilityMap(req.body.section_visibility?.[section.id] ?? section.market_visibility, codes)
+  saveDb()
+  res.json({ success: true })
 })
 
 router.get('/site-config', (_req, res) => {
@@ -165,11 +253,12 @@ router.put('/admin/site-config/favicon', authMiddleware, upload.single('file'), 
 
 router.get('/page/:pageKey', (req, res) => {
   const row = db.page_configs.find((p) => p.page_key === req.params.pageKey)
-  res.json({ data: row || null })
+  const market = requestMarket(req)
+  res.json({ data: row && visibleInMarket(row, market) ? row : null })
 })
 
-router.get('/navigation', (_req, res) => {
-  res.json({ data: db.navigation.sort(sortByOrderIndex) })
+router.get('/navigation', (req, res) => {
+  res.json({ data: navigationForMarket(requestMarket(req)) })
 })
 
 router.get('/footer', (_req, res) => {
@@ -192,7 +281,9 @@ router.put('/admin/contact-config', authMiddleware, (req: AuthRequest, res) => {
 })
 
 router.get('/content-sections/:pageKey', (req, res) => {
-  res.json({ data: db.fluorine_sections.filter((section) => section.page_key === req.params.pageKey && section.status !== 'draft').sort(sortByOrderIndex) })
+  const market = requestMarket(req)
+  if (!pageVisible(req.params.pageKey, market)) { res.json({ data: [] }); return }
+  res.json({ data: db.fluorine_sections.filter((section) => section.page_key === req.params.pageKey && section.status !== 'draft' && visibleInMarket(section, market)).sort(sortByOrderIndex) })
 })
 
 router.get('/admin/content-sections/:pageKey', authMiddleware, (req, res) => {
@@ -239,6 +330,7 @@ router.post('/admin/content-sections/:pageKey', authMiddleware, (req: AuthReques
     hero_statement: String(req.body.hero_statement || '').trim(),
     hero_scroll_label: String(req.body.hero_scroll_label || '').trim(),
     content_blocks: normalizeTechnologyContentBlocks(req.body.content_blocks),
+    market_visibility: sanitizeVisibilityMap(req.body.market_visibility, new Set(configuredMarkets().map((market) => market.code))),
   }
   db.fluorine_sections.push(newSection)
   saveDb()
@@ -275,6 +367,9 @@ router.put('/admin/content-sections/:pageKey/:id', authMiddleware, (req: AuthReq
     content_blocks: Object.prototype.hasOwnProperty.call(req.body, 'content_blocks')
       ? normalizeTechnologyContentBlocks(req.body.content_blocks)
       : existing.content_blocks,
+    market_visibility: Object.prototype.hasOwnProperty.call(req.body, 'market_visibility')
+      ? sanitizeVisibilityMap(req.body.market_visibility, new Set(configuredMarkets().map((market) => market.code)))
+      : existing.market_visibility,
   })
   saveDb()
   res.json({ success: true })

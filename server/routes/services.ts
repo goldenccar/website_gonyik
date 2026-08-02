@@ -1,11 +1,13 @@
 import { Router, type Request } from 'express'
 import { db, saveDb, getNextId, sortByOrderIndex, updateById, deleteById, nextOrderIndex } from '../db'
 import { authMiddleware, AuthRequest } from '../middleware/auth'
+import { pageVisible, requestMarket } from '../market'
 
 const router = Router()
 
 function registerContentCollection(resource: string, getCollection: () => any[], filter?: (collection: any[], req: Request) => any[]) {
   router.get(`/${resource}`, (req, res) => {
+    if (!pageVisible('services', requestMarket(req))) { res.json({ data: [] }); return }
     const collection = getCollection()
     res.json({ data: [...(filter ? filter(collection, req) : collection)].sort(sortByOrderIndex) })
   })

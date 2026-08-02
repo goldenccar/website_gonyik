@@ -2,7 +2,8 @@ import { useEffect, useMemo, useRef, useState, type CSSProperties, type MouseEve
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { ChevronDown, ChevronUp, Globe2, Menu, X } from 'lucide-react'
 import { getPublicBootstrap } from '@/api/client'
-import { localizePath, stripEnglishPrefix, useSiteLocale } from '@/i18n/SiteLocale'
+import { useSiteLocale } from '@/i18n/SiteLocale'
+import { marketPath, stripMarketPrefix } from '@/config/markets'
 import type { NavItem } from '@/types'
 import { InlineMarkup } from './MarkupParser'
 
@@ -29,18 +30,16 @@ export default function Header() {
   const desktopMenuWasOpenRef = useRef(false)
   const location = useLocation()
   const navigate = useNavigate()
-  const { locale, path: localePath } = useSiteLocale()
-  const publicPath = stripEnglishPrefix(location.pathname)
+  const { locale, market, markets, path: localePath } = useSiteLocale()
+  const publicPath = stripMarketPrefix(location.pathname)
   const currentPublicLocation = `${publicPath}${location.search}${location.hash}`
-  const chinesePath = localizePath(currentPublicLocation, 'zh')
-  const englishPath = localizePath(currentPublicLocation, 'en')
 
   useEffect(() => {
     getPublicBootstrap().then((bootstrap) => {
       setNavItems(bootstrap.data.navigation || [])
       setSiteConfig(bootstrap.data.site_config || {})
     })
-  }, [])
+  }, [market.code])
 
   useEffect(() => {
     setMobileOpen(false)
@@ -182,18 +181,25 @@ export default function Header() {
           })}
         </nav>
 
-        <div aria-label={locale === 'en' ? 'Language' : '语言'} className="ml-5 hidden h-8 items-center gap-2.5 border-l border-white/20 pl-5 md:flex">
-          <Globe2 size={15} strokeWidth={1.6} className="text-white/55" aria-hidden="true" />
-          <Link to={chinesePath} aria-current={locale === 'zh' ? 'page' : undefined} className={`relative py-1 text-[11px] font-medium tracking-[0.05em] transition-colors ${locale === 'zh' ? 'text-white' : 'text-white/45 hover:text-white/80'}`}>中文<span className={`absolute inset-x-0 -bottom-0.5 h-px bg-[#69B2C1] transition-opacity ${locale === 'zh' ? 'opacity-100' : 'opacity-0'}`} /></Link>
-          <span aria-hidden="true" className="h-3 w-px bg-white/18" />
-          <Link to={englishPath} aria-current={locale === 'en' ? 'page' : undefined} className={`relative py-1 text-[11px] font-medium tracking-[0.08em] transition-colors ${locale === 'en' ? 'text-white' : 'text-white/45 hover:text-white/80'}`}>EN<span className={`absolute inset-x-0 -bottom-0.5 h-px bg-[#69B2C1] transition-opacity ${locale === 'en' ? 'opacity-100' : 'opacity-0'}`} /></Link>
-        </div>
-        <div aria-label={locale === 'en' ? 'Language' : '语言'} className="ml-auto flex h-11 items-center gap-2 text-[11px] font-medium md:hidden">
-          <Globe2 size={17} strokeWidth={1.6} className="text-white/55" aria-hidden="true" />
-          <Link to={chinesePath} aria-current={locale === 'zh' ? 'page' : undefined} className={locale === 'zh' ? 'text-white' : 'text-white/45'}>中</Link>
-          <span className="text-white/20">/</span>
-          <Link to={englishPath} aria-current={locale === 'en' ? 'page' : undefined} className={locale === 'en' ? 'text-white' : 'text-white/45'}>EN</Link>
-        </div>
+        <details className="group/market relative ml-5 hidden border-l border-white/20 pl-5 md:block">
+          <summary className="flex h-9 cursor-pointer list-none items-center gap-2 text-[11px] font-medium tracking-[0.04em] text-white/75 transition-colors hover:text-white [&::-webkit-details-marker]:hidden">
+            <Globe2 size={15} strokeWidth={1.6} className="text-white/55" aria-hidden="true" />
+            <span>{market.label}</span>
+            <ChevronDown size={13} className="text-white/45 transition-transform duration-200 group-open/market:rotate-180" aria-hidden="true" />
+          </summary>
+          <div className="absolute right-0 top-[43px] min-w-44 border border-border bg-[#fbfcfd] py-1.5 shadow-[0_16px_36px_rgba(4,31,56,0.16)]">
+            {markets.filter((item) => item.enabled).map((item) => <Link key={item.code} to={marketPath(currentPublicLocation, item.code)} aria-current={item.code === market.code ? 'page' : undefined} className={`flex min-h-10 items-center justify-between gap-5 px-4 text-[12px] transition-colors ${item.code === market.code ? 'bg-[#e9f3f5] font-semibold text-primary' : 'text-secondary hover:bg-[#f0f5f6] hover:text-primary'}`}><span>{item.label}</span><span className="text-[10px] uppercase tracking-[0.08em] opacity-55">{item.locale}</span></Link>)}
+          </div>
+        </details>
+        <details className="group/mobile-market relative ml-auto md:hidden">
+          <summary className="flex h-11 cursor-pointer list-none items-center gap-1.5 text-[11px] font-medium text-white/75 [&::-webkit-details-marker]:hidden">
+            <Globe2 size={17} strokeWidth={1.6} className="text-white/55" aria-hidden="true" />
+            <span>{market.label}</span>
+          </summary>
+          <div className="absolute right-0 top-11 min-w-40 border border-border bg-[#fbfcfd] py-1.5 shadow-[0_16px_36px_rgba(4,31,56,0.16)]">
+            {markets.filter((item) => item.enabled).map((item) => <Link key={item.code} to={marketPath(currentPublicLocation, item.code)} className={`block min-h-10 px-4 py-3 text-[12px] ${item.code === market.code ? 'bg-[#e9f3f5] font-semibold text-primary' : 'text-secondary'}`}>{item.label}</Link>)}
+          </div>
+        </details>
         <button type="button" aria-label={locale === 'en' ? 'Open navigation' : '打开导航'} aria-expanded={mobileOpen} aria-controls="mobile-navigation" className="ml-1 flex h-11 w-11 items-center justify-center text-white md:hidden" onClick={() => setMobileOpen(true)}><Menu size={25} /></button>
       </div>
 

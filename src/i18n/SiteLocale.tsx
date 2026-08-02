@@ -1,8 +1,9 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useLocation } from 'react-router-dom'
-import { getTranslations } from '@/api/client'
+import { getPublicBootstrap, getTranslations } from '@/api/client'
+import { DEFAULT_SITE_MARKETS, marketCodeFromPath, marketPath, stripMarketPrefix, type SiteLocale, type SiteMarket } from '@/config/markets'
 
-export type SiteLocale = 'zh' | 'en'
+export type { SiteLocale } from '@/config/markets'
 
 export const ENGLISH_COPY: Record<string, string> = {
   '港翼科技': 'GONYIK',
@@ -203,56 +204,75 @@ export const ENGLISH_COPY: Record<string, string> = {
 
 interface SiteLocaleContextValue {
   locale: SiteLocale
+  market: SiteMarket
+  markets: SiteMarket[]
   t: (text?: string | null) => string
   path: (href: string) => string
-  switchPath: string
 }
 
 const SiteLocaleContext = createContext<SiteLocaleContextValue>({
-  locale: 'zh',
+  locale: 'zh-CN',
+  market: DEFAULT_SITE_MARKETS[0],
+  markets: DEFAULT_SITE_MARKETS,
   t: (text) => text || '',
   path: (href) => href,
-  switchPath: '/en',
 })
 
 export function stripEnglishPrefix(pathname: string) {
-  if (pathname === '/en') return '/'
-  return pathname.startsWith('/en/') ? pathname.slice(3) : pathname
+  return stripMarketPrefix(pathname)
 }
 
 export function localizePath(href: string, locale: SiteLocale) {
-  if (!href || /^(?:https?:|mailto:|tel:|#)/.test(href) || href.startsWith('/admin')) return href
-  const [pathnameAndQuery, hash = ''] = href.split('#')
-  const base = stripEnglishPrefix(pathnameAndQuery)
-  const localized = locale === 'en' ? `/en${base === '/' ? '' : base}` : base
-  return `${localized}${hash ? `#${hash}` : ''}`
+  return marketPath(href, locale === 'en' ? 'global' : 'cn')
 }
 
 export function SiteLocaleProvider({ children }: { children: ReactNode }) {
   const location = useLocation()
-  const locale: SiteLocale = location.pathname === '/en' || location.pathname.startsWith('/en/') ? 'en' : 'zh'
-  const [cmsEnglishCopy, setCmsEnglishCopy] = useState<Record<string, string>>({})
+  const routeMarketCode = marketCodeFromPath(location.pathname)
+  const [markets, setMarkets] = useState<SiteMarket[]>(DEFAULT_SITE_MARKETS)
+  const market = markets.find((item) => item.code === routeMarketCode && item.enabled)
+    || markets.find((item) => item.enabled && item.is_default)
+    || DEFAULT_SITE_MARKETS[0]
+  const locale = market.locale
+  const [cmsCopy, setCmsCopy] = useState<Record<string, string>>({})
 
   useEffect(() => {
-    if (locale !== 'en') return
-    getTranslations('en')
-      .then((response) => setCmsEnglishCopy(response.data.data || {}))
-      .catch(() => setCmsEnglishCopy({}))
+    getPublicBootstrap()
+      .then((response) => {
+        const configured = response.data.markets
+        if (Array.isArray(configured) && configured.length) {
+          setMarkets(configured.map((item: SiteMarket, index: number) => ({
+            ...item,
+            enabled: true,
+            default_visibility: 'public',
+            order_index: index,
+          })))
+        }
+      })
+      .catch(() => setMarkets(DEFAULT_SITE_MARKETS))
+  }, [routeMarketCode])
+
+  useEffect(() => {
+    document.documentElement.lang = locale
+    if (locale === 'zh-CN') { setCmsCopy({}); return }
+    getTranslations(locale)
+      .then((response) => setCmsCopy(response.data.data || {}))
+      .catch(() => setCmsCopy({}))
   }, [locale])
 
   const value = useMemo<SiteLocaleContextValue>(() => ({
     locale,
+    market,
+    markets,
     t(text) {
       if (!text) return ''
-      return locale === 'en' ? cmsEnglishCopy[text] || ENGLISH_COPY[text] || text : text
+      if (locale === 'zh-CN') return text
+      return cmsCopy[text] || (locale === 'en' ? ENGLISH_COPY[text] : undefined) || text
     },
     path(href) {
-      return localizePath(href, locale)
+      return marketPath(href, market.code)
     },
-    switchPath: locale === 'en'
-      ? `${stripEnglishPrefix(location.pathname)}${location.search}${location.hash}`
-      : `/en${location.pathname === '/' ? '' : location.pathname}${location.search}${location.hash}`,
-  }), [cmsEnglishCopy, locale, location.hash, location.pathname, location.search])
+  }), [cmsCopy, locale, market, markets])
 
   return <SiteLocaleContext.Provider value={value}>{children}</SiteLocaleContext.Provider>
 }
