@@ -28,11 +28,18 @@ else
   fi
   npm run build >> "$LOG_FILE" 2>&1
   mkdir -p logs
-  pm2 reload ecosystem.config.cjs >> "$LOG_FILE" 2>&1
-  # 健康检查重试
+  pm2 restart ecosystem.config.cjs --update-env >> "$LOG_FILE" 2>&1
+  # 健康检查同时覆盖新前端依赖的关键聚合接口。
   for i in 1 2 3 4 5; do
-    if curl -s http://localhost:3001/api/health >> "$LOG_FILE" 2>&1; then
+    if curl -fsS http://localhost:3001/api/health >> "$LOG_FILE" 2>&1 \
+      && curl -fsS 'http://localhost:3001/api/fabrics/catalog?market=cn&schema=dual-code-v1' > /dev/null \
+      && curl -fsS 'http://localhost:3001/api/equipment/catalog?market=cn' > /dev/null \
+      && curl -fsS 'http://localhost:3001/api/services/bootstrap?market=cn' > /dev/null; then
       break
+    fi
+    if [ "$i" = "5" ]; then
+      echo "[$(date '+%Y-%m-%d %H:%M:%S')] 关键 API 健康检查失败" >> "$LOG_FILE"
+      exit 1
     fi
     sleep 2
   done

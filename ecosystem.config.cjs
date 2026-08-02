@@ -24,6 +24,7 @@ module.exports = {
   apps: [
     {
       name: 'gonyik',
+      cwd: __dirname,
       script: './server/index.ts',
       interpreter: 'node',
       interpreter_args: '--import ./node_modules/tsx/dist/loader.mjs',

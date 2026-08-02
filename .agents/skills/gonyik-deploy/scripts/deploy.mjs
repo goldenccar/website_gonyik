@@ -46,18 +46,21 @@ async function hasCurrentReleaseVerification() {
 
 function parseArgs(argv) {
   let yes = false
+  let remoteOnly = false
   let message = null
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i]
     if (arg === '-y' || arg === '--yes') {
       yes = true
+    } else if (arg === '--remote-only') {
+      remoteOnly = true
     } else if (arg === '-m' || arg === '--message') {
       message = argv[++i] || ''
     } else if (!arg.startsWith('-')) {
       message = arg
     }
   }
-  return { yes, message: message || 'deploy: auto deploy' }
+  return { yes, remoteOnly, message: message || 'deploy: auto deploy' }
 }
 
 async function loadDeployKey() {
@@ -145,9 +148,9 @@ async function deployRemote(password) {
     "npm run build:client",
     'mkdir -p logs',
     "if [ ! -f .env.production ]; then node -e \"require('node:fs').writeFileSync('.env.production', 'JWT_SECRET=' + require('node:crypto').randomBytes(48).toString('hex') + '\\n', { mode: 0o600 })\"; fi",
-    'pm2 reload ecosystem.config.cjs || pm2 start ecosystem.config.cjs',
+    'pm2 restart ecosystem.config.cjs --update-env || pm2 start ecosystem.config.cjs',
     'pm2 save',
-    '(for i in 1 2 3 4 5; do curl -s http://localhost:3001/api/health && exit 0; sleep 2; done; exit 1)',
+    "(for i in 1 2 3 4 5; do curl -fsS http://localhost:3001/api/health && curl -fsS 'http://localhost:3001/api/fabrics/catalog?market=cn&schema=dual-code-v1' >/dev/null && curl -fsS 'http://localhost:3001/api/equipment/catalog?market=cn' >/dev/null && curl -fsS 'http://localhost:3001/api/services/bootstrap?market=cn' >/dev/null && exit 0; sleep 2; done; exit 1)",
   ].join(' && ')
 
   const conn = new Client()
@@ -191,8 +194,14 @@ async function deployRemote(password) {
 
 async function main() {
   const deployStartedAt = Date.now()
-  const { yes, message } = parseArgs(process.argv.slice(2))
+  const { yes, remoteOnly, message } = parseArgs(process.argv.slice(2))
   const { password } = await loadDeployKey()
+
+  if (remoteOnly) {
+    await deployRemote(password)
+    console.log(`\n=== Remote deploy finished · 总耗时 ${elapsed(deployStartedAt)} ===`)
+    return
+  }
 
   const buildStartedAt = Date.now()
   if (await hasCurrentReleaseVerification()) {
