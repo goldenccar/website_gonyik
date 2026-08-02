@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { getContentSections, getPageConfig } from '@/api/client'
+import { getServicesBootstrap } from '@/api/client'
 import PageHero from '@/components/PageHero'
 import { PageShell } from '@/components/PageLayout'
 import CatalogSelectorBar from '@/components/CatalogSelectorBar'
@@ -22,9 +22,10 @@ export default function ServicesLayout() {
   const { path: localePath, t } = useSiteLocale()
 
   useEffect(() => {
-    Promise.all([getPageConfig('services'), getContentSections('services')]).then(([pageResponse, sectionResponse]) => {
-      setPage(pageResponse.data.data)
-      setSections((sectionResponse.data.data || []).filter((section: ContentSection) => isServiceModuleType(section.module_type)))
+    getServicesBootstrap().then((response) => {
+      const data = response.data.data || {}
+      setPage(data.page || null)
+      setSections((data.sections || []).filter((section: ContentSection) => isServiceModuleType(section.module_type)))
       setLoaded(true)
     })
   }, [])

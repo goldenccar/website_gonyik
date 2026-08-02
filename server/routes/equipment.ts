@@ -124,6 +124,22 @@ router.get('/products', (req, res) => {
   res.json({ data: { products } })
 })
 
+router.get('/catalog', (req, res) => {
+  const market = requestMarket(req)
+  const page = db.page_configs.find((item) => item.page_key === 'equipment') || null
+  if (!pageVisible('equipment', market)) {
+    res.json({ data: { page: null, categories: [], products: [] } })
+    return
+  }
+  const categories = visibleCategories().map(categoryPayload)
+  const products = db.equipment_products
+    .filter((product) => product.visibility !== 'hidden' && product.status !== 'archived')
+    .sort(sortByOrderIndex)
+    .map((product) => enrichProduct(product, true))
+    .filter((product) => product.category_ids.length > 0)
+  res.json({ data: { page, categories, products } })
+})
+
 router.get('/admin/categories', authMiddleware, (_req, res) => {
   const rows = [...db.equipment_categories]
     .sort((a, b) => (a.parent_id ?? 0) - (b.parent_id ?? 0) || sortByOrderIndex(a, b) || a.id - b.id)

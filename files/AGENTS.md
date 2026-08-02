@@ -1,119 +1,69 @@
-# 港翼科技 GONYIK 官网 — Agent 开发指南
+# 港翼官网 Agent 交接指南
 
-## 项目速览
-- **品牌**：港翼科技（GONYIK）— 科技面料品牌
-- **技术栈**：React 19 + TypeScript + Vite + Tailwind CSS + Express + JSON DB
-- **内容管理**：全站内容通过 `/admin` 后台维护，数据存在 `db.json`
-- **字体**：自托管 Inter Variable（英文）+ Noto Sans SC Variable（中文）
+## 先读
 
-## 关键文件
-| 文件 | 作用 |
-|------|------|
-| `files/PROJECT_LOG.md` | 完整项目决策记录、功能清单、待办事项 |
-| `files/PRD.md` | 原始产品需求文档 |
-| `server/db.ts` | 数据库定义和默认数据 |
-| `src/api/client.ts` | 前端 API 封装 |
-| `src/components/Header.tsx` | 全局导航（GORE-TEX 风格） |
-| `src/components/Footer.tsx` | 全局页脚 + 社交媒体 + 后台入口 |
+1. `files/PRD.md`：当前产品、页面、CMS、数据、设计、安全和验收的唯一事实源；
+2. `files/COMPETITIVE_AUDIT_2026-08.md`：竞争对标、文案风险和下一步；
+3. `files/SECURITY_AND_LOAD.md`：安全、限流、备份和大流量措施；
+4. `files/QUALITY_AUDIT.md`：自动质量审计说明。
 
-## 设计规范
-- **视觉定位**：高性能防护材料品牌，参考 GORE-TEX / eVent / Arc'teryx 材料技术页
-- **色彩**：Graphite Black `#0D0D0D`、Deep Charcoal `#1A1A1A`、Mist White `#F5F5F5`、Cool Silver `#EDEDED`、Technical Green 薄荷绿仅作 5%–10% 点缀
-- **首屏视觉**：必须使用真实面料、膜层、雨水微距、测试场景等物理对象，禁止纯抽象科技背景
-- **文案风格**：材料 datasheet + 户外品牌官网，避免“科技赋能”“定义未来”等泛化表达
-- **卡片/按钮**：无圆角（`0px`）
-- **页面水平内边距**：48px（桌面）/ 24px（移动端）
-- **响应式**：iPhone 375px 为基准移动端适配
-## 后台管理
-- 入口：`http://localhost:5173/admin` 或 Footer 右下角齿轮
-- 账号：`admin`
-- 密码：`888888`
+## 项目概览
 
-## 部署工作流（核心）
+- React 19 + TypeScript + Vite + Tailwind CSS；
+- Express API + JSON 环境数据库；
+- 全站 CMS 路径 `/admin`；
+- 默认市场为中国大陆，支持 `/global` 和其他市场路径；
+- 字体、图片和关键动效资源自托管；
+- 官网展示与获客，不提供零售支付。
 
-> **目标**：任何 AI Agent 或开发者换设备后，都能直接执行这套「修改 → 同步到 GitHub → 部署到服务器」的流程，且支持 Windows / macOS / Linux。
-> **密码**：服务器 root 密码已加密存储在本地 `.deploy-key.md`，部署脚本会自动读取解密，**不要硬编码到代码里**。
+## 开始开发
 
-### 服务器信息
-| 项目 | 详情 |
-|------|------|
-| 供应商 | 腾讯云 CVM |
-| IP | `111.231.141.7` |
-| 系统 | OpenCloudOS 9.4 |
-| 登录用户 | `root` |
-| 凭据 | 仅从本地未跟踪的 `.deploy-key.md` 读取，不在文档或源码记录密文/明文 |
-| 项目路径 | `/var/www/website_gonyik` |
-| 后端服务 | `gonyik` (PM2 管理)，监听 `localhost:3001` |
-| PM2 配置 | `ecosystem.config.cjs` |
-| nginx | 80 端口 → 反向代理到 `localhost:3001`，配置在 `/etc/nginx/conf.d/gonyik.conf` |
-| 定时任务 | `*/5 * * * *` 执行 `scripts/auto-deploy.sh`（已修复为通过 commit hash 判断更新） |
+```bash
+npm ci
+npm run dev
+```
 
-### 一键部署（推荐）
+发布前：
+
+```bash
+npm test
+npm run typecheck
+npm run build
+npm run audit:quality
+```
+
+## 数据与资源
+
+- `db.json` 和 `public/uploads/` 不提交 Git；
+- 修改 `server/db.ts` 时迁移必须幂等，不能覆盖 CMS 已有内容；
+- 系列/装备分类与 SKU/产品是映射关系，禁止级联删除；
+- 删除媒体前必须检查引用；
+- 精确复刻生产需要同版本数据和 uploads 备份。
+
+## 内容纪律
+
+- 不公开工商/股东关系；
+- 不把内部约束写到前台；
+- 不把合作方认证泛化到全产品；
+- 高校、奖项、认证、医学和性能比较必须可核验；
+- 完整 TDS 与测试报告定向提供，不做公开报告下载中心。
+
+## 部署
+
+使用仓库已有部署流程。凭据只允许来自未跟踪的本机文件或 CI secret；不得在文档或源码记录服务器 IP、root 密码、管理员默认密码或 JWT 密钥。
+
+常规发布优先执行：
 
 ```bash
 npm run deploy
 ```
 
-非交互模式（Agent 自动执行）：
+本任务如果只要求推送 GitHub，不得自动部署生产。
 
-```bash
-npm run deploy -y
-```
+## 代码约束
 
-该命令会依次完成：本地构建 → Git 提交 → Git 推送 → SSH 登录服务器 → 拉代码 → 安装依赖 → 构建 → PM2 重启 → 健康检查。
-
-### 完整手动部署命令
-
-**第 1 步：本地验证 + 推送**
-```bash
-npm run build          # 确保本地构建通过
-git add -A
-git commit -m "feat: xxx"
-git push origin main
-```
-
-**第 2 步：SSH 到服务器执行部署**
-```bash
-ssh root@111.231.141.7
-cd /var/www/website_gonyik
-git pull
-npm install
-npm run build
-pm2 reload ecosystem.config.cjs
-curl -s http://localhost:3001/api/health
-```
-
-### 关键注意事项
-
-| 问题 | 说明 |
-|------|------|
-| `db.json` 不提交 | 被 `.gitignore` 排除，服务器上独立维护 |
-| 向后兼容 | `server/db.ts` 的 `initDatabase()` 会自动补全新增字段，**一般无需手动修改服务器 db.json** |
-| 服务端运行方式 | 生产环境使用 `node --import tsx server/index.ts`（PM2 管理），修改 `server/` 代码后必须 `pm2 reload gonyik` |
-| 前端缓存 | `index.html` 已加 `Cache-Control: no-cache`，但 CDN/浏览器仍可能缓存，清缓存或硬刷新 |
-| 自动部署 | `scripts/auto-deploy.sh` 每 5 分钟检查一次，通过 commit hash 判断是否有更新 |
-| 跨平台 | 优先使用 `npm run deploy`，不要依赖硬编码的本地路径 |
-
-### 日常诊断命令
-```bash
-# 查看 PM2 状态
-pm2 status
-pm2 logs gonyik --lines 20
-
-# 查看后端端口
-ss -tlnp | grep 3001
-
-# 测试 API
-curl -s http://localhost:3001/api/health
-
-# 查看 nginx 配置
-cat /etc/nginx/conf.d/gonyik.conf
-```
-
----
-
-## 开发注意
-1. 上传的文件存到 `public/uploads/`，被 gitignore 排除
-2. 添加新页面需在 `src/App.tsx` 注册路由
-3. 添加新后台模块需在 `src/admin/` 创建页面并在 `Dashboard.tsx` 添加导航
-4. 导航/页面配置等运营数据通过 `/admin` 后台维护，存在 `db.json` 中。修改 `server/db.ts` 的默认数据后，需手动同步到服务器上的 `db.json`（或清理 db.json 让服务器重启时重新初始化）
+- 优先复用现有组件；
+- 交互优先使用原生 `button`、`a`、`dialog`、表单控件；
+- 页面公共数据走 `/api/bootstrap`，页面域数据走聚合接口；
+- 动效优先 transform/opacity，并支持 reduced motion；
+- 不覆盖与当前任务无关的用户改动。

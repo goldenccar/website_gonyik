@@ -27,28 +27,29 @@ export default function ResponsiveAdminList<T>({
 
   return (
     <div className="divide-y divide-white/5 bg-dark">
-      {items.map((item) => (
-        <div
-          key={getKey(item)}
-          role={onSelect ? 'button' : undefined}
-          tabIndex={onSelect ? 0 : undefined}
-          onClick={() => onSelect?.(item)}
-          onKeyDown={(event) => {
-            if (onSelect && (event.key === 'Enter' || event.key === ' ')) {
-              event.preventDefault()
-              onSelect(item)
-            }
-          }}
-          className={`flex min-w-0 items-center gap-3 px-4 py-4 transition-colors ${onSelect ? 'cursor-pointer hover:bg-white/5' : ''} ${isSelected?.(item) ? 'bg-white/10' : ''}`}
-        >
-          {renderMedia && <div className="shrink-0">{renderMedia(item)}</div>}
-          <div className="min-w-0 flex-1">
-            <div className="truncate text-[14px] font-medium text-white">{renderTitle(item)}</div>
-            {renderSubtitle && <div className="mt-1 line-clamp-2 text-[12px] leading-5 text-accent">{renderSubtitle(item)}</div>}
+      {items.map((item) => {
+        const content = (
+          <>
+            {renderMedia && <span className="shrink-0">{renderMedia(item)}</span>}
+            <span className="min-w-0 flex-1">
+              <span className="block truncate text-[14px] font-medium text-white">{renderTitle(item)}</span>
+              {renderSubtitle && <span className="mt-1 block line-clamp-2 text-[12px] leading-5 text-accent">{renderSubtitle(item)}</span>}
+            </span>
+          </>
+        )
+        return (
+          <div key={getKey(item)} className={`flex min-w-0 items-center gap-3 px-4 transition-colors ${onSelect ? 'hover:bg-white/5' : ''} ${isSelected?.(item) ? 'bg-white/10' : ''}`}>
+            {onSelect ? (
+              <button type="button" onClick={() => onSelect(item)} className="flex min-w-0 flex-1 items-center gap-3 py-4 text-left">
+                {content}
+              </button>
+            ) : (
+              <div className="flex min-w-0 flex-1 items-center gap-3 py-4">{content}</div>
+            )}
+            {renderActions && <div className="flex shrink-0 items-center gap-1">{renderActions(item)}</div>}
           </div>
-          {renderActions && <div className="flex shrink-0 items-center gap-1" onClick={(event) => event.stopPropagation()}>{renderActions(item)}</div>}
-        </div>
-      ))}
+        )
+      })}
     </div>
   )
 }

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { getEquipmentCategories, getEquipmentProducts, getPageConfig } from '@/api/client'
+import { getEquipmentCatalog } from '@/api/client'
 import CatalogCollection from '@/components/CatalogCollection'
 import { CatalogEndCta } from '@/components/CatalogCard'
 import ApplicationCard from '@/components/ApplicationCard'
@@ -20,12 +20,13 @@ export default function EndUseEquipment() {
 
   useEffect(() => {
     let current = true
-    Promise.all([getPageConfig('equipment'), getEquipmentCategories(), getEquipmentProducts()])
-      .then(([config, categoryRes, productRes]) => {
+    getEquipmentCatalog()
+      .then((response) => {
         if (!current) return
-        setPage(config.data.data)
-        setCategories(categoryRes.data.data || [])
-        setProducts(productRes.data.data?.products || [])
+        const catalog = response.data.data || {}
+        setPage(catalog.page || null)
+        setCategories(catalog.categories || [])
+        setProducts(catalog.products || [])
       })
       .finally(() => { if (current) setLoading(false) })
     return () => { current = false }

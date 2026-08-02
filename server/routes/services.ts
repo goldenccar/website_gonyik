@@ -1,9 +1,22 @@
 import { Router, type Request } from 'express'
 import { db, saveDb, getNextId, sortByOrderIndex, updateById, deleteById, nextOrderIndex } from '../db'
 import { authMiddleware, AuthRequest } from '../middleware/auth'
-import { pageVisible, requestMarket } from '../market'
+import { pageVisible, requestMarket, visibleInMarket } from '../market'
 
 const router = Router()
+
+router.get('/bootstrap', (req, res) => {
+  const market = requestMarket(req)
+  const page = db.page_configs.find((item) => item.page_key === 'services') || null
+  if (!pageVisible('services', market)) {
+    res.json({ data: { page: null, sections: [] } })
+    return
+  }
+  const sections = db.fluorine_sections
+    .filter((section) => section.page_key === 'services' && section.status !== 'draft' && visibleInMarket(section, market))
+    .sort(sortByOrderIndex)
+  res.json({ data: { page, sections } })
+})
 
 function registerContentCollection(resource: string, getCollection: () => any[], filter?: (collection: any[], req: Request) => any[]) {
   router.get(`/${resource}`, (req, res) => {

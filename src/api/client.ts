@@ -48,7 +48,6 @@ api.interceptors.response.use(
 export default api
 
 export const getPublicBootstrap = () => cachedGet('/bootstrap')
-export const getTranslations = (locale: SiteLocale) => cachedGet(`/translations/${locale}`)
 export const getAdminLocalizations = (locale: Exclude<SiteLocale, 'zh-CN'>) => api.get('/admin/localizations', { params: { locale } })
 export const updateLocalizations = (locale: Exclude<SiteLocale, 'zh-CN'>, translations: Record<string, string>) => api.put(`/admin/localizations/${locale}`, { translations })
 export const getAdminMarkets = () => api.get('/admin/markets')
@@ -68,13 +67,14 @@ export const getFooter = () => cachedGet('/footer')
 export const getSocial = () => cachedGet('/social')
 
 export const getFabricSeries = () => cachedGet('/fabrics/series', { schema: 'dual-code-v1' })
+export const getFabricCatalog = () => cachedGet('/fabrics/catalog', { schema: 'dual-code-v1' })
 export const getFabricSeriesDetail = (slug: string) => cachedGet(`/fabrics/series/${slug}`, { schema: 'dual-code-v1' })
-export const getEquipmentCategories = () => cachedGet('/equipment/categories')
-export const getEquipmentProducts = () => cachedGet('/equipment/products')
+export const getEquipmentCatalog = () => cachedGet('/equipment/catalog')
 export const getMaterialCareGuides = () => cachedGet('/services/material-care-guides')
 export const getCareGuides = () => cachedGet('/services/care-guides')
 export const getFaqs = (category: 'material-care' | 'garment-care') => cachedGet('/services/faqs', { category })
 export const getDigitalFabricFormats = () => cachedGet('/services/digital-fabric-formats')
+export const getServicesBootstrap = () => cachedGet('/services/bootstrap')
 
 export const getContactConfig = () => cachedGet('/contact-config')
 

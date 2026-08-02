@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useLocation, useSearchParams } from 'react-router-dom'
-import { getFabricSeries, getFabricSeriesDetail, getPageConfig } from '@/api/client'
+import { getFabricCatalog } from '@/api/client'
 import CatalogSelectorBar from '@/components/CatalogSelectorBar'
 import { InlineMarkup } from '@/components/MarkupParser'
 import PageHero from '@/components/PageHero'
@@ -38,15 +38,14 @@ export default function FabricDatabase() {
   useEffect(() => {
     let current = true
     setDetailLoading(true)
-    Promise.all([
-      getPageConfig('fabrics'),
-      getFabricSeries(),
-      ...SERIES_ORDER.map((slug) => getFabricSeriesDetail(slug)),
-    ]).then(([config, list, ...responses]) => {
+    getFabricCatalog().then((response) => {
       if (!current) return
-      setPage(config.data.data)
-      setSeries(list.data.data || [])
-      setDetails(Object.fromEntries(SERIES_ORDER.map((slug, index) => [slug, responses[index].data.data])) as Record<SeriesSlug, SeriesDetail>)
+      const catalog = response.data.data || {}
+      const catalogSeries = (catalog.series || []) as SeriesDetail[]
+      const capabilities = catalog.capabilities || []
+      setPage(catalog.page || null)
+      setSeries(catalogSeries)
+      setDetails(Object.fromEntries(catalogSeries.map((item) => [item.slug, { ...item, capabilities }])) as Partial<Record<SeriesSlug, SeriesDetail>>)
     }).finally(() => {
       if (current) setDetailLoading(false)
     })

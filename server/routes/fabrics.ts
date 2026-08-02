@@ -129,6 +129,24 @@ router.get('/series', (req, res) => {
   res.json({ data: db.fabric_series.sort(sortByOrderIndex) })
 })
 
+router.get('/catalog', (req, res) => {
+  const market = requestMarket(req)
+  const page = db.page_configs.find((item) => item.page_key === 'fabrics') || null
+  if (!pageVisible('fabrics', market)) {
+    res.json({ data: { page: null, series: [], capabilities: [] } })
+    return
+  }
+  const capabilities = [...db.fabric_capabilities].sort(sortByOrderIndex)
+  const series = [...db.fabric_series].sort(sortByOrderIndex).map((item) => ({
+    ...item,
+    skus: db.fabric_sku
+      .filter((sku) => sku.series_id === item.id && sku.visibility !== 'hidden' && sku.status !== 'archived')
+      .sort(sortByOrderIndex)
+      .map(toPublicSku),
+  }))
+  res.json({ data: { page, series, capabilities } })
+})
+
 router.get('/series/:slug', (req, res) => {
   if (!pageVisible('fabrics', requestMarket(req))) { res.status(404).json({ error: 'Series not found' }); return }
   const slug = req.params.slug
