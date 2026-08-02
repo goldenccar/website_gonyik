@@ -28,6 +28,9 @@ export default function Header() {
   const [desktopPanelVisible, setDesktopPanelVisible] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const desktopMenuWasOpenRef = useRef(false)
+  const desktopMegaPanelRef = useRef<HTMLDivElement>(null)
+  const desktopMarketRef = useRef<HTMLDetailsElement>(null)
+  const mobileMarketRef = useRef<HTMLDetailsElement>(null)
   const location = useLocation()
   const navigate = useNavigate()
   const { locale, market, markets, path: localePath } = useSiteLocale()
@@ -45,7 +48,36 @@ export default function Header() {
     setMobileOpen(false)
     setMobileExpanded(null)
     setDesktopMenu(null)
+    if (desktopMarketRef.current) desktopMarketRef.current.open = false
+    if (mobileMarketRef.current) mobileMarketRef.current.open = false
   }, [location.pathname, location.search, location.hash])
+
+  useEffect(() => {
+    const closeOpenHeaderPanels = (event: PointerEvent) => {
+      const target = event.target
+      if (!(target instanceof Node)) return
+      const targetElement = target instanceof Element ? target : target.parentElement
+      const clickedMegaTrigger = Boolean(targetElement?.closest('[data-mega-menu-trigger]'))
+      const clickedMegaPanel = Boolean(desktopMegaPanelRef.current?.contains(target))
+
+      if (!clickedMegaTrigger && !clickedMegaPanel) setDesktopMenu(null)
+      if (desktopMarketRef.current?.open && !desktopMarketRef.current.contains(target)) desktopMarketRef.current.open = false
+      if (mobileMarketRef.current?.open && !mobileMarketRef.current.contains(target)) mobileMarketRef.current.open = false
+    }
+    const closeOpenHeaderPanelsOnEscape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return
+      setDesktopMenu(null)
+      if (desktopMarketRef.current) desktopMarketRef.current.open = false
+      if (mobileMarketRef.current) mobileMarketRef.current.open = false
+    }
+
+    document.addEventListener('pointerdown', closeOpenHeaderPanels, true)
+    window.addEventListener('keydown', closeOpenHeaderPanelsOnEscape)
+    return () => {
+      document.removeEventListener('pointerdown', closeOpenHeaderPanels, true)
+      window.removeEventListener('keydown', closeOpenHeaderPanelsOnEscape)
+    }
+  }, [])
 
   useEffect(() => {
     if (desktopMenu) {
@@ -81,15 +113,6 @@ export default function Header() {
       window.removeEventListener('keydown', closeOnEscape)
     }
   }, [mobileOpen])
-
-  useEffect(() => {
-    if (!desktopMenu) return
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setDesktopMenu(null)
-    }
-    window.addEventListener('keydown', closeOnEscape)
-    return () => window.removeEventListener('keydown', closeOnEscape)
-  }, [desktopMenu])
 
   useEffect(() => {
     const update = () => setScrolled(window.scrollY > 12)
@@ -167,6 +190,7 @@ export default function Header() {
               return <button
                 key={item.id}
                 type="button"
+                data-mega-menu-trigger
                 aria-current={active ? 'page' : undefined}
                 aria-expanded={expanded}
                 aria-controls={`mega-menu-${item.id}`}
@@ -181,7 +205,7 @@ export default function Header() {
           })}
         </nav>
 
-        <details className="group/market relative ml-5 hidden border-l border-white/20 pl-5 md:block">
+        <details ref={desktopMarketRef} className="group/market relative ml-5 hidden border-l border-white/20 pl-5 md:block">
           <summary className="flex h-9 cursor-pointer list-none items-center gap-2 text-[11px] font-medium tracking-[0.04em] text-white/75 transition-colors hover:text-white [&::-webkit-details-marker]:hidden">
             <Globe2 size={15} strokeWidth={1.6} className="text-white/55" aria-hidden="true" />
             <span>{market.label}</span>
@@ -191,7 +215,7 @@ export default function Header() {
             {markets.filter((item) => item.enabled).map((item) => <Link key={item.code} to={marketPath(currentPublicLocation, item.code)} aria-current={item.code === market.code ? 'page' : undefined} className={`flex min-h-10 items-center justify-between gap-5 px-4 text-[12px] transition-colors ${item.code === market.code ? 'bg-[#e9f3f5] font-semibold text-primary' : 'text-secondary hover:bg-[#f0f5f6] hover:text-primary'}`}><span>{item.label}</span><span className="text-[10px] uppercase tracking-[0.08em] opacity-55">{item.locale}</span></Link>)}
           </div>
         </details>
-        <details className="group/mobile-market relative ml-auto md:hidden">
+        <details ref={mobileMarketRef} className="group/mobile-market relative ml-auto md:hidden">
           <summary className="flex h-11 cursor-pointer list-none items-center gap-1.5 text-[11px] font-medium text-white/75 [&::-webkit-details-marker]:hidden">
             <Globe2 size={17} strokeWidth={1.6} className="text-white/55" aria-hidden="true" />
             <span>{market.label}</span>
@@ -218,7 +242,7 @@ export default function Header() {
           className={`fixed inset-x-0 top-[60px] z-50 hidden px-6 md:block ${menuOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}
         >
           <div className="mx-auto flex w-full max-w-[1760px] justify-end px-0 lg:px-10">
-          <div className={`w-full ${menuWidthClass} origin-top overflow-hidden border-b border-border bg-[#fbfcfd] shadow-[0_22px_52px_rgba(4,31,56,0.13)] transition-[clip-path] duration-[360ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${menuOpen ? '[clip-path:inset(0_0_0_0)]' : '[clip-path:inset(0_0_100%_0)]'}`}>
+          <div ref={desktopMegaPanelRef} className={`w-full ${menuWidthClass} origin-top overflow-hidden border-b border-border bg-[#fbfcfd] shadow-[0_22px_52px_rgba(4,31,56,0.13)] transition-[clip-path] duration-[360ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${menuOpen ? '[clip-path:inset(0_0_0_0)]' : '[clip-path:inset(0_0_100%_0)]'}`}>
             <div className={`transition-[opacity,transform] ease-out motion-reduce:transition-none ${menuOpen ? 'translate-y-0 opacity-100 delay-[90ms] duration-[420ms]' : '-translate-y-1 opacity-0 delay-0 duration-[120ms]'}`}>
             <div className="px-6 pb-3 pt-3 lg:px-7">
               <div className="mb-3 flex min-h-8 items-start justify-end border-b border-border pb-2">
