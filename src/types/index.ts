@@ -227,6 +227,12 @@ export interface ContentSection {
   hero_statement?: string
   hero_scroll_label?: string
   content_blocks?: TechnologyContentBlock[]
+  certification_logos?: CertificationLogo[]
+}
+
+export interface CertificationLogo {
+  name: string
+  image_url: string
 }
 
 export interface TechnologyContentItem {

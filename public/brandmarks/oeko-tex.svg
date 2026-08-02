@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 120" role="img" aria-labelledby="title">
+  <title id="title">OEKO-TEX</title>
+  <g fill="none" fill-rule="evenodd">
+    <path fill="#65A844" d="M44 18c17.7 0 32 14.3 32 32S61.7 82 44 82 12 67.7 12 50 26.3 18 44 18Zm0 10c-12.2 0-22 9.8-22 22s9.8 22 22 22 22-9.8 22-22-9.8-22-22-22Z"/>
+    <path stroke="#65A844" stroke-width="6" stroke-linecap="round" d="M29 50h30M44 35v30"/>
+    <text x="94" y="67" fill="#174234" font-family="Arial, Helvetica, sans-serif" font-size="48" font-weight="700" letter-spacing="1.2">OEKO-TEX</text>
+    <text x="368" y="37" fill="#174234" font-family="Arial, Helvetica, sans-serif" font-size="13">®</text>
+  </g>
+</svg>

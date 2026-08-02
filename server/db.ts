@@ -315,32 +315,53 @@ function createDefaultDb(): Database {
       {
         id: 4,
         page_key: 'pfas-free-innovation',
+        section_key: 'high-performance-fiber',
         order_index: 3,
         title: '高性能纤维',
-        subtitle: '让纤维本身承担防护性能',
-        content: '在 RPO-SOTEX 平台中，高性能纤维并不只是功能膜的支撑材料。针对高强、耐磨、轻量和专业防护需求，纤维本身可以承担载荷分散、结构增强和抗切割等核心作用，直接决定面料的基础性能边界。/h港翼根据不同应用选择纤维材料、纱线规格和织物组织，并协同织造、染整与后整理工艺，在强度、克重、手感、柔韧性和耐久性之间建立适合最终产品的结构方案。高性能纤维可以独立形成防护材料，也可以与功能膜共同构成多层系统。',
+        subtitle: '从纤维配方到织物结构，让轻量与防护建立在材料本体之上。',
+        content: '面料的基础性能，首先由纤维、纱线与织物组织共同决定。港翼将 RPO 高性能纤维与成熟的高品质纤维体系结合，针对强度、耐磨、轻量、柔韧与舒适等不同目标，组织适合具体应用的材料组合。/h拥有二十余年织造与染整经验的核心纺织合作伙伴，为纤维选择、纱线规格和织物成形提供稳定的制造基础。/hRPO 高性能纤维以高比强度和耐磨表现，为轻量防护结构提供更大的设计空间。它可以作为独立的增强材料，也可以与功能膜、织物结构和复合工艺协同，在不牺牲耐用性的前提下减少不必要的重量。',
         image_url: '/visuals/technology-fiber-production-hero-v2.webp',
         image_fit: 'cover',
+        content_blocks: [
+          { key: 'fiber-formula', title: '高性能，来自正确的纤维配方', content: '面料的基础性能，首先由纤维、纱线与织物组织共同决定。港翼将 RPO 高性能纤维与成熟的高品质纤维体系结合，针对强度、耐磨、轻量、柔韧与舒适等不同目标，组织适合具体应用的材料组合。/h拥有二十余年织造与染整经验的核心纺织合作伙伴，为纤维选择、纱线规格和织物成形提供稳定的制造基础。' },
+          { key: 'fiber-specific-strength', title: '高比强度，换来更轻的结构', content: 'RPO 高性能纤维以高比强度和耐磨表现，为轻量防护结构提供更大的设计空间。它可以作为独立的增强材料，也可以与功能膜、织物结构和复合工艺协同，在不牺牲耐用性的前提下减少不必要的重量。' },
+        ],
       },
       {
         id: 5,
         page_key: 'pfas-free-innovation',
+        section_key: 'lamination',
         order_index: 4,
         title: '面料复合技术',
-        subtitle: '面向二维功能材料开发的高可靠复合体系',
-        content: 'RPO-SOTEX 二维功能材料具有轻薄、连续和界面敏感等特点，传统复合参数难以直接套用。港翼围绕其表面特性和形变方式，适配开发胶黏体系、施胶结构与层间结合工艺，使面层、功能层和底布形成稳定协同。/h从胶黏剂选择、胶点结构到温度、压力、速度和张力，港翼建立面向 RPO-SOTEX 的专用工艺窗口，并通过批次管理和过程控制维持复合一致性，在层间可靠性、透湿表现、手感和长期耐用性之间取得平衡。',
-        image_url: null,
+        subtitle: '让面层、功能层与内层在同一套工艺窗口中可靠协同。',
+        content: 'RPO-SOTEX 膜材轻薄、连续，传统复合参数难以直接套用。港翼围绕面层、功能层、胶黏剂与内层的组合关系，重新安排施胶结构和层间结合方式，让不同材料共同形成可裁剪、可缝制、可穿着的完整面料。/h从胶黏剂选择、胶点结构到温度、压力、速度和张力，港翼持续调整面向 RPO-SOTEX 的复合工艺窗口，在层间可靠性、透湿表现、手感与长期耐用性之间取得平衡。',
+        image_url: '/visuals/technology-lamination-hero-v1.webp',
         image_fit: 'cover',
+        content_blocks: [
+          { key: 'lamination-interface', title: '不同材料，形成完整面料', content: 'RPO-SOTEX 膜材轻薄、连续，传统复合参数难以直接套用。港翼围绕面层、功能层、胶黏剂与内层的组合关系，重新安排施胶结构和层间结合方式，让不同材料共同形成可裁剪、可缝制、可穿着的完整面料。' },
+          { key: 'lamination-window', title: '从工艺窗口到稳定复合', content: '从胶黏剂选择、胶点结构到温度、压力、速度和张力，港翼持续调整面向 RPO-SOTEX 的复合工艺窗口，在层间可靠性、透湿表现、手感与长期耐用性之间取得平衡。' },
+        ],
       },
       {
         id: 6,
         page_key: 'pfas-free-innovation',
+        section_key: 'supply-chain',
         order_index: 5,
         title: '供应链管理',
-        subtitle: '让技术方案稳定进入规模制造',
-        content: '技术只有能够被重复制造，才具备产品价值。港翼协同原料、纺纱、织造、染整和复合环节，对材料规格、生产批次、工艺条件与质量要求进行持续管理，使研发阶段确认的方案能够稳定进入样品开发和批量生产。/h港翼将材料可追溯性、质量管理能力、环境表现和持续交付能力作为供应链选择的重要标准。核心合作伙伴具备 bluesign®、GRS、OEKO-TEX® 等与其材料和生产环节相匹配的认证与合规能力，共同建立可靠、透明且可持续的材料供应体系。',
-        image_url: null,
+        subtitle: '把材料、织造、染整与复合能力组织成可追溯的生产链路。',
+        content: '港翼与拥有二十余年织造与染整经验的核心纺织合作伙伴协同，将高品质纤维、织物开发、染整能力与功能膜结合，为不同应用提供稳定的面料基础。/h从原料、纱线、织造、染整到复合，多种专业能力在同一条生产链上协同，让材料特性能够被完整转化为面料表现。/h相关材料与生产环节可提供 OEKO-TEX®、GRS 等认证信息，为面料开发提供清晰的品质与可持续选择。',
+        image_url: '/visuals/technology-supply-chain-hero-v1.webp',
         image_fit: 'cover',
+        content_blocks: [
+          { key: 'supply-partner', title: '从成熟纺织能力开始', content: '港翼与拥有二十余年织造与染整经验的核心纺织合作伙伴协同，将高品质纤维、织物开发、染整能力与功能膜结合，为不同应用提供稳定的面料基础。' },
+          { key: 'supply-coordination', title: '材料与工艺，沿同一条链路协同', content: '从原料、纱线、织造、染整到复合，多种专业能力在同一条生产链上协同，让材料特性能够被完整转化为面料表现。' },
+          { key: 'supply-delivery', title: '把稳定性带到交付端', content: '相关材料与生产环节可提供 OEKO-TEX®、GRS 等认证信息，为面料开发提供清晰的品质与可持续选择。' },
+        ],
+        certification_logos: [
+          { name: 'bluesign', image_url: '/brandmarks/bluesign.svg' },
+          { name: 'Global Recycled Standard', image_url: '/brandmarks/grs.svg' },
+          { name: 'OEKO-TEX', image_url: '/brandmarks/oeko-tex.svg' },
+        ],
       },
       {
         id: 12,
@@ -348,10 +369,15 @@ function createDefaultDb(): Database {
         section_key: 'testing-certification',
         order_index: 6,
         title: '测试与验证',
-        subtitle: '从材料研发到第三方验证',
-        content: '港翼结合材料研发实验室、香港科技大学（广州）多功能高聚物薄膜中央实验室及合作实验条件，对原料、纤维、膜材、复合结构、工艺窗口和耐久表现开展分阶段测试。/h从实验室配方、材料小样和工艺试制，到量产批次与成品性能，港翼通过连续测试确认技术方案的稳定性。对于防水、透湿、耐磨及专业防护等关键指标，可根据项目要求委托 SGS、中纺标 CTTC 等机构进行独立检测，使材料性能建立在可重复、可验证的数据基础之上。',
-        image_url: null,
+        subtitle: '从每一种材料，到每一块成品，建立逐级确认的测试链路。',
+        content: '纤维、膜材、织物和胶黏剂分别进入材料筛选与基础性能检查，确认它们能够满足目标结构与应用方向。/h材料进入复合和成品加工后，港翼围绕工艺条件、结构组合与样品表现进行内部实验，持续比较防水、透湿、耐磨和耐久等关键指标。/h对于需要独立验证的项目，根据具体产品与测试要求委托 SGS、中纺标 CTTC 等专业机构检测，结果以对应样品的正式报告为准。',
+        image_url: '/visuals/technology-testing-hero-v2.jpg',
         image_fit: 'cover',
+        content_blocks: [
+          { key: 'testing-materials', title: '先确认每一种材料', content: '纤维、膜材、织物和胶黏剂分别进入材料筛选与基础性能检查，确认它们能够满足目标结构与应用方向。' },
+          { key: 'testing-process', title: '再确认组合工艺', content: '材料进入复合和成品加工后，港翼围绕工艺条件、结构组合与样品表现进行内部实验，持续比较防水、透湿、耐磨和耐久等关键指标。' },
+          { key: 'testing-product', title: '最后确认成品表现', content: '对于需要独立验证的项目，根据具体产品与测试要求委托 SGS、中纺标 CTTC 等专业机构检测，结果以对应样品的正式报告为准。' },
+        ],
       },
       {
         id: 7,
@@ -1573,6 +1599,163 @@ export function initDatabase() {
         testingSection.image_url = '/visuals/technology-testing-hero-v2.jpg'
       }
       db.technology_sections_version = 19
+      saveDb()
+    }
+    if ((db.technology_sections_version ?? 0) < 20) {
+      const pageKey = 'pfas-free-innovation'
+      const storyUpdates: Record<string, {
+        subtitle: string
+        image_url?: string
+        content_blocks: Array<{ key: string; title: string; content: string; items?: Array<{ title: string; content: string }>; highlights?: string[] }>
+      }> = {
+        'high-performance-fiber': {
+          subtitle: '从纤维配方到织物结构，让轻量与防护建立在材料本体之上。',
+          image_url: '/visuals/technology-fiber-production-hero-v2.webp',
+          content_blocks: [
+            { key: 'fiber-formula', title: '高性能，来自正确的纤维配方', content: '面料的基础性能，首先由纤维、纱线与织物组织共同决定。港翼将 RPO 高性能纤维与成熟的高品质纤维体系结合，针对强度、耐磨、轻量、柔韧与舒适等不同目标，组织适合具体应用的材料组合。/h拥有二十余年织造与染整经验的核心纺织合作伙伴，为纤维选择、纱线规格和织物成形提供稳定的制造基础。' },
+            { key: 'fiber-specific-strength', title: '高比强度，换来更轻的结构', content: 'RPO 高性能纤维以高比强度和耐磨表现，为轻量防护结构提供更大的设计空间。它可以作为独立的增强材料，也可以与功能膜、织物结构和复合工艺协同，在不牺牲耐用性的前提下减少不必要的重量。' },
+          ],
+        },
+        'lamination': {
+          subtitle: '让面层、功能层与内层在同一套工艺窗口中可靠协同。',
+          image_url: '/visuals/technology-lamination-hero-v1.webp',
+          content_blocks: [
+            { key: 'lamination-interface', title: '不同材料，形成完整面料', content: 'RPO-SOTEX 膜材轻薄、连续，传统复合参数难以直接套用。港翼围绕面层、功能层、胶黏剂与内层的组合关系，重新安排施胶结构和层间结合方式，让不同材料共同形成可裁剪、可缝制、可穿着的完整面料。' },
+            { key: 'lamination-window', title: '从工艺窗口到稳定复合', content: '从胶黏剂选择、胶点结构到温度、压力、速度和张力，港翼持续调整面向 RPO-SOTEX 的复合工艺窗口，在层间可靠性、透湿表现、手感与长期耐用性之间取得平衡。' },
+          ],
+        },
+        'supply-chain': {
+          subtitle: '把材料、织造、染整与复合能力组织成可追溯的生产链路。',
+          image_url: '/visuals/technology-supply-chain-hero-v1.webp',
+          content_blocks: [
+          { key: 'supply-partner', title: '从成熟纺织能力开始', content: '港翼与拥有二十余年织造与染整经验的核心纺织合作伙伴协同，将高品质纤维、织物开发、染整能力与功能膜结合，为不同应用提供稳定的面料基础。' },
+          { key: 'supply-coordination', title: '材料与工艺，沿同一条链路协同', content: '从原料、纱线、织造、染整到复合，多种专业能力在同一条生产链上协同，让材料特性能够被完整转化为面料表现。' },
+          { key: 'supply-delivery', title: '把稳定性带到交付端', content: '相关材料与生产环节可提供 OEKO-TEX®、GRS 等认证信息，为面料开发提供清晰的品质与可持续选择。' },
+          ],
+        },
+        'testing-certification': {
+          subtitle: '从每一种材料，到每一块成品，建立逐级确认的测试链路。',
+          image_url: '/visuals/technology-testing-hero-v2.jpg',
+          content_blocks: [
+            { key: 'testing-materials', title: '先确认每一种材料', content: '纤维、膜材、织物和胶黏剂分别进入材料筛选与基础性能检查，确认它们能够满足目标结构与应用方向。' },
+            { key: 'testing-process', title: '再确认组合工艺', content: '材料进入复合和成品加工后，港翼围绕工艺条件、结构组合与样品表现进行内部实验，持续比较防水、透湿、耐磨和耐久等关键指标。' },
+            { key: 'testing-product', title: '最后确认成品表现', content: '对于需要独立验证的项目，根据具体产品与测试要求委托 SGS、中纺标 CTTC 等专业机构检测，结果以对应样品的正式报告为准。' },
+          ],
+        },
+      }
+
+      db.fluorine_sections
+        .filter((section: any) => section.page_key === pageKey && storyUpdates[section.section_key])
+        .forEach((section: any) => {
+          const update = storyUpdates[section.section_key]
+          Object.assign(section, update, { module_type: 'technology-page', status: 'published' })
+          section.content = update.content_blocks.map((block) => block.content).join('/h')
+        })
+      db.technology_sections_version = 20
+      saveDb()
+    }
+    if ((db.technology_sections_version ?? 0) < 21) {
+      const supplySection = db.fluorine_sections.find((section: any) => (
+        section.page_key === 'pfas-free-innovation'
+        && section.section_key === 'supply-chain'
+      ))
+      if (supplySection) {
+        const contentBlocks = [
+          { key: 'supply-partner', title: '从成熟纺织能力开始', content: '港翼与拥有二十余年织造与染整经验的核心纺织合作伙伴协同，将高品质纤维、织物开发、染整能力与功能膜结合，为不同应用提供稳定的面料基础。' },
+          { key: 'supply-coordination', title: '材料与工艺，沿同一条链路协同', content: '从原料、纱线、织造、染整到复合，多种专业能力在同一条生产链上协同，让材料特性能够被完整转化为面料表现。' },
+          { key: 'supply-delivery', title: '把稳定性带到交付端', content: '相关材料与生产环节可提供 OEKO-TEX®、GRS 等认证信息，为面料开发提供清晰的品质与可持续选择。' },
+        ]
+        supplySection.content_blocks = contentBlocks
+        supplySection.content = contentBlocks.map((block) => block.content).join('/h')
+      }
+      db.technology_sections_version = 21
+      saveDb()
+    }
+    if ((db.technology_sections_version ?? 0) < 22) {
+      const revisedStories: Record<string, Array<{ key: string; title: string; content: string; highlights?: string[]; items?: Array<{ title: string; content: string }> }>> = {
+        'high-performance-fiber': [
+          {
+            key: 'fiber-formula',
+            title: '高性能，来自于正确的纤维配方',
+            content: '一块面料的强度、重量、触感与耐用性，在织造成形之前就已经从纤维开始。港翼根据使用环境，将 RPO 高性能纤维与其他高品质纤维组合，并进一步匹配纱线规格与织物组织，让不同材料各自承担增强、耐磨、弹性或舒适的作用。/h这套配方由拥有二十余年织造与染整经验的核心纺织合作伙伴共同转化为稳定的织物结构。',
+            highlights: ['RPO 高性能纤维', '其他高品质纤维', '纱线与织物组织'],
+          },
+          {
+            key: 'fiber-specific-strength',
+            title: '更轻的结构，仍然保留防护余量',
+            content: 'RPO 高性能纤维具有突出的比强度、耐磨性与耐候基础，可在较低材料重量下提供有效增强。面向轻量防护、高磨损区域或需要长期使用的产品，港翼通过纤维比例与组织密度的调整，把材料能力放在真正需要的位置。',
+            items: [
+              { title: '高比强度', content: '以更少的材料重量，为织物提供有效的承载与增强基础。' },
+              { title: '耐磨增强', content: '针对高接触、高摩擦区域，提高织物抵抗持续磨耗的能力。' },
+              { title: '耐候基础', content: '为户外暴露、反复使用和复杂环境中的性能保持提供材料基础。' },
+            ],
+          },
+        ],
+        lamination: [
+          {
+            key: 'lamination-interface',
+            title: '三层材料，最终成为一块面料',
+            content: '面层决定外观、触感与表面防护，RPO-SOTEX 功能膜承担防水透湿，内层则影响贴肤体验与结构保护。真正的复合不是简单地把三层粘在一起，而是让它们在弯折、拉伸、湿热与持续穿着中保持协同。',
+            highlights: ['面层', 'RPO-SOTEX 功能膜', '内层'],
+          },
+          {
+            key: 'lamination-window',
+            title: '为 RPO-SOTEX 建立专属复合工艺',
+            content: 'RPO-SOTEX 的材料特性使传统复合参数难以直接套用。港翼围绕胶黏剂体系、施胶结构、温度与压力、速度与张力持续建立专属工艺窗口，使层间结合达到可靠水平，同时保留膜层的透湿能力、面料手感与耐久表现。',
+            items: [
+              { title: '可靠结合', content: '使面层、功能层与内层在反复使用中维持完整结构。' },
+              { title: '保留透湿', content: '控制施胶形态与覆盖关系，避免功能通道被不必要地占用。' },
+              { title: '兼顾手感', content: '让复合后的面料仍具有适合具体产品的柔软度与活动自由度。' },
+              { title: '面向耐久', content: '围绕湿热、弯折与洗护条件，持续优化层间稳定性。' },
+            ],
+          },
+        ],
+        'supply-chain': [
+          { key: 'supply-chain', title: '让材料能力沿着产业链完整传递', content: '一块高性能面料，来自纤维、织造、染整、功能膜与复合工艺的连续协同。港翼把底层材料开发与成熟纺织制造能力连接起来，让每一个生产环节都围绕最终应用共同工作。' },
+          { key: 'supply-foundation', title: '二十余年的纺织经验，进入新的材料体系', content: '核心纺织合作伙伴长期积累的织造与染整能力，为纤维选择、织物开发、颜色与手感控制提供成熟基础。港翼在此基础上引入 RPO-SOTEX 功能膜与无氟技术路径，把新的材料能力转化为可制造的面料产品。', highlights: ['纤维与纱线', '织造与染整', '功能膜', '复合与成品'] },
+          { key: 'supply-assurance', title: '材料信息与品质依据，同步进入开发过程', content: '港翼采购的相关面布具备 bluesign®、GRS、OEKO-TEX® 等认证基础，并结合材料批次、工艺条件与成品表现组织开发信息，为品牌选材、打样与后续交付提供清晰依据。' },
+        ],
+        'testing-certification': [
+          { key: 'testing-chain', title: '验证，从单项材料开始', content: '纤维、织物、RPO-SOTEX 功能膜与胶黏剂先分别进行基础检查，再进入复合结构。只有每一种材料都与目标产品相匹配，后续测试得到的结果才真正对应这块面料。' },
+          { key: 'testing-lab', title: '从内部实验，到独立第三方验证', content: '样品完成后，港翼围绕防水、透湿、耐磨、结构与耐久表现开展内部测试和对比；达到项目要求的成品，再根据具体用途委托 SGS、中纺标 CTTC 等专业机构进行独立检测。', highlights: ['内部研发测试', '生产过程验证', '独立第三方检测'] },
+          { key: 'testing-result', title: '让性能表达建立在对应样品之上', content: '测试条件、面料结构与样品批次共同决定结果。港翼以对应型号和项目的测试数据作为性能沟通依据，并在品牌选材与产品开发阶段提供相匹配的技术资料。' },
+        ],
+      }
+      db.fluorine_sections
+        .filter((section: any) => section.page_key === 'pfas-free-innovation' && revisedStories[section.section_key])
+        .forEach((section: any) => {
+          section.content_blocks = revisedStories[section.section_key]
+          section.content = section.content_blocks.map((block: any) => block.content).join('/h')
+        })
+      db.technology_sections_version = 22
+      saveDb()
+    }
+    if ((db.technology_sections_version ?? 0) < 23) {
+      const supplySection = db.fluorine_sections.find((section: any) => (
+        section.page_key === 'pfas-free-innovation'
+        && section.section_key === 'supply-chain'
+      ))
+      const assuranceBlock = supplySection?.content_blocks?.find((block: any) => block.key === 'supply-assurance')
+      if (assuranceBlock) {
+        assuranceBlock.content = '港翼采购的相关面布具备 bluesign®、GRS、OEKO-TEX® 等认证基础，并结合材料批次、工艺条件与成品表现组织开发信息，为品牌选材、打样与后续交付提供清晰依据。'
+        supplySection.content = supplySection.content_blocks.map((block: any) => block.content).join('/h')
+      }
+      db.technology_sections_version = 23
+      saveDb()
+    }
+    if ((db.technology_sections_version ?? 0) < 24) {
+      const supplySection = db.fluorine_sections.find((section: any) => (
+        section.page_key === 'pfas-free-innovation'
+        && section.section_key === 'supply-chain'
+      ))
+      if (supplySection && !Array.isArray(supplySection.certification_logos)) {
+        supplySection.certification_logos = [
+          { name: 'bluesign', image_url: '/brandmarks/bluesign.svg' },
+          { name: 'Global Recycled Standard', image_url: '/brandmarks/grs.svg' },
+          { name: 'OEKO-TEX', image_url: '/brandmarks/oeko-tex.svg' },
+        ]
+      }
+      db.technology_sections_version = 24
       saveDb()
     }
     if ((db.public_copy_version ?? 0) < 1) {

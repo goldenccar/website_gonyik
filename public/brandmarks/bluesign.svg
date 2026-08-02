@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 120" role="img" aria-labelledby="title">
+  <title id="title">bluesign</title>
+  <g fill="none" fill-rule="evenodd">
+    <path fill="#0073B9" d="M44 18c17.7 0 32 14.3 32 32S61.7 82 44 82 12 67.7 12 50 26.3 18 44 18Zm0 10.5C32.1 28.5 22.5 38.1 22.5 50S32.1 71.5 44 71.5 65.5 61.9 65.5 50 55.9 28.5 44 28.5Z"/>
+    <path fill="#0073B9" d="M42.4 34.2c10.2 0 18.4 7.3 18.4 16.3 0 9-8.2 16.3-18.4 16.3-6.8 0-12.8-3.3-16-8.2 4 2.4 8.7 3.8 13.8 3.8 10.2 0 18.4-5.5 18.4-12.3 0-6.8-8.2-12.3-18.4-12.3-4.6 0-8.9 1.1-12.2 3 3.4-4 8.5-6.6 14.4-6.6Z"/>
+    <text x="94" y="68" fill="#123955" font-family="Arial, Helvetica, sans-serif" font-size="52" font-weight="700" letter-spacing="-1.5">bluesign</text>
+    <text x="344" y="37" fill="#123955" font-family="Arial, Helvetica, sans-serif" font-size="13">®</text>
+  </g>
+</svg>

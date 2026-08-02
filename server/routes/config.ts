@@ -52,6 +52,7 @@ const NON_TRANSLATABLE_KEYS = new Set([
   'hero_background', 'hero_mobile_background', 'verification_image', 'url', 'link', 'href',
   'slug', 'sku_code', 'internal_code', 'email', 'phone', 'qrcode_url', 'logo_url', 'favicon_url',
   'status', 'visibility', 'role', 'platform', 'format', 'smtp_host', 'smtp_user', 'smtp_pass',
+  'certification_logos',
 ])
 
 function collectTranslatableStrings(value: unknown, output = new Set<string>(), key = ''): Set<string> {
@@ -127,6 +128,14 @@ function normalizeTechnologyContentBlocks(value: unknown) {
         })).filter((item: any) => item.title || item.content)
       : undefined,
   })).filter((block) => block.title || block.content)
+}
+
+function normalizeCertificationLogos(value: unknown) {
+  if (!Array.isArray(value)) return undefined
+  return value.slice(0, 8).map((item: any) => ({
+    name: String(item?.name || '').trim().slice(0, 80),
+    image_url: String(item?.image_url || '').trim().slice(0, 500),
+  })).filter((item) => item.name && item.image_url)
 }
 
 router.get('/home', (_req, res) => {
@@ -330,6 +339,7 @@ router.post('/admin/content-sections/:pageKey', authMiddleware, (req: AuthReques
     hero_statement: String(req.body.hero_statement || '').trim(),
     hero_scroll_label: String(req.body.hero_scroll_label || '').trim(),
     content_blocks: normalizeTechnologyContentBlocks(req.body.content_blocks),
+    certification_logos: normalizeCertificationLogos(req.body.certification_logos),
     market_visibility: sanitizeVisibilityMap(req.body.market_visibility, new Set(configuredMarkets().map((market) => market.code))),
   }
   db.fluorine_sections.push(newSection)
@@ -367,6 +377,9 @@ router.put('/admin/content-sections/:pageKey/:id', authMiddleware, (req: AuthReq
     content_blocks: Object.prototype.hasOwnProperty.call(req.body, 'content_blocks')
       ? normalizeTechnologyContentBlocks(req.body.content_blocks)
       : existing.content_blocks,
+    certification_logos: Object.prototype.hasOwnProperty.call(req.body, 'certification_logos')
+      ? normalizeCertificationLogos(req.body.certification_logos)
+      : existing.certification_logos,
     market_visibility: Object.prototype.hasOwnProperty.call(req.body, 'market_visibility')
       ? sanitizeVisibilityMap(req.body.market_visibility, new Set(configuredMarkets().map((market) => market.code)))
       : existing.market_visibility,

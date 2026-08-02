@@ -6,6 +6,7 @@ import MarkupParser, { InlineMarkup } from '@/components/MarkupParser'
 import { PageSection, PageShell } from '@/components/PageLayout'
 import MembraneStructureStory from '@/components/technology/MembraneStructureStory'
 import PfasSystemStory from '@/components/technology/PfasSystemStory'
+import TechnologyStory, { type TechnologyStoryKind } from '@/components/technology/TechnologyStory'
 import { getTechnologyPagePath, TECHNOLOGY_GROUPS, TECHNOLOGY_PAGES } from '@/config/technologyPages'
 import { useSiteLocale } from '@/i18n/SiteLocale'
 import type { FluorineSection } from '@/types'
@@ -68,6 +69,15 @@ export default function TechnologyPage() {
   const definitionExists = TECHNOLOGY_PAGES.some((page) => page.sectionKey === technologyKey)
   const isPfasSystem = technologyKey === 'pfas-free-system'
   const isMembraneTechnology = technologyKey === 'rpo-sotex-membrane'
+  const storyKind: TechnologyStoryKind | null = technologyKey === 'high-performance-fiber'
+    ? 'fiber'
+    : technologyKey === 'lamination'
+      ? 'lamination'
+      : technologyKey === 'supply-chain'
+        ? 'supply'
+        : technologyKey === 'testing-certification'
+          ? 'testing'
+          : null
   const effectiveSection = isPfasSystem
     ? { ...DEFAULT_PFAS_SECTION, ...(section || {}), image_url: section?.image_url || DEFAULT_PFAS_SECTION.image_url }
     : section
@@ -132,6 +142,8 @@ export default function TechnologyPage() {
         <>
           {isMembraneTechnology && effectiveSection
             ? <MembraneStructureStory section={effectiveSection} />
+            : storyKind && effectiveSection
+              ? <TechnologyStory kind={storyKind} section={effectiveSection} />
             : section?.content ? (
               <PageSection tone="white" className="min-h-[520px]">
                 <article className="max-w-[820px]">

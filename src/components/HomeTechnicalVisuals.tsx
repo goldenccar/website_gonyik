@@ -178,7 +178,7 @@ function MembraneDiagram() {
   )
 }
 
-function LaminationDiagram() {
+export function LaminationDiagram() {
   return (
     <MaterialScene
       kind="lamination"
