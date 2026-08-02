@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type MouseEvent } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { ChevronDown, ChevronUp, Globe2, Menu, X } from 'lucide-react'
-import { getPublicBootstrap } from '@/api/client'
 import { useSiteLocale } from '@/i18n/SiteLocale'
 import { marketPath, stripMarketPrefix } from '@/config/markets'
 import type { NavItem } from '@/types'
@@ -19,8 +18,6 @@ interface MegaMenuGroup {
 }
 
 export default function Header() {
-  const [navItems, setNavItems] = useState<NavItem[]>([])
-  const [siteConfig, setSiteConfig] = useState<any>({})
   const [mobileOpen, setMobileOpen] = useState(false)
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null)
   const [desktopMenu, setDesktopMenu] = useState<string | null>(null)
@@ -33,16 +30,11 @@ export default function Header() {
   const mobileMarketRef = useRef<HTMLDetailsElement>(null)
   const location = useLocation()
   const navigate = useNavigate()
-  const { locale, market, markets, path: localePath } = useSiteLocale()
+  const { locale, market, markets, path: localePath, bootstrap } = useSiteLocale()
+  const navItems: NavItem[] = bootstrap.navigation || []
+  const siteConfig = bootstrap.site_config || {}
   const publicPath = stripMarketPrefix(location.pathname)
   const currentPublicLocation = `${publicPath}${location.search}${location.hash}`
-
-  useEffect(() => {
-    getPublicBootstrap().then((bootstrap) => {
-      setNavItems(bootstrap.data.navigation || [])
-      setSiteConfig(bootstrap.data.site_config || {})
-    })
-  }, [market.code])
 
   useEffect(() => {
     setMobileOpen(false)

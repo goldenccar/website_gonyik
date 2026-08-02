@@ -7,6 +7,7 @@ import CatalogSelectorBar from '@/components/CatalogSelectorBar'
 import { getServiceModuleDefinition, isServiceModuleType } from '@/config/serviceModules'
 import type { ContentSection, PageConfig } from '@/types'
 import { useSiteLocale } from '@/i18n/SiteLocale'
+import PublicContentLoader from '@/components/PublicContentLoader'
 
 export interface ServicesOutletContext {
   sections: ContentSection[]
@@ -40,6 +41,8 @@ export default function ServicesLayout() {
       navigate(localePath(`/services/${navigation[0].definition.route}`), { replace: true })
     }
   }, [loaded, location.pathname, navigate, navigation])
+
+  if (!loaded) return <PublicContentLoader label="正在加载专业支持内容" />
 
   return (
     <PageShell>

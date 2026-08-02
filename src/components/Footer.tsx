@@ -1,9 +1,7 @@
-import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Settings, Shield } from 'lucide-react'
-import { getContactConfig, getFooter, getPublicBootstrap, getSocial } from '@/api/client'
 import { useSiteLocale } from '@/i18n/SiteLocale'
-import type { ContactConfig, FooterConfig, NavItem, SocialMedia } from '@/types'
+import type { NavItem, SocialMedia } from '@/types'
 import { InlineMarkup } from './MarkupParser'
 
 const SOCIAL_LABELS: Record<string, string> = {
@@ -13,48 +11,16 @@ const SOCIAL_LABELS: Record<string, string> = {
 }
 
 export default function Footer() {
-  const footerRef = useRef<HTMLElement>(null)
-  const [footer, setFooter] = useState<FooterConfig | null>(null)
-  const [contact, setContact] = useState<ContactConfig | null>(null)
-  const [socials, setSocials] = useState<SocialMedia[]>([])
-  const [navigation, setNavigation] = useState<NavItem[]>([])
-  const { path: localePath } = useSiteLocale()
-
-  useEffect(() => {
-    let cancelled = false
-    const loadFooterData = () => {
-      Promise.all([getFooter(), getContactConfig(), getSocial(), getPublicBootstrap()]).then(([footerRes, contactRes, socialRes, bootstrapRes]) => {
-        if (cancelled) return
-        setFooter(footerRes.data.data)
-        setContact(contactRes.data.data)
-        setSocials(socialRes.data.data || [])
-        setNavigation(bootstrapRes.data.navigation || [])
-      })
-    }
-
-    const element = footerRef.current
-    if (!element || !('IntersectionObserver' in window)) {
-      loadFooterData()
-      return () => { cancelled = true }
-    }
-
-    const observer = new IntersectionObserver(([entry]) => {
-      if (!entry.isIntersecting) return
-      observer.disconnect()
-      loadFooterData()
-    }, { rootMargin: '300px' })
-
-    observer.observe(element)
-    return () => {
-      cancelled = true
-      observer.disconnect()
-    }
-  }, [])
+  const { path: localePath, bootstrap } = useSiteLocale()
+  const footer = bootstrap.footer_config
+  const contact = bootstrap.contact_config
+  const socials = bootstrap.socials || []
+  const navigation = bootstrap.navigation || []
 
   const visibleSocials = socials.filter((item) => item.account || item.qrcode_url)
 
   return (
-    <footer ref={footerRef} className="border-t border-border bg-white px-4 text-primary md:px-6">
+    <footer className="border-t border-border bg-white px-4 text-primary md:px-6">
       <div className="mx-auto w-full max-w-[1760px] px-3 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-10 md:px-12 md:pb-6 md:pt-16 lg:px-16">
         <div className="grid grid-cols-2 gap-x-6 gap-y-9 border-b border-border pb-10 md:gap-12 md:pb-14 lg:grid-cols-12 lg:gap-10">
           <div className="col-span-2 lg:col-span-5">

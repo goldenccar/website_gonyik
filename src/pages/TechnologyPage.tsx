@@ -10,6 +10,7 @@ import TechnologyStory, { type TechnologyStoryKind } from '@/components/technolo
 import { getTechnologyPagePath, TECHNOLOGY_GROUPS, TECHNOLOGY_PAGES } from '@/config/technologyPages'
 import { useSiteLocale } from '@/i18n/SiteLocale'
 import type { FluorineSection } from '@/types'
+import PublicContentLoader from '@/components/PublicContentLoader'
 
 const PREVIEW_MESSAGE = 'gonyik:technology-preview'
 const DEFAULT_TECHNOLOGY_HERO_IMAGES: Record<string, string> = {
@@ -40,12 +41,14 @@ export default function TechnologyPage() {
   const { path: localePath, t } = useSiteLocale()
   const previewMode = new URLSearchParams(location.search).has('cms-preview')
   const [sections, setSections] = useState<FluorineSection[]>([])
+  const [loading, setLoading] = useState(true)
   const [previewSection, setPreviewSection] = useState<FluorineSection | null>(null)
 
   useEffect(() => {
     getContentSections('pfas-free-innovation')
       .then((response) => setSections(response.data.data || []))
       .catch(() => setSections([]))
+      .finally(() => setLoading(false))
   }, [])
 
   useEffect(() => {
@@ -93,6 +96,7 @@ export default function TechnologyPage() {
   if (!definitionExists) {
     return <Navigate to={localePath(getTechnologyPagePath(TECHNOLOGY_PAGES[0].sectionKey))} replace />
   }
+  if (loading && !previewSection) return <PublicContentLoader label="正在加载材料科技内容" />
 
   return (
     <PageShell className="technology-reading">

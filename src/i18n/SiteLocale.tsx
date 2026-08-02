@@ -1,7 +1,8 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useLocation } from 'react-router-dom'
-import { getPublicBootstrap, getTranslations } from '@/api/client'
+import { getPublicBootstrap } from '@/api/client'
 import { DEFAULT_SITE_MARKETS, marketCodeFromPath, marketPath, stripMarketPrefix, type SiteLocale, type SiteMarket } from '@/config/markets'
+import type { FabricSeries, FooterConfig, HomeConfig, NavItem, SocialMedia } from '@/types'
 
 export type { SiteLocale } from '@/config/markets'
 
@@ -209,7 +210,24 @@ interface SiteLocaleContextValue {
   markets: SiteMarket[]
   t: (text?: string | null) => string
   path: (href: string) => string
+  bootstrap: PublicBootstrap
 }
+
+export interface PublicBootstrap {
+  site_config: Record<string, any>
+  navigation: NavItem[]
+  home_config: HomeConfig
+  series: FabricSeries[]
+  footer_config: FooterConfig
+  contact_config: { email?: string; phone?: string; address?: string; response_text?: string }
+  socials: SocialMedia[]
+  translations: Record<string, string>
+  markets: SiteMarket[]
+  current_market: string
+  current_locale: SiteLocale
+}
+
+const EMPTY_BOOTSTRAP = {} as PublicBootstrap
 
 const SiteLocaleContext = createContext<SiteLocaleContextValue>({
   locale: 'zh-CN',
@@ -217,6 +235,7 @@ const SiteLocaleContext = createContext<SiteLocaleContextValue>({
   markets: DEFAULT_SITE_MARKETS,
   t: (text) => text || '',
   path: (href) => href,
+  bootstrap: EMPTY_BOOTSTRAP,
 })
 
 export function stripEnglishPrefix(pathname: string) {
@@ -230,36 +249,51 @@ export function localizePath(href: string, locale: SiteLocale) {
 export function SiteLocaleProvider({ children }: { children: ReactNode }) {
   const location = useLocation()
   const routeMarketCode = marketCodeFromPath(location.pathname)
-  const [markets, setMarkets] = useState<SiteMarket[]>(DEFAULT_SITE_MARKETS)
+  const [bootstrap, setBootstrap] = useState<PublicBootstrap | null>(null)
+  const [loadVersion, setLoadVersion] = useState(0)
+  const [failed, setFailed] = useState(false)
+  const markets = bootstrap?.markets?.length ? bootstrap.markets : DEFAULT_SITE_MARKETS
   const market = markets.find((item) => item.code === routeMarketCode && item.enabled)
     || markets.find((item) => item.enabled && item.is_default)
     || DEFAULT_SITE_MARKETS[0]
   const locale = market.locale
-  const [cmsCopy, setCmsCopy] = useState<Record<string, string>>({})
-
   useEffect(() => {
+    let cancelled = false
+    setFailed(false)
     getPublicBootstrap()
       .then((response) => {
-        const configured = response.data.markets
-        if (Array.isArray(configured) && configured.length) {
-          setMarkets(configured.map((item: SiteMarket, index: number) => ({
+        if (cancelled) return
+        const data = response.data as PublicBootstrap
+        const configured: SiteMarket[] = Array.isArray(data.markets) && data.markets.length
+          ? data.markets.map((item: SiteMarket, index: number) => ({
             ...item,
             enabled: true,
-            default_visibility: 'public',
+            default_visibility: 'public' as const,
             order_index: index,
-          })))
-        }
+          }))
+          : DEFAULT_SITE_MARKETS
+        setBootstrap({ ...data, markets: configured, translations: data.translations || {} })
       })
-      .catch(() => setMarkets(DEFAULT_SITE_MARKETS))
-  }, [routeMarketCode])
+      .catch(() => { if (!cancelled) setFailed(true) })
+    return () => { cancelled = true }
+  }, [routeMarketCode, loadVersion])
+
+  const bootstrapMatchesRoute = bootstrap?.current_market === routeMarketCode
+  const cmsCopy = bootstrapMatchesRoute ? bootstrap.translations : {}
 
   useEffect(() => {
+    if (!bootstrapMatchesRoute) return
     document.documentElement.lang = locale
-    if (locale === 'zh-CN') { setCmsCopy({}); return }
-    getTranslations(locale)
-      .then((response) => setCmsCopy(response.data.data || {}))
-      .catch(() => setCmsCopy({}))
-  }, [locale])
+    const favicon = bootstrap.site_config?.favicon_url
+    if (!favicon) return
+    let link = document.querySelector('link[rel="icon"]') as HTMLLinkElement | null
+    if (!link) {
+      link = document.createElement('link')
+      link.rel = 'icon'
+      document.head.appendChild(link)
+    }
+    link.href = favicon
+  }, [bootstrap, bootstrapMatchesRoute, locale])
 
   const value = useMemo<SiteLocaleContextValue>(() => ({
     locale,
@@ -273,9 +307,29 @@ export function SiteLocaleProvider({ children }: { children: ReactNode }) {
     path(href) {
       return marketPath(href, market.code)
     },
-  }), [cmsCopy, locale, market, markets])
+    bootstrap: bootstrap!,
+  }), [bootstrap, cmsCopy, locale, market, markets])
+
+  if (!bootstrapMatchesRoute) {
+    return <PublicBootstrapGate failed={failed} onRetry={() => setLoadVersion((value) => value + 1)} />
+  }
 
   return <SiteLocaleContext.Provider value={value}>{children}</SiteLocaleContext.Provider>
+}
+
+function PublicBootstrapGate({ failed, onRetry }: { failed: boolean; onRetry: () => void }) {
+  return (
+    <div className="grid min-h-[100dvh] place-items-center bg-[#041f38]" role={failed ? 'alert' : 'status'} aria-live="polite">
+      <div className="flex flex-col items-center gap-5">
+        <span className="grid h-9 w-9 place-items-center bg-white text-[11px] font-semibold tracking-[0.08em] text-[#041f38]">GY</span>
+        {failed ? (
+          <button type="button" onClick={onRetry} className="border border-white/35 px-5 py-2 text-[13px] text-white transition-colors hover:bg-white hover:text-[#041f38]">重新加载</button>
+        ) : (
+          <span className="h-px w-24 bg-white/15"><span className="block h-full w-full animate-pulse bg-[#69b2c1]" /></span>
+        )}
+      </div>
+    </div>
+  )
 }
 
 export function useSiteLocale() {

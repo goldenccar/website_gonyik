@@ -147,11 +147,16 @@ router.get('/home', (_req, res) => {
 
 router.get('/bootstrap', (req, res) => {
   const market = requestMarket(req)
+  const { email, phone, address, response_text } = db.contact_config
   res.json({
     site_config: db.site_config,
     navigation: navigationForMarket(market),
     home_config: db.home_config,
     series: [...db.fabric_series].sort(sortByOrderIndex),
+    footer_config: db.footer_config,
+    contact_config: { email, phone, address, response_text },
+    socials: db.social_media,
+    translations: market.locale === 'zh-CN' ? {} : (db.translations?.[market.locale] || {}),
     markets: configuredMarkets().filter((item) => item.enabled).map(({ code, label, locale, is_default }) => ({ code, label, locale, is_default })),
     current_market: market.code,
     current_locale: market.locale,

@@ -1,29 +1,33 @@
 import { useEffect, useState } from 'react'
-import { getContactConfig, getInquirySubjects, getPageConfig, submitContactForm } from '@/api/client'
+import { getInquirySubjects, getPageConfig, submitContactForm } from '@/api/client'
 import PageHero from '@/components/PageHero'
 import { PageSection, PageShell } from '@/components/PageLayout'
-import type { ContactConfig, InquirySubject, PageConfig } from '@/types'
+import type { InquirySubject, PageConfig } from '@/types'
 import { InlineMarkup } from '@/components/MarkupParser'
 import { useSiteLocale } from '@/i18n/SiteLocale'
+import PublicContentLoader from '@/components/PublicContentLoader'
 
 const EMPTY = { name: '', company: '', position: '', email: '', phone: '', subject: '', cooperation_type: '', message: '' }
 
 export default function Contact() {
-  const { t } = useSiteLocale()
+  const { t, bootstrap } = useSiteLocale()
   const [page, setPage] = useState<PageConfig | null>(null)
-  const [contact, setContact] = useState<ContactConfig | null>(null)
   const [subjects, setSubjects] = useState<InquirySubject[]>([])
   const [form, setForm] = useState(EMPTY)
   const [message, setMessage] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    Promise.all([getPageConfig('contact'), getContactConfig(), getInquirySubjects()]).then(([config, details, options]) => {
+    Promise.all([getPageConfig('contact'), getInquirySubjects()]).then(([config, options]) => {
       setPage(config.data.data)
-      setContact(details.data.data)
       setSubjects(options.data.data || [])
-    })
+    }).finally(() => setLoading(false))
   }, [])
+
+  if (loading) return <PublicContentLoader label="正在加载联系信息" />
+
+  const contact = bootstrap.contact_config
 
   const submit = async (event: React.FormEvent) => {
     event.preventDefault()

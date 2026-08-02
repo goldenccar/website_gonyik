@@ -2,13 +2,14 @@ import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { getEquipmentCategories, getEquipmentProducts, getPageConfig } from '@/api/client'
 import CatalogCollection from '@/components/CatalogCollection'
-import { CatalogCardSkeleton, CatalogEndCta } from '@/components/CatalogCard'
+import { CatalogEndCta } from '@/components/CatalogCard'
 import ApplicationCard from '@/components/ApplicationCard'
 import PageHero from '@/components/PageHero'
 import { PageSection, PageShell } from '@/components/PageLayout'
 import type { EquipmentCategory, EquipmentProduct, PageConfig } from '@/types'
 import { InlineMarkup } from '@/components/MarkupParser'
 import CatalogSelectorBar from '@/components/CatalogSelectorBar'
+import PublicContentLoader from '@/components/PublicContentLoader'
 
 export default function EndUseEquipment() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -81,6 +82,8 @@ export default function EndUseEquipment() {
     setSearchParams(next)
   }
 
+  if (loading) return <PublicContentLoader label="正在加载产品应用" />
+
   return (
     <PageShell>
       <PageHero title={page?.page_title || '产品应用'} subtitle={page?.page_subtitle || '查看港翼面料在成衣、鞋履与配件中的应用，以及材料与产品之间的对应关系。'} image={page?.hero_background} imageAlt="港翼面料终端应用" />
@@ -101,8 +104,7 @@ export default function EndUseEquipment() {
         ]}
       />}
       <PageSection className="!py-9 lg:!py-12">
-        {loading ? <div aria-label="正在加载终端装备内容" className="grid gap-5 md:grid-cols-2 lg:grid-cols-3"><CatalogCardSkeleton ratio="equipment" /><CatalogCardSkeleton ratio="equipment" /><CatalogCardSkeleton ratio="equipment" /></div> : (
-          <div>
+        <div>
             <div className="mb-7 max-w-[680px] border-l-2 border-[#69B2C1] pl-5 md:mb-9">
               <h2 className="type-module-title text-primary"><InlineMarkup text={activeCategory?.name} /></h2>
               <p className="mt-2 text-[14px] leading-6 text-secondary"><InlineMarkup text={activeCategory?.description} /></p>
@@ -119,8 +121,7 @@ export default function EndUseEquipment() {
               </CatalogCollection>}
               {endCardVisible && filteredProducts.length === 0 && <CatalogEndCta title={page?.rail_end_card_title ?? '应用合作咨询'} description={page?.rail_end_card_description ?? '围绕具体任务、穿着环境与性能目标，共同确认适用材料和产品方案。'} label={page?.rail_end_card_cta_label ?? '咨询应用方案'} href={page?.rail_end_card_cta_href || '/contact'} />}
             </div>
-          </div>
-        )}
+        </div>
       </PageSection>
     </PageShell>
   )

@@ -10,6 +10,7 @@ import SkuCard from '@/components/SkuCard'
 import type { FabricCapabilityDefinition } from '@/config/fabricCapabilities'
 import type { FabricSeries, FabricSku, PageConfig } from '@/types'
 import { useSiteLocale } from '@/i18n/SiteLocale'
+import PublicContentLoader from '@/components/PublicContentLoader'
 
 const SERIES_ORDER = ['otter', 'rayo', 'kais'] as const
 type SeriesSlug = typeof SERIES_ORDER[number]
@@ -141,6 +142,8 @@ export default function FabricDatabase() {
       return next
     })
   }
+
+  if (detailLoading) return <PublicContentLoader label="正在加载面料产品" />
 
   return (
     <PageShell>

@@ -15,6 +15,7 @@ import { createInterface } from 'node:readline'
 import { fileURLToPath } from 'node:url'
 import { dirname, resolve } from 'node:path'
 import { Client } from 'ssh2'
+import { releaseFingerprint } from '../../../../scripts/release-fingerprint.mjs'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -25,6 +26,23 @@ const DEPLOY_KEY_PATH = resolve(REPO_ROOT, '.deploy-key.md')
 const SERVER_IP = '111.231.141.7'
 const SERVER_USER = 'root'
 const SERVER_PATH = '/var/www/website_gonyik'
+const RELEASE_STAMP_PATH = resolve(REPO_ROOT, 'dist/.release-verified.json')
+const MAX_STAMP_AGE_MS = 2 * 60 * 60 * 1000
+
+function elapsed(startedAt) {
+  return `${((Date.now() - startedAt) / 1000).toFixed(1)}s`
+}
+
+async function hasCurrentReleaseVerification() {
+  try {
+    const stamp = JSON.parse(await readFile(RELEASE_STAMP_PATH, 'utf8'))
+    const age = Date.now() - Date.parse(stamp.verified_at)
+    const fingerprint = await releaseFingerprint(REPO_ROOT)
+    return age >= 0 && age <= MAX_STAMP_AGE_MS && stamp.fingerprint === fingerprint
+  } catch {
+    return false
+  }
+}
 
 function parseArgs(argv) {
   let yes = false
@@ -124,7 +142,7 @@ async function deployRemote(password) {
     'git reset --hard HEAD',
     'git pull origin main',
     "if git diff --name-only HEAD@{1} HEAD | grep -qE 'package(-lock)?\\.json'; then npm ci; else echo '依赖未变更，跳过 npm ci'; fi",
-    'npm run build',
+    "npm run build:client",
     'mkdir -p logs',
     "if [ ! -f .env.production ]; then node -e \"require('node:fs').writeFileSync('.env.production', 'JWT_SECRET=' + require('node:crypto').randomBytes(48).toString('hex') + '\\n', { mode: 0o600 })\"; fi",
     'pm2 reload ecosystem.config.cjs || pm2 start ecosystem.config.cjs',
@@ -172,11 +190,18 @@ async function deployRemote(password) {
 }
 
 async function main() {
+  const deployStartedAt = Date.now()
   const { yes, message } = parseArgs(process.argv.slice(2))
   const { password } = await loadDeployKey()
 
-  console.log('=== Step 0: 本地构建 ===')
-  await runNpm(['run', 'build'])
+  const buildStartedAt = Date.now()
+  if (await hasCurrentReleaseVerification()) {
+    console.log('=== Step 0: 复用本次已验证构建（跳过重复本地构建） ===')
+  } else {
+    console.log('=== Step 0: 本地构建 ===')
+    await runNpm(['run', 'build'])
+  }
+  console.log(`本地检查阶段耗时：${elapsed(buildStartedAt)}`)
 
   if (!yes) {
     const ok = await confirm('构建通过，是否继续提交、推送并部署到服务器？')
@@ -196,6 +221,7 @@ async function main() {
   }
 
   console.log('\n=== Step 2: Git 推送 ===')
+  const pushStartedAt = Date.now()
   try {
     await run('git', ['push', 'origin', 'main'])
   } catch {
@@ -203,10 +229,13 @@ async function main() {
     console.error(' workaround：使用服务器中转推送，详见 .agents/skills/gonyik-deploy/SKILL.md')
     process.exit(1)
   }
+  console.log(`Git 推送耗时：${elapsed(pushStartedAt)}`)
 
+  const remoteStartedAt = Date.now()
   await deployRemote(password)
+  console.log(`服务器部署耗时：${elapsed(remoteStartedAt)}`)
 
-  console.log('\n=== Deploy finished ===')
+  console.log(`\n=== Deploy finished · 总耗时 ${elapsed(deployStartedAt)} ===`)
 }
 
 main().catch((err) => {

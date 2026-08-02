@@ -1,9 +1,7 @@
-import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { getPublicBootstrap } from '@/api/client'
 import PageHero from '@/components/PageHero'
 import { PageSection, PageShell } from '@/components/PageLayout'
-import type { FabricSeries, HomeConfig } from '@/types'
+import type { FabricSeries } from '@/types'
 import { InlineMarkup } from '@/components/MarkupParser'
 import { MaterialSystemVisual, MaterialValidationSummary } from '@/components/HomeTechnicalVisuals'
 import { useSiteLocale } from '@/i18n/SiteLocale'
@@ -14,31 +12,10 @@ const SERIES_TITLES: Record<string, string> = {
   kais: '黑标 KAIS',
 }
 
-const DEFAULT_HOME: HomeConfig = {
-  id: 0,
-  hero_tag: 'PERFORMANCE TEXTILE TECHNOLOGY',
-  hero_title: '以材料科技\n重构高性能面料',
-  hero_slogan: '港翼围绕底层材料、结构设计、制造与验证，开发面向真实应用的功能面料和材料解决方案。',
-  hero_background: null,
-  hero_mobile_background: null,
-  primary_btn_text: '探索材料', primary_btn_link: '/fabrics', secondary_btn_text: '探索技术', secondary_btn_link: '/pfas-free-innovation',
-  platform_section_title: '', platform_section_subtitle: '', platform_section_link_text: '', platform_section_link: '/pfas-free-innovation', platform_cards: [],
-  series_section_title: '', series_section_subtitle: '', series_section_link_text: '查看全部面料产品', series_section_link: '/fabrics',
-  verification_image: null, verification_images: [],
-  verification_section_title: '', verification_section_subtitle: '', verification_section_link_text: '', verification_section_link: '/pfas-free-innovation#technology-testing-certification', verifications: [],
-}
-
 export default function Home() {
-  const [config, setConfig] = useState<HomeConfig>(DEFAULT_HOME)
-  const [series, setSeries] = useState<FabricSeries[]>([])
-  const { path: localePath } = useSiteLocale()
-
-  useEffect(() => {
-    getPublicBootstrap().then((response) => {
-      setConfig(response.data.home_config || DEFAULT_HOME)
-      setSeries((response.data.series || []).sort((a: FabricSeries, b: FabricSeries) => a.order_index - b.order_index))
-    })
-  }, [])
+  const { path: localePath, bootstrap } = useSiteLocale()
+  const config = bootstrap.home_config
+  const series = [...(bootstrap.series || [])].sort((a: FabricSeries, b: FabricSeries) => a.order_index - b.order_index)
 
   return (
     <PageShell>

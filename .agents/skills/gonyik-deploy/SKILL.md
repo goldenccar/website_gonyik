@@ -8,7 +8,7 @@ description: Deploy the GONYIK website (React + Express) from local dev to GitHu
 ## Quick Workflow
 
 ```
-Local build → Git push → Server pull/install/build → PM2 reload → Health check
+Reuse verified local build (or build once) → Git push → Server pull/client build → PM2 reload → Health check
 ```
 
 Run the following from the project root:
@@ -28,8 +28,8 @@ The deployment script works on **Windows / macOS / Linux** (uses Node.js under t
 ### Manual Steps
 
 ```bash
-# 1. Local build
-npm run build
+# 1. Full local release verification (writes a short-lived verification stamp)
+npm run test:release
 
 # 2. Commit & push
 git add -A
@@ -40,8 +40,8 @@ git push origin main
 ssh root@111.231.141.7
 cd /var/www/website_gonyik
 git pull
-npm install
-npm run build
+npm ci # only when package files changed
+npm run build:client
 pm2 reload ecosystem.config.cjs
 curl -s http://localhost:3001/api/health
 ```
@@ -66,7 +66,7 @@ npm run deploy "feat: your message"   # 自定义提交信息
 npm run deploy -y                      # 非交互模式，跳过确认
 ```
 
-The script auto-decrypts the password and runs the full pipeline. If `git push` fails (see Network Issues below), it prints the workaround instructions.
+The script auto-decrypts the password and runs the full pipeline. When `npm run test:release` has just passed and the working tree has not changed, it reuses that verified build instead of compiling locally a second time. It also reports local, push, remote, and total timings. If `git push` fails (see Network Issues below), it prints the workaround instructions.
 
 ## Network Issues (VPN / GitHub Timeout)
 
@@ -92,8 +92,8 @@ The script auto-decrypts the password and runs the full pipeline. If `git push` 
    ```
 3. Then proceed with normal server pull + build + restart:
    ```bash
-   npm install
-   npm run build
+   npm ci # only when package files changed
+   npm run build:client
    pm2 reload ecosystem.config.cjs
    curl -s http://localhost:3001/api/health
    ```
@@ -107,7 +107,7 @@ The script auto-decrypts the password and runs the full pipeline. If `git push` 
 | `db.json` | Never commit. Managed independently on the server. |
 | Server code changes | Must `pm2 reload gonyik` (or `pm2 restart gonyik`). |
 | Build failures | Fix locally before pushing. Never push broken builds. |
-| Dependency changes | Server auto-deploy now runs `npm install` when code changes. |
+| Dependency changes | Server auto-deploy runs `npm ci` only when package files changed. |
 | Cross-platform | Use `npm run deploy` on any OS; do not rely on hardcoded paths. |
 
 ## Reference

@@ -1,13 +1,8 @@
-import { useState, useEffect } from 'react'
-import { getFooter } from '@/api/client'
-import type { FooterConfig } from '@/types'
+import { useSiteLocale } from '@/i18n/SiteLocale'
 
 export default function PrivacyPolicy() {
-  const [footer, setFooter] = useState<FooterConfig | null>(null)
-
-  useEffect(() => {
-    getFooter().then((res) => setFooter(res.data.data))
-  }, [])
+  const { bootstrap } = useSiteLocale()
+  const footer = bootstrap.footer_config
 
   const content = footer?.privacy_policy_content || '<p>我们仅在回应咨询、提供材料建议与推进合作所必需的范围内处理您主动提交的信息，并采取合理措施保护这些信息。</p>'
 
