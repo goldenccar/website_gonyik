@@ -81,8 +81,8 @@ const FALLBACK_STORIES: Record<TechnologyStoryKind, TechnologyContentBlock[]> = 
     },
     {
       key: 'testing-result',
-      title: '让性能表达建立在对应样品之上',
-      content: '公开页面呈现与选材相关的核心性能信息。对应型号的完整测试方法、适用条件与更多技术数据，通过 TDS 及项目技术资料提供。',
+      title: '从性能数据，到产品选择',
+      content: '防水、透湿、耐磨、强度与耐久等关键表现，最终都要服务于真实产品。港翼为品牌提供面料型号、性能信息与技术支持，帮助开发团队更快比较方案、确认选材并推进打样。',
     },
   ],
 }
@@ -245,7 +245,7 @@ function TestingStory({ blocks }: { blocks: TechnologyContentBlock[] }) {
   return <>
     <SectionShell><StoryIntro block={blocks[0]} /><TestingFlowVisual /></SectionShell>
     <SectionShell tone="mist"><StoryIntro block={blocks[1]} align="offset" /><div className="testing-capability-strip">{['防水与透湿', '耐磨与强度', '弯折与耐久', '结构与工艺'].map((item) => <span key={item}>{item}</span>)}</div></SectionShell>
-    <SectionShell><div className="testing-result-layout"><StoryIntro block={blocks[2]} /><div className="testing-result-proof"><i aria-hidden="true" /><strong>对应型号<br />对应样品<br />对应条件</strong><span>数据用于品牌选材与项目开发</span></div></div></SectionShell>
+    <SectionShell><div className="testing-result-layout"><StoryIntro block={blocks[2]} /><div className="testing-result-proof"><i aria-hidden="true" /><strong>明确型号<br />核心性能<br />应用建议</strong><span>支持选材、打样与产品开发</span></div></div></SectionShell>
   </>
 }
 

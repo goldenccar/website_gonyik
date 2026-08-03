@@ -364,13 +364,13 @@ function createDefaultDb(): Database {
         order_index: 6,
         title: '测试与认证',
         subtitle: '从材料到成品面料，持续验证产品表现',
-        content: '港翼围绕材料筛选、结构开发、样品对比与耐久表现开展内部测试，并根据具体产品与项目要求，由 SGS、中纺标 CTTC 等专业机构进行独立检测。/h公开页面呈现与选材相关的核心性能信息。对应型号的完整测试方法、适用条件与更多技术数据，通过 TDS 及项目技术资料提供。',
+        content: '从防水透湿、耐磨强度到弯折耐久，港翼围绕功能面料的关键表现开展测试，并根据具体产品与项目要求，由 SGS、中纺标 CTTC 等专业机构进行独立检测。',
         image_url: '/visuals/technology-testing-hero-v2.jpg',
         image_fit: 'cover',
         content_blocks: [
           { key: 'testing-materials', title: '先确认每一种材料', content: '纤维、膜材、织物和胶黏剂分别进入材料筛选与基础性能检查，确认它们能够满足目标结构与应用方向。' },
           { key: 'testing-process', title: '再确认组合工艺', content: '材料进入复合和成品加工后，港翼围绕工艺条件、结构组合与样品表现进行内部实验，持续比较防水、透湿、耐磨和耐久等关键指标。' },
-          { key: 'testing-product', title: '最后确认成品表现', content: '对于需要独立验证的项目，根据具体产品与测试要求委托 SGS、中纺标 CTTC 等专业机构检测，结果以对应样品的正式报告为准。' },
+          { key: 'testing-result', title: '从性能数据，到产品选择', content: '防水、透湿、耐磨、强度与耐久等关键表现，最终都要服务于真实产品。港翼为品牌提供面料型号、性能信息与技术支持，帮助开发团队更快比较方案、确认选材并推进打样。' },
         ],
       },
       {
@@ -1711,7 +1711,7 @@ export function initDatabase() {
         'testing-certification': [
           { key: 'testing-chain', title: '验证，从单项材料开始', content: '纤维、织物、RPO-SOTEX 功能膜与胶黏剂先分别进行基础检查，再进入复合结构。只有每一种材料都与目标产品相匹配，后续测试得到的结果才真正对应这块面料。' },
           { key: 'testing-lab', title: '从内部实验，到独立第三方验证', content: '样品完成后，港翼围绕防水、透湿、耐磨、结构与耐久表现开展内部测试和对比；达到项目要求的成品，再根据具体用途委托 SGS、中纺标 CTTC 等专业机构进行独立检测。', highlights: ['内部研发测试', '生产过程验证', '独立第三方检测'] },
-          { key: 'testing-result', title: '让性能表达建立在对应样品之上', content: '测试条件、面料结构与样品批次共同决定结果。港翼以对应型号和项目的测试数据作为性能沟通依据，并在品牌选材与产品开发阶段提供相匹配的技术资料。' },
+          { key: 'testing-result', title: '从性能数据，到产品选择', content: '防水、透湿、耐磨、强度与耐久等关键表现，最终都要服务于真实产品。港翼为品牌提供面料型号、性能信息与技术支持，帮助开发团队更快比较方案、确认选材并推进打样。' },
         ],
       }
       db.fluorine_sections
@@ -1991,7 +1991,7 @@ export function initDatabase() {
       'testing-certification': {
         title: '测试与认证',
         subtitle: '从材料到成品面料，持续验证产品表现',
-        content: '港翼围绕材料筛选、结构开发、样品对比与耐久表现开展内部测试，并根据具体产品与项目要求，由 SGS、中纺标 CTTC 等专业机构进行独立检测。/h公开页面呈现与选材相关的核心性能信息。对应型号的完整测试方法、适用条件与更多技术数据，通过 TDS 及项目技术资料提供。',
+        content: '从防水透湿、耐磨强度到弯折耐久，港翼围绕功能面料的关键表现开展测试，并根据具体产品与项目要求，由 SGS、中纺标 CTTC 等专业机构进行独立检测。',
       },
     }
     db.fluorine_sections.forEach((section: any) => {
@@ -2009,7 +2009,7 @@ export function initDatabase() {
         section.content_blocks = [
           { key: 'testing-chain', title: '验证，从单项材料开始', content: '港翼围绕材料筛选、结构开发、样品对比与耐久表现开展内部测试。' },
           { key: 'testing-lab', title: '从内部实验，到独立第三方验证', content: '根据具体产品与项目要求，由 SGS、中纺标 CTTC 等专业机构进行独立检测。', highlights: ['材料与结构验证', '样品与耐久对比', '独立第三方检测'] },
-          { key: 'testing-result', title: '让性能表达建立在对应样品之上', content: '公开页面呈现与选材相关的核心性能信息。对应型号的完整测试方法、适用条件与更多技术数据，通过 TDS 及项目技术资料提供。' },
+          { key: 'testing-result', title: '从性能数据，到产品选择', content: '防水、透湿、耐磨、强度与耐久等关键表现，最终都要服务于真实产品。港翼为品牌提供面料型号、性能信息与技术支持，帮助开发团队更快比较方案、确认选材并推进打样。' },
         ]
       }
     })
@@ -2037,6 +2037,25 @@ export function initDatabase() {
   if ((db.chinese_copy_adjustment_version ?? 0) < 4) {
     db.home_config.hero_tag = 'PFAS Free · RPO MATERIAL PLATFORM'
     db.chinese_copy_adjustment_version = 4
+    saveDb()
+  }
+
+  if ((db.chinese_copy_adjustment_version ?? 0) < 5) {
+    const testingSection = db.fluorine_sections.find((section: any) => section.section_key === 'testing-certification')
+    if (testingSection) {
+      testingSection.content = '从防水透湿、耐磨强度到弯折耐久，港翼围绕功能面料的关键表现开展测试，并根据具体产品与项目要求，由 SGS、中纺标 CTTC 等专业机构进行独立检测。'
+      const blocks = Array.isArray(testingSection.content_blocks) ? testingSection.content_blocks : []
+      const resultBlock = blocks.find((block: any) => block.key === 'testing-result' || block.key === 'testing-product')
+      const nextResultBlock = {
+        key: 'testing-result',
+        title: '从性能数据，到产品选择',
+        content: '防水、透湿、耐磨、强度与耐久等关键表现，最终都要服务于真实产品。港翼为品牌提供面料型号、性能信息与技术支持，帮助开发团队更快比较方案、确认选材并推进打样。',
+      }
+      if (resultBlock) Object.assign(resultBlock, nextResultBlock)
+      else blocks.push(nextResultBlock)
+      testingSection.content_blocks = blocks
+    }
+    db.chinese_copy_adjustment_version = 5
     saveDb()
   }
 
