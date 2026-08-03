@@ -13,6 +13,8 @@ interface ContactMessage {
   phone: string
   subject: string
   cooperation_type: string
+  source_page?: string
+  product_model?: string
   message: string
   created_at: string
 }
@@ -74,7 +76,13 @@ export default function AdminContactMessageManager() {
                     </div>
                     {msg.cooperation_type && (
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="text-[12px] text-white bg-white/10 px-2 py-0.5">客户身份：{msg.cooperation_type}</span>
+                        <span className="text-[12px] text-white bg-white/10 px-2 py-0.5">咨询方向：{msg.cooperation_type}</span>
+                      </div>
+                    )}
+                    {(msg.source_page || msg.product_model) && (
+                      <div className="flex flex-wrap items-center gap-2 text-[12px] text-accent">
+                        {msg.source_page && <span>来源页面：{msg.source_page}</span>}
+                        {msg.product_model && <span>产品型号：{msg.product_model}</span>}
                       </div>
                     )}
                   </div>

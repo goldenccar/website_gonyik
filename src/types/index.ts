@@ -2,6 +2,7 @@ export interface HomePlatformCard {
   title: string
   subtitle: string
   description?: string
+  evidence?: string
 }
 
 export interface HomeVerification {

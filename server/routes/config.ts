@@ -552,7 +552,7 @@ router.delete('/admin/contact-messages/:id', authMiddleware, (req: AuthRequest, 
 })
 
 router.post('/contact', async (req, res) => {
-  const { name, company, position, email, phone, subject, cooperation_type, message } = req.body
+  const { name, company, position, email, phone, subject, cooperation_type, message, source_page, product_model } = req.body
   if (!name || !email || !subject || !message) {
     res.status(400).json({ error: '缺少必填字段' })
     return
@@ -568,6 +568,8 @@ router.post('/contact', async (req, res) => {
     phone: phone || '',
     subject,
     cooperation_type: cooperation_type || '',
+    source_page: String(source_page || '').slice(0, 200),
+    product_model: String(product_model || '').slice(0, 120),
     message,
     created_at: new Date().toISOString(),
   }
@@ -597,6 +599,8 @@ router.post('/contact', async (req, res) => {
 姓名：${name}
 公司：${company || '未填写'}
 职位：${position || '未填写'}
+来源页面：${source_page || '直接进入联系页'}
+产品型号：${product_model || '未指定'}
 邮箱：${email}
 电话：${phone || '未填写'}
 ━━━━━━━━━━━━━━━━━━━━

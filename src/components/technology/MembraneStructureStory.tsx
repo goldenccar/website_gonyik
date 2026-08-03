@@ -14,9 +14,9 @@ const FALLBACK_BLOCK: TechnologyContentBlock = {
 const FALLBACK_PERFORMANCE_BLOCK: TechnologyContentBlock = {
   key: 'performance-foundation',
   title: '一张膜，需要同时成立的性能',
-  content: 'RPO-SOTEX 基于增韧聚烯烃材料体系与微孔结构调控，将无氟材料本体、连通超微孔和高强韧膜体结合在同一结构中。/h它追求的不是某一个孤立指标的峰值，而是在复合加工与长期使用中，持续维持防水、透湿、强韧和耐候之间的平衡。',
+  content: 'RPO-SOTEX 基于增韧聚烯烃材料体系与微孔结构调控，将聚烯烃材料、连通超微孔和高强韧膜体结合在同一结构中。/h它追求的不是某一个孤立指标的峰值，而是在复合加工与长期使用中，持续维持防水、透湿、强韧和耐候之间的平衡。',
   items: [
-    { title: '材料本体无氟', content: '采用无氟聚烯烃材料体系，从核心膜层减少对含氟材料的依赖，并已通过 SGS PFAS-Free 检测。' },
+    { title: '减少含氟依赖', content: 'RPO-SOTEX 采用聚烯烃材料体系，从核心膜层减少对含氟材料的依赖。经 SGS 对数百种目标 PFAS 进行检测，结果均未检出。' },
     { title: '超微孔直接传递', content: '膜体内部形成细小、连续的微孔结构，为水汽提供直接的传递通道，减少对材料吸湿扩散过程的依赖。' },
     { title: '强韧与耐候基础', content: '高强韧膜体为后续复合加工、反复弯折、磨损和环境变化中的稳定表现提供材料基础。' },
   ],
@@ -68,6 +68,15 @@ export default function MembraneStructureStory({ section }: { section: FluorineS
 
   return (
     <>
+      <section className="bg-bg px-4 pb-4 md:px-6 md:pb-6">
+        <MotionInView className="mx-auto w-full max-w-[1600px] bg-white px-7 py-14 md:px-12 md:py-16 lg:px-20">
+          <div data-motion-item className="max-w-[880px]">
+            <MarkupParser text={section.content} className="technical-copy text-secondary" />
+            <p className="mt-5 text-[12px] leading-6 text-secondary">“未检出”指报告所列目标物低于相应方法检出限，具体检测范围以技术资料为准。</p>
+          </div>
+        </MotionInView>
+      </section>
+
       <section className="bg-bg px-4 pb-4 md:px-6 md:pb-6">
         <MotionInView className="membrane-structure-story mx-auto w-full max-w-[1600px] bg-white px-7 py-16 md:px-12 md:py-20 lg:px-20 lg:py-24">
           <div className="membrane-chapter-intro membrane-chapter-intro--lead grid gap-7 lg:grid-cols-[minmax(300px,0.9fr)_minmax(420px,1.1fr)] lg:items-start lg:gap-20">

@@ -11,6 +11,7 @@ import { getTechnologyPagePath, TECHNOLOGY_GROUPS, TECHNOLOGY_PAGES } from '@/co
 import { useSiteLocale } from '@/i18n/SiteLocale'
 import type { FluorineSection } from '@/types'
 import PublicContentLoader from '@/components/PublicContentLoader'
+import RelatedAction from '@/components/RelatedAction'
 
 const PREVIEW_MESSAGE = 'gonyik:technology-preview'
 const DEFAULT_TECHNOLOGY_HERO_IMAGES: Record<string, string> = {
@@ -70,6 +71,7 @@ export default function TechnologyPage() {
     || null
   ), [previewSection, sections, technologyKey])
   const definitionExists = TECHNOLOGY_PAGES.some((page) => page.sectionKey === technologyKey)
+  const pageDefinition = TECHNOLOGY_PAGES.find((page) => page.sectionKey === technologyKey)
   const isPfasSystem = technologyKey === 'pfas-free-system'
   const isMembraneTechnology = technologyKey === 'rpo-sotex-membrane'
   const storyKind: TechnologyStoryKind | null = technologyKey === 'high-performance-fiber'
@@ -162,6 +164,17 @@ export default function TechnologyPage() {
             ) : null}
         </>
       )}
+
+      <RelatedAction
+        title={pageDefinition?.relatedSeries ? `查看 ${pageDefinition.relatedSeries.toUpperCase()} 系列面料` : '从材料能力进入具体面料'}
+        description={pageDefinition?.relatedSeries
+          ? `查看采用相关材料与工艺的 ${pageDefinition.relatedSeries.toUpperCase()} 系列现有型号与代表性性能。`
+          : '进入面料数据库，按系列查看现有型号、材料结构与代表性性能。'}
+        label="查看相关面料"
+        to={localePath(pageDefinition?.relatedSeries
+          ? `/fabrics?series=${pageDefinition.relatedSeries}#series-${pageDefinition.relatedSeries}`
+          : '/fabrics')}
+      />
     </PageShell>
   )
 }

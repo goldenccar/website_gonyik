@@ -53,6 +53,7 @@ export interface Database {
   home_verification_gallery_version?: number
   visual_asset_version?: number
   public_copy_version?: number
+  chinese_copy_adjustment_version?: number
   inquiry_subjects: any[]
   contact_messages: any[]
   users: any[]
@@ -63,11 +64,11 @@ export interface Database {
 
 const PFAS_SYSTEM_PAGE_COPY = {
   title: '无氟技术体系',
-  subtitle: '从新的材料体系出发，重建高性能防护的结构与体验。',
-  content: '过去数十年，许多高性能防水透湿产品依赖含氟膜材料与含氟拒水整理。随着部分 PFAS 的环境持久性、潜在健康影响及相关风险得到进一步确认，行业需要在减少含氟依赖的同时，保留真正有价值的性能与穿着体验。',
+  subtitle: '减少含氟依赖，同时保留高性能面料真正需要的表现',
+  content: '许多传统防水透湿产品依赖含氟膜材料与含氟拒水整理。港翼从膜材料、织物结构、复合工艺与供应链协同出发，探索减少含氟依赖的高性能路径，在防水、透湿、耐久与穿着体验之间建立新的平衡。',
   image_url: '/visuals/pfas-system-hero-v8.jpg',
   image_fit: 'cover',
-  hero_statement: '性能，不应以对持久性含氟化学体系的长期依赖为前提。',
+  hero_statement: '高性能，不必依赖含氟膜',
   hero_scroll_label: '了解新的无氟性能路径',
   content_blocks: [
     {
@@ -90,7 +91,7 @@ const PFAS_SYSTEM_PAGE_COPY = {
     {
       key: 'from-material-to-product',
       title: '从一片功能膜，走向完整的产品体系',
-      content: '港翼以 RPO-SOTEX 超微孔功能膜等核心材料为基础，将织物结构、复合工艺、无氟整理与供应链协同纳入同一开发体系。/h这套体系最终形成可制造、可验证的功能面料，并进一步服务于成衣、鞋履材料和专业装备等终端应用。',
+      content: '港翼以 RPO-SOTEX 超微孔功能膜等核心材料为基础，将织物结构、复合工艺、无氟整理与供应链协同纳入同一开发体系。/h这套体系最终形成可制造、可验证的功能面料，并进一步服务于成衣、鞋履材料和专业装备等终端应用。/h数百种目标 PFAS，SGS 检测未检出。检测对象为 RPO-SOTEX 功能膜。',
     },
   ],
 }
@@ -110,9 +111,9 @@ const MEMBRANE_WATERPROOF_BLOCK = {
 const MEMBRANE_PERFORMANCE_BLOCK = {
   key: 'performance-foundation',
   title: '一张膜，需要同时成立的性能',
-  content: 'RPO-SOTEX 基于增韧聚烯烃材料体系与微孔结构调控，将无氟材料本体、连通超微孔和高强韧膜体结合在同一结构中。/h它追求的不是某一个孤立指标的峰值，而是在复合加工与长期使用中，持续维持防水、透湿、强韧和耐候之间的平衡。',
+  content: 'RPO-SOTEX 基于增韧聚烯烃材料体系与微孔结构调控，将聚烯烃材料、连通超微孔和高强韧膜体结合在同一结构中。/h它追求的不是某一个孤立指标的峰值，而是在复合加工与长期使用中，持续维持防水、透湿、强韧和耐候之间的平衡。',
   items: [
-    { title: '材料本体无氟', content: '采用无氟聚烯烃材料体系，从核心膜层减少对含氟材料的依赖，并已通过 SGS PFAS-Free 检测。' },
+    { title: '减少含氟依赖', content: 'RPO-SOTEX 采用聚烯烃材料体系，从核心膜层减少对含氟材料的依赖。经 SGS 对数百种目标 PFAS 进行检测，结果均未检出。' },
     { title: '超微孔直接传递', content: '膜体内部形成细小、连续的微孔结构，为水汽提供直接的传递通道，减少对材料吸湿扩散过程的依赖。' },
     { title: '强韧与耐候基础', content: '高强韧膜体为后续复合加工、反复弯折、磨损和环境变化中的稳定表现提供材料基础。' },
   ],
@@ -165,62 +166,56 @@ function createDefaultDb(): Database {
   const defaultDb: Database = {
     home_config: {
       id: 1,
-      hero_tag: 'PERFORMANCE TEXTILE TECHNOLOGY',
+      hero_tag: 'PFAS Free · RPO MATERIAL PLATFORM',
       hero_title: '以材料科技\n重构高性能面料',
-      hero_slogan: '港翼围绕底层材料、结构设计、制造与验证，开发面向真实应用的功能面料和材料解决方案。',
+      hero_slogan: '将 RPO 膜、织物结构与复合工艺，转化为更轻、更强、更可靠的功能面料。',
       hero_background: null,
       hero_mobile_background: null,
-      primary_btn_text: '探索材料平台',
+      primary_btn_text: '探索面料系列',
       primary_btn_link: '/fabrics',
-      secondary_btn_text: '了解无氟未来',
-      secondary_btn_link: '/pfas-free-innovation',
-      platform_section_title: '技术来源与材料平台',
-      platform_section_subtitle: '源自科研，成就可靠材料解决方案。',
-      platform_section_link_text: '了解更多',
-      platform_section_link: '/pfas-free-innovation',
+      secondary_btn_text: '了解 RPO 技术',
+      secondary_btn_link: '/pfas-free-innovation/rpo-material-platform',
+      platform_section_title: '让实验室材料，真正进入产品',
+      platform_section_subtitle: '基于香港科技大学30余年高分子材料研究经验，依托设于香港科技大学（广州）多功能高聚物薄膜中央实验室的RPO Lab，港翼推动 RPO 膜技术从实验室走向可制造的功能面料。',
+      platform_section_link_text: '探索 RPO 材料平台',
+      platform_section_link: '/pfas-free-innovation/rpo-material-platform',
       platform_cards: [
         {
-          icon: 'Building2',
-          title: '科研来源',
-          subtitle: '香港科技大学（广州）科创成果转化',
-          description: '先进材料与工程研究基础\n创新驱动，工程化商落地',
-          footer: 'HKUST(GZ) Origin',
-        },
-        {
-          icon: 'Atom',
-          title: '固纳 RPO',
-          subtitle: '固纳高性能材料平台',
-          description: '以配方与工艺创新\n实现高性能与可持续的平衡',
-          footer: 'SOLIDGOOD RPO',
+          icon: 'Layers',
+          title: '膜技术',
+          subtitle: '高性能，不必依赖含氟膜',
+          description: 'RPO-SOTEX 以聚烯烃材料与超微孔结构实现防水透湿',
+          evidence: '数百种目标PFAS，通过SGS检测，均未检出',
+          footer: 'MEMBRANE',
         },
         {
           icon: 'Hexagon',
-          title: '无氟复合体系',
-          subtitle: 'PFAS-FREE 复合材料体系',
-          description: '在防护、耐久与舒适之间\n达成可靠平衡',
-          footer: 'PFAS-Free by Design',
+          title: '面料复合',
+          subtitle: '让面层、功能膜与内层协同工作',
+          description: '兼顾防护、透湿、手感与耐久表现',
+          footer: 'LAMINATION',
         },
         {
-          icon: 'Shirt',
-          title: '功能织物结构设计',
-          subtitle: '以纤维与结构设计',
-          description: '放大材料潜能\n服务多样化应用需求',
-          footer: 'Engineered for Performance',
+          icon: 'Network',
+          title: '供应链协同',
+          subtitle: '让材料技术稳定进入产品',
+          description: '连接材料、工艺、制造与交付',
+          footer: 'SUPPLY CHAIN',
         },
       ],
-      series_section_title: '核心面料平台',
-      series_section_subtitle: '面向多元应用的材料平台，让高性能更可持续。',
+      series_section_title: '三大面料平台',
+      series_section_subtitle: '蓝标 OTTER 聚焦高性能防水透湿，银标 RAYO 面向防晒、导湿与凉感体验，黑标 KAIS 服务消防、防化等特种场景的材料开发。',
       series_section_link_text: '查看全部面料产品',
       series_section_link: '/fabrics',
       verification_image: null,
       verification_images: [],
-      verification_section_title: '测试与认证',
-      verification_section_subtitle: '内部验证用于研发与过程控制，关键结果由独立第三方检测提供依据。',
+      verification_section_title: '性能，不只停在材料概念里',
+      verification_section_subtitle: '从膜材、复合到成品面料，港翼通过内部测试与第三方检测，持续验证产品表现。',
       verification_section_link_text: '查看测试与认证',
-      verification_section_link: '/pfas-free-innovation#technology-testing-certification',
+      verification_section_link: '/pfas-free-innovation/testing-certification',
       verifications: [
-        { title: '内部实验室', subtitle: '依托香港科技大学（广州）多功能高聚物薄膜中央实验室，开展材料筛选、结构开发、样品对比与耐久验证。' },
-        { title: '第三方测试认证', subtitle: '根据具体产品与项目要求，委托 SGS、中纺标 CTTC 等专业机构检测，结果以正式报告为准。' },
+        { title: '材料与结构验证', subtitle: '围绕材料筛选、结构开发、样品对比与耐久表现开展测试。' },
+        { title: '独立第三方检测', subtitle: '根据具体产品与项目要求，由 SGS、中纺标 CTTC 等专业机构检测。' },
       ],
     },
     site_config: {
@@ -236,7 +231,7 @@ function createDefaultDb(): Database {
       { id: 2, page_key: 'equipment', page_tag: 'END-USE APPLICATIONS', page_title: '从面料到真实应用', page_subtitle: '查看不同装备采用的港翼面料，以及材料如何构成完整的穿着体验。', hero_background: null },
       { id: 3, page_key: 'pfas-free-innovation', page_tag: 'TECHNOLOGY INNOVATION', page_title: '技术，从材料开始', page_subtitle: '探索膜、复合、功能整理、供应链与测试验证。', hero_background: null },
       { id: 4, page_key: 'services', page_tag: '', page_title: '服务与支持', page_subtitle: '从面料护理、成衣洗涤到数字化应用，为材料使用和产品开发提供支持。', hero_background: null },
-      { id: 5, page_key: 'contact', page_tag: 'CONTACT US', page_title: '联系我们', page_subtitle: '如有材料需求或合作意向，欢迎与我们取得联系。', hero_background: null },
+      { id: 5, page_key: 'contact', page_tag: 'CONTACT US', page_title: '合作咨询', page_subtitle: '告诉我们你正在寻找的材料或应用方向，我们会尽快与你联系。', hero_background: null },
     ],
     navigation: [
       { id: 4, label: '材料科技', link: '/pfas-free-innovation', order_index: 0 },
@@ -276,11 +271,10 @@ function createDefaultDb(): Database {
       smtp_secure: false,
     },
     inquiry_subjects: [
-      { id: 1, label: '功能咨询', order_index: 0 },
-      { id: 2, label: '样品申请', order_index: 1 },
-      { id: 3, label: '合作洽谈', order_index: 2 },
-      { id: 4, label: '技术支持', order_index: 3 },
-      { id: 5, label: '其他', order_index: 4 },
+      { id: 1, label: '索取 TDS 或样品', order_index: 0 },
+      { id: 2, label: '面料选型', order_index: 1 },
+      { id: 3, label: '产品开发合作', order_index: 2 },
+      { id: 4, label: '其他咨询', order_index: 3 },
     ],
     fluorine_sections: [
       {
@@ -296,8 +290,8 @@ function createDefaultDb(): Database {
         section_key: 'rpo-material-platform',
         nav_label: 'RPO 材料平台',
         title: 'RPO 高性能材料平台',
-        subtitle: '连接底层材料技术与面料应用',
-        content: '高性能面料的能力，首先来自底层材料。RPO 材料平台围绕 RPO-SOTEX 超微孔功能膜、RPO高性能纤维展开，通过对材料结构、形态与加工适配性的持续开发，在轻量、强度、耐久与功能界面之间建立新的性能基础。/h港翼根据不同应用，将 RPO 材料与织物结构、无氟整理和复合工艺协同设计，使材料从实验室形态进入可制造、可验证的面料系统，并进一步服务于防水透湿、轻量防护、高强耐磨等产品方向。',
+        subtitle: '让实验室材料，进入可制造的高性能面料',
+        content: '港翼技术顾问高平教授拥有30余年高分子材料研究经验。港翼源自固纳内部孵化的功能材料项目，依托设于香港科技大学（广州）多功能高聚物薄膜中央实验室的固纳 RPO Lab，推动 RPO 膜与高性能纤维从实验室走向应用。/hRPO 材料平台围绕 RPO-SOTEX 超微孔功能膜与 RPO 高性能纤维展开，通过材料结构、形态和加工适配性的持续开发，在轻量、强度、耐久与功能界面之间建立新的性能基础。/h港翼根据不同使用场景，将 RPO 材料与织物结构、功能整理和复合工艺协同设计，使底层材料转化为可制造、可验证的面料，并进一步服务于防水透湿、高强耐磨及特种材料等产品方向。',
         image_url: null,
         image_fit: 'cover',
       },
@@ -305,9 +299,9 @@ function createDefaultDb(): Database {
         id: 3,
         page_key: 'pfas-free-innovation',
         order_index: 2,
-        title: '高性能膜技术',
-        subtitle: '构建防水、透湿与强度兼备的功能界面',
-        content: '港翼通过 RPO-SOTEX 无氟超微孔纳米膜构建连续、轻薄的功能界面。膜内相互连通的超微孔为气态水分子的扩散提供通道；面对液态水时，疏水孔隙结构与水的表面张力共同形成毛细阻力，使液体需要达到一定进入压力才能穿透膜层。/h除了防水与水汽传递能力，RPO 纳米膜本身也具有突出的物理性能。其材料结构在极低密度下仍可达到接近部分铝合金等级的拉伸强度，呈现优异的比强度、耐拉伸表现和结构稳定性，为轻量面料与高可靠防护结构提供更大的设计空间。/h膜材的最终表现还取决于孔隙分布、厚度、均匀性，以及与面层、底布和复合工艺的匹配。港翼围绕膜材制备、结构控制与应用适配持续开发，使 RPO-SOTEX 功能层能够稳定进入不同面料系统。',
+        title: 'RPO-SOTEX 膜技术',
+        subtitle: '以聚烯烃材料与超微孔结构，构建防水、透湿与强韧兼备的功能界面',
+        content: 'RPO-SOTEX 以聚烯烃材料与超微孔结构实现防水透湿，不依赖含氟膜材料体系。经 SGS 对数百种目标 PFAS 进行检测，结果均未检出。',
         image_url: '/visuals/technology-membrane-production-hero-v1.webp',
         image_fit: 'cover',
         content_blocks: [MEMBRANE_STRUCTURE_BLOCK, MEMBRANE_WATERPROOF_BLOCK, MEMBRANE_PERFORMANCE_BLOCK],
@@ -349,13 +343,13 @@ function createDefaultDb(): Database {
         order_index: 5,
         title: '供应链管理',
         subtitle: '把材料、织造、染整与复合能力组织成可追溯的生产链路。',
-        content: '港翼与拥有二十余年织造与染整经验的核心纺织合作伙伴协同，将高品质纤维、织物开发、染整能力与功能膜结合，为不同应用提供稳定的面料基础。/h从原料、纱线、织造、染整到复合，多种专业能力在同一条生产链上协同，让材料特性能够被完整转化为面料表现。/h相关材料与生产环节可提供 OEKO-TEX®、GRS 等认证信息，为面料开发提供清晰的品质与可持续选择。',
+        content: '港翼与拥有二十余年织造与染整经验的核心纺织合作伙伴协同，将高品质纤维、织物开发、染整能力与功能膜结合，为不同应用提供稳定的面料基础。/h从原料、纱线、织造、染整到复合，多种专业能力在同一条生产链上协同，让材料特性能够被完整转化为面料表现。/h港翼优选具备 bluesign®、GRS、OEKO-TEX® 认证基础的面料与供应链合作伙伴。具体适用范围以对应产品资料为准。',
         image_url: '/visuals/technology-supply-chain-hero-v1.webp',
         image_fit: 'cover',
         content_blocks: [
           { key: 'supply-partner', title: '从成熟纺织能力开始', content: '港翼与拥有二十余年织造与染整经验的核心纺织合作伙伴协同，将高品质纤维、织物开发、染整能力与功能膜结合，为不同应用提供稳定的面料基础。' },
           { key: 'supply-coordination', title: '材料与工艺，沿同一条链路协同', content: '从原料、纱线、织造、染整到复合，多种专业能力在同一条生产链上协同，让材料特性能够被完整转化为面料表现。' },
-          { key: 'supply-delivery', title: '把稳定性带到交付端', content: '相关材料与生产环节可提供 OEKO-TEX®、GRS 等认证信息，为面料开发提供清晰的品质与可持续选择。' },
+          { key: 'supply-delivery', title: '把稳定性带到交付端', content: '港翼优选具备 bluesign®、GRS、OEKO-TEX® 认证基础的面料与供应链合作伙伴。具体适用范围以对应产品资料为准。' },
         ],
         certification_logos: [
           { name: 'bluesign', image_url: '/brandmarks/bluesign.svg' },
@@ -368,9 +362,9 @@ function createDefaultDb(): Database {
         page_key: 'pfas-free-innovation',
         section_key: 'testing-certification',
         order_index: 6,
-        title: '测试与验证',
-        subtitle: '从每一种材料，到每一块成品，建立逐级确认的测试链路。',
-        content: '纤维、膜材、织物和胶黏剂分别进入材料筛选与基础性能检查，确认它们能够满足目标结构与应用方向。/h材料进入复合和成品加工后，港翼围绕工艺条件、结构组合与样品表现进行内部实验，持续比较防水、透湿、耐磨和耐久等关键指标。/h对于需要独立验证的项目，根据具体产品与测试要求委托 SGS、中纺标 CTTC 等专业机构检测，结果以对应样品的正式报告为准。',
+        title: '测试与认证',
+        subtitle: '从材料到成品面料，持续验证产品表现',
+        content: '港翼围绕材料筛选、结构开发、样品对比与耐久表现开展内部测试，并根据具体产品与项目要求，由 SGS、中纺标 CTTC 等专业机构进行独立检测。/h公开页面呈现与选材相关的核心性能信息。对应型号的完整测试方法、适用条件与更多技术数据，通过 TDS 及项目技术资料提供。',
         image_url: '/visuals/technology-testing-hero-v2.jpg',
         image_fit: 'cover',
         content_blocks: [
@@ -437,9 +431,9 @@ function createDefaultDb(): Database {
     ],
     fabric_capabilities: DEFAULT_FABRIC_CAPABILITIES.map((item, index) => ({ ...item, id: index + 1, order_index: index })),
     fabric_series: [
-      { id: 1, name: 'Otter', slug: 'otter', description: '无氟高性能复合面料 3L，Solidgood RPO Membrane 中间层，香港科技大学前沿纳米材料 / 日内瓦国际发明展金奖技术', tagline: '新一代无氟防护', story_title: '为复杂天气与长期使用建立可靠防护', story_intro: 'OTTER 将无氟防水透湿结构、持久防风与耐磨面层整合为可制造、可验证的复合面料系统，面向全天候防护与高频使用。', story_highlights: ['全天候防护', '防水与透湿兼顾', '面向长期使用的耐磨结构'], home_image: null, home_badge_image: '/brandmarks/otter-label.svg', order_index: 0 },
-      { id: 2, name: 'Kais', slug: 'kais', description: '专业防护平台，基于 UHMWPE 纤维基材的防刺/防火/防化解决方案', tagline: '专业防护平台 · 防刺/防火/防化', story_title: '让高强材料进入明确的专业任务', story_intro: 'KAIS 围绕高强纤维、织物结构与应用适配展开材料开发，为防刺、防火及其他专业防护方向提供可进一步验证的材料基础。', story_highlights: ['高强材料基础', '轻量防护方向', '专业任务适配'], home_image: null, home_badge_image: '/brandmarks/kais-label.svg', order_index: 1 },
-      { id: 3, name: 'Rayo', slug: 'rayo', description: '原生防晒导湿系列，Coolmax + TiO2 原纱处理，UPF 150+', tagline: '原生防晒 · 导湿凉感', story_title: '从纤维与结构出发，建立轻量舒适体验', story_intro: 'RAYO 面向日常与运动场景，通过纤维、织物结构与无氟整理的协同设计，形成防晒、导湿和速干等具体功能。', story_highlights: ['轻量穿着体验', '导湿与速干', '原生防晒能力'], home_image: null, home_badge_image: '/brandmarks/rayo-label.svg', order_index: 2 },
+      { id: 1, name: 'Otter', slug: 'otter', description: '采用获日内瓦国际发明展特别评审金奖的 RPO 膜技术，构建高性能防水透湿复合面料。', tagline: '高性能防水透湿面料', story_title: '金奖膜技术，进入高性能面料', story_intro: '港翼 OTTER 采用获日内瓦国际发明展特别评审金奖的 RPO 膜技术，通过面层、功能膜与内层结构的协同设计，兼顾防水、透湿和舒适性表现。其 RPO-SOTEX 功能膜经 SGS 对数百种目标 PFAS 进行检测，结果均未检出。', story_highlights: ['高性能防水', '稳定透湿表现', '轻量舒适结构'], home_image: null, home_badge_image: '/brandmarks/otter-label.svg', order_index: 0 },
+      { id: 2, name: 'Kais', slug: 'kais', description: '面向消防、防化及其他专业任务，开发与具体使用环境相适配的特种材料方案。', tagline: '特种场景材料平台', story_title: '面向特种场景，构建关键材料', story_intro: 'KAIS 面向消防、防化及其他特种场景，围绕高性能纤维、功能膜、织物结构与复合工艺进行针对性开发，为不同专业任务提供可进一步适配与验证的材料基础。', story_highlights: ['特种场景适配', '多材料协同', '项目化开发'], home_image: null, home_badge_image: '/brandmarks/kais-label.svg', order_index: 1 },
+      { id: 3, name: 'Rayo', slug: 'rayo', description: '从纤维配方与织物结构出发，兼顾防晒、导湿、速干与接触凉感。', tagline: '防晒、导湿与凉感面料', story_title: '把防晒、导湿与凉感织进结构', story_intro: 'RAYO 面向日常与运动场景，从纤维配方与织物结构出发，兼顾防晒、导湿、速干与接触凉感，让功能表现建立在材料与结构本身。', story_highlights: ['UPF 50+', '导湿速干', '接触凉感'], home_image: null, home_badge_image: '/brandmarks/rayo-label.svg', order_index: 2 },
     ],
     media_items: [],
     fabric_sku: [
@@ -455,7 +449,7 @@ function createDefaultDb(): Database {
       { id: 1, parent_id: null, name: '成衣', slug: 'apparel', description: '从日常通勤、户外防护到专业任务的功能成衣应用。', visibility: 'public', order_index: 0 },
       { id: 2, parent_id: 1, name: '日常通勤', slug: 'daily', description: '面向城市通勤与日常穿着的舒适、防风雨和轻量应用。', visibility: 'public', order_index: 0 },
       { id: 3, parent_id: 1, name: '户外防护', slug: 'outdoor', description: '面向徒步、骑行和多变天气的功能装备应用。', visibility: 'public', order_index: 1 },
-      { id: 4, parent_id: 1, name: '专业与特种', slug: 'professional', description: '面向防刺、消防及其他明确任务的专业装备应用。', visibility: 'public', order_index: 2 },
+      { id: 4, parent_id: 1, name: '专业与特种', slug: 'professional', description: '面向消防、防化及其他明确任务的特种材料与专业装备应用。', visibility: 'public', order_index: 2 },
       { id: 5, parent_id: null, name: '鞋履', slug: 'footwear', description: '面向鞋面与鞋履系统的高性能材料应用。', visibility: 'hidden', order_index: 1 },
       { id: 6, parent_id: null, name: '配件', slug: 'accessories', description: '围绕成衣养护、穿戴装备和功能组件建立的配套产品。', visibility: 'public', order_index: 2 },
       { id: 7, parent_id: 6, name: '养护用品', slug: 'care', description: '用于高性能成衣清洁与表面拒水维护的产品。', visibility: 'public', order_index: 0 },
@@ -467,7 +461,6 @@ function createDefaultDb(): Database {
       { id: 2, name: '夏季轻量外层', image: null, features: '["防晒","导湿","Rayo"]', material_platforms: [], related_sku_ids: [], order_index: 1 },
       { id: 3, name: '风雨户外服装', image: null, features: '["防水透湿","耐用","Otter"]', material_platforms: ['rpo'], related_sku_ids: [1, 2], order_index: 2 },
       { id: 4, name: '运动防晒服装', image: null, features: '["轻量","导湿","Rayo"]', material_platforms: [], related_sku_ids: [], order_index: 3 },
-      { id: 5, name: '防刺装备', image: null, features: '["明确任务","防刺内层","Kais"]', material_platforms: ['rpo'], related_sku_ids: [], order_index: 4 },
       { id: 6, name: '消防装备', image: null, features: '["消防场景","专业防护","Kais"]', material_platforms: ['rpo'], related_sku_ids: [], order_index: 5 },
     ],
     equipment_product_categories: [
@@ -475,11 +468,11 @@ function createDefaultDb(): Database {
       { product_id: 2, category_id: 2 },
       { product_id: 3, category_id: 3 },
       { product_id: 4, category_id: 3 },
-      { product_id: 5, category_id: 4 },
       { product_id: 6, category_id: 4 },
     ],
     equipment_global_order_version: 1,
     equipment_taxonomy_version: 1,
+    chinese_copy_adjustment_version: 4,
     material_care_guides: createDefaultMaterialCareGuides(),
     care_guides: createDefaultGarmentCareGuides(),
     faqs: createDefaultServiceFaqs(),
@@ -925,11 +918,10 @@ export function initDatabase() {
     }
     if (!db.inquiry_subjects) {
       db.inquiry_subjects = [
-        { id: 1, label: '功能咨询', order_index: 0 },
-        { id: 2, label: '样品申请', order_index: 1 },
-        { id: 3, label: '合作洽谈', order_index: 2 },
-        { id: 4, label: '技术支持', order_index: 3 },
-        { id: 5, label: '其他', order_index: 4 },
+        { id: 1, label: '索取 TDS 或样品', order_index: 0 },
+        { id: 2, label: '面料选型', order_index: 1 },
+        { id: 3, label: '产品开发合作', order_index: 2 },
+        { id: 4, label: '其他咨询', order_index: 3 },
       ]
       saveDb()
     }
@@ -939,7 +931,7 @@ export function initDatabase() {
         { id: 2, page_key: 'equipment', page_tag: 'END USE & EQUIPMENT', page_title: '终端装备', page_subtitle: '四大品类，覆盖全场景功能需求', hero_background: null },
         { id: 3, page_key: 'pfas-free-innovation', page_tag: 'RPO MATERIAL PLATFORM', page_title: 'RPO材料平台 · 探索无氟未来', page_subtitle: '以科技创新推动可持续发展，告别 PFAS，拥抱绿色未来', hero_background: null },
         { id: 4, page_key: 'services', page_tag: '', page_title: '服务与支持', page_subtitle: '从面料护理、成衣洗涤到数字化应用，为材料使用和产品开发提供支持。', hero_background: null },
-        { id: 5, page_key: 'contact', page_tag: 'CONTACT US', page_title: '联系我们', page_subtitle: '如有材料需求或合作意向，欢迎与我们取得联系。', hero_background: null },
+        { id: 5, page_key: 'contact', page_tag: 'CONTACT US', page_title: '合作咨询', page_subtitle: '告诉我们你正在寻找的材料或应用方向，我们会尽快与你联系。', hero_background: null },
       ]
       saveDb()
     }
@@ -957,7 +949,7 @@ export function initDatabase() {
       { id: 2, page_key: 'equipment', page_tag: 'END-USE APPLICATIONS', page_title: '从面料到真实应用', page_subtitle: '查看不同装备采用的港翼面料，以及材料如何构成完整的穿着体验。', hero_background: null },
       { id: 3, page_key: 'pfas-free-innovation', page_tag: 'TECHNOLOGY INNOVATION', page_title: '技术，从材料开始', page_subtitle: '探索膜、复合、功能整理、供应链与测试验证。', hero_background: null },
       { id: 4, page_key: 'services', page_tag: '', page_title: '服务与支持', page_subtitle: '从面料护理、成衣洗涤到数字化应用，为材料使用和产品开发提供支持。', hero_background: null },
-      { id: 5, page_key: 'contact', page_tag: 'CONTACT US', page_title: '联系我们', page_subtitle: '如有材料需求或合作意向，欢迎与我们取得联系。', hero_background: null },
+      { id: 5, page_key: 'contact', page_tag: 'CONTACT US', page_title: '合作咨询', page_subtitle: '告诉我们你正在寻找的材料或应用方向，我们会尽快与你联系。', hero_background: null },
     ]
     for (const item of pageDefaults) if (!db.page_configs.some((page: any) => page.page_key === item.page_key)) db.page_configs.push(item)
     const fabricsPage = db.page_configs.find((page: any) => page.page_key === 'fabrics')
@@ -1125,13 +1117,14 @@ export function initDatabase() {
       db.equipment_categories = [
         { id: 1, name: '日常休闲', slug: 'daily', description: '面向通勤与日常穿着的舒适、防风雨和轻量应用。', order_index: 0 },
         { id: 2, name: '户外运动', slug: 'outdoor', description: '面向徒步、骑行和多变天气的功能装备应用。', order_index: 1 },
-        { id: 3, name: '特种专业', slug: 'special', description: '面向防刺与消防等明确任务的专业装备应用。', order_index: 2 },
+        { id: 3, name: '特种专业', slug: 'special', description: '面向消防、防化及其他明确任务的特种材料与专业装备应用。', order_index: 2 },
       ]
-      const names = ['通勤防护外套', '夏季轻量外层', '风雨户外服装', '运动防晒服装', '防刺装备', '消防装备']
+      const names = ['通勤防护外套', '夏季轻量外层', '风雨户外服装', '运动防晒服装', '特种材料项目', '消防装备']
       db.equipment_products = db.equipment_products.slice(0, 6).map((p: any, index: number) => ({
         ...p,
         category_id: index < 2 ? 1 : index < 4 ? 2 : 3,
         name: names[index],
+        visibility: index === 4 ? 'hidden' : p.visibility,
       }))
       const equipmentPage = db.page_configs.find((p: any) => p.page_key === 'equipment')
       if (equipmentPage) Object.assign(equipmentPage, { page_tag: 'END-USE APPLICATIONS', page_title: '从面料到真实应用', page_subtitle: '查看不同装备采用的港翼面料，以及材料如何构成完整的穿着体验。' })
@@ -1152,7 +1145,7 @@ export function initDatabase() {
         { id: 1, parent_id: null, name: '成衣', slug: 'apparel', description: '从日常通勤、户外防护到专业任务的功能成衣应用。', visibility: 'public', order_index: 0 },
         { id: 2, parent_id: 1, name: '日常通勤', slug: 'daily', description: '面向城市通勤与日常穿着的舒适、防风雨和轻量应用。', visibility: 'public', order_index: 0 },
         { id: 3, parent_id: 1, name: '户外防护', slug: 'outdoor', description: '面向徒步、骑行和多变天气的功能装备应用。', visibility: 'public', order_index: 1 },
-        { id: 4, parent_id: 1, name: '专业与特种', slug: 'professional', description: '面向防刺、消防及其他明确任务的专业装备应用。', visibility: 'public', order_index: 2 },
+        { id: 4, parent_id: 1, name: '专业与特种', slug: 'professional', description: '面向消防、防化及其他明确任务的特种材料与专业装备应用。', visibility: 'public', order_index: 2 },
         { id: 5, parent_id: null, name: '鞋履', slug: 'footwear', description: '面向鞋面与鞋履系统的高性能材料应用。', visibility: 'hidden', order_index: 1 },
         { id: 6, parent_id: null, name: '配件', slug: 'accessories', description: '围绕成衣养护、穿戴装备和功能组件建立的配套产品。', visibility: 'public', order_index: 2 },
         { id: 7, parent_id: 6, name: '养护用品', slug: 'care', description: '用于高性能成衣清洁与表面拒水维护的产品。', visibility: 'public', order_index: 0 },
@@ -1171,7 +1164,7 @@ export function initDatabase() {
           .map((sku: any) => db.fabric_series.find((series: any) => series.id === sku?.series_id)?.slug)
         const productText = `${product.name || ''} ${product.features || ''}`.toLowerCase()
         const inferredRpo = relatedSeries.some((slug: string) => ['otter', 'kais'].includes(slug))
-          || /otter|kais|防刺|消防/.test(productText)
+          || /otter|kais|消防/.test(productText)
         const { category_id: _retiredCategoryId, ...rest } = product
         return { ...rest, is_rpo_product: product.is_rpo_product ?? inferredRpo }
       })
@@ -1854,13 +1847,6 @@ export function initDatabase() {
       })
       saveDb()
     }
-    if (homeVerifications[1]?.title === '独立第三方检测') {
-      Object.assign(homeVerifications[1], {
-        title: '第三方测试认证',
-        subtitle: '根据具体产品与项目要求，委托 SGS、中纺标 CTTC 等专业机构检测，结果以正式报告为准。',
-      })
-      saveDb()
-    }
     let publicCopyChanged = false
     if (typeof db.home_config?.hero_tag === 'string' && db.home_config.hero_tag.includes('Matertial')) {
       db.home_config.hero_tag = db.home_config.hero_tag.replace('Matertial', 'Material')
@@ -1923,6 +1909,134 @@ export function initDatabase() {
       story_highlights: Array.isArray(series.story_highlights) ? series.story_highlights : [],
     }))
     db.fabric_series_story_version = 1
+    saveDb()
+  }
+
+  if ((db.chinese_copy_adjustment_version ?? 0) < 3) {
+    Object.assign(db.home_config, {
+      hero_tag: 'PFAS Free · RPO MATERIAL PLATFORM',
+      hero_title: '以材料科技\n重构高性能面料',
+      hero_slogan: '将 RPO 膜、织物结构与复合工艺，转化为更轻、更强、更可靠的功能面料。',
+      primary_btn_text: '探索面料系列',
+      primary_btn_link: '/fabrics',
+      secondary_btn_text: '了解 RPO 技术',
+      secondary_btn_link: '/pfas-free-innovation/rpo-material-platform',
+      platform_section_title: '让实验室材料，真正进入产品',
+      platform_section_subtitle: '基于香港科技大学30余年高分子材料研究经验，依托设于香港科技大学（广州）多功能高聚物薄膜中央实验室的RPO Lab，港翼推动 RPO 膜技术从实验室走向可制造的功能面料。',
+      platform_section_link_text: '探索 RPO 材料平台',
+      platform_section_link: '/pfas-free-innovation/rpo-material-platform',
+      platform_cards: [
+        { icon: 'Layers', title: '膜技术', subtitle: '高性能，不必依赖含氟膜', description: 'RPO-SOTEX 以聚烯烃材料与超微孔结构实现防水透湿', evidence: '数百种目标PFAS，通过SGS检测，均未检出', footer: 'MEMBRANE' },
+        { icon: 'Hexagon', title: '面料复合', subtitle: '让面层、功能膜与内层协同工作', description: '兼顾防护、透湿、手感与耐久表现', footer: 'LAMINATION' },
+        { icon: 'Network', title: '供应链协同', subtitle: '让材料技术稳定进入产品', description: '连接材料、工艺、制造与交付', footer: 'SUPPLY CHAIN' },
+      ],
+      series_section_title: '三大面料平台',
+      series_section_subtitle: '蓝标 OTTER 聚焦高性能防水透湿，银标 RAYO 面向防晒、导湿与凉感体验，黑标 KAIS 服务消防、防化等特种场景的材料开发。',
+      series_section_link_text: '查看全部面料产品',
+      verification_section_title: '性能，不只停在材料概念里',
+      verification_section_subtitle: '从膜材、复合到成品面料，港翼通过内部测试与第三方检测，持续验证产品表现。',
+      verification_section_link_text: '查看测试与认证',
+      verification_section_link: '/pfas-free-innovation/testing-certification',
+      verifications: [
+        { title: '材料与结构验证', subtitle: '围绕材料筛选、结构开发、样品对比与耐久表现开展测试。' },
+        { title: '独立第三方检测', subtitle: '根据具体产品与项目要求，由 SGS、中纺标 CTTC 等专业机构检测。' },
+      ],
+    })
+
+    const seriesCopy: Record<string, any> = {
+      otter: {
+        tagline: '高性能防水透湿面料',
+        description: '采用获日内瓦国际发明展特别评审金奖的 RPO 膜技术，构建高性能防水透湿复合面料。',
+        story_title: '金奖膜技术，进入高性能面料',
+        story_intro: '港翼 OTTER 采用获日内瓦国际发明展特别评审金奖的 RPO 膜技术，通过面层、功能膜与内层结构的协同设计，兼顾防水、透湿和舒适性表现。其 RPO-SOTEX 功能膜经 SGS 对数百种目标 PFAS 进行检测，结果均未检出。',
+        story_highlights: ['高性能防水', '稳定透湿表现', '轻量舒适结构'],
+      },
+      rayo: {
+        tagline: '防晒、导湿与凉感面料',
+        description: '从纤维配方与织物结构出发，兼顾防晒、导湿、速干与接触凉感。',
+        story_title: '把防晒、导湿与凉感织进结构',
+        story_intro: 'RAYO 面向日常与运动场景，从纤维配方与织物结构出发，兼顾防晒、导湿、速干与接触凉感，让功能表现建立在材料与结构本身。',
+        story_highlights: ['UPF 50+', '导湿速干', '接触凉感'],
+      },
+      kais: {
+        tagline: '特种场景材料平台',
+        description: '面向消防、防化及其他专业任务，开发与具体使用环境相适配的特种材料方案。',
+        story_title: '面向特种场景，构建关键材料',
+        story_intro: 'KAIS 面向消防、防化及其他特种场景，围绕高性能纤维、功能膜、织物结构与复合工艺进行针对性开发，为不同专业任务提供可进一步适配与验证的材料基础。',
+        story_highlights: ['特种场景适配', '多材料协同', '项目化开发'],
+      },
+    }
+    db.fabric_series.forEach((series: any) => {
+      if (seriesCopy[series.slug]) Object.assign(series, seriesCopy[series.slug])
+    })
+
+    const technologyCopy: Record<string, any> = {
+      'pfas-free-system': {
+        ...PFAS_SYSTEM_PAGE_COPY,
+        content_blocks: PFAS_SYSTEM_PAGE_COPY.content_blocks,
+      },
+      'rpo-material-platform': {
+        title: 'RPO 高性能材料平台',
+        subtitle: '让实验室材料，进入可制造的高性能面料',
+        content: '港翼技术顾问高平教授拥有30余年高分子材料研究经验。港翼源自固纳内部孵化的功能材料项目，依托设于香港科技大学（广州）多功能高聚物薄膜中央实验室的固纳 RPO Lab，推动 RPO 膜与高性能纤维从实验室走向应用。/hRPO 材料平台围绕 RPO-SOTEX 超微孔功能膜与 RPO 高性能纤维展开，通过材料结构、形态和加工适配性的持续开发，在轻量、强度、耐久与功能界面之间建立新的性能基础。/h港翼根据不同使用场景，将 RPO 材料与织物结构、功能整理和复合工艺协同设计，使底层材料转化为可制造、可验证的面料，并进一步服务于防水透湿、高强耐磨及特种材料等产品方向。',
+      },
+      'rpo-sotex-membrane': {
+        title: 'RPO-SOTEX 膜技术',
+        subtitle: '以聚烯烃材料与超微孔结构，构建防水、透湿与强韧兼备的功能界面',
+        content: 'RPO-SOTEX 以聚烯烃材料与超微孔结构实现防水透湿，不依赖含氟膜材料体系。经 SGS 对数百种目标 PFAS 进行检测，结果均未检出。',
+      },
+      'supply-chain': {
+        content: '港翼优选具备 bluesign®、GRS、OEKO-TEX® 认证基础的面料与供应链合作伙伴。具体适用范围以对应产品资料为准。',
+      },
+      'testing-certification': {
+        title: '测试与认证',
+        subtitle: '从材料到成品面料，持续验证产品表现',
+        content: '港翼围绕材料筛选、结构开发、样品对比与耐久表现开展内部测试，并根据具体产品与项目要求，由 SGS、中纺标 CTTC 等专业机构进行独立检测。/h公开页面呈现与选材相关的核心性能信息。对应型号的完整测试方法、适用条件与更多技术数据，通过 TDS 及项目技术资料提供。',
+      },
+    }
+    db.fluorine_sections.forEach((section: any) => {
+      if (technologyCopy[section.section_key]) Object.assign(section, technologyCopy[section.section_key])
+      if (section.section_key === 'rpo-sotex-membrane') {
+        section.content_blocks = [MEMBRANE_STRUCTURE_BLOCK, MEMBRANE_WATERPROOF_BLOCK, MEMBRANE_PERFORMANCE_BLOCK]
+      }
+      if (section.section_key === 'supply-chain') {
+        const blocks = Array.isArray(section.content_blocks) ? section.content_blocks : []
+        section.content_blocks = blocks.map((block: any) => block.key === 'supply-assurance' || block.key === 'supply-delivery'
+          ? { ...block, content: '港翼优选具备 bluesign®、GRS、OEKO-TEX® 认证基础的面料与供应链合作伙伴。具体适用范围以对应产品资料为准。' }
+          : block)
+      }
+      if (section.section_key === 'testing-certification') {
+        section.content_blocks = [
+          { key: 'testing-chain', title: '验证，从单项材料开始', content: '港翼围绕材料筛选、结构开发、样品对比与耐久表现开展内部测试。' },
+          { key: 'testing-lab', title: '从内部实验，到独立第三方验证', content: '根据具体产品与项目要求，由 SGS、中纺标 CTTC 等专业机构进行独立检测。', highlights: ['材料与结构验证', '样品与耐久对比', '独立第三方检测'] },
+          { key: 'testing-result', title: '让性能表达建立在对应样品之上', content: '公开页面呈现与选材相关的核心性能信息。对应型号的完整测试方法、适用条件与更多技术数据，通过 TDS 及项目技术资料提供。' },
+        ]
+      }
+    })
+
+    const professionalCategory = db.equipment_categories.find((category: any) => category.slug === 'professional')
+    if (professionalCategory) professionalCategory.description = '面向消防、防化及其他明确任务的特种材料与专业装备应用。'
+    db.equipment_products.forEach((product: any) => {
+      if (/防刺|防割|软甲|公安标准/.test(`${product.name || ''} ${product.features || ''} ${product.card_summary || ''}`)) {
+        product.visibility = 'hidden'
+      }
+    })
+
+    const contactPage = db.page_configs.find((page: any) => page.page_key === 'contact')
+    if (contactPage) Object.assign(contactPage, {
+      page_title: '合作咨询',
+      page_subtitle: '告诉我们你正在寻找的材料或应用方向，我们会尽快与你联系。',
+    })
+    db.inquiry_subjects = ['索取 TDS 或样品', '面料选型', '产品开发合作', '其他咨询']
+      .map((label, order_index) => ({ id: order_index + 1, label, order_index }))
+
+    db.chinese_copy_adjustment_version = 3
+    saveDb()
+  }
+
+  if ((db.chinese_copy_adjustment_version ?? 0) < 4) {
+    db.home_config.hero_tag = 'PFAS Free · RPO MATERIAL PLATFORM'
+    db.chinese_copy_adjustment_version = 4
     saveDb()
   }
 

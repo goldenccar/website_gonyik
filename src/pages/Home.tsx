@@ -21,8 +21,8 @@ export default function Home() {
     <PageShell>
       <PageHero
         variant="home"
-        tag={config.hero_tag || 'PERFORMANCE MATERIALS'}
-        title={config.hero_title || '从材料开始\n构建可靠防护'}
+        tag={config.hero_tag || 'RPO MATERIAL PLATFORM'}
+        title={config.hero_title || '以材料科技\n重构高性能面料'}
         subtitle={config.hero_slogan}
         image={config.hero_background}
         mobileImage={config.hero_mobile_background}
@@ -31,8 +31,8 @@ export default function Home() {
         scrollTarget="#home-rpo-platform"
       >
         <div className="flex flex-wrap items-center gap-7">
-          <Link to={localePath(config.primary_btn_link || '/fabrics')} className="bg-[#0b4f87] px-6 py-3 text-[14px] font-medium text-white transition-colors hover:bg-[#12649f]"><InlineMarkup text={config.primary_btn_text || '探索材料'} /></Link>
-          <Link to={localePath(config.secondary_btn_link || '/pfas-free-innovation')} className="py-3 text-[14px] font-medium text-white underline decoration-white/60 underline-offset-4 hover:decoration-white"><InlineMarkup text={config.secondary_btn_text || '探索技术'} /> →</Link>
+          <Link to={localePath(config.primary_btn_link || '/fabrics')} className="bg-[#0b4f87] px-6 py-3 text-[14px] font-medium text-white transition-colors hover:bg-[#12649f]"><InlineMarkup text={config.primary_btn_text || '探索面料系列'} /></Link>
+          <Link to={localePath(config.secondary_btn_link || '/pfas-free-innovation/rpo-material-platform')} className="py-3 text-[14px] font-medium text-white underline decoration-white/60 underline-offset-4 hover:decoration-white"><InlineMarkup text={config.secondary_btn_text || '了解 RPO 技术'} /> →</Link>
         </div>
       </PageHero>
 

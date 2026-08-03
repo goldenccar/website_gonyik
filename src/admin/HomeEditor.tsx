@@ -334,6 +334,15 @@ export default function AdminHomeEditor() {
                     className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none"
                   />
                 </div>
+                <div className="sm:col-span-11">
+                  <label className="block text-[11px] text-muted mb-1">证据短句（可选）</label>
+                  <input
+                    type="text"
+                    value={item.evidence || ''}
+                    onChange={(e) => updateArrayItem('platform_cards', idx, { evidence: e.target.value })}
+                    className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none"
+                  />
+                </div>
                 <div className="text-right sm:col-span-1 sm:pt-6">
                   <button onClick={() => removeArrayItem('platform_cards', idx)} className="text-error hover:text-white">
                     ×

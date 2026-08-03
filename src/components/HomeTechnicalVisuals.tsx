@@ -255,6 +255,7 @@ export function MaterialSystemVisual({ items, href, itemHrefs }: { items: HomePl
             <h3 className="type-card-title text-primary"><InlineMarkup text={item.title} /></h3>
             <p className="mt-3 text-[14px] leading-6 text-secondary"><InlineMarkup text={item.subtitle || item.description || ''} /></p>
             {item.description && item.description !== item.subtitle && <p className="mt-1 text-[14px] leading-6 text-secondary"><InlineMarkup text={item.description} /></p>}
+            {item.evidence && <p className="mt-3 border-l-2 border-accent pl-3 text-[13px] font-semibold leading-5 text-primary"><InlineMarkup text={item.evidence} /></p>}
           </div>
           <div className="material-system-media relative z-0 mt-3 h-[170px] min-w-0 overflow-hidden text-primary md:mt-0 md:h-[182px]">
             <MaterialDiagram kind={MATERIAL_KINDS[index]} />

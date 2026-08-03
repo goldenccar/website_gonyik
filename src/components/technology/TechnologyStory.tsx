@@ -64,7 +64,7 @@ const FALLBACK_STORIES: Record<TechnologyStoryKind, TechnologyContentBlock[]> = 
     {
       key: 'supply-assurance',
       title: '材料信息与品质依据，同步进入开发过程',
-      content: '港翼采购的相关面布具备 bluesign®、GRS、OEKO-TEX® 等认证基础，并结合材料批次、工艺条件与成品表现组织开发信息，为品牌选材、打样与后续交付提供清晰依据。',
+      content: '港翼优选具备 bluesign®、GRS、OEKO-TEX® 认证基础的面料与供应链合作伙伴。具体适用范围以对应产品资料为准。',
     },
   ],
   testing: [
@@ -76,13 +76,13 @@ const FALLBACK_STORIES: Record<TechnologyStoryKind, TechnologyContentBlock[]> = 
     {
       key: 'testing-lab',
       title: '从内部实验，到独立第三方验证',
-      content: '样品完成后，港翼围绕防水、透湿、耐磨、结构与耐久表现开展内部测试和对比；达到项目要求的成品，再根据具体用途委托 SGS、中纺标 CTTC 等专业机构进行独立检测。',
+      content: '港翼围绕材料筛选、结构开发、样品对比与耐久表现开展内部测试，并根据具体产品与项目要求，由 SGS、中纺标 CTTC 等专业机构进行独立检测。',
       highlights: ['内部研发测试', '生产过程验证', '独立第三方检测'],
     },
     {
       key: 'testing-result',
       title: '让性能表达建立在对应样品之上',
-      content: '测试条件、面料结构与样品批次共同决定结果。港翼以对应型号和项目的测试数据作为性能沟通依据，并在品牌选材与产品开发阶段提供相匹配的技术资料。',
+      content: '公开页面呈现与选材相关的核心性能信息。对应型号的完整测试方法、适用条件与更多技术数据，通过 TDS 及项目技术资料提供。',
     },
   ],
 }

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link, Navigate, useParams } from 'react-router-dom'
+import { Navigate, useParams } from 'react-router-dom'
 import { getFabricSeriesDetail } from '@/api/client'
 import { getFabricCapabilityIds } from '@/components/FabricCapabilities'
 import { InlineMarkup } from '@/components/MarkupParser'
@@ -9,6 +9,7 @@ import { PageSection, PageShell } from '@/components/PageLayout'
 import type { FabricCapabilityDefinition } from '@/config/fabricCapabilities'
 import type { FabricSeries, FabricSku } from '@/types'
 import { useSiteLocale } from '@/i18n/SiteLocale'
+import RelatedAction from '@/components/RelatedAction'
 
 type SeriesDetail = FabricSeries & {
   skus: FabricSku[]
@@ -17,19 +18,19 @@ type SeriesDetail = FabricSeries & {
 
 const FALLBACK_STORIES: Record<string, Pick<FabricSeries, 'story_title' | 'story_intro' | 'story_highlights'>> = {
   otter: {
-    story_title: '为复杂天气与长期使用建立可靠防护',
-    story_intro: 'OTTER 将无氟防水透湿结构、持久防风与耐磨面层整合为可制造、可验证的复合面料系统，面向全天候防护与高频使用。',
-    story_highlights: ['全天候防护', '防水与透湿兼顾', '面向长期使用的耐磨结构'],
+    story_title: '金奖膜技术，进入高性能面料',
+    story_intro: '港翼 OTTER 采用获日内瓦国际发明展特别评审金奖的 RPO 膜技术，通过面层、功能膜与内层结构的协同设计，兼顾防水、透湿和舒适性表现。其 RPO-SOTEX 功能膜经 SGS 对数百种目标 PFAS 进行检测，结果均未检出。',
+    story_highlights: ['高性能防水', '稳定透湿表现', '轻量舒适结构'],
   },
   rayo: {
-    story_title: '从纤维与结构出发，建立轻量舒适体验',
-    story_intro: 'RAYO 面向日常与运动场景，通过纤维、织物结构与无氟整理的协同设计，形成防晒、导湿和速干等具体功能。',
-    story_highlights: ['轻量穿着体验', '导湿与速干', '原生防晒能力'],
+    story_title: '把防晒、导湿与凉感织进结构',
+    story_intro: 'RAYO 面向日常与运动场景，从纤维配方与织物结构出发，兼顾防晒、导湿、速干与接触凉感，让功能表现建立在材料与结构本身。',
+    story_highlights: ['UPF 50+', '导湿速干', '接触凉感'],
   },
   kais: {
-    story_title: '让高强材料进入明确的专业任务',
-    story_intro: 'KAIS 围绕高强纤维、织物结构与应用适配展开材料开发，为防刺、防火及其他专业防护方向提供可进一步验证的材料基础。',
-    story_highlights: ['高强材料基础', '轻量防护方向', '专业任务适配'],
+    story_title: '面向特种场景，构建关键材料',
+    story_intro: 'KAIS 面向消防、防化及其他特种场景，围绕高性能纤维、功能膜、织物结构与复合工艺进行针对性开发，为不同专业任务提供可进一步适配与验证的材料基础。',
+    story_highlights: ['特种场景适配', '多材料协同', '项目化开发'],
   },
 }
 
@@ -118,23 +119,12 @@ export default function FabricSeriesStory() {
         </MotionInView>
       </PageSection>
 
-      <PageSection tone="navy" className="!py-16 md:!py-20">
-        <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
-          <div>
-            <h2 className="type-module-title text-white">查看 {series.name.toUpperCase()} 系列面料</h2>
-            <p className="mt-3 max-w-[620px] text-[15px] leading-7 text-white/70">
-              返回面料数据库，查看该系列现有型号、材料结构与代表性性能。
-            </p>
-          </div>
-          <Link
-            to={localePath(databaseHref)}
-            className="group inline-flex w-fit items-center border-b border-white/45 pb-1 text-[14px] font-medium text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
-          >
-            查看系列面料
-            <span aria-hidden="true" className="ml-2 inline-block transition-transform duration-[var(--motion-instant)] group-hover:translate-x-1">→</span>
-          </Link>
-        </div>
-      </PageSection>
+      <RelatedAction
+        title={`查看 ${series.name.toUpperCase()} 系列型号`}
+        description="进入面料数据库，查看该系列现有型号、材料结构与代表性性能。"
+        label="进入面料数据库"
+        to={localePath(databaseHref)}
+      />
     </PageShell>
   )
 }

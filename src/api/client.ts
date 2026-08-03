@@ -138,7 +138,7 @@ export const getContentSections = (pageKey: string) => cachedGet(`/content-secti
 export const getInquirySubjects = () => cachedGet('/inquiry-subjects')
 export const updateInquirySubjects = (data: { items: any[] }) => api.put('/admin/inquiry-subjects', data)
 
-export const submitContactForm = (data: { name: string; company?: string; position?: string; email: string; phone?: string; subject: string; cooperation_type?: string; message: string }) => api.post('/contact', data)
+export const submitContactForm = (data: { name: string; company?: string; position?: string; email: string; phone?: string; subject: string; cooperation_type?: string; message: string; source_page?: string; product_model?: string }) => api.post('/contact', data)
 
 export const uploadFile = (file: File) => {
   const fd = new FormData()

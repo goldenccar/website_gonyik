@@ -62,6 +62,7 @@ export default function SkuCard({ sku, seriesName, capabilities, onClick, expand
     { label: '手感', start: '柔软', end: '挺括', value: clampPosition(sku.position_handfeel) },
   ].filter((item): item is { label: string; start: string; end: string; value: number } => item.value !== null)
   const detailSpecs = Object.entries(parseSpecs(sku.specifications)).slice(0, 3)
+  const inquiryHref = `/contact?source=${encodeURIComponent('/fabrics')}&sku=${encodeURIComponent(code)}${seriesName ? `&series=${encodeURIComponent(seriesName)}` : ''}`
 
   return (
     <CatalogCardShell selected={expanded} interactive className="sku-card sku-flip-card !h-auto self-start !border-border/80 !bg-white/55 !shadow-none hover:!translate-y-0 hover:!border-[#afbec6] hover:!bg-white/70 hover:!shadow-none">
@@ -122,14 +123,14 @@ export default function SkuCard({ sku, seriesName, capabilities, onClick, expand
           </div>
 
           <div className="pointer-events-none relative z-10 mt-6 border-t border-border pt-4">
-            <p className="text-[11px] leading-5 text-secondary">{t('数据为代表性样品典型值，具体规格、测试方法与适用条件以对应 TDS 为准。')}</p>
+            <p className="text-[11px] leading-5 text-secondary">{t('代表性样品典型值，具体结构、测试方法和适用条件以对应 TDS 为准。')}</p>
             <Link
-              to={localePath('/contact')}
+              to={localePath(inquiryHref)}
               tabIndex={expanded ? 0 : -1}
               onClick={(event) => event.stopPropagation()}
               className="pointer-events-auto mt-3 inline-block text-[13px] font-medium text-primary underline underline-offset-4"
             >
-              {t('获取完整 TDS')} →
+              {t('索取 TDS 与样品')} →
             </Link>
           </div>
         </div>
