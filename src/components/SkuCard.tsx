@@ -4,6 +4,7 @@ import { FabricCapabilityTags } from './FabricCapabilities'
 import type { FabricCapabilityDefinition } from '@/config/fabricCapabilities'
 import { CatalogCardMedia, CatalogCardShell } from './CatalogCard'
 import { useSiteLocale } from '@/i18n/SiteLocale'
+import { InlineMarkup } from './MarkupParser'
 
 interface SkuCardProps {
   sku: FabricSku
@@ -117,7 +118,7 @@ export default function SkuCard({ sku, seriesName, capabilities, onClick, expand
             {detailSpecs.map(([label, value]) => (
               <div key={label} className="border-t border-border pt-3">
                 <p className="text-[11px] font-medium text-secondary">{t(label)}</p>
-                <p className="mt-2 text-[16px] font-medium leading-6 text-primary">{t(value)}</p>
+                <p className="mt-2 text-[16px] font-medium leading-6 text-primary"><InlineMarkup text={value} /></p>
               </div>
             ))}
           </div>
