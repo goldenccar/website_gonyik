@@ -1,5 +1,6 @@
 import { useEffect, useId, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import type { HomePlatformCard, HomeVerification, HomeVerificationImage } from '@/types'
 import MotionInView from './MotionInView'
 import { InlineMarkup } from './MarkupParser'
@@ -349,11 +350,25 @@ function VerificationGallery({
       {slides.length > 1 && (
         <>
           <span className="sr-only" aria-live="polite">正在显示第 {activeIndex + 1} 张，共 {slides.length} 张</span>
-          <div className="absolute bottom-3 right-3 flex items-center gap-1 border border-white/50 bg-primary/70 p-1 text-white shadow-sm backdrop-blur-md">
-            <button type="button" onClick={() => selectSlide(activeIndex - 1)} aria-label="上一张实验室图片" className="grid h-7 w-7 place-items-center text-[16px] transition-colors hover:bg-white/15 focus-visible:outline focus-visible:outline-1 focus-visible:outline-white">←</button>
-            <span className="min-w-[42px] text-center text-[10px] tabular-nums tracking-[0.12em]">{String(activeIndex + 1).padStart(2, '0')} / {String(slides.length).padStart(2, '0')}</span>
-            <button type="button" onClick={() => selectSlide(activeIndex + 1)} aria-label="下一张实验室图片" className="grid h-7 w-7 place-items-center text-[16px] transition-colors hover:bg-white/15 focus-visible:outline focus-visible:outline-1 focus-visible:outline-white">→</button>
-          </div>
+          <button
+            type="button"
+            onClick={() => selectSlide(activeIndex - 1)}
+            aria-label="上一张实验室图片"
+            className="group/previous absolute left-3 top-1/2 z-10 grid size-10 -translate-y-1/2 place-items-center border border-white/45 bg-primary/65 text-white shadow-[0_8px_22px_rgba(4,31,56,0.18)] backdrop-blur-md transition-[background-color,border-color,transform] hover:border-white/70 hover:bg-primary/80 active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white md:size-11"
+          >
+            <ChevronLeft aria-hidden="true" size={22} strokeWidth={1.6} className="transition-transform group-hover/previous:-translate-x-0.5" />
+          </button>
+          <span aria-hidden="true" className="absolute bottom-3 left-1/2 z-10 -translate-x-1/2 border border-white/40 bg-primary/60 px-3 py-1.5 text-[10px] tabular-nums tracking-[0.12em] text-white shadow-sm backdrop-blur-md">
+            {String(activeIndex + 1).padStart(2, '0')} / {String(slides.length).padStart(2, '0')}
+          </span>
+          <button
+            type="button"
+            onClick={() => selectSlide(activeIndex + 1)}
+            aria-label="下一张实验室图片"
+            className="group/next absolute right-3 top-1/2 z-10 grid size-10 -translate-y-1/2 place-items-center border border-white/45 bg-primary/65 text-white shadow-[0_8px_22px_rgba(4,31,56,0.18)] backdrop-blur-md transition-[background-color,border-color,transform] hover:border-white/70 hover:bg-primary/80 active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white md:size-11"
+          >
+            <ChevronRight aria-hidden="true" size={22} strokeWidth={1.6} className="transition-transform group-hover/next:translate-x-0.5" />
+          </button>
         </>
       )}
     </div>
