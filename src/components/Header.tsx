@@ -217,7 +217,7 @@ export default function Header() {
             <span>{market.label}</span>
             <ChevronDown size={13} className="text-white/45 transition-transform duration-200 group-open/market:rotate-180" aria-hidden="true" />
           </summary>
-          <div className="absolute right-0 top-[43px] min-w-44 border border-border bg-[#fbfcfd] py-1.5 shadow-[0_16px_36px_rgba(4,31,56,0.16)]">
+          <div className="absolute left-[-1px] top-[43px] min-w-44 border border-border bg-[#fbfcfd] py-1.5 shadow-[0_16px_36px_rgba(4,31,56,0.16)]">
             {markets.filter((item) => item.enabled).map((item) => <Link key={item.code} to={marketPath(currentPublicLocation, item.code)} aria-current={item.code === market.code ? 'page' : undefined} className={`flex min-h-10 items-center justify-between gap-5 px-4 text-[12px] transition-colors ${item.code === market.code ? 'bg-[#e9f3f5] font-semibold text-primary' : 'text-secondary hover:bg-[#f0f5f6] hover:text-primary'}`}><span>{item.label}</span><span className="text-[10px] uppercase tracking-[0.08em] opacity-55">{item.locale}</span></Link>)}
           </div>
         </details>
