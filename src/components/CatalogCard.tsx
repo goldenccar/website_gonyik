@@ -3,15 +3,14 @@ import { Link } from 'react-router-dom'
 import { InlineMarkup } from './MarkupParser'
 import { useSiteLocale } from '@/i18n/SiteLocale'
 
-export function CatalogCardShell({ children, selected = false, interactive = false, className = '', railEndCard = false }: {
+export function CatalogCardShell({ children, selected = false, interactive = false, className = '' }: {
   children: ReactNode
   selected?: boolean
   interactive?: boolean
   className?: string
-  railEndCard?: boolean
 }) {
   return (
-    <article data-rail-end-card={railEndCard || undefined} className={`catalog-card group relative flex h-full min-w-0 flex-col border bg-white/60 transition-[border-color,background-color,box-shadow,transform] duration-[var(--motion-instant)] ease-apple ${selected ? 'border-[#69B2C1] bg-white shadow-[0_10px_30px_rgba(15,45,70,0.07)]' : 'border-border/80'} ${interactive ? 'hover:-translate-y-0.5 hover:border-[#9dcbd4] hover:bg-white hover:shadow-[0_12px_34px_rgba(15,45,70,0.065)] focus-within:border-[#69B2C1]' : ''} ${className}`}>
+    <article className={`catalog-card group relative flex h-full min-w-0 flex-col border bg-white/60 transition-[border-color,background-color,box-shadow,transform] duration-[var(--motion-instant)] ease-apple ${selected ? 'border-[#69B2C1] bg-white shadow-[0_10px_30px_rgba(15,45,70,0.07)]' : 'border-border/80'} ${interactive ? 'hover:-translate-y-0.5 hover:border-[#9dcbd4] hover:bg-white hover:shadow-[0_12px_34px_rgba(15,45,70,0.065)] focus-within:border-[#69B2C1]' : ''} ${className}`}>
       {children}
     </article>
   )
@@ -21,13 +20,11 @@ export function CatalogCardMedia({ src, alt, placeholder, ratio = 'fabric', fit 
   src?: string | null
   alt: string
   placeholder: ReactNode
-  ratio?: 'fabric' | 'application' | 'compact' | 'portrait'
+  ratio?: 'fabric' | 'compact' | 'portrait'
   fit?: 'cover' | 'contain'
   className?: string
 }) {
-  const ratioClass = ratio === 'application'
-    ? 'aspect-[16/10]'
-    : ratio === 'compact'
+  const ratioClass = ratio === 'compact'
       ? 'aspect-[16/7] md:aspect-auto md:min-h-[248px]'
       : ratio === 'portrait'
         ? 'aspect-[4/3] md:aspect-[3/4] md:h-full'
@@ -44,29 +41,6 @@ export function CatalogCardMedia({ src, alt, placeholder, ratio = 'fabric', fit 
         />
       ) : placeholder}
       <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-px origin-left scale-x-0 bg-[#69B2C1] transition-transform duration-[var(--motion-switch)] ease-apple group-hover:scale-x-100 group-focus-within:scale-x-100" />
-    </div>
-  )
-}
-
-export function CatalogCardSkeleton({ ratio = 'fabric' }: { ratio?: 'fabric' | 'application' | 'equipment' }) {
-  if (ratio === 'equipment') return (
-    <div aria-hidden="true" className="overflow-hidden border border-border/80 bg-white/55 md:grid md:min-h-[340px] md:grid-cols-[44%_1fr] xl:grid-cols-[48%_1fr]">
-      <div className="aspect-[4/3] animate-pulse bg-[#e9eef1] md:aspect-auto md:h-full" />
-      <div className="space-y-3 p-5 md:p-6">
-        <div className="h-3 w-20 animate-pulse bg-[#e2e8eb]" />
-        <div className="h-6 w-2/3 animate-pulse bg-[#dce4e8]" />
-        <div className="h-4 w-4/5 animate-pulse bg-[#e7ecef]" />
-      </div>
-    </div>
-  )
-  return (
-    <div aria-hidden="true" className="overflow-hidden border border-border/80 bg-white/55">
-      <div className={`${ratio === 'application' ? 'aspect-[16/10]' : 'aspect-[4/3]'} animate-pulse bg-[#e9eef1]`} />
-      <div className="space-y-3 p-5">
-        <div className="h-3 w-20 animate-pulse bg-[#e2e8eb]" />
-        <div className="h-6 w-2/3 animate-pulse bg-[#dce4e8]" />
-        <div className="h-4 w-4/5 animate-pulse bg-[#e7ecef]" />
-      </div>
     </div>
   )
 }

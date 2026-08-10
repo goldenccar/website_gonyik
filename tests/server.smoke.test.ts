@@ -3,13 +3,16 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { test } from 'node:test'
 import { apiCacheControl, createApp, isAllowedApiOrigin } from '../server/app'
-import { db, initDatabase } from '../server/db'
+import { db, initDatabase, saveDb } from '../server/db'
 import { createRateLimit, securityHeaders } from '../server/middleware/security'
 import { assertAuthConfiguration } from '../server/middleware/auth'
+import { updateContactConfiguration, validateContactSubmission } from '../server/contactValidation'
+import fabricRoutes from '../server/routes/fabrics'
+import equipmentRoutes from '../server/routes/equipment'
+import serviceRoutes from '../server/routes/services'
 import { getLocalMediaReferences, resolveLocalMediaPath } from '../server/mediaAssets'
 import { visibleInMarket } from '../server/market'
-import { marketCodeFromPath, marketPath, stripMarketPrefix } from '../src/config/markets'
-import { localizePath } from '../src/i18n/SiteLocale'
+import { marketCodeFromPath, marketPath, routeMarketStatus, stripMarketPrefix } from '../src/config/markets'
 
 initDatabase()
 
@@ -125,14 +128,26 @@ test('media inventory discovers referenced site visuals and blocks path traversa
   assert.match(resolveLocalMediaPath('/visuals/pfas-system-hero-v8.jpg') || '', /public\/visuals\/pfas-system-hero-v8\.jpg$/)
 })
 
-test('market route helper preserves query strings, hashes, and legacy English links', () => {
-  assert.equal(localizePath('/fabrics?series=otter#sku', 'en'), '/global/fabrics?series=otter#sku')
-  assert.equal(localizePath('/en/fabrics', 'zh-CN'), '/fabrics')
-  assert.equal(localizePath('/admin', 'en'), '/admin')
+test('market route helper preserves query strings and hashes', () => {
   assert.equal(marketPath('/global/fabrics?series=otter#sku', 'cn'), '/fabrics?series=otter#sku')
   assert.equal(marketPath('/fabrics?series=otter#sku', 'global'), '/global/fabrics?series=otter#sku')
   assert.equal(marketCodeFromPath('/jp/fabrics'), 'jp')
   assert.equal(stripMarketPrefix('/jp/fabrics'), '/fabrics')
+})
+
+test('a new database contains no predictable administrator account', () => {
+  assert.deepEqual(db.users, [])
+})
+
+test('current migration is idempotent and preserves CMS-managed copy', () => {
+  const databasePath = process.env.GONYIK_DB_PATH!
+  db.home_config.hero_title = 'CMS 自定义标题'
+  saveDb()
+  const before = fs.readFileSync(databasePath)
+  initDatabase()
+  const after = fs.readFileSync(databasePath)
+  assert.equal(after.equals(before), true)
+  assert.equal(db.home_config.hero_title, 'CMS 自定义标题')
 })
 
 test('market visibility uses explicit content rules before the market default', () => {
@@ -143,4 +158,42 @@ test('market visibility uses explicit content rules before the market default', 
   assert.equal(visibleInMarket({}, globalMarket), false)
   assert.equal(visibleInMarket({ market_visibility: { global: 'public' } }, globalMarket), true)
   assert.equal(visibleInMarket({ market_visibility: { global: 'hidden' } }, { ...globalMarket, default_visibility: 'public' }), false)
+})
+
+test('market route validation distinguishes enabled, disabled, and unknown markets', () => {
+  const markets = [
+    { code: 'cn', label: '中国大陆', locale: 'zh-CN', enabled: true, is_default: true, default_visibility: 'public', order_index: 0 },
+    { code: 'jp', label: '日本', locale: 'ja', enabled: false, default_visibility: 'hidden', order_index: 1 },
+  ] as const
+  assert.equal(routeMarketStatus('cn', [...markets]), 'enabled')
+  assert.equal(routeMarketStatus('jp', [...markets]), 'disabled')
+  assert.equal(routeMarketStatus('not-a-market', [...markets]), 'unknown')
+})
+
+test('contact validation rejects malformed, unknown, oversized, and honeypot submissions', () => {
+  const base = { name: '测试用户', company: '测试公司', email: 'user@example.com', subject: db.inquiry_subjects[0].label, message: '这是一段超过十个字符的有效咨询留言。' }
+  for (const body of [
+    { ...base, email: 'invalid' },
+    { ...base, subject: '未知主题' },
+    { ...base, message: '太短' },
+    { ...base, message: '字'.repeat(501) },
+    { ...base, website: 'spam.example' },
+  ]) {
+    assert.ok(validateContactSubmission(body, db.inquiry_subjects.map((item) => item.label)).error)
+  }
+})
+
+test('updating public contact fields preserves an existing SMTP password', () => {
+  const result = updateContactConfiguration({ ...db.contact_config, smtp_pass: 'existing-secret' }, { ...db.contact_config, email: 'updated@example.com', smtp_pass: '' })
+  assert.equal(result.value?.smtp_pass, 'existing-secret')
+})
+
+test('catalog aggregate routes and their backing collections match page consumers', () => {
+  const routePaths = (router: any) => router.stack.map((layer: any) => layer.route?.path).filter(Boolean)
+  assert.ok(routePaths(fabricRoutes).includes('/catalog'))
+  assert.ok(routePaths(equipmentRoutes).includes('/catalog'))
+  assert.ok(routePaths(serviceRoutes).includes('/bootstrap'))
+  assert.ok(Array.isArray(db.fabric_series) && Array.isArray(db.fabric_capabilities))
+  assert.ok(Array.isArray(db.equipment_categories) && Array.isArray(db.equipment_products))
+  assert.ok(Array.isArray(db.fluorine_sections) && db.page_configs.some((item) => item.page_key === 'services'))
 })

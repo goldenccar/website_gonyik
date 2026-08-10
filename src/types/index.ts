@@ -199,16 +199,34 @@ export interface DigitalFabricFormat {
 }
 
 export interface ContactConfig {
-  id: number
   email: string
   phone: string
   address: string
   response_text: string
+}
+
+export interface AdminContactConfig extends ContactConfig {
   smtp_host: string
   smtp_port: number
   smtp_user: string
-  smtp_pass: string
+  smtp_pass?: string
   smtp_secure: boolean
+  smtp_password_configured: boolean
+}
+
+export interface ContactMessage {
+  id: number
+  name: string
+  company: string
+  email: string
+  phone: string
+  subject: string
+  message: string
+  source_page: string
+  product_model: string
+  created_at: string
+  position?: string
+  cooperation_type?: string
 }
 
 export interface ContentSection {

@@ -1,115 +1,37 @@
 ---
 name: gonyik-deploy
-description: Deploy the GONYIK website (React + Express) from local dev to GitHub and then to the Tencent Cloud server. Use when the user asks to deploy, push code, restart the server, or perform any CI/CD-like operations for this project.
+description: Deploy the GONYIK website from a verified, committed local main branch to the configured production server.
 ---
 
-# GONYIK Website Deploy Skill
+# GONYIK deployment
 
-## Quick Workflow
-
-```
-Reuse verified local build (or build once) → Git push → Server pull/client build → PM2 reload → Health check
-```
-
-Run the following from the project root:
+The repository has one production trigger:
 
 ```bash
 npm run deploy
 ```
 
-Or use the shell wrapper:
+Deployment does not stage or commit files. It stops on a dirty worktree, runs `npm run test:release` unless the exact source fingerprint was recently verified, pushes the committed `main` HEAD, then deploys that commit over SSH.
 
-```bash
-bash .agents/skills/gonyik-deploy/scripts/deploy.sh "feat: your message"
+## Required local or CI environment
+
+```text
+GONYIK_DEPLOY_HOST
+GONYIK_DEPLOY_USER
+GONYIK_DEPLOY_PATH
+GONYIK_DEPLOY_SSH_KEY
+GONYIK_DEPLOY_PORT             # optional, defaults to 22
+GONYIK_DEPLOY_KNOWN_HOSTS      # optional custom known_hosts path
 ```
 
-The deployment script works on **Windows / macOS / Linux** (uses Node.js under the hood).
+Use a dedicated non-root deployment account with the minimum repository and PM2 permissions. The SSH key must not have a password fallback. Host verification is strict and uses the system `known_hosts` unless `GONYIK_DEPLOY_KNOWN_HOSTS` is supplied.
 
-### Manual Steps
+## Release behavior
 
-```bash
-# 1. Full local release verification (writes a short-lived verification stamp)
-npm run test:release
+The remote release acquires a `flock`, records the old and target commits, copies `db.json` to `backups/db-<UTC time>-<commit>.json`, checks out the exact pushed commit, runs `npm ci` only when package files changed, builds the client, reloads PM2 and verifies that `/api/health` reports the target commit.
 
-# 2. Commit & push
-git add -A
-git commit -m "feat: xxx"
-git push origin main
+If health verification fails, the output prints the previous commit and database snapshot path. Restore data only when migration damage is confirmed; do not automatically overwrite current data.
 
-# 3. Server deploy (password read from .deploy-key.md at runtime)
-ssh root@111.231.141.7
-cd /var/www/website_gonyik
-git pull
-npm ci # only when package files changed
-npm run build:client
-pm2 reload ecosystem.config.cjs
-curl -s http://localhost:3001/api/health
-```
+New servers use `scripts/server-setup.sh`. Uploads require a separate scheduled backup and restore policy. No repository script installs a polling deployment cron.
 
-## Password Rule
-
-- Read `.deploy-key.md` for the ciphertext and offset.
-- Decrypt at runtime: subtract offset from each character's ASCII code.
-- **Never hardcode the plaintext password in scripts or commits.**
-- The deploy script (`deploy.mjs`) decrypts at runtime using Node.js.
-
-## One-Command Deploy
-
-```bash
-npm run deploy
-```
-
-Options:
-
-```bash
-npm run deploy "feat: your message"   # 自定义提交信息
-npm run deploy -y                      # 非交互模式，跳过确认
-```
-
-The script auto-decrypts the password and runs the full pipeline. When `npm run test:release` has just passed and the working tree has not changed, it reuses that verified build instead of compiling locally a second time. It also reports local, push, remote, and total timings. If `git push` fails (see Network Issues below), it prints the workaround instructions.
-
-## Network Issues (VPN / GitHub Timeout)
-
-**Symptom:** `git push` times out even though browser/VPN works.
-
-**Root cause:** Some VPN clients only proxy browser HTTP traffic; SSH/HTTPS to GitHub is blocked.
-
-**Workaround — Server Relay Push:**
-
-1. Generate a patch from the local commit:
-   ```bash
-   git format-patch -1 --stdout > /tmp/deploy.patch
-   ```
-2. SCP the patch to the server and apply it there:
-   ```bash
-   # 登录服务器后执行
-   cd /var/www/website_gonyik
-   git checkout -- src/pages/CHANGED_FILE.tsx
-   git config user.email 'deploy@gonyik.com'
-   git config user.name 'Deploy Bot'
-   git am /tmp/deploy.patch
-   git push origin main
-   ```
-3. Then proceed with normal server pull + build + restart:
-   ```bash
-   npm ci # only when package files changed
-   npm run build:client
-   pm2 reload ecosystem.config.cjs
-   curl -s http://localhost:3001/api/health
-   ```
-
-> The server (Tencent Cloud) has direct access to GitHub, so pushing from the server often works when the local machine cannot.
-
-## Critical Checklist
-
-| Item | Rule |
-|------|------|
-| `db.json` | Never commit. Managed independently on the server. |
-| Server code changes | Must `pm2 reload gonyik` (or `pm2 restart gonyik`). |
-| Build failures | Fix locally before pushing. Never push broken builds. |
-| Dependency changes | Server auto-deploy runs `npm ci` only when package files changed. |
-| Cross-platform | Use `npm run deploy` on any OS; do not rely on hardcoded paths. |
-
-## Reference
-
-- Detailed server info & diagnostic commands: see `references/server-info.md`
+See `references/server-info.md` for variable and permission guidance.

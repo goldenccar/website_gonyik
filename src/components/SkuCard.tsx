@@ -15,7 +15,7 @@ interface SkuCardProps {
   detailTitle?: string
 }
 
-export function getSkuDisplayCode(skuCode = '', seriesName = '') {
+function getSkuDisplayCode(skuCode = '', seriesName = '') {
   const parts = skuCode.split('-').filter(Boolean)
   const normalizedSeries = seriesName.replace(/<[^>]+>/g, '').trim().toUpperCase()
   if (parts[0]?.toUpperCase() === 'GY') parts.shift()

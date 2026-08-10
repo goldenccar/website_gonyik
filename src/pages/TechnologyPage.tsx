@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, Navigate, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { getContentSections } from '@/api/client'
 import CatalogSelectorBar from '@/components/CatalogSelectorBar'
@@ -42,15 +42,16 @@ export default function TechnologyPage() {
   const { path: localePath, t } = useSiteLocale()
   const previewMode = new URLSearchParams(location.search).has('cms-preview')
   const [sections, setSections] = useState<FluorineSection[]>([])
-  const [loading, setLoading] = useState(true)
+  const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading')
   const [previewSection, setPreviewSection] = useState<FluorineSection | null>(null)
 
-  useEffect(() => {
+  const loadSections = useCallback(() => {
+    setStatus('loading')
     getContentSections('pfas-free-innovation')
-      .then((response) => setSections(response.data.data || []))
-      .catch(() => setSections([]))
-      .finally(() => setLoading(false))
+      .then((response) => { setSections(response.data.data || []); setStatus('ready') })
+      .catch(() => setStatus('error'))
   }, [])
+  useEffect(loadSections, [loadSections])
 
   useEffect(() => {
     if (!previewMode) return
@@ -98,7 +99,8 @@ export default function TechnologyPage() {
   if (!definitionExists) {
     return <Navigate to={localePath(getTechnologyPagePath(TECHNOLOGY_PAGES[0].sectionKey))} replace />
   }
-  if (loading && !previewSection) return <PublicContentLoader label="正在加载材料科技内容" />
+  if (status === 'loading' && !previewSection) return <PublicContentLoader label="正在加载材料科技内容" />
+  if (status === 'error' && !previewSection) return <PageShell><PageSection tone="white"><div role="alert" className="border-l-2 border-[#69B2C1] pl-5"><p className="text-[16px] text-primary">材料科技内容加载失败。</p><button type="button" onClick={loadSections} className="mt-4 border-b border-primary text-[14px] text-primary">重新加载</button></div></PageSection></PageShell>
 
   return (
     <PageShell className="technology-reading">

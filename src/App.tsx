@@ -18,6 +18,7 @@ function PublicLayout() {
 
   return (
     <SiteLocaleProvider>
+      <PageScrollProgress />
       <div className="flex flex-col min-h-[100dvh]">
         <Header />
         <main className="flex flex-1 flex-col">
@@ -69,6 +70,7 @@ const AdminPageConfigManager = lazy(() => import('./admin/PageConfigManager'))
 const AdminCmsManager = lazy(() => import('./admin/CmsManager'))
 const AdminLocalizationManager = lazy(() => import('./admin/LocalizationManager'))
 const AdminMarketManager = lazy(() => import('./admin/MarketManager'))
+const AdminPassword = lazy(() => import('./admin/Password'))
 
 function LegacyEnglishRedirect() {
   const location = useLocation()
@@ -79,7 +81,6 @@ function LegacyEnglishRedirect() {
 function App() {
   return (
     <div className="min-h-[100dvh] bg-bg">
-      <PageScrollProgress />
       <Suspense fallback={<PageLoader />}>
         <Routes>
           {/* Admin routes */}
@@ -105,6 +106,7 @@ function App() {
           <Route path="/admin/cms" element={<AdminCmsManager />} />
           <Route path="/admin/localizations" element={<AdminLocalizationManager />} />
           <Route path="/admin/markets" element={<AdminMarketManager />} />
+          <Route path="/admin/password" element={<AdminPassword />} />
 
           {/* Public routes */}
           <Route element={<PublicLayout />}>

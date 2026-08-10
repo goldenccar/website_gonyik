@@ -1,253 +1,113 @@
 #!/usr/bin/env node
-/**
- * 跨平台一键部署脚本
- *
- * 运行方式：
- *   npm run deploy
- *   或
- *   bash .agents/skills/gonyik-deploy/scripts/deploy.sh "feat: xxx"
- *   或
- *   node .agents/skills/gonyik-deploy/scripts/deploy.mjs "feat: xxx"
- */
 import { spawn } from 'node:child_process'
-import { readFile } from 'node:fs/promises'
+import { access, readFile } from 'node:fs/promises'
+import { constants as fsConstants } from 'node:fs'
 import { createInterface } from 'node:readline'
 import { fileURLToPath } from 'node:url'
 import { dirname, resolve } from 'node:path'
-import { Client } from 'ssh2'
 import { releaseFingerprint } from '../../../../scripts/release-fingerprint.mjs'
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
-// 脚本位于 .agents/skills/gonyik-deploy/scripts，项目根目录向上 3 层
-const REPO_ROOT = resolve(__dirname, '../../../..')
-
-const DEPLOY_KEY_PATH = resolve(REPO_ROOT, '.deploy-key.md')
-const SERVER_IP = '111.231.141.7'
-const SERVER_USER = 'root'
-const SERVER_PATH = '/var/www/website_gonyik'
+const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../../..')
 const RELEASE_STAMP_PATH = resolve(REPO_ROOT, 'dist/.release-verified.json')
 const MAX_STAMP_AGE_MS = 2 * 60 * 60 * 1000
 
-function elapsed(startedAt) {
-  return `${((Date.now() - startedAt) / 1000).toFixed(1)}s`
+function run(command, args, { capture = false } = {}) {
+  return new Promise((resolvePromise, reject) => {
+    const child = spawn(command, args, { cwd: REPO_ROOT, stdio: capture ? ['ignore', 'pipe', 'pipe'] : 'inherit' })
+    let output = ''
+    let error = ''
+    if (capture) {
+      child.stdout.on('data', (chunk) => { output += chunk })
+      child.stderr.on('data', (chunk) => { error += chunk })
+    }
+    child.on('error', reject)
+    child.on('close', (code) => code === 0 ? resolvePromise(output.trim()) : reject(new Error(error.trim() || `${command} exited with ${code}`)))
+  })
 }
 
 async function hasCurrentReleaseVerification() {
   try {
     const stamp = JSON.parse(await readFile(RELEASE_STAMP_PATH, 'utf8'))
     const age = Date.now() - Date.parse(stamp.verified_at)
-    const fingerprint = await releaseFingerprint(REPO_ROOT)
-    return age >= 0 && age <= MAX_STAMP_AGE_MS && stamp.fingerprint === fingerprint
+    return age >= 0 && age <= MAX_STAMP_AGE_MS && stamp.fingerprint === await releaseFingerprint(REPO_ROOT)
   } catch {
     return false
   }
 }
 
-function parseArgs(argv) {
-  let yes = false
-  let remoteOnly = false
-  let message = null
-  for (let i = 0; i < argv.length; i++) {
-    const arg = argv[i]
-    if (arg === '-y' || arg === '--yes') {
-      yes = true
-    } else if (arg === '--remote-only') {
-      remoteOnly = true
-    } else if (arg === '-m' || arg === '--message') {
-      message = argv[++i] || ''
-    } else if (!arg.startsWith('-')) {
-      message = arg
-    }
-  }
-  return { yes, remoteOnly, message: message || 'deploy: auto deploy' }
+function requiredEnvironment(name) {
+  const value = String(process.env[name] || '').trim()
+  if (!value) throw new Error(`${name} is required`)
+  return value
 }
 
-async function loadDeployKey() {
-  const content = await readFile(DEPLOY_KEY_PATH, 'utf8')
-  const cipherMatch = content.match(/\*\*Ciphertext\*\*[: \t]+`([^`]+)`/i)
-  const offsetMatch = content.match(/\*\*Offset\*\*[: \t]+`(\d+)`/i)
-  if (!cipherMatch || !offsetMatch) {
-    throw new Error('无法从 .deploy-key.md 解析密文或偏移量')
-  }
-  const cipher = cipherMatch[1]
-  const offset = parseInt(offsetMatch[1], 10)
-  const password = [...cipher]
-    .map((ch) => String.fromCharCode(ch.charCodeAt(0) - offset))
-    .join('')
-  return { password, cipher, offset }
+function shellQuote(value) {
+  return `'${String(value).replaceAll("'", "'\\''")}'`
 }
 
-function run(cmd, args, options = {}) {
-  return new Promise((resolve, reject) => {
-    const child = spawn(cmd, args, {
-      cwd: REPO_ROOT,
-      stdio: 'inherit',
-      ...options,
-    })
-    child.on('error', reject)
-    child.on('close', (code) => {
-      if (code !== 0) {
-        reject(new Error(`命令退出码 ${code}: ${cmd} ${args.join(' ')}`))
-      } else {
-        resolve()
-      }
-    })
-  })
-}
-
-function runNpm(args) {
-  if (process.platform === 'win32') {
-    return run('cmd', ['/c', 'npm', ...args])
-  }
-  return run('npm', args)
-}
-
-function runCapture(cmd, args) {
-  return new Promise((resolve, reject) => {
-    const child = spawn(cmd, args, { cwd: REPO_ROOT })
-    let out = ''
-    let err = ''
-    child.stdout.on('data', (d) => (out += d))
-    child.stderr.on('data', (d) => (err += d))
-    child.on('error', reject)
-    child.on('close', (code) => {
-      if (code !== 0) reject(new Error(err || out))
-      else resolve(out.trim())
-    })
-  })
-}
-
-async function ensureGitIdentity() {
-  const email = await runCapture('git', ['config', 'user.email']).catch(() => '')
-  const name = await runCapture('git', ['config', 'user.name']).catch(() => '')
-  if (!email || !name) {
-    await run('git', ['config', 'user.email', 'agent@gonyik.com'])
-    await run('git', ['config', 'user.name', 'GONYIK Agent'])
-    console.log('已自动配置本地 Git 身份信息（仅当前仓库）')
-  }
-}
-
-async function confirm(message) {
-  if (!process.stdin.isTTY) return true
-  const rl = createInterface({ input: process.stdin, output: process.stdout })
-  return new Promise((resolve) => {
-    rl.question(`${message} [Y/n] `, (answer) => {
-      rl.close()
-      resolve(!answer || answer.toLowerCase() === 'y' || answer.toLowerCase() === 'yes')
-    })
-  })
-}
-
-async function deployRemote(password) {
-  const remoteCmd = [
-    `cd ${SERVER_PATH}`,
-    'git reset --hard HEAD',
-    'git pull origin main',
-    "if git diff --name-only HEAD@{1} HEAD | grep -qE 'package(-lock)?\\.json'; then npm ci; else echo '依赖未变更，跳过 npm ci'; fi",
-    "npm run build:client",
-    'mkdir -p logs',
-    "if [ ! -f .env.production ]; then node -e \"require('node:fs').writeFileSync('.env.production', 'JWT_SECRET=' + require('node:crypto').randomBytes(48).toString('hex') + '\\n', { mode: 0o600 })\"; fi",
-    'pm2 restart ecosystem.config.cjs --update-env || pm2 start ecosystem.config.cjs',
-    'pm2 save',
-    "(for i in 1 2 3 4 5; do curl -fsS http://localhost:3001/api/health && curl -fsS 'http://localhost:3001/api/fabrics/catalog?market=cn&schema=dual-code-v1' >/dev/null && curl -fsS 'http://localhost:3001/api/equipment/catalog?market=cn' >/dev/null && curl -fsS 'http://localhost:3001/api/services/bootstrap?market=cn' >/dev/null && exit 0; sleep 2; done; exit 1)",
-  ].join(' && ')
-
-  const conn = new Client()
-  return new Promise((resolve, reject) => {
-    conn
-      .on('ready', () => {
-        console.log('\n=== Step 3: 服务器部署 ===')
-        conn.exec(remoteCmd, (err, stream) => {
-          if (err) return reject(err)
-          stream
-            .on('close', (code) => {
-              conn.end()
-              if (code === 0) {
-                resolve()
-              } else {
-                reject(new Error(`服务器部署失败，退出码 ${code}`))
-              }
-            })
-            .on('data', (data) => {
-              process.stdout.write(data)
-            })
-            .stderr.on('data', (data) => {
-              process.stderr.write(data)
-            })
-        })
-      })
-      .on('error', (err) => {
-        reject(new Error(`SSH 连接失败: ${err.message}`))
-      })
-      .connect({
-        host: SERVER_IP,
-        port: 22,
-        username: SERVER_USER,
-        password,
-        // 自动接受主机密钥；生产环境若需要更高安全性，可改为读取 known_hosts
-        hostVerifier: () => true,
-        readyTimeout: 30000,
-      })
-  })
+async function confirm(commit) {
+  if (process.argv.includes('-y') || process.argv.includes('--yes') || !process.stdin.isTTY) return true
+  const prompt = createInterface({ input: process.stdin, output: process.stdout })
+  return new Promise((resolvePromise) => prompt.question(`部署已验证 commit ${commit}？ [y/N] `, (answer) => {
+    prompt.close()
+    resolvePromise(/^y(?:es)?$/i.test(answer.trim()))
+  }))
 }
 
 async function main() {
-  const deployStartedAt = Date.now()
-  const { yes, remoteOnly, message } = parseArgs(process.argv.slice(2))
-  const { password } = await loadDeployKey()
+  const dirty = await run('git', ['status', '--porcelain', '--untracked-files=all'], { capture: true })
+  if (dirty) throw new Error(`工作区不是干净状态，部署已中止：\n${dirty}`)
+  const branch = await run('git', ['branch', '--show-current'], { capture: true })
+  if (branch !== 'main') throw new Error(`只能从 main 部署，当前分支为 ${branch || '(detached HEAD)'}`)
+  const commit = await run('git', ['rev-parse', 'HEAD'], { capture: true })
 
-  if (remoteOnly) {
-    await deployRemote(password)
-    console.log(`\n=== Remote deploy finished · 总耗时 ${elapsed(deployStartedAt)} ===`)
-    return
-  }
+  if (!await hasCurrentReleaseVerification()) await run('npm', ['run', 'test:release'])
+  if (!await confirm(commit)) return
 
-  const buildStartedAt = Date.now()
-  if (await hasCurrentReleaseVerification()) {
-    console.log('=== Step 0: 复用本次已验证构建（跳过重复本地构建） ===')
-  } else {
-    console.log('=== Step 0: 本地构建 ===')
-    await runNpm(['run', 'build'])
-  }
-  console.log(`本地检查阶段耗时：${elapsed(buildStartedAt)}`)
+  await run('git', ['push', 'origin', 'main'])
 
-  if (!yes) {
-    const ok = await confirm('构建通过，是否继续提交、推送并部署到服务器？')
-    if (!ok) {
-      console.log('已取消部署')
-      process.exit(0)
-    }
-  }
+  const host = requiredEnvironment('GONYIK_DEPLOY_HOST')
+  const user = requiredEnvironment('GONYIK_DEPLOY_USER')
+  const deployPath = requiredEnvironment('GONYIK_DEPLOY_PATH')
+  const identityFile = resolve(requiredEnvironment('GONYIK_DEPLOY_SSH_KEY'))
+  const port = String(process.env.GONYIK_DEPLOY_PORT || '22')
+  if (!/^\d{1,5}$/.test(port) || Number(port) > 65535) throw new Error('GONYIK_DEPLOY_PORT is invalid')
+  if (!/^\/[A-Za-z0-9._/-]+$/.test(deployPath)) throw new Error('GONYIK_DEPLOY_PATH must be an absolute safe path')
+  await access(identityFile, fsConstants.R_OK)
 
-  console.log('\n=== Step 1: Git 提交 ===')
-  await ensureGitIdentity()
-  await run('git', ['add', '-A'])
-  try {
-    await run('git', ['commit', '-m', message])
-  } catch {
-    console.log('没有变更需要提交，继续推送...')
-  }
+  const remoteScript = `set -euo pipefail
+exec 9>/tmp/gonyik-deploy.lock
+flock -n 9 || { echo 'Another deployment is running'; exit 75; }
+cd ${shellQuote(deployPath)}
+OLD_COMMIT=$(git rev-parse HEAD)
+TARGET_COMMIT=${shellQuote(commit)}
+git fetch origin main
+git cat-file -e "$TARGET_COMMIT^{commit}"
+mkdir -p backups logs
+STAMP=$(date -u +%Y%m%dT%H%M%SZ)
+BACKUP_PATH="backups/db-$STAMP-$TARGET_COMMIT.json"
+if [ -f db.json ]; then cp -p db.json "$BACKUP_PATH"; else BACKUP_PATH="none (no db.json)"; fi
+echo "deploy old=$OLD_COMMIT new=$TARGET_COMMIT backup=$BACKUP_PATH"
+git checkout main
+git reset --hard "$TARGET_COMMIT"
+if git diff --name-only "$OLD_COMMIT" "$TARGET_COMMIT" | grep -qE '^package(-lock)?\\.json$'; then npm ci; else echo 'Dependencies unchanged'; fi
+npm run build:client
+export DEPLOY_COMMIT="$TARGET_COMMIT"
+pm2 reload ecosystem.config.cjs --update-env || pm2 start ecosystem.config.cjs
+pm2 save
+HEALTH=''
+for attempt in 1 2 3 4 5; do HEALTH=$(curl -fsS http://localhost:3001/api/health || true); case "$HEALTH" in *"\\\"commit\\\":\\\"$TARGET_COMMIT\\\""*) break;; esac; sleep 2; done
+case "$HEALTH" in *"\\\"commit\\\":\\\"$TARGET_COMMIT\\\""*) echo "health=$HEALTH";; *) echo "Health check failed: $HEALTH"; echo "Code rollback: git reset --hard $OLD_COMMIT && pm2 reload ecosystem.config.cjs --update-env"; echo "Data restore candidate: $BACKUP_PATH"; exit 1;; esac`
 
-  console.log('\n=== Step 2: Git 推送 ===')
-  const pushStartedAt = Date.now()
-  try {
-    await run('git', ['push', 'origin', 'main'])
-  } catch {
-    console.error('\nERROR: git push 失败。常见原因：VPN/代理屏蔽了到 GitHub 的连接。')
-    console.error(' workaround：使用服务器中转推送，详见 .agents/skills/gonyik-deploy/SKILL.md')
-    process.exit(1)
-  }
-  console.log(`Git 推送耗时：${elapsed(pushStartedAt)}`)
-
-  const remoteStartedAt = Date.now()
-  await deployRemote(password)
-  console.log(`服务器部署耗时：${elapsed(remoteStartedAt)}`)
-
-  console.log(`\n=== Deploy finished · 总耗时 ${elapsed(deployStartedAt)} ===`)
+  const sshArgs = ['-p', port, '-i', identityFile, '-o', 'BatchMode=yes', '-o', 'StrictHostKeyChecking=yes']
+  const knownHosts = String(process.env.GONYIK_DEPLOY_KNOWN_HOSTS || '').trim()
+  if (knownHosts) sshArgs.push('-o', `UserKnownHostsFile=${resolve(knownHosts)}`)
+  sshArgs.push(`${user}@${host}`, `bash -lc ${shellQuote(remoteScript)}`)
+  await run('ssh', sshArgs)
+  console.log(`Deployed commit ${commit}`)
 }
 
-main().catch((err) => {
-  console.error('\n部署失败:', err.message)
-  process.exit(1)
+main().catch((error) => {
+  console.error(`Deployment failed: ${error.message}`)
+  process.exitCode = 1
 })

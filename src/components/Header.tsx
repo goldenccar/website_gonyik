@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type CSSProperties, type MouseEvent } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type MouseEvent } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { ChevronDown, ChevronUp, Globe2, Menu, X } from 'lucide-react'
 import { useSiteLocale } from '@/i18n/SiteLocale'
@@ -23,9 +23,11 @@ export default function Header() {
   const [desktopMenu, setDesktopMenu] = useState<string | null>(null)
   const [renderedDesktopMenu, setRenderedDesktopMenu] = useState<string | null>(null)
   const [desktopPanelVisible, setDesktopPanelVisible] = useState(false)
+  const [desktopMegaShift, setDesktopMegaShift] = useState(0)
   const [scrolled, setScrolled] = useState(false)
   const desktopMenuWasOpenRef = useRef(false)
   const desktopMegaPanelRef = useRef<HTMLDivElement>(null)
+  const desktopHeaderInnerRef = useRef<HTMLDivElement>(null)
   const desktopMarketRef = useRef<HTMLDetailsElement>(null)
   const mobileMarketRef = useRef<HTMLDetailsElement>(null)
   const location = useLocation()
@@ -145,6 +147,18 @@ export default function Header() {
   const activeMenuGroups = renderedDesktopMenu ? megaMenus[renderedDesktopMenu] || [] : []
   const menuOpen = Boolean(desktopPanelVisible && desktopMenu && activeMenuItem && activeMenuGroups.length)
   const menuMounted = Boolean(activeMenuItem && activeMenuGroups.length)
+  useLayoutEffect(() => {
+    if (!menuMounted) return
+    const updateAlignment = () => {
+      const marketLeft = desktopMarketRef.current?.getBoundingClientRect().left
+      const headerRight = desktopHeaderInnerRef.current?.getBoundingClientRect().right
+      if (marketLeft == null || headerRight == null) return
+      setDesktopMegaShift(Math.max(0, headerRight - marketLeft))
+    }
+    updateAlignment()
+    window.addEventListener('resize', updateAlignment)
+    return () => window.removeEventListener('resize', updateAlignment)
+  }, [menuMounted, market.label])
   const menuWidthClass = activeMenuGroups.length >= 4
     ? 'max-w-[920px]'
     : activeMenuGroups.length === 3
@@ -162,7 +176,7 @@ export default function Header() {
 
   return (
     <header className={`fixed left-0 top-0 z-50 h-[60px] w-screen px-6 transition-colors duration-300 ${menuMounted || scrolled ? 'border-b border-white/15 bg-[#041F38]' : 'border-b border-transparent bg-transparent'}`}>
-      <div className="mx-auto flex h-full w-full max-w-[1760px] items-center px-0 lg:px-10">
+      <div ref={desktopHeaderInnerRef} className="mx-auto flex h-full w-full max-w-[1760px] items-center px-0 lg:px-10">
         <Link to={localePath('/')} className="flex shrink-0 items-center" aria-label={locale === 'en' ? 'GONYIK home' : '港翼科技首页'}>
           {siteConfig.logo_url ? <img src={siteConfig.logo_url} alt="GONYIK" className="mr-2 h-7 w-auto" /> : <span className="mr-2 grid h-7 w-7 place-items-center bg-white text-[10px] font-semibold text-[#041F38]">GY</span>}
           <span className="text-[15px] font-semibold text-white"><InlineMarkup text={siteConfig.logo_text || '港翼科技'} /></span>
@@ -233,7 +247,7 @@ export default function Header() {
           aria-hidden={!menuOpen}
           className={`fixed inset-x-0 top-[60px] z-50 hidden px-6 md:block ${menuOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}
         >
-          <div className="mx-auto flex w-full max-w-[1760px] justify-end px-0 lg:px-10">
+          <div style={{ transform: `translateX(-${desktopMegaShift}px)` }} className="mx-auto flex w-full max-w-[1760px] justify-end px-0">
           <div ref={desktopMegaPanelRef} className={`w-full ${menuWidthClass} origin-top overflow-hidden border-b border-border bg-[#fbfcfd] shadow-[0_22px_52px_rgba(4,31,56,0.13)] transition-[clip-path] duration-[360ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${menuOpen ? '[clip-path:inset(0_0_0_0)]' : '[clip-path:inset(0_0_100%_0)]'}`}>
             <div className={`transition-[opacity,transform] ease-out motion-reduce:transition-none ${menuOpen ? 'translate-y-0 opacity-100 delay-[90ms] duration-[420ms]' : '-translate-y-1 opacity-0 delay-0 duration-[120ms]'}`}>
             <div className="px-6 pb-3 pt-3 lg:px-7">

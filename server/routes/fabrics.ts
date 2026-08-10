@@ -156,17 +156,6 @@ router.get('/series/:slug', (req, res) => {
   res.json({ data: { ...series, skus, capabilities: db.fabric_capabilities.sort(sortByOrderIndex) } })
 })
 
-router.get('/sku/:id', (req, res) => {
-  if (!pageVisible('fabrics', requestMarket(req))) { res.status(404).json({ error: 'SKU not found' }); return }
-  const row = db.fabric_sku.find((k) => (
-    k.id === Number(req.params.id)
-    && k.visibility !== 'hidden'
-    && k.status !== 'archived'
-  ))
-  if (!row) { res.status(404).json({ error: 'SKU not found' }); return }
-  res.json({ data: toPublicSku(row) })
-})
-
 router.get('/admin/series', authMiddleware, (_req, res) => {
   res.json({ data: db.fabric_series.sort(sortByOrderIndex) })
 })

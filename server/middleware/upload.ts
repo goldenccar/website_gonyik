@@ -1,9 +1,9 @@
 import multer from 'multer'
-import path from 'path'
 import fs from 'fs'
 import crypto from 'crypto'
+import { uploadsPath } from '../paths'
 
-const UPLOADS_DIR = path.resolve(process.cwd(), 'public/uploads')
+const UPLOADS_DIR = uploadsPath()
 
 if (!fs.existsSync(UPLOADS_DIR)) {
   fs.mkdirSync(UPLOADS_DIR, { recursive: true })

@@ -5,8 +5,9 @@ import { db, saveDb, updateById, deleteById } from '../db'
 import { findUploadReferences, getLocalMediaReferences, registerUploadedFile, resolveLocalMediaPath, syncReferencedMedia } from '../mediaAssets'
 import { authMiddleware, AuthRequest } from '../middleware/auth'
 import { upload } from '../middleware/upload'
+import { uploadsPath } from '../paths'
 
-const UPLOADS_DIR = path.resolve(process.cwd(), 'public/uploads')
+const UPLOADS_DIR = uploadsPath()
 
 const router = Router()
 
@@ -31,7 +32,7 @@ router.get('/admin/download', authMiddleware, (req: AuthRequest, res) => {
     res.status(404).json({ error: '资源文件不存在' })
     return
   }
-  res.download(filePath, path.basename(filePath))
+  res.download(filePath)
 })
 
 router.post('/upload', authMiddleware, upload.single('file'), (req: AuthRequest, res) => {

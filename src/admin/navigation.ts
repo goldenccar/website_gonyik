@@ -14,6 +14,7 @@ import {
   Sun,
   Languages,
   Globe2,
+  KeyRound,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -30,7 +31,7 @@ export interface AdminMenuGroup {
   children: AdminMenuItem[]
 }
 
-export const ADMIN_FIXED_START: AdminMenuGroup[] = [
+const ADMIN_FIXED_START: AdminMenuGroup[] = [
   {
     id: 'site-frame',
     label: '页面框架',
@@ -54,10 +55,13 @@ export const ADMIN_REORDERABLE_GROUPS: AdminMenuGroup[] = [
   { id: 'media', label: '资源库', icon: Image, children: [{ label: '多媒体资源库', icon: Image, path: '/admin/media' }] },
 ]
 
-export const ADMIN_FIXED_END: AdminMenuGroup[] = [
+const ADMIN_FIXED_END: AdminMenuGroup[] = [
   { id: 'cms', label: 'CMS 管理', icon: SlidersHorizontal, children: [
     { label: '多语言内容', icon: Languages, path: '/admin/localizations' },
     { label: '模块排序', icon: SlidersHorizontal, path: '/admin/cms' },
+  ] },
+  { id: 'account', label: '管理员', icon: KeyRound, children: [
+    { label: '修改密码', icon: KeyRound, path: '/admin/password' },
   ] },
 ]
 
@@ -73,7 +77,7 @@ export function getAdminMenuGroups(moduleOrder: string[] = []) {
   return [...ADMIN_FIXED_START, ...middle, ...ADMIN_FIXED_END]
 }
 
-export const ADMIN_MENU_GROUPS = getAdminMenuGroups()
+const ADMIN_MENU_GROUPS = getAdminMenuGroups()
 
 export function getAdminPageLabel(pathname: string) {
   return ADMIN_MENU_GROUPS.flatMap((group) => group.children).find((item) => item.path === pathname)?.label || '港翼科技 CMS'

@@ -8,7 +8,7 @@ import { useSiteLocale } from '@/i18n/SiteLocale'
 import PublicContentLoader from '@/components/PublicContentLoader'
 import { useSearchParams } from 'react-router-dom'
 
-const EMPTY = { name: '', company: '', position: '', email: '', phone: '', subject: '', cooperation_type: '', message: '', source_page: '', product_model: '' }
+const EMPTY = { name: '', company: '', email: '', phone: '', subject: '', message: '', website: '', source_page: '', product_model: '' }
 
 export default function Contact() {
   const { t, bootstrap } = useSiteLocale()
@@ -33,7 +33,6 @@ export default function Contact() {
         setForm((current) => ({
           ...current,
           subject: current.subject || preferred?.label || '',
-          cooperation_type: current.cooperation_type || preferred?.label || '',
           source_page: inquirySource || '/fabrics',
           product_model: `${inquirySeries ? `${inquirySeries} / ` : ''}${inquirySku}`,
         }))
@@ -56,8 +55,8 @@ export default function Contact() {
       await submitContactForm(form)
       setForm(EMPTY)
       setMessage('提交成功，我们会按页面公布的联系方式回复。')
-    } catch {
-      setMessage('提交失败，请稍后重试或直接通过邮箱联系。')
+    } catch (error: any) {
+      setMessage(error.response?.data?.error || '提交失败，请稍后重试或直接通过邮箱联系。')
     } finally {
       setSubmitting(false)
     }
@@ -73,7 +72,8 @@ export default function Contact() {
             <p className="label-en text-white/75">CONTACT</p><h2 className="type-module-title mt-3">{t('材料与合作咨询')}</h2>
             <dl className="mt-8 space-y-5 text-[14px]">{contact?.email && <div><dt className="text-white/75">{t('邮箱')}</dt><dd className="mt-1"><a href={`mailto:${contact.email}`}>{contact.email}</a></dd></div>}{contact?.phone && <div><dt className="text-white/75">{t('电话')}</dt><dd className="mt-1"><InlineMarkup text={contact.phone} /></dd></div>}{contact?.address && <div><dt className="text-white/75">{t('地址')}</dt><dd className="mt-1"><InlineMarkup text={contact.address} /></dd></div>}</dl>
           </aside>
-          <form onSubmit={submit} className="grid gap-3 bg-white p-6 sm:grid-cols-2 lg:col-span-8 lg:p-8">
+          <form onSubmit={submit} className="relative grid gap-3 bg-white p-6 sm:grid-cols-2 lg:col-span-8 lg:p-8">
+            <div aria-hidden="true" className="hidden"><label>网站<input tabIndex={-1} autoComplete="off" name="website" value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} /></label></div>
             {inquirySku && (
               <p className="border-l-2 border-accent bg-bg px-4 py-3 text-[13px] font-medium text-primary sm:col-span-2">
                 {t('当前咨询')}：{inquirySeries ? `${inquirySeries} / ` : ''}{inquirySku}
@@ -83,7 +83,7 @@ export default function Contact() {
             <label className="grid gap-2 text-[13px] font-medium text-primary">{t('公司 *')}<input className={fieldClass} autoComplete="organization" value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} /></label>
             <label className="grid gap-2 text-[13px] font-medium text-primary">{t('邮箱 *')}<input className={fieldClass} type="email" autoComplete="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></label>
             <label className="grid gap-2 text-[13px] font-medium text-primary">{t('电话或微信')}<input className={fieldClass} autoComplete="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></label>
-            <label className="grid gap-2 text-[13px] font-medium text-primary sm:col-span-2">{t('咨询方向 *')}<select className={fieldClass} value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value, cooperation_type: e.target.value })}><option value="">{t('请选择咨询方向')}</option>{subjects.map((item) => <option key={item.id} value={item.label}>{t(item.label)}</option>)}</select></label>
+            <label className="grid gap-2 text-[13px] font-medium text-primary sm:col-span-2">{t('咨询方向 *')}<select className={fieldClass} value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value })}><option value="">{t('请选择咨询方向')}</option>{subjects.map((item) => <option key={item.id} value={item.label}>{t(item.label)}</option>)}</select></label>
             <label className="grid gap-2 text-[13px] font-medium text-primary sm:col-span-2">{t('留言 *')}<textarea className={`${fieldClass} resize-none`} rows={4} maxLength={500} placeholder={t('可以简单说明用途、关注的面料系列或产品型号。')} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} /></label>
             <div className="flex flex-wrap items-center gap-4 sm:col-span-2"><button disabled={submitting} className="bg-dark px-6 py-3 text-[14px] font-medium text-white disabled:opacity-50">{t(submitting ? '提交中…' : '提交咨询')}</button><p className="text-[12px] text-secondary"><InlineMarkup text={message || contact?.response_text} /></p></div>
           </form>

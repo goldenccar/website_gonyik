@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
-import { useLocation } from 'react-router-dom'
+import { Navigate, useLocation } from 'react-router-dom'
 import { getPublicBootstrap } from '@/api/client'
-import { DEFAULT_SITE_MARKETS, marketCodeFromPath, marketPath, stripMarketPrefix, type SiteLocale, type SiteMarket } from '@/config/markets'
+import { DEFAULT_SITE_MARKETS, marketCodeFromPath, marketPath, type SiteLocale, type SiteMarket } from '@/config/markets'
 import type { FabricSeries, FooterConfig, HomeConfig, NavItem, SocialMedia } from '@/types'
 
 export type { SiteLocale } from '@/config/markets'
@@ -250,14 +250,6 @@ const SiteLocaleContext = createContext<SiteLocaleContextValue>({
   bootstrap: EMPTY_BOOTSTRAP,
 })
 
-export function stripEnglishPrefix(pathname: string) {
-  return stripMarketPrefix(pathname)
-}
-
-export function localizePath(href: string, locale: SiteLocale) {
-  return marketPath(href, locale === 'en' ? 'global' : 'cn')
-}
-
 export function SiteLocaleProvider({ children }: { children: ReactNode }) {
   const location = useLocation()
   const routeMarketCode = marketCodeFromPath(location.pathname)
@@ -277,12 +269,7 @@ export function SiteLocaleProvider({ children }: { children: ReactNode }) {
         if (cancelled) return
         const data = response.data as PublicBootstrap
         const configured: SiteMarket[] = Array.isArray(data.markets) && data.markets.length
-          ? data.markets.map((item: SiteMarket, index: number) => ({
-            ...item,
-            enabled: true,
-            default_visibility: 'public' as const,
-            order_index: index,
-          }))
+          ? data.markets
           : DEFAULT_SITE_MARKETS
         setBootstrap({ ...data, markets: configured, translations: data.translations || {} })
       })
@@ -322,11 +309,33 @@ export function SiteLocaleProvider({ children }: { children: ReactNode }) {
     bootstrap: bootstrap!,
   }), [bootstrap, cmsCopy, locale, market, markets])
 
+  if (bootstrap) {
+    const requestedMarket = markets.find((item) => item.code === routeMarketCode)
+    if (!requestedMarket) return <UnknownMarketPage />
+    if (!requestedMarket.enabled) {
+      const defaultMarket = markets.find((item) => item.enabled && item.is_default) || DEFAULT_SITE_MARKETS[0]
+      return <Navigate to={marketPath(`${location.pathname}${location.search}${location.hash}`, defaultMarket.code)} replace />
+    }
+  }
+
   if (!bootstrapMatchesRoute) {
     return <PublicBootstrapGate failed={failed} onRetry={() => setLoadVersion((value) => value + 1)} />
   }
 
   return <SiteLocaleContext.Provider value={value}>{children}</SiteLocaleContext.Provider>
+}
+
+function UnknownMarketPage() {
+  return (
+    <main className="grid min-h-[100dvh] place-items-center bg-[#041f38] px-7 text-white">
+      <div className="max-w-[560px] border-l border-[#69b2c1] pl-6">
+        <p className="text-[12px] font-semibold tracking-[0.14em] text-white/60">404</p>
+        <h1 className="mt-3 text-[30px] font-medium tracking-[-0.02em]">页面不存在</h1>
+        <p className="mt-4 text-[15px] leading-7 text-white/70">该地区站点或页面地址无效。</p>
+        <a href="/" className="mt-7 inline-block border-b border-white/50 pb-1 text-[14px]">返回首页</a>
+      </div>
+    </main>
+  )
 }
 
 function PublicBootstrapGate({ failed, onRetry }: { failed: boolean; onRetry: () => void }) {

@@ -52,6 +52,8 @@ npm run audit:quality
 
 使用仓库已有部署流程。凭据只允许来自未跟踪的本机文件或 CI secret；不得在文档或源码记录服务器 IP、root 密码、管理员默认密码或 JWT 密钥。
 
+新数据库不会创建默认管理员。首次初始化通过 `GONYIK_INITIAL_ADMIN_USERNAME`、`GONYIK_INITIAL_ADMIN_PASSWORD` 和 `npm run admin:init` 一次性完成，随后清除环境变量并在首次登录时改密。
+
 常规发布优先执行：
 
 ```bash

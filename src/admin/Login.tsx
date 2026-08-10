@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import api from '@/api/client'
 
 export default function AdminLogin() {
-  const [username, setUsername] = useState('admin')
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -17,7 +17,14 @@ export default function AdminLogin() {
       const res = await api.post('/admin/login', { username, password })
       if (res.data.success) {
         localStorage.setItem('admin_token', res.data.token)
-        navigate('/admin/home')
+        localStorage.setItem('admin_username', res.data.user.username)
+        if (res.data.user.must_change_password) {
+          localStorage.setItem('admin_must_change_password', '1')
+          navigate('/admin/password')
+        } else {
+          localStorage.removeItem('admin_must_change_password')
+          navigate('/admin/home')
+        }
       }
     } catch (err: any) {
       setError(err.response?.data?.error || '登录失败')

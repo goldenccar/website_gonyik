@@ -3,21 +3,7 @@ import { Trash2, Mail, User, Building2, Phone, Clock, MessageSquare, Briefcase }
 import api from '@/api/client'
 import Dashboard from './Dashboard'
 import AdminHeader from './components/AdminHeader'
-
-interface ContactMessage {
-  id: number
-  name: string
-  company: string
-  position: string
-  email: string
-  phone: string
-  subject: string
-  cooperation_type: string
-  source_page?: string
-  product_model?: string
-  message: string
-  created_at: string
-}
+import type { ContactMessage } from '@/types'
 
 export default function AdminContactMessageManager() {
   const [messages, setMessages] = useState<ContactMessage[]>([])
@@ -74,7 +60,7 @@ export default function AdminContactMessageManager() {
                       <span className="flex items-center gap-1"><Mail size={13} />{msg.email}</span>
                       {msg.phone && <span className="flex items-center gap-1"><Phone size={13} />{msg.phone}</span>}
                     </div>
-                    {msg.cooperation_type && (
+                    {msg.cooperation_type && msg.cooperation_type !== msg.subject && (
                       <div className="flex items-center gap-2 mb-2">
                         <span className="text-[12px] text-white bg-white/10 px-2 py-0.5">咨询方向：{msg.cooperation_type}</span>
                       </div>

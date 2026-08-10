@@ -56,6 +56,11 @@ export function marketCodeFromPath(pathname: string) {
   return segment && !UNPREFIXED_PUBLIC_ROOTS.has(segment) ? segment : 'cn'
 }
 
+export function routeMarketStatus(code: string, markets: SiteMarket[]) {
+  const market = markets.find((item) => item.code === code)
+  return market ? (market.enabled ? 'enabled' : 'disabled') : 'unknown'
+}
+
 export function marketPath(href: string, marketCode: string) {
   if (!href || /^(?:https?:|mailto:|tel:|#)/.test(href) || href.startsWith('/admin')) return href
   const [pathnameAndQuery, hash = ''] = href.split('#')

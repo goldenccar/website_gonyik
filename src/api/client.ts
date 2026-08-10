@@ -11,7 +11,7 @@ const api = axios.create({
 const inFlightGets = new Map<string, Promise<AxiosResponse>>()
 
 function cachedGet<T = any>(url: string, params?: Record<string, unknown>): Promise<AxiosResponse<T>> {
-  const market = typeof window === 'undefined' ? 'cn' : marketCodeFromPath(window.location.pathname)
+  const market = marketCodeFromPath(window.location.pathname)
   const requestParams = { market, ...params }
   const key = `${url}:${JSON.stringify(requestParams)}`
   const pending = inFlightGets.get(key)
@@ -22,28 +22,6 @@ function cachedGet<T = any>(url: string, params?: Record<string, unknown>): Prom
 
   inFlightGets.set(key, request)
   return request
-}
-
-async function withLegacy404Fallback<T>(
-  request: () => Promise<AxiosResponse<T>>,
-  fallback: () => Promise<AxiosResponse<T>>,
-) {
-  try {
-    return await request()
-  } catch (error) {
-    if (!axios.isAxiosError(error) || error.response?.status !== 404) throw error
-    return fallback()
-  }
-}
-
-function localDataResponse<T>(data: T): AxiosResponse<{ data: T }> {
-  return {
-    data: { data },
-    status: 200,
-    statusText: 'OK',
-    headers: {},
-    config: {} as AxiosResponse['config'],
-  }
 }
 
 api.interceptors.request.use((config) => {
@@ -90,55 +68,22 @@ export const getSocial = () => cachedGet('/social')
 
 export const getFabricSeries = () => cachedGet('/fabrics/series', { schema: 'dual-code-v1' })
 export const getFabricSeriesDetail = (slug: string) => cachedGet(`/fabrics/series/${slug}`, { schema: 'dual-code-v1' })
-export const getFabricCatalog = () => withLegacy404Fallback(
-  () => cachedGet('/fabrics/catalog', { schema: 'dual-code-v1' }),
-  async () => {
-    const [pageResponse, seriesResponse] = await Promise.all([getPageConfig('fabrics'), getFabricSeries()])
-    const series = seriesResponse.data.data || []
-    const detailResponses = await Promise.all(series.map((item: any) => getFabricSeriesDetail(item.slug)))
-    const details = detailResponses.map((response) => response.data.data)
-    const capabilities = details.find((detail: any) => Array.isArray(detail?.capabilities))?.capabilities || []
-    return localDataResponse({ page: pageResponse.data.data, series: details, capabilities })
-  },
-)
-export const getEquipmentCatalog = () => withLegacy404Fallback(
-  () => cachedGet('/equipment/catalog'),
-  async () => {
-    const [pageResponse, categoryResponse, productResponse] = await Promise.all([
-      getPageConfig('equipment'),
-      cachedGet('/equipment/categories'),
-      cachedGet('/equipment/products'),
-    ])
-    return localDataResponse({
-      page: pageResponse.data.data,
-      categories: categoryResponse.data.data || [],
-      products: productResponse.data.data?.products || [],
-    })
-  },
-)
+export const getFabricCatalog = () => cachedGet('/fabrics/catalog', { schema: 'dual-code-v1' })
+export const getEquipmentCatalog = () => cachedGet('/equipment/catalog')
 export const getMaterialCareGuides = () => cachedGet('/services/material-care-guides')
 export const getCareGuides = () => cachedGet('/services/care-guides')
 export const getFaqs = (category: 'material-care' | 'garment-care') => cachedGet('/services/faqs', { category })
 export const getDigitalFabricFormats = () => cachedGet('/services/digital-fabric-formats')
-export const getServicesBootstrap = () => withLegacy404Fallback(
-  () => cachedGet('/services/bootstrap'),
-  async () => {
-    const [pageResponse, sectionResponse] = await Promise.all([
-      getPageConfig('services'),
-      getContentSections('services'),
-    ])
-    return localDataResponse({ page: pageResponse.data.data, sections: sectionResponse.data.data || [] })
-  },
-)
+export const getServicesBootstrap = () => cachedGet('/services/bootstrap')
 
-export const getContactConfig = () => cachedGet('/contact-config')
+export const getAdminContactConfig = () => api.get('/admin/contact-config')
 
 export const getContentSections = (pageKey: string) => cachedGet(`/content-sections/${pageKey}`)
 
 export const getInquirySubjects = () => cachedGet('/inquiry-subjects')
 export const updateInquirySubjects = (data: { items: any[] }) => api.put('/admin/inquiry-subjects', data)
 
-export const submitContactForm = (data: { name: string; company?: string; position?: string; email: string; phone?: string; subject: string; cooperation_type?: string; message: string; source_page?: string; product_model?: string }) => api.post('/contact', data)
+export const submitContactForm = (data: { name: string; company: string; email: string; phone?: string; subject: string; message: string; website?: string; source_page?: string; product_model?: string }) => api.post('/contact', data)
 
 export const uploadFile = (file: File) => {
   const fd = new FormData()

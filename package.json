@@ -7,7 +7,7 @@
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "client": "vite",
     "server": "tsx watch server/index.ts",
-    "test": "node --import tsx --test tests/*.test.ts",
+    "test": "node --import tsx --import ./tests/setup.ts --test tests/*.test.ts",
     "test:release": "npm test && npm run build && npm run audit:quality && node scripts/write-release-stamp.mjs",
     "test:quality": "npm run build && npm run audit:quality",
     "audit:quality": "node scripts/quality-audit.mjs",
@@ -17,6 +17,7 @@
     "preview": "vite preview",
     "start": "node --import ./node_modules/tsx/dist/loader.mjs server/index.ts",
     "setup": "node -e \"import('tsx').then(() => import('./server/db.ts')).then(m => m.initDatabase())\"",
+    "admin:init": "node --import tsx scripts/init-admin.ts",
     "deploy": "node .agents/skills/gonyik-deploy/scripts/deploy.mjs"
   },
   "dependencies": {
@@ -50,7 +51,6 @@
     "autoprefixer": "^10.5.0",
     "concurrently": "^9.2.1",
     "postcss": "^8.5.12",
-    "ssh2": "^1.15.0",
     "tailwindcss": "^3.4.19",
     "tsx": "^4.23.0",
     "typescript": "^5.9.3",

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { getServicesBootstrap } from '@/api/client'
 import PageHero from '@/components/PageHero'
@@ -16,19 +16,21 @@ export interface ServicesOutletContext {
 export default function ServicesLayout() {
   const [page, setPage] = useState<PageConfig | null>(null)
   const [sections, setSections] = useState<ContentSection[]>([])
-  const [loaded, setLoaded] = useState(false)
+  const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading')
   const location = useLocation()
   const navigate = useNavigate()
   const { path: localePath, t } = useSiteLocale()
 
-  useEffect(() => {
+  const load = useCallback(() => {
+    setStatus('loading')
     getServicesBootstrap().then((response) => {
       const data = response.data.data || {}
       setPage(data.page || null)
       setSections((data.sections || []).filter((section: ContentSection) => isServiceModuleType(section.module_type)))
-      setLoaded(true)
-    })
+      setStatus('ready')
+    }).catch(() => setStatus('error'))
   }, [])
+  useEffect(load, [load])
 
   const navigation = useMemo(() => sections.map((section) => ({
     section,
@@ -36,14 +38,15 @@ export default function ServicesLayout() {
   })), [sections])
 
   useEffect(() => {
-    if (!loaded || navigation.length === 0) return
+    if (status !== 'ready' || navigation.length === 0) return
     const route = location.pathname.split('/').filter(Boolean).at(-1)
     if (!route || !navigation.some((item) => item.definition.route === route)) {
       navigate(localePath(`/services/${navigation[0].definition.route}`), { replace: true })
     }
-  }, [loaded, location.pathname, navigate, navigation])
+  }, [status, location.pathname, navigate, navigation])
 
-  if (!loaded) return <PublicContentLoader label="正在加载专业支持内容" />
+  if (status === 'loading') return <PublicContentLoader label="正在加载专业支持内容" />
+  if (status === 'error') return <PageShell><div role="alert" className="mx-auto w-full max-w-[1760px] px-7 py-24 md:px-12 lg:px-20"><div className="border-l-2 border-[#69B2C1] pl-5"><p className="text-[16px] text-primary">专业支持内容加载失败。</p><button type="button" onClick={load} className="mt-4 border-b border-primary text-[14px] text-primary">重新加载</button></div></div></PageShell>
 
   return (
     <PageShell>
@@ -60,7 +63,7 @@ export default function ServicesLayout() {
           })),
         }]}
       />}
-      {loaded && navigation.length > 0 && <Outlet context={{ sections } satisfies ServicesOutletContext} />}
+      {navigation.length > 0 && <Outlet context={{ sections } satisfies ServicesOutletContext} />}
     </PageShell>
   )
 }

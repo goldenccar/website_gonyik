@@ -7,7 +7,7 @@
 1. 只开放 80/443，由 Nginx 或 CDN 终止 TLS；Node 端口仅监听内网。
 2. Nginx/CDN 开启 Brotli 或 Gzip、静态资源缓存和单 IP 基础限速。
 3. `NODE_ENV=production`，并设置不少于 32 字符的随机 `JWT_SECRET`；如经过一层反向代理则设置 `TRUST_PROXY=1`；`ALLOWED_ORIGINS` 只填写正式域名。缺少合格密钥时后台登录会拒绝启动令牌签发，避免退回公开默认密钥。
-4. 用 systemd 或现有 PM2 `ecosystem.config.cjs` 自动重启进程；访问量上升时先增加到 2 个无状态实例，再由反向代理分流。
+4. 用 systemd 或现有 PM2 `ecosystem.config.cjs` 自动重启单个进程。当前 JSON 数据库与内存限流只支持单实例；扩容前必须先把数据库和限流状态迁移到共享外部服务。
 5. CDN 开启托管 WAF、Bot/挑战模式和 DDoS 基础防护。发现攻击时先提高挑战级别、临时收紧 `/api/admin` 与 `/api/contact`，不要直接暴露源站 IP。
 6. 每日备份 `db.json` 与 `public/uploads`，保留至少 7 个版本；恢复演练比只“有备份”更重要。
 7. 每次发布前运行 `npm test && npm run build`，并定期运行 `npm audit --omit=dev`。

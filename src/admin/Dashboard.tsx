@@ -15,7 +15,8 @@ export default function AdminDashboard({ children }: DashboardProps = {}) {
 
   useEffect(() => {
     if (!localStorage.getItem('admin_token')) navigate('/admin')
-  }, [navigate])
+    else if (localStorage.getItem('admin_must_change_password') === '1' && location.pathname !== '/admin/password') navigate('/admin/password')
+  }, [location.pathname, navigate])
 
   useEffect(() => { setMobileOpen(false) }, [location.pathname])
 
@@ -33,13 +34,15 @@ export default function AdminDashboard({ children }: DashboardProps = {}) {
 
   const logout = () => {
     localStorage.removeItem('admin_token')
+    localStorage.removeItem('admin_username')
+    localStorage.removeItem('admin_must_change_password')
     navigate('/admin')
   }
 
   return (
     <div className="admin-shell flex h-[100dvh] overflow-hidden bg-darker dark">
       {mobileOpen && <button type="button" aria-label="关闭导航" className="fixed inset-0 z-40 bg-black/60 md:hidden" onClick={() => setMobileOpen(false)} />}
-      <AdminSidebar pathname={location.pathname} mobileOpen={mobileOpen} onClose={() => setMobileOpen(false)} onLogout={logout} username="Admin" />
+      <AdminSidebar pathname={location.pathname} mobileOpen={mobileOpen} onClose={() => setMobileOpen(false)} onLogout={logout} username={localStorage.getItem('admin_username') || '管理员'} />
       <div className="flex h-full min-w-0 flex-1 flex-col overflow-hidden">
         <header className="sticky top-0 z-30 flex min-h-14 items-center gap-3 border-b border-white/10 bg-dark/95 px-4 backdrop-blur md:hidden">
           <button type="button" onClick={() => setMobileOpen(true)} className="-ml-2 flex h-11 w-11 items-center justify-center text-white" aria-label="打开导航"><Menu size={22} /></button>

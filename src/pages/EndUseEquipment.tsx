@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { getEquipmentCatalog } from '@/api/client'
-import CatalogCollection from '@/components/CatalogCollection'
 import { CatalogEndCta } from '@/components/CatalogCard'
 import ApplicationCard from '@/components/ApplicationCard'
 import PageHero from '@/components/PageHero'
@@ -112,14 +111,14 @@ export default function EndUseEquipment() {
             </div>
 
             <div className="min-h-[260px] motion-content-fade" key={`${activeRoot?.id || 'none'}-${activeChild?.id || 'all'}`}>
-              {filteredProducts.length > 0 && <CatalogCollection label={`${activeCategory?.name || ''}应用`} desktopColumns={3}>
+              {filteredProducts.length > 0 && <div aria-label={`${activeCategory?.name || ''}应用`} className="grid items-stretch gap-5 md:grid-cols-2 md:gap-6 lg:grid-cols-3">
                 {filteredProducts.map((product) => {
                   const mappedCategory = activeChild
                     || product.categories?.find((category) => category.parent_id === activeRoot?.id)
                     || activeRoot
                   return <ApplicationCard key={product.id} product={product} categoryName={mappedCategory?.name} />
                 })}
-              </CatalogCollection>}
+              </div>}
               {endCardVisible && filteredProducts.length === 0 && <CatalogEndCta title={page?.rail_end_card_title ?? '应用合作咨询'} description={page?.rail_end_card_description ?? '围绕具体任务、穿着环境与性能目标，共同确认适用材料和产品方案。'} label={page?.rail_end_card_cta_label ?? '咨询应用方案'} href={page?.rail_end_card_cta_href || '/contact'} />}
             </div>
         </div>

@@ -109,21 +109,6 @@ function validateSlug(value: unknown, excludeId?: number) {
   return { slug }
 }
 
-router.get('/categories', (req, res) => {
-  if (!pageVisible('equipment', requestMarket(req))) { res.json({ data: [] }); return }
-  res.json({ data: visibleCategories().map(categoryPayload) })
-})
-
-router.get('/products', (req, res) => {
-  if (!pageVisible('equipment', requestMarket(req))) { res.json({ data: { products: [] } }); return }
-  const products = db.equipment_products
-    .filter((product) => product.visibility !== 'hidden' && product.status !== 'archived')
-    .sort(sortByOrderIndex)
-    .map((product) => enrichProduct(product, true))
-    .filter((product) => product.category_ids.length > 0)
-  res.json({ data: { products } })
-})
-
 router.get('/catalog', (req, res) => {
   const market = requestMarket(req)
   const page = db.page_configs.find((item) => item.page_key === 'equipment') || null

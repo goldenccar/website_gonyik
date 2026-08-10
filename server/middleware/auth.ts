@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import jwt from 'jsonwebtoken'
+import { db } from '../db'
 
 const DEVELOPMENT_JWT_SECRET = 'gonyik-local-development-only'
 
@@ -44,5 +45,14 @@ export function authMiddleware(req: AuthRequest, res: Response, next: NextFuncti
     return
   }
   req.user = payload
+  const user = db.users.find((item) => item.id === payload.id)
+  if (!user) {
+    res.status(401).json({ error: 'Invalid token' })
+    return
+  }
+  if (user.must_change_password && req.originalUrl !== '/api/admin/change-password') {
+    res.status(403).json({ error: 'Password change required', code: 'PASSWORD_CHANGE_REQUIRED' })
+    return
+  }
   next()
 }

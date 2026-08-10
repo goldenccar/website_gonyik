@@ -19,7 +19,7 @@ const TECHNICAL_VISUAL_ASSETS = [
   '/visuals/supply-chain-node-material-v2.webp',
 ] as const
 
-export const SUPPLY_CHAIN_ASSETS = [
+const SUPPLY_CHAIN_ASSETS = [
   '/visuals/supply-chain-ribbon-v2.webp',
   '/visuals/supply-chain-node-lab-v2.webp',
   '/visuals/supply-chain-node-factory-v2.webp',

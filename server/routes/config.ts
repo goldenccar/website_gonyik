@@ -4,6 +4,7 @@ import { db, saveDb, getNextId, sortByOrderIndex, updateById, deleteById, nextOr
 import { registerUploadedFile } from '../mediaAssets'
 import { authMiddleware, AuthRequest } from '../middleware/auth'
 import { upload } from '../middleware/upload'
+import { updateContactConfiguration, validateContactSubmission } from '../contactValidation'
 import { SITE_LOCALES, type MarketVisibility, type SiteMarket } from '../../src/config/markets'
 import { configuredMarkets, pageKeyForLink, pageVisible, requestMarket, visibleInMarket } from '../market'
 
@@ -157,16 +158,10 @@ router.get('/bootstrap', (req, res) => {
     contact_config: { email, phone, address, response_text },
     socials: db.social_media,
     translations: market.locale === 'zh-CN' ? {} : (db.translations?.[market.locale] || {}),
-    markets: configuredMarkets().filter((item) => item.enabled).map(({ code, label, locale, is_default }) => ({ code, label, locale, is_default })),
+    markets: configuredMarkets().map(({ code, label, locale, enabled, is_default, default_visibility, order_index }) => ({ code, label, locale, enabled, is_default, default_visibility, order_index })),
     current_market: market.code,
     current_locale: market.locale,
   })
-})
-
-router.get('/translations/:locale', (req, res) => {
-  const locale = req.params.locale
-  if (!SITE_LOCALES.includes(locale as any)) { res.status(404).json({ error: '不支持的语言' }); return }
-  res.json({ data: locale === 'zh-CN' ? {} : (db.translations?.[locale] || {}) })
 })
 
 router.get('/admin/localizations', authMiddleware, (req, res) => {
@@ -288,10 +283,43 @@ router.get('/contact-config', (_req, res) => {
   res.json({ data: { email, phone, address, response_text } })
 })
 
+router.get('/admin/contact-config', authMiddleware, (_req, res) => {
+  const { email, phone, address, response_text, smtp_host, smtp_port, smtp_user, smtp_secure, smtp_pass } = db.contact_config
+  res.json({
+    data: {
+      email, phone, address, response_text, smtp_host, smtp_port, smtp_user, smtp_secure,
+      smtp_password_configured: Boolean(String(smtp_pass || '').trim()),
+    },
+  })
+})
+
 router.put('/admin/contact-config', authMiddleware, (req: AuthRequest, res) => {
-  db.contact_config = { ...db.contact_config, ...req.body }
+  const result = updateContactConfiguration(db.contact_config, req.body || {})
+  if (result.error || !result.value) { res.status(400).json({ error: result.error }); return }
+  db.contact_config = result.value
   saveDb()
   res.json({ success: true })
+})
+
+router.post('/admin/contact-config/test', authMiddleware, async (_req, res) => {
+  const cfg = db.contact_config
+  if (!cfg.smtp_host || !cfg.smtp_user || !cfg.smtp_pass || !cfg.email) {
+    res.status(400).json({ error: '请先完整保存 SMTP 与收件邮箱配置' })
+    return
+  }
+  try {
+    const transporter = nodemailer.createTransport({
+      host: cfg.smtp_host,
+      port: cfg.smtp_port || 587,
+      secure: Boolean(cfg.smtp_secure),
+      auth: { user: cfg.smtp_user, pass: cfg.smtp_pass },
+    })
+    await transporter.sendMail({ from: `"${cfg.smtp_user}" <${cfg.smtp_user}>`, to: cfg.email, subject: '[港翼官网] SMTP 配置测试', text: 'SMTP 配置测试成功。' })
+    res.json({ success: true })
+  } catch (error) {
+    console.error('SMTP test failed:', error instanceof Error ? error.message : 'unknown error')
+    res.status(502).json({ error: '测试邮件发送失败，请检查服务器、端口、账号和授权码' })
+  }
 })
 
 router.get('/content-sections/:pageKey', (req, res) => {
@@ -552,24 +580,20 @@ router.delete('/admin/contact-messages/:id', authMiddleware, (req: AuthRequest, 
 })
 
 router.post('/contact', async (req, res) => {
-  const { name, company, position, email, phone, subject, cooperation_type, message, source_page, product_model } = req.body
-  if (!name || !email || !subject || !message) {
-    res.status(400).json({ error: '缺少必填字段' })
-    return
-  }
+  const result = validateContactSubmission(req.body || {}, db.inquiry_subjects.map((item) => String(item.label).trim()))
+  if (result.error || !result.value) { res.status(400).json({ error: result.error }); return }
+  const { name, company, email, phone, subject, message, source_page, product_model } = result.value
 
   // Save to database
   const msg = {
     id: getNextId(db.contact_messages),
     name,
-    company: company || '',
-    position: position || '',
+    company,
     email,
     phone: phone || '',
     subject,
-    cooperation_type: cooperation_type || '',
-    source_page: String(source_page || '').slice(0, 200),
-    product_model: String(product_model || '').slice(0, 120),
+    source_page,
+    product_model,
     message,
     created_at: new Date().toISOString(),
   }
@@ -594,11 +618,9 @@ router.post('/contact', async (req, res) => {
       const mailBody = `您收到一条新的网站留言：
 
 ━━━━━━━━━━━━━━━━━━━━
-客户身份：${cooperation_type || '普通咨询'}
 咨询主题：${subject}
 姓名：${name}
-公司：${company || '未填写'}
-职位：${position || '未填写'}
+公司：${company}
 来源页面：${source_page || '直接进入联系页'}
 产品型号：${product_model || '未指定'}
 邮箱：${email}

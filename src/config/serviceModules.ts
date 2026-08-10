@@ -1,4 +1,4 @@
-export const SERVICE_MODULE_DEFINITIONS = [
+const SERVICE_MODULE_DEFINITIONS = [
   {
     type: 'material-care',
     sectionKey: 'material-care',

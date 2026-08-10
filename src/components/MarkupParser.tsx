@@ -41,7 +41,7 @@ export function InlineMarkup({ text }: { text?: string | null }) {
   return <>{parseInlineMarkup(t(text))}</>
 }
 
-export function parseInlineMarkup(text: string): ReactNode[] {
+function parseInlineMarkup(text: string): ReactNode[] {
   const result: ReactNode[] = []
   let remaining = text
   let key = 0

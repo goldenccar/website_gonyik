@@ -1,17 +1,18 @@
 import { useState, useEffect } from 'react'
-import api, { getContactConfig } from '@/api/client'
+import api, { getAdminContactConfig } from '@/api/client'
 import Dashboard from './Dashboard'
 import SaveButton from './components/SaveButton'
 import AdminHeader from './components/AdminHeader'
-import type { ContactConfig as ContactConfigType } from '@/types'
+import type { AdminContactConfig } from '@/types'
 
 export default function ContactConfig() {
-  const [config, setConfig] = useState<ContactConfigType | null>(null)
+  const [config, setConfig] = useState<AdminContactConfig | null>(null)
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
+  const [testing, setTesting] = useState(false)
 
   useEffect(() => {
-    getContactConfig().then((res) => setConfig(res.data.data))
+    getAdminContactConfig().then((res) => setConfig({ ...res.data.data, smtp_pass: '' }))
   }, [])
 
   const handleSave = async () => {
@@ -26,7 +27,7 @@ export default function ContactConfig() {
         smtp_host: config.smtp_host,
         smtp_port: config.smtp_port,
         smtp_user: config.smtp_user,
-        smtp_pass: config.smtp_pass,
+        ...(config.smtp_pass ? { smtp_pass: config.smtp_pass } : {}),
         smtp_secure: config.smtp_secure,
       })
       setMessage('保存成功')
@@ -35,6 +36,18 @@ export default function ContactConfig() {
       setMessage('保存失败')
     } finally {
       setSaving(false)
+    }
+  }
+
+  const testSmtp = async () => {
+    setTesting(true)
+    try {
+      await api.post('/admin/contact-config/test')
+      setMessage('测试邮件已发送')
+    } catch (error: any) {
+      setMessage(error.response?.data?.error || '测试邮件发送失败')
+    } finally {
+      setTesting(false)
     }
   }
 
@@ -139,7 +152,7 @@ export default function ContactConfig() {
                 value={config.smtp_pass || ''}
                 onChange={(e) => setConfig({ ...config, smtp_pass: e.target.value })}
                 className="w-full bg-white/5 border border-borderDark text-white px-4 py-3 text-[14px] focus:border-white focus:outline-none"
-                placeholder="授权码或密码"
+                placeholder={config.smtp_password_configured ? '已配置；留空表示不修改' : '授权码或密码'}
               />
             </div>
           </div>
@@ -156,6 +169,7 @@ export default function ContactConfig() {
               使用 SSL（端口 465 时勾选）
             </label>
           </div>
+          <button type="button" disabled={testing} onClick={testSmtp} className="mt-5 border border-white/25 px-4 py-2 text-[13px] text-white disabled:opacity-50">{testing ? '发送中…' : '发送测试邮件'}</button>
         </div>
       </div>
     </Dashboard>

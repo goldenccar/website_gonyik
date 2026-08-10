@@ -1,13 +1,13 @@
 import fs from 'fs'
 import path from 'path'
-import bcrypt from 'bcryptjs'
 import { DEFAULT_FABRIC_CAPABILITIES } from '../src/config/fabricCapabilities'
 import { normalizeMaterialPlatforms } from '../src/config/materialPlatforms'
 import { getTechnologyPagePath, TECHNOLOGY_GROUPS, TECHNOLOGY_PAGES } from '../src/config/technologyPages'
 import { DEFAULT_SITE_MARKETS } from '../src/config/markets'
+import { databasePath, uploadsPath } from './paths'
 
-const DB_PATH = path.resolve(process.cwd(), 'db.json')
-const UPLOADS_DIR = path.resolve(process.cwd(), 'public/uploads')
+const DB_PATH = databasePath()
+const UPLOADS_DIR = uploadsPath()
 
 if (!fs.existsSync(UPLOADS_DIR)) {
   fs.mkdirSync(UPLOADS_DIR, { recursive: true })
@@ -26,7 +26,6 @@ export interface Database {
   fabric_sku: any[]
   product_code_registry?: { sku_code: string; internal_code: string; public_name?: string }[]
   media_items: any[]
-  test_reports: any[]
   equipment_categories: any[]
   equipment_products: any[]
   equipment_product_categories: Array<{ product_id: number; category_id: number }>
@@ -282,6 +281,8 @@ function createDefaultDb(): Database {
         page_key: 'pfas-free-innovation',
         order_index: 0,
         ...PFAS_SYSTEM_PAGE_COPY,
+        section_key: 'pfas-free-system',
+        nav_label: '无氟技术体系',
       },
       {
         id: 2,
@@ -292,12 +293,14 @@ function createDefaultDb(): Database {
         title: 'RPO 高性能材料平台',
         subtitle: '让实验室材料，进入可制造的高性能面料',
         content: '港翼技术顾问高平教授拥有30余年高分子材料研究经验。港翼源自固纳内部孵化的功能材料项目，依托设于香港科技大学（广州）多功能高聚物薄膜中央实验室的固纳 RPO Lab，推动 RPO 膜与高性能纤维从实验室走向应用。/hRPO 材料平台围绕 RPO-SOTEX 超微孔功能膜与 RPO 高性能纤维展开，通过材料结构、形态和加工适配性的持续开发，在轻量、强度、耐久与功能界面之间建立新的性能基础。/h港翼根据不同使用场景，将 RPO 材料与织物结构、功能整理和复合工艺协同设计，使底层材料转化为可制造、可验证的面料，并进一步服务于防水透湿、高强耐磨及特种材料等产品方向。',
-        image_url: null,
+        image_url: '/visuals/technology-rpo-platform-hero-v1.webp',
         image_fit: 'cover',
       },
       {
         id: 3,
         page_key: 'pfas-free-innovation',
+        section_key: 'rpo-sotex-membrane',
+        nav_label: 'RPO-SOTEX 膜',
         order_index: 2,
         title: 'RPO-SOTEX 膜技术',
         subtitle: '以聚烯烃材料与超微孔结构，构建防水、透湿与强韧兼备的功能界面',
@@ -310,6 +313,7 @@ function createDefaultDb(): Database {
         id: 4,
         page_key: 'pfas-free-innovation',
         section_key: 'high-performance-fiber',
+        nav_label: '高性能纤维',
         order_index: 3,
         title: '高性能纤维',
         subtitle: '从纤维配方到织物结构，让轻量与防护建立在材料本体之上。',
@@ -325,6 +329,7 @@ function createDefaultDb(): Database {
         id: 5,
         page_key: 'pfas-free-innovation',
         section_key: 'lamination',
+        nav_label: '面料复合',
         order_index: 4,
         title: '面料复合技术',
         subtitle: '让面层、功能层与内层在同一套工艺窗口中可靠协同。',
@@ -340,6 +345,7 @@ function createDefaultDb(): Database {
         id: 6,
         page_key: 'pfas-free-innovation',
         section_key: 'supply-chain',
+        nav_label: '供应链管理',
         order_index: 5,
         title: '供应链管理',
         subtitle: '把材料、织造、染整与复合能力组织成可追溯的生产链路。',
@@ -361,6 +367,7 @@ function createDefaultDb(): Database {
         id: 12,
         page_key: 'pfas-free-innovation',
         section_key: 'testing-certification',
+        nav_label: '测试与认证',
         order_index: 6,
         title: '测试与认证',
         subtitle: '从材料到成品面料，持续验证产品表现',
@@ -413,7 +420,7 @@ function createDefaultDb(): Database {
         image_fit: 'cover',
       },
     ],
-    technology_sections_version: 7,
+    technology_sections_version: 24,
     material_platforms_version: 1,
     rpo_sotex_naming_version: 1,
     brand_identity_version: 1,
@@ -444,7 +451,6 @@ function createDefaultDb(): Database {
       { sku_code: 'OT-01', internal_code: 'OT3-PAEL70-V15-PES50-B', public_name: 'OTTER T70' },
       { sku_code: 'OT-02', internal_code: 'OT3-PAEL50-V20-PES30-D', public_name: 'OTTER T50' },
     ],
-    test_reports: [],
     equipment_categories: [
       { id: 1, parent_id: null, name: '成衣', slug: 'apparel', description: '从日常通勤、户外防护到专业任务的功能成衣应用。', visibility: 'public', order_index: 0 },
       { id: 2, parent_id: 1, name: '日常通勤', slug: 'daily', description: '面向城市通勤与日常穿着的舒适、防风雨和轻量应用。', visibility: 'public', order_index: 0 },
@@ -472,7 +478,7 @@ function createDefaultDb(): Database {
     ],
     equipment_global_order_version: 1,
     equipment_taxonomy_version: 1,
-    chinese_copy_adjustment_version: 4,
+    chinese_copy_adjustment_version: 5,
     material_care_guides: createDefaultMaterialCareGuides(),
     care_guides: createDefaultGarmentCareGuides(),
     faqs: createDefaultServiceFaqs(),
@@ -482,18 +488,17 @@ function createDefaultDb(): Database {
       { id: 3, platform: '交换格式', format: '.u3ma', description: '用于跨软件协作与兼容性交付的补充格式。', role: 'exchange', order_index: 2 },
     ],
     contact_messages: [],
-    users: [
-      { id: 1, username: 'admin', password_hash: bcrypt.hashSync('888888', 10), must_change_password: 0, created_at: new Date().toISOString() },
-    ],
+    users: [],
     translations: { en: {} },
     markets: DEFAULT_SITE_MARKETS,
   }
 
-  fs.writeFileSync(DB_PATH, JSON.stringify(defaultDb, null, 2))
   return defaultDb
 }
 
 export let db: Database
+let initializing = false
+let pendingSave = false
 
 function replaceLegacyRpoName(value: any): any {
   if (typeof value === 'string') return value.replaceAll('RPO-TEX', 'RPO-SOTEX')
@@ -630,6 +635,8 @@ function migrateFabricProductCards(database: Database) {
 }
 
 export function initDatabase() {
+  initializing = true
+  pendingSave = false
   if (fs.existsSync(DB_PATH)) {
     db = JSON.parse(fs.readFileSync(DB_PATH, 'utf-8'))
     if ((db.market_content_version ?? 0) < 1) {
@@ -2508,9 +2515,15 @@ export function initDatabase() {
     db.home_story_version = 4
     saveDb()
   }
+  initializing = false
+  if (pendingSave || !fs.existsSync(DB_PATH)) fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2))
 }
 
 export function saveDb() {
+  if (initializing) {
+    pendingSave = true
+    return
+  }
   fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2))
 }
 

@@ -18,6 +18,8 @@ function walk(directory, predicate = () => true) {
 
 const sourceFiles = walk(sourceRoot, (file) => /\.(?:ts|tsx)$/.test(file))
 const sourceText = new Map(sourceFiles.map((file) => [file, fs.readFileSync(file, 'utf8')]))
+const consumerFiles = [...sourceFiles, ...walk(serverRoot, (file) => /\.(?:ts|tsx)$/.test(file)), ...walk(path.join(root, 'tests'), (file) => /\.(?:ts|tsx)$/.test(file))]
+const consumerText = new Map(consumerFiles.map((file) => [file, fs.readFileSync(file, 'utf8')]))
 
 function resolveImport(importer, specifier) {
   const base = specifier.startsWith('@/')
@@ -42,6 +44,18 @@ const componentFiles = sourceFiles.filter((file) => (
   && !file.endsWith('.test.tsx')
 ))
 const unusedComponents = componentFiles.filter((file) => !inbound.has(file))
+
+const namedExportAllowlist = new Set([])
+const unusedNamedExports = []
+for (const [file, content] of sourceText) {
+  for (const match of content.matchAll(/\bexport\s+(?:async\s+)?(?:function|const|class)\s+([A-Za-z_$][\w$]*)/g)) {
+    const name = match[1]
+    const key = `${path.relative(root, file)}:${name}`
+    if (namedExportAllowlist.has(key)) continue
+    const usedElsewhere = [...consumerText].some(([candidate, candidateText]) => candidate !== file && new RegExp(`\\b${name}\\b`).test(candidateText))
+    if (!usedElsewhere) unusedNamedExports.push(key)
+  }
+}
 
 const exactComponentBodies = new Map()
 for (const file of componentFiles) {
@@ -132,6 +146,7 @@ const oversizedPublicAssets = walk(publicRoot, (file) => fs.statSync(file).size 
 
 const failures = [
   ...unusedComponents.map((file) => `未被引用的组件：${path.relative(root, file)}`),
+  ...unusedNamedExports.map((item) => `未被消费的命名导出：${item}`),
   ...duplicateComponents.map((files) => `完全重复的组件：${files.map((file) => path.relative(root, file)).join(', ')}`),
   ...unmatchedEndpoints.map((endpoint) => `找不到服务端路由：${endpoint.method.toUpperCase()} ${endpoint.path} (${endpoint.source})`),
   ...oversizedBundles.map((asset) => `构建产物超预算：${asset.file} gzip ${(asset.gzip / 1024).toFixed(1)} KB`),
@@ -141,6 +156,7 @@ const failures = [
 console.log('\n港翼官网自动化质量审计')
 console.log(`- 数据流：检查 ${clientEndpoints.length} 个静态 API 调用，服务端识别 ${serverEndpoints.length} 个路由`)
 console.log(`- 组件复用：检查 ${componentFiles.length} 个组件，零引用 ${unusedComponents.length}，完全重复 ${duplicateComponents.length}`)
+console.log(`- 命名导出：未发现消费者 ${unusedNamedExports.length} 项（显式 allowlist ${namedExportAllowlist.size} 项）`)
 console.log(`- 原生交互：发现 ${nonNativeInteractions.length} 个非原生可点击元素（提示项，不阻断发布）`)
 console.log(`- 性能预算：检查 ${assetMetrics.length} 个构建资源和公共媒体，超预算 ${oversizedBundles.length + oversizedPublicAssets.length}`)
 
@@ -155,5 +171,5 @@ if (failures.length) {
   failures.forEach((failure) => console.error(`  × ${failure}`))
   process.exitCode = 1
 } else {
-  console.log('\n结果：通过。未发现会阻断发布的数据流、组件复用或性能问题。')
+  console.log('\n结果：通过。未发现会阻断发布的数据流、组件引用、确定性废导出或性能问题。')
 }

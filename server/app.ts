@@ -12,6 +12,7 @@ import equipmentRoutes from './routes/equipment'
 import serviceRoutes from './routes/services'
 import mediaRoutes from './routes/media'
 import adminRoutes from './routes/admin'
+import { uploadsPath } from './paths'
 
 let databaseReady = false
 
@@ -113,7 +114,7 @@ export function createApp() {
 
   app.use('/api', apiCacheControl)
 
-  const uploadsDir = path.resolve(process.cwd(), 'public/uploads')
+  const uploadsDir = uploadsPath()
   if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true })
   app.use('/uploads', express.static(uploadsDir, {
     maxAge: '30d',
@@ -128,7 +129,7 @@ export function createApp() {
   app.use('/api/admin', adminRoutes)
 
   app.get('/api/health', (_req, res) => {
-    res.json({ status: 'ok', timestamp: new Date().toISOString() })
+    res.json({ status: 'ok', commit: process.env.DEPLOY_COMMIT || null, timestamp: new Date().toISOString() })
   })
 
   app.use('/api', (_req, res) => {
