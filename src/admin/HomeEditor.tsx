@@ -8,6 +8,7 @@ import ImageCropper from './ImageCropper'
 import AdminHeader from './components/AdminHeader'
 import SeriesHomeImageEditor from './components/SeriesHomeImageEditor'
 import AdminPagePreview from './components/AdminPagePreview'
+import type { HomeTechnicalVisualsConfig } from '@/types'
 
 const TABS = [
   { key: 'hero', label: 'Hero', icon: Home },
@@ -36,12 +37,7 @@ export default function AdminHomeEditor() {
 
   useEffect(() => {
     getHomeConfig().then((res) => {
-      const data = res.data.data || {}
-      const verificationDefaults = [
-        { title: '内部实验室', subtitle: '依托香港科技大学（广州）多功能高聚物薄膜中央实验室，开展材料筛选、结构开发、样品对比与耐久验证。' },
-        { title: '第三方测试认证', subtitle: '根据具体产品与项目要求，委托 SGS、中纺标 CTTC 等专业机构检测，结果以正式报告为准。' },
-      ]
-      const verifications = verificationDefaults.map((fallback, index) => ({ ...fallback, ...(ensureArray(data.verifications)[index] || {}) }))
+      const { verifications: _legacyVerifications, ...data } = res.data.data || {}
       const verificationImages = ensureArray(data.verification_images)
         .filter((item) => item?.url)
         .sort((a, b) => (a.order_index ?? 0) - (b.order_index ?? 0))
@@ -52,7 +48,6 @@ export default function AdminHomeEditor() {
       setForm({
         ...data,
         platform_cards: ensureArray(data.platform_cards).slice(0, 3),
-        verifications,
         verification_images: verificationImages,
       })
     })
@@ -225,6 +220,23 @@ export default function AdminHomeEditor() {
     </div>
   )
 
+  const mediaField = (label: string, value: string, onChange: (url: string) => void) => <label className="block text-[12px] text-muted">
+    <span className="mb-2 block">{label}</span>
+    {value && <img src={value} alt="" className="mb-2 h-20 max-w-full bg-white/5 object-contain" />}
+    <input value={value} onChange={event => onChange(event.target.value)} placeholder="选择上传或输入媒体库地址；清空则不显示" className="w-full border border-borderDark bg-white/5 px-3 py-2 text-white" />
+    <input type="file" accept="image/*" className="mt-2 block max-w-full text-[11px]" onChange={async event => {
+      const file = event.currentTarget.files?.[0]
+      event.currentTarget.value = ''
+      if (!file) return
+      try {
+        const response = await uploadFile(file)
+        onChange(response.data.url || response.data.data?.url || '')
+      } catch { setMessage('图片上传失败，请重试。') }
+    }} />
+  </label>
+
+  const updateSharedVisual = (key: keyof HomeTechnicalVisualsConfig, value: string) => setForm((current: any) => ({ ...current, technical_visuals: { ...current.technical_visuals, [key]: value } }))
+
   const textareaField = (label: string, key: string, rows = 3, placeholder?: string) => (
     <div className="mb-4">
       <label className="block text-[12px] text-secondary uppercase mb-2">{label}</label>
@@ -310,7 +322,7 @@ export default function AdminHomeEditor() {
       <div>
         <div className="flex items-center justify-between mb-4">
           <label className="text-[12px] text-secondary uppercase">技术入口（前台最多显示 3 项）</label>
-          {ensureArray(form.platform_cards).length < 3 && <PrimaryButton onClick={() => addArrayItem('platform_cards', { title: '', subtitle: '' })} size="sm" icon={<Plus size={14} />}>新增入口</PrimaryButton>}
+          {ensureArray(form.platform_cards).length < 3 && <PrimaryButton onClick={() => addArrayItem('platform_cards', { title: '', subtitle: '', link: '', visual: 'none', image_url: '' })} size="sm" icon={<Plus size={14} />}>新增入口</PrimaryButton>}
         </div>
         <div className="space-y-4">
           {ensureArray(form.platform_cards).map((item: any, idx: number) => (
@@ -340,10 +352,28 @@ export default function AdminHomeEditor() {
                   </button>
                 </div>
               </div>
+              <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                <label className="text-[11px] text-muted">跳转地址（留空则不跳转）<input value={item.link || ''} onChange={event => updateArrayItem('platform_cards', idx, { link: event.target.value })} className="mt-1 w-full border border-borderDark bg-white/5 px-3 py-2 text-white" /></label>
+                <label className="text-[11px] text-muted">展示方式<select value={item.visual || 'none'} onChange={event => updateArrayItem('platform_cards', idx, { visual: event.target.value })} className="mt-1 w-full border border-borderDark bg-dark px-3 py-2 text-white"><option value="none">无配图</option><option value="membrane">膜动画</option><option value="lamination">复合动画</option><option value="supply">供应链动画</option><option value="image">静态图片</option></select></label>
+                {item.visual === 'image' && mediaField('静态图片', item.image_url || '', url => updateArrayItem('platform_cards', idx, { image_url: url }))}
+              </div>
             </div>
           ))}
         </div>
       </div>
+      <details className="border border-white/10 p-4">
+        <summary className="cursor-pointer text-[14px] text-white">共享技术动画素材</summary>
+        <p className="my-3 text-[12px] leading-6 text-muted">首页与 RPO-Tech 共用这些素材。修改后两处同步更新；透明分层图请保持相同画布尺寸。清空字段会移除对应内容。</p>
+        <div className="grid gap-5 sm:grid-cols-2">
+          {([
+            ['membrane_image', '膜动画底图'], ['lamination_top_image', '复合：面层'], ['lamination_membrane_image', '复合：膜层'], ['lamination_backing_image', '复合：内层'],
+            ['supply_ribbon_image', '供应链：连接环'], ['supply_lab_image', '供应链：实验室'], ['supply_factory_image', '供应链：工厂'], ['supply_retail_image', '供应链：终端'], ['supply_materials_image', '供应链：原料'], ['supply_material_image', '供应链：材料'],
+          ] as [keyof HomeTechnicalVisualsConfig, string][]).map(([key, label]) => <div key={key}>{mediaField(label, form.technical_visuals?.[key] || '', value => updateSharedVisual(key, value))}</div>)}
+          {([
+            ['supply_home_center', '首页供应链中心文字'], ['supply_rpo_center', 'RPO-Tech 供应链中心文字'], ['membrane_label', '膜动画文字说明（供辅助阅读）'], ['lamination_label', '复合动画文字说明（供辅助阅读）'], ['supply_label', '供应链动画文字说明（供辅助阅读）'],
+          ] as [keyof HomeTechnicalVisualsConfig, string][]).map(([key, label]) => <label key={key} className="text-[12px] text-muted">{label}<input value={form.technical_visuals?.[key] || ''} onChange={event => updateSharedVisual(key, event.target.value)} className="mt-2 w-full border border-borderDark bg-white/5 px-3 py-2 text-white" /></label>)}
+        </div>
+      </details>
     </div>
   )
 

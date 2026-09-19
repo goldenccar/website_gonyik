@@ -7,12 +7,6 @@ import { InlineMarkup } from '@/components/MarkupParser'
 import { MaterialSystemVisual, MaterialValidationSummary } from '@/components/HomeTechnicalVisuals'
 import { useSiteLocale } from '@/i18n/SiteLocale'
 
-const SERIES_COPY: Record<string, { title: string; description: string }> = {
-  otter: { title: '防水透湿', description: '适用于冲锋衣、雨衣等户外服装。' },
-  rayo: { title: '防晒与日常户外', description: '适用于防晒衣、垂钓披风及轻户外服装。' },
-  kais: { title: '专业防护', description: '用于防护服装、手套及其他需要加强防护的部位。' },
-}
-
 export default function Home() {
   const { path, t, bootstrap } = useSiteLocale()
   const c = bootstrap.home_config
@@ -24,8 +18,8 @@ export default function Home() {
   return <PageShell className="home-release">
     <div id="H01"><PageHero variant="home" tag={c.hero_tag} title={c.hero_title} subtitle={c.hero_slogan} image={c.hero_background} mobileImage={c.hero_mobile_background} imageAlt="港翼户外服装应用" scrollLabel="下滑探索港翼科技" scrollTarget="#H03">
       <div className="flex flex-wrap items-center gap-7">
-        <Link to={path(c.primary_btn_link || '/fabrics')} className="bg-[#0b4f87] px-6 py-3 ui-copy text-white transition-colors hover:bg-[#12649f]"><InlineMarkup text={c.primary_btn_text || '探索面料系列'} /></Link>
-        <Link to={path(c.secondary_btn_link || '/pfas-free-innovation/rpo-material-platform')} className="py-3 ui-copy text-white underline decoration-white/60 underline-offset-4 hover:decoration-white"><InlineMarkup text={c.secondary_btn_text || '了解 RPO 技术'} /> →</Link>
+        {c.primary_btn_text && c.primary_btn_link && <Link to={path(c.primary_btn_link)} className="bg-[#0b4f87] px-6 py-3 ui-copy text-white transition-colors hover:bg-[#12649f]"><InlineMarkup text={c.primary_btn_text} /></Link>}
+        {c.secondary_btn_text && c.secondary_btn_link && <Link to={path(c.secondary_btn_link)} className="py-3 ui-copy text-white underline decoration-white/60 underline-offset-4 hover:decoration-white"><InlineMarkup text={c.secondary_btn_text} /> →</Link>}
       </div>
     </PageHero></div>
 
@@ -46,7 +40,7 @@ export default function Home() {
       </div>
       </div>
       {series.map(s => {
-        const copy = c.series_entries?.[s.slug] || SERIES_COPY[s.slug]
+        const copy = c.series_entries?.[s.slug]
         return <div key={s.slug} id={`home-panel-${s.slug}`} role="tabpanel" aria-labelledby={`home-tab-${s.slug}`} hidden={active?.slug !== s.slug} tabIndex={0} className="pt-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent md:pt-8">
           <div className="home-series-stage">
             <div className="home-series-image">
@@ -54,8 +48,8 @@ export default function Home() {
             </div>
             <div className="home-series-copy">
               <h3 className="type-hero type-heading-en text-white">{s.slug.toUpperCase()}</h3>
-              <p className="type-card-title mt-5 text-white"><InlineMarkup text={copy.title} /></p>
-              <p className="body-copy mt-2 max-w-[420px] text-white/75"><InlineMarkup text={copy.description} /></p>
+              {copy?.title && <p className="type-card-title mt-5 text-white"><InlineMarkup text={copy.title} /></p>}
+              {copy?.description && <p className="body-copy mt-2 max-w-[420px] text-white/75"><InlineMarkup text={copy.description} /></p>}
               <Link to={path('/fabrics/series/' + s.slug)} className="home-series-link ui-copy"><span>{t('探索系列')}</span><ArrowUpRight size={22} strokeWidth={1.5} aria-hidden="true" /></Link>
             </div>
           </div>
@@ -73,7 +67,7 @@ export default function Home() {
       </div>
       <div className="home-technology-layout">
         <MaterialValidationSummary image={c.verification_image} images={c.verification_images || []} title={c.verification_section_title} subtitle={c.verification_section_subtitle} linkText={c.verification_section_link_text} linkTo={path(c.verification_section_link || '/pfas-free-innovation/testing-certification')} />
-        <MaterialSystemVisual items={c.platform_cards || []} href={path(c.platform_section_link)} itemHrefs={['rpo-sotex-membrane', 'lamination', 'supply-chain'].map(key => path('/pfas-free-innovation/' + key))} />
+        <MaterialSystemVisual items={c.platform_cards || []} />
       </div>
     </PageSection>
   </PageShell>

@@ -16,7 +16,7 @@ interface PageConfigItem {
 }
 
 const PAGE_KEY_MAP: Record<string, { label: string; publicPath: string }> = {
-  fabrics: { label: '面料数据库', publicPath: '/fabrics' },
+  fabrics: { label: '面料数据库', publicPath: '/fabrics/catalog' },
   equipment: { label: '终端装备', publicPath: '/equipment' },
   services: { label: '服务与支持', publicPath: '/services' },
   contact: { label: '联系我们', publicPath: '/contact' },

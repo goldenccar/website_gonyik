@@ -7,7 +7,7 @@ type Change = { collection: string; id?: number; field: string; before?: unknown
 export function applyReviewedRpoContent(database: any, changes: Change[]) {
   const next = structuredClone(database)
   for (const change of changes) {
-    if (!['home_config', 'navigation', 'fluorine_sections'].includes(change.collection)) throw Error('Unexpected content collection')
+    if (!['home_config', 'navigation', 'fluorine_sections', 'fabric_series', 'translations'].includes(change.collection)) throw Error('Unexpected content collection')
     const target = change.id === undefined ? next[change.collection] : next[change.collection].find((row: any) => row.id === change.id)
     if (!target || ['__proto__', 'prototype', 'constructor'].includes(change.field)) throw Error('Invalid content target')
     if (isDeepStrictEqual(target[change.field], change.after)) continue
@@ -22,7 +22,10 @@ if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.ar
   const target = path.resolve(process.argv[2] || 'db.json')
   const original = fs.readFileSync(target, 'utf8')
   const database = JSON.parse(original)
-  const changes = JSON.parse(fs.readFileSync(new URL('../files/releases/rpo-content-20260919.json', import.meta.url), 'utf8'))
+  const manifestIndex = process.argv.indexOf('--manifest')
+  if (manifestIndex !== -1 && !process.argv[manifestIndex + 1]) throw Error('Missing manifest path')
+  const manifest = manifestIndex === -1 ? new URL('../files/releases/rpo-content-20260919.json', import.meta.url) : path.resolve(process.argv[manifestIndex + 1])
+  const changes = JSON.parse(fs.readFileSync(manifest, 'utf8'))
   const next = applyReviewedRpoContent(database, changes)
   if (process.argv.includes('--write') && !isDeepStrictEqual(database, next)) {
     const backup = `${target}.before-rpo-${Date.now()}`

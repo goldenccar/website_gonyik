@@ -12,7 +12,7 @@ npm run review:local
 
 地址：`http://127.0.0.1:5180/`。同步与旧稿恢复说明见 [当前生产基线](files/PRODUCTION_BASELINE_2026-09-19.md)。
 
-2026-09-19 材料科技本地审阅版已在此基线上实现，入口为 `/pfas-free-innovation/rpo-material-platform`。页面范围、数据备份与恢复注意事项见 [RPO 本地审阅说明](files/RPO_LOCAL_REVIEW_2026-09-19.md)；尚未部署生产。
+2026-09-19 材料科技审阅版已发布生产，生产代码版本为 `52f5b87`，入口为 `/pfas-free-innovation/rpo-material-platform`。发布范围、内容迁移与验证见 [RPO 发布记录](files/RELEASE_RPO_2026-09-19.md)。本地预览保留同一审阅内容，最初同步快照仍保留旧版本信息供追溯。
 
 默认开发服务器仍可使用以下命令，但它读取的是根目录数据库，不保证与当前线上内容一致：
 

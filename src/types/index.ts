@@ -2,12 +2,27 @@ export interface HomePlatformCard {
   title: string
   subtitle: string
   description?: string
-  evidence?: string
+  link?: string
+  visual?: 'membrane' | 'lamination' | 'supply' | 'image' | 'none'
+  image_url?: string
 }
 
-export interface HomeVerification {
-  title: string
-  subtitle: string
+export interface HomeTechnicalVisualsConfig {
+  membrane_image?: string
+  membrane_label?: string
+  lamination_top_image?: string
+  lamination_membrane_image?: string
+  lamination_backing_image?: string
+  lamination_label?: string
+  supply_ribbon_image?: string
+  supply_lab_image?: string
+  supply_factory_image?: string
+  supply_retail_image?: string
+  supply_materials_image?: string
+  supply_material_image?: string
+  supply_label?: string
+  supply_home_center?: string
+  supply_rpo_center?: string
 }
 
 export interface HomeVerificationImage {
@@ -33,6 +48,7 @@ export interface HomeConfig {
   platform_section_link_text: string
   platform_section_link: string
   platform_cards: HomePlatformCard[]
+  technical_visuals?: HomeTechnicalVisualsConfig
   series_section_title: string
   series_section_subtitle: string
   series_section_link_text: string
@@ -43,7 +59,6 @@ export interface HomeConfig {
   verification_section_subtitle: string
   verification_section_link_text: string
   verification_section_link: string
-  verifications: HomeVerification[]
 }
 
 export interface PageConfig {
@@ -121,6 +136,12 @@ export interface FabricSeries {
   story_title?: string
   story_intro?: string
   story_highlights?: string[]
+  story_features_label?: string
+  story_icons?: string[]
+  story_primary_label?: string
+  story_primary_link?: string
+  story_secondary_label?: string
+  story_secondary_link?: string
   home_image: string | null
   home_badge_image: string | null
   order_index: number

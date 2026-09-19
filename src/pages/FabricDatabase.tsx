@@ -146,7 +146,7 @@ export default function FabricDatabase() {
 
   return (
     <PageShell>
-      <PageHero title={page?.page_title || '按使用环境，找到合适的材料'} subtitle={page?.page_subtitle || '从日常与户外使用到特种专业场景，查看材料系列、具体型号与验证依据。'} image={page?.hero_background} imageAlt="复合面料与膜层结构微距" />
+      <PageHero title={page?.page_title || ''} subtitle={page?.page_subtitle} image={page?.hero_background} imageAlt={page?.page_title} />
 
       <CatalogSelectorBar
         label="面料系列"
@@ -181,7 +181,7 @@ export default function FabricDatabase() {
                 <div className="mb-8 grid gap-4 md:mb-10 md:grid-cols-[minmax(220px,0.65fr)_minmax(320px,1fr)] md:items-end md:gap-12">
                   <div>
                     <p className="label-en -ml-px text-secondary"><InlineMarkup text={seriesItem.name || slug} /></p>
-                    <h2 className="type-section-title mt-3 text-primary"><InlineMarkup text={seriesItem.tagline || '面向真实使用环境的功能材料'} /></h2>
+                    <h2 className="type-section-title mt-3 text-primary"><InlineMarkup text={seriesItem.story_title || seriesItem.tagline} /></h2>
                     <Link
                       to={localePath(`/fabrics/series/${slug}`)}
                       className="fabric-series-story-link group mt-5 inline-flex items-center pb-1 text-[13px] font-medium text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
@@ -191,7 +191,7 @@ export default function FabricDatabase() {
                       <span aria-hidden="true" className="ml-2 inline-block transition-transform duration-[var(--motion-instant)] group-hover:translate-x-1">→</span>
                     </Link>
                   </div>
-                  <p className="body-copy max-w-[680px] text-secondary"><InlineMarkup text={seriesItem.description} /></p>
+                  <p className="body-copy max-w-[680px] text-secondary"><InlineMarkup text={seriesItem.story_intro || seriesItem.description} /></p>
                 </div>
 
                 {detail?.skus?.length ? (
@@ -211,7 +211,7 @@ export default function FabricDatabase() {
                   </div>
                 ) : (
                   <div className="max-w-[520px]">
-                    <RailEndCard config={page || {}} fallbackTitle="新面料开发" fallbackDescription="如有明确的使用环境与性能目标，欢迎提交材料需求。" />
+                    <RailEndCard config={page || {}} />
                   </div>
                 )}
               </section>

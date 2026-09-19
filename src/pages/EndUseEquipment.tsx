@@ -86,7 +86,7 @@ export default function EndUseEquipment() {
 
   return (
     <PageShell>
-      <PageHero title={page?.page_title || '产品应用'} subtitle={page?.page_subtitle || '查看港翼面料在成衣、鞋履与配件中的应用，以及材料与产品之间的对应关系。'} image={page?.hero_background} imageAlt="港翼面料终端应用" />
+      <PageHero title={page?.page_title || ''} subtitle={page?.page_subtitle} image={page?.hero_background} imageAlt={page?.page_title} />
       {!loading && <CatalogSelectorBar
         label="终端装备分类"
         groups={[
@@ -119,7 +119,7 @@ export default function EndUseEquipment() {
                   return <ApplicationCard key={product.id} product={product} categoryName={mappedCategory?.name} />
                 })}
               </div>}
-              {endCardVisible && filteredProducts.length === 0 && <CatalogEndCta title={page?.rail_end_card_title ?? '应用合作咨询'} description={page?.rail_end_card_description ?? '围绕具体任务、穿着环境与性能目标，共同确认适用材料和产品方案。'} label={page?.rail_end_card_cta_label ?? '咨询应用方案'} href={page?.rail_end_card_cta_href || '/contact'} />}
+              {endCardVisible && filteredProducts.length === 0 && page?.rail_end_card_title && <CatalogEndCta title={page.rail_end_card_title} description={page.rail_end_card_description || ''} label={page.rail_end_card_cta_label || ''} href={page.rail_end_card_cta_href || ''} />}
             </div>
         </div>
       </PageSection>

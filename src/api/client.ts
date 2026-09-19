@@ -67,7 +67,6 @@ export const getFooter = () => cachedGet('/footer')
 export const getSocial = () => cachedGet('/social')
 
 export const getFabricSeries = () => cachedGet('/fabrics/series', { schema: 'dual-code-v1' })
-export const getFabricSeriesDetail = (slug: string) => cachedGet(`/fabrics/series/${slug}`, { schema: 'dual-code-v1' })
 export const getFabricCatalog = () => cachedGet('/fabrics/catalog', { schema: 'dual-code-v1' })
 export const getEquipmentCatalog = () => cachedGet('/equipment/catalog')
 export const getMaterialCareGuides = () => cachedGet('/services/material-care-guides')

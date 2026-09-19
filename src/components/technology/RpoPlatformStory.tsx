@@ -27,11 +27,14 @@ function Rows({ block }: { block: TechnologyContentBlock }) {
   </div>)}</div>
 }
 function ContentMedia({ media }: { media: TechnologyMedia & { highlights?: string[] } }) {
+  const { bootstrap } = useSiteLocale()
+  const shared = bootstrap.home_config.technical_visuals
+  const layerImages: Record<string, string | undefined> = { top: shared?.lamination_top_image, membrane: shared?.lamination_membrane_image, backing: shared?.lamination_backing_image, felt: shared?.lamination_backing_image }
   const visual = media.visual || 'image'
   const labels = visual.startsWith('layers-') ? media.highlights : undefined
   const layers = visual === 'layers-light' ? ['top', 'backing'] : visual === 'layers-protection' ? ['top', 'felt', 'backing'] : ['top', 'membrane', 'backing']
   return <figure className={`rpo-content-media rpo-content-media--${visual}`}>
-    {visual === 'membrane' || visual === 'lamination' ? <MaterialTechnologyVisual kind={visual} /> : visual === 'supply' ? <SupplyChainVisual /> : visual.startsWith('layers-') ? <div className="rpo-layer-images" aria-hidden="true">{layers.map((layer,index) => <img key={layer} className={layer==='felt'?'rpo-felt-layer':undefined} src={`/visuals/lamination-layer-${layer==='felt'?'backing':layer}-alpha-v3.webp`} style={{top:`${index*25}%`}} alt="" loading="lazy" />)}</div> : media.image_url ? <img src={media.image_url} alt="" loading="lazy" decoding="async" /> : null}
+    {visual === 'membrane' || visual === 'lamination' ? <MaterialTechnologyVisual kind={visual} /> : visual === 'supply' ? <SupplyChainVisual /> : visual.startsWith('layers-') ? <div className="rpo-layer-images" aria-hidden="true">{layers.map((layer,index) => layerImages[layer] ? <img key={layer} className={layer==='felt'?'rpo-felt-layer':undefined} src={layerImages[layer]} style={{top:`${index*25}%`}} alt="" loading="lazy" /> : null)}</div> : media.image_url ? <img src={media.image_url} alt="" loading="lazy" decoding="async" /> : null}
     {(media.caption || labels?.length) && <figcaption><InlineMarkup text={media.caption || ''} />{labels?.length ? <div className="rpo-media-labels">{labels.map((text,index)=><span key={index}><InlineMarkup text={text} /></span>)}</div> : null}</figcaption>}
   </figure>
 }

@@ -7,6 +7,7 @@ import { upload } from '../middleware/upload'
 import { updateContactConfiguration, validateContactSubmission } from '../contactValidation'
 import { SITE_LOCALES, type MarketVisibility, type SiteMarket } from '../../src/config/markets'
 import { configuredMarkets, pageKeyForLink, pageVisible, requestMarket, visibleInMarket } from '../market'
+import { normalizeHomeMedia } from '../homeMedia'
 
 const router = Router()
 const TECHNOLOGY_NAV_LABEL_MAX_LENGTH = 32
@@ -471,7 +472,7 @@ router.delete('/admin/content-sections/:pageKey/:id', authMiddleware, (req: Auth
 })
 
 router.put('/admin/home', authMiddleware, (req: AuthRequest, res) => {
-  db.home_config = { ...db.home_config, ...req.body }
+  db.home_config = { ...db.home_config, ...normalizeHomeMedia(req.body) }
   saveDb()
   res.json({ success: true })
 })

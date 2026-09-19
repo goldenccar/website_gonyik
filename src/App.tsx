@@ -111,7 +111,8 @@ function App() {
           {/* Public routes */}
           <Route element={<PublicLayout />}>
             <Route path="/" element={<Home />} />
-            <Route path="/fabrics" element={<FabricDatabase />} />
+            <Route path="/fabrics" element={<FabricSeriesStory />} />
+            <Route path="/fabrics/catalog" element={<FabricDatabase />} />
             <Route path="/fabrics/series/:seriesSlug" element={<FabricSeriesStory />} />
 
             <Route path="/equipment" element={<EndUseEquipment />} />
@@ -128,7 +129,8 @@ function App() {
             <Route path="/contact" element={<Contact />} />
 
             <Route path="/global" element={<Home />} />
-            <Route path="/global/fabrics" element={<FabricDatabase />} />
+            <Route path="/global/fabrics" element={<FabricSeriesStory />} />
+            <Route path="/global/fabrics/catalog" element={<FabricDatabase />} />
             <Route path="/global/fabrics/series/:seriesSlug" element={<FabricSeriesStory />} />
             <Route path="/global/equipment" element={<EndUseEquipment />} />
             <Route path="/global/pfas-free-innovation" element={<Navigate to="/global/pfas-free-innovation/rpo-material-platform" replace />} />
@@ -146,7 +148,8 @@ function App() {
 
             {/* Additional CMS-defined markets use the same pages; their configured locale and visibility come from the API. */}
             <Route path="/:marketCode" element={<Home />} />
-            <Route path="/:marketCode/fabrics" element={<FabricDatabase />} />
+            <Route path="/:marketCode/fabrics" element={<FabricSeriesStory />} />
+            <Route path="/:marketCode/fabrics/catalog" element={<FabricDatabase />} />
             <Route path="/:marketCode/fabrics/series/:seriesSlug" element={<FabricSeriesStory />} />
             <Route path="/:marketCode/equipment" element={<EndUseEquipment />} />
             <Route path="/:marketCode/pfas-free-innovation" element={<Navigate to="rpo-material-platform" replace />} />

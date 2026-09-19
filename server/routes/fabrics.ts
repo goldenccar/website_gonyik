@@ -4,10 +4,43 @@ import { registerUploadedFile } from '../mediaAssets'
 import { authMiddleware, AuthRequest } from '../middleware/auth'
 import { upload } from '../middleware/upload'
 import { FABRIC_CAPABILITY_THEMES } from '../../src/config/fabricCapabilities'
+import { SERIES_FEATURE_ICONS } from '../../src/config/seriesFeatures'
 import { pageVisible, requestMarket } from '../market'
 
 const router = Router()
 const capabilityThemes = new Set(FABRIC_CAPABILITY_THEMES.map((item) => item.value))
+const seriesIconKeys = new Set<string>(SERIES_FEATURE_ICONS.map((item) => item.key))
+
+function validSeriesLink(value: unknown) {
+  if (value === undefined || value === null || value === '') return true
+  if (typeof value !== 'string' || /[\\\u0000-\u001f\u007f]/.test(value)) return false
+  const link = value.trim()
+  if (!link || /^\/(?!\/)/.test(link)) return true
+  if (!/^https?:\/\//i.test(link)) return false
+  try { return Boolean(new URL(link).hostname) } catch { return false }
+}
+
+function seriesStoryFields(body: Record<string, any>, existing: Record<string, any> = {}) {
+  const fields: Record<string, any> = {}
+  for (const key of ['story_title', 'story_intro', 'story_features_label', 'story_primary_label', 'story_primary_link', 'story_secondary_label', 'story_secondary_link']) {
+    fields[key] = body[key] === undefined ? existing[key] : String(body[key] ?? '').trim()
+  }
+  if (body.story_highlights === undefined && body.story_icons === undefined) {
+    fields.story_highlights = existing.story_highlights
+    fields.story_icons = existing.story_icons
+  } else {
+    const raw = body.story_highlights === undefined ? existing.story_highlights : body.story_highlights
+    const highlights = Array.isArray(raw) ? raw : String(raw ?? '').split(/[、,，\n]/)
+    const icons = body.story_icons === undefined ? existing.story_icons : body.story_icons
+    const rows = highlights.map((text, index) => ({ text: String(text ?? '').trim(), icon: icons?.[index] }))
+      .filter((item) => item.text).slice(0, 6)
+    fields.story_highlights = rows.map((item) => item.text)
+    fields.story_icons = Array.isArray(icons) && icons.length
+      ? rows.map((item) => seriesIconKeys.has(item.icon) ? item.icon : 'none')
+      : []
+  }
+  return fields
+}
 
 function toPublicSku(sku: any) {
   const { internal_code: _internalCode, ...publicSku } = sku
@@ -161,10 +194,11 @@ router.get('/admin/series', authMiddleware, (_req, res) => {
 })
 
 router.post('/admin/series', authMiddleware, (req: AuthRequest, res) => {
-  const { name, slug, description, tagline, story_title, story_intro, story_highlights, home_image, home_badge_image } = req.body
+  const { name, slug, description, tagline, home_image, home_badge_image } = req.body
   const normalizedName = String(name || '').trim()
   const normalizedSlug = String(slug || '').trim().toLowerCase()
   if (!normalizedName || !normalizedSlug) { res.status(400).json({ error: '系列名称和 Slug 不能为空' }); return }
+  if (![req.body.story_primary_link, req.body.story_secondary_link].every(validSeriesLink)) { res.status(400).json({ error: '按钮链接仅支持站内 / 路径或完整的 http(s) 地址' }); return }
   if (db.fabric_series.some((series) => String(series.slug).toLowerCase() === normalizedSlug)) { res.status(409).json({ error: 'Slug 已被使用' }); return }
   const normalizedHomeImage = home_image && home_image !== 'undefined' ? home_image : null
   const newSeries = {
@@ -173,9 +207,7 @@ router.post('/admin/series', authMiddleware, (req: AuthRequest, res) => {
     slug: normalizedSlug,
     description: String(description || '').trim(),
     tagline: String(tagline || '').trim(),
-    story_title: String(story_title || '').trim(),
-    story_intro: String(story_intro || '').trim(),
-    story_highlights: Array.isArray(story_highlights) ? story_highlights.map(String).map((item) => item.trim()).filter(Boolean).slice(0, 6) : [],
+    ...seriesStoryFields(req.body),
     home_image: normalizedHomeImage,
     home_badge_image: home_badge_image || null,
     order_index: nextOrderIndex(db.fabric_series),
@@ -189,10 +221,11 @@ router.put('/admin/series/:id', authMiddleware, (req: AuthRequest, res) => {
   const id = Number(req.params.id)
   const existing = db.fabric_series.find((s) => s.id === id)
   if (!existing) { res.status(404).json({ error: 'Not found' }); return }
-  const { name, slug, description, tagline, story_title, story_intro, story_highlights, home_image, home_badge_image } = req.body
+  const { name, slug, description, tagline, home_image, home_badge_image } = req.body
   const normalizedName = name === undefined ? existing.name : String(name).trim()
   const normalizedSlug = slug === undefined ? existing.slug : String(slug).trim().toLowerCase()
   if (!normalizedName || !normalizedSlug) { res.status(400).json({ error: '系列名称和 Slug 不能为空' }); return }
+  if (![req.body.story_primary_link, req.body.story_secondary_link].every(validSeriesLink)) { res.status(400).json({ error: '按钮链接仅支持站内 / 路径或完整的 http(s) 地址' }); return }
   if (db.fabric_series.some((series) => series.id !== id && String(series.slug).toLowerCase() === normalizedSlug)) { res.status(409).json({ error: 'Slug 已被使用' }); return }
   const normalizedHomeImage = home_image && home_image !== 'undefined' ? home_image : null
   updateById(db.fabric_series, id, {
@@ -200,11 +233,7 @@ router.put('/admin/series/:id', authMiddleware, (req: AuthRequest, res) => {
     slug: normalizedSlug,
     description: description === undefined ? existing.description : String(description).trim(),
     tagline: tagline === undefined ? existing.tagline : String(tagline).trim(),
-    story_title: story_title === undefined ? existing.story_title : String(story_title).trim(),
-    story_intro: story_intro === undefined ? existing.story_intro : String(story_intro).trim(),
-    story_highlights: story_highlights === undefined
-      ? existing.story_highlights
-      : (Array.isArray(story_highlights) ? story_highlights : String(story_highlights).split(/[、,，\n]/)).map(String).map((item) => item.trim()).filter(Boolean).slice(0, 6),
+    ...seriesStoryFields(req.body, existing),
     home_image: normalizedHomeImage ?? existing.home_image,
     home_badge_image: home_badge_image ?? existing.home_badge_image,
   })

@@ -31,13 +31,13 @@ export default function Contact() {
       setPage(config.data.data)
       const nextSubjects = options.data.data || []
       setSubjects(nextSubjects)
-      if (inquirySku) {
+      if (inquirySku || inquirySeries) {
         const preferred = nextSubjects.find((item: InquirySubject) => /样品|资料|tds|材料/i.test(item.label))
         setForm((current) => ({
           ...current,
           subject: current.subject || preferred?.label || '',
           source_page: inquirySource || '/fabrics',
-          product_model: `${inquirySeries ? `${inquirySeries} / ` : ''}${inquirySku}`,
+          product_model: [inquirySeries.toUpperCase(), inquirySku].filter(Boolean).join(' / '),
         }))
       } else if (inquiryTopic) {
         const preferred = nextSubjects.find((item: InquirySubject) => inquiryTopic === RPO_LABELS.testContact ? /资料|TDS/i.test(item.label) : /开发/.test(item.label))
@@ -71,7 +71,7 @@ export default function Contact() {
   const fieldClass = 'w-full border border-border bg-bg px-3 py-2.5 text-[16px] font-medium text-primary outline-none focus:border-primary sm:text-[14px]'
   return (
     <PageShell>
-      <PageHero title={page?.page_title || '合作咨询'} subtitle={page?.page_subtitle || '告诉我们你正在寻找的材料或应用方向，我们会尽快与你联系。'} image={page?.hero_background} imageAlt="港翼科技材料合作" />
+      <PageHero title={page?.page_title || ''} subtitle={page?.page_subtitle} image={page?.hero_background} imageAlt={page?.page_title} />
       <PageSection className="!py-8 lg:!py-10">
         <div className="grid overflow-hidden lg:grid-cols-12">
           <aside className="bg-darker p-6 text-white lg:col-span-4 lg:p-8">
@@ -80,9 +80,9 @@ export default function Contact() {
           </aside>
           <form onSubmit={submit} className="relative grid gap-3 bg-white p-6 sm:grid-cols-2 lg:col-span-8 lg:p-8">
             <div aria-hidden="true" className="hidden"><label>网站<input tabIndex={-1} autoComplete="off" name="website" value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} /></label></div>
-            {inquirySku && (
+            {(inquirySku || inquirySeries) && (
               <p className="border-l-2 border-accent bg-bg px-4 py-3 text-[13px] font-medium text-primary sm:col-span-2">
-                {t('当前咨询')}：{inquirySeries ? `${inquirySeries} / ` : ''}{inquirySku}
+                {t('当前咨询')}：{[inquirySeries.toUpperCase(), inquirySku].filter(Boolean).join(' / ')}
               </p>
             )}
             <label className="grid gap-2 text-[13px] font-medium text-primary">{t('姓名 *')}<input className={fieldClass} autoComplete="name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></label>

@@ -58,7 +58,7 @@ export function CatalogEndCta({ title, description, label, href = '/contact' }: 
         <h3 className="text-[17px] font-semibold text-primary"><InlineMarkup text={title} /></h3>
         {description && <p className="mt-1.5 text-[13px] leading-6 text-secondary"><InlineMarkup text={description} /></p>}
       </div>
-      {label && <Link to={localePath(href)} className="shrink-0 text-[14px] font-medium text-primary underline underline-offset-4"><InlineMarkup text={label} /> →</Link>}
+      {label && href && <Link to={localePath(href)} className="shrink-0 text-[14px] font-medium text-primary underline underline-offset-4"><InlineMarkup text={label} /> →</Link>}
     </aside>
   )
 }

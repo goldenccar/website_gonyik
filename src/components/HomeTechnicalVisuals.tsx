@@ -2,28 +2,17 @@ import { useEffect, useId, useMemo, useRef, useState, type CSSProperties, type R
 import { Link } from 'react-router-dom'
 import { ArrowUpRight, ChevronLeft, ChevronRight } from 'lucide-react'
 import type { HomePlatformCard, HomeVerificationImage } from '@/types'
+import { useSiteLocale } from '@/i18n/SiteLocale'
 import MotionInView from './MotionInView'
 import { InlineMarkup } from './MarkupParser'
 
 type MaterialKind = 'membrane' | 'lamination' | 'supply'
 
-const TECHNICAL_VISUAL_ASSETS = [
-  '/visuals/membrane-waterdrops-v3.webp',
-  '/visuals/lamination-layer-backing-alpha-v3.webp',
-  '/visuals/lamination-layer-membrane-alpha-v3.webp',
-  '/visuals/lamination-layer-top-alpha-v3.webp',
-  '/visuals/supply-chain-ribbon-v2.webp',
-  '/visuals/supply-chain-node-lab-v2.webp',
-  '/visuals/supply-chain-node-factory-v2.webp',
-  '/visuals/supply-chain-node-retail-v2.webp',
-  '/visuals/supply-chain-node-materials-v2.webp',
-  '/visuals/supply-chain-node-material-v2.webp',
-] as const
-
 function useImagesReady(assets: readonly string[]) {
   const [ready, setReady] = useState(false)
 
   useEffect(() => {
+    setReady(false)
     let active = true
     let readinessTimeout = 0
     let preloadTimeout = 0
@@ -64,7 +53,10 @@ function useImagesReady(assets: readonly string[]) {
 }
 
 function useTechnicalVisualsReady() {
-  return useImagesReady(TECHNICAL_VISUAL_ASSETS)
+  const { bootstrap } = useSiteLocale()
+  const config = bootstrap.home_config.technical_visuals
+  const assets = useMemo(() => Object.entries(config || {}).filter(([key, value]) => key.endsWith('_image') && value).map(([, value]) => value as string), [config])
+  return useImagesReady(assets)
 }
 
 type FlowPoint = { x: number; y: number; scale: number; delay: number }
@@ -89,11 +81,11 @@ function MaterialScene({ kind, image, layers, label, children }: {
   kind: MaterialKind
   image?: string
   layers?: MaterialLayer[]
-  label: string
+  label?: string
   children?: ReactNode
 }) {
   return (
-    <div className={`material-render material-render-${kind}`} role="img" aria-label={label}>
+    <div className={`material-render material-render-${kind}`} role={label ? 'img' : undefined} aria-label={label || undefined}>
       <div className="material-render-stage" aria-hidden="true">
         {image && <img src={image} alt="" loading="lazy" decoding="async" fetchPriority="low" className="material-render-image" />}
         {layers?.map((layer) => (
@@ -110,13 +102,15 @@ function MaterialScene({ kind, image, layers, label, children }: {
 }
 
 function MembraneDiagram() {
+  const { bootstrap, t } = useSiteLocale()
+  const config = bootstrap.home_config.technical_visuals
   const uid = useId().replace(/:/g, '')
   const waterId = `water-drop-${uid}`
   const fogId = `fog-volume-${uid}`
   const softId = `flow-soft-${uid}`
   const fogFilterId = `fog-filter-${uid}`
   return (
-    <MaterialScene kind="membrane" image="/visuals/membrane-waterdrops-v3.webp" label="微孔膜阻挡液态水并允许湿气通过的示意图">
+    <MaterialScene kind="membrane" image={config?.membrane_image} label={t(config?.membrane_label || '')}>
         <defs>
           <radialGradient id={waterId} cx="34%" cy="26%" r="72%">
             <stop offset="0" stopColor="#fff" stopOpacity=".9" />
@@ -167,34 +161,38 @@ function MembraneDiagram() {
 }
 
 function LaminationDiagram() {
+  const { bootstrap, t } = useSiteLocale()
+  const config = bootstrap.home_config.technical_visuals
   return (
     <MaterialScene
       kind="lamination"
       layers={[
-        { src: '/visuals/lamination-layer-backing-alpha-v3.webp', className: 'material-render-lamination-backing' },
-        { src: '/visuals/lamination-layer-membrane-alpha-v3.webp', className: 'material-render-lamination-membrane' },
-        { src: '/visuals/lamination-layer-top-alpha-v3.webp', className: 'material-render-lamination-top' },
-      ]}
-      label="织物、膜层和内层压合形成完整复合面料的示意图"
+        { src: config?.lamination_backing_image || '', className: 'material-render-lamination-backing' },
+        { src: config?.lamination_membrane_image || '', className: 'material-render-lamination-membrane' },
+        { src: config?.lamination_top_image || '', className: 'material-render-lamination-top' },
+      ].filter(layer => layer.src)}
+      label={t(config?.lamination_label || '')}
     />
   )
 }
 
 const SUPPLY_CHAIN_NODES = [
-  { key: 'lab', src: '/visuals/supply-chain-node-lab-v2.webp', delay: -3.316 },
-  { key: 'factory', src: '/visuals/supply-chain-node-factory-v2.webp', delay: -.76 },
-  { key: 'retail', src: '/visuals/supply-chain-node-retail-v2.webp', delay: -9.542 },
-  { key: 'materials', src: '/visuals/supply-chain-node-materials-v2.webp', delay: -6.832 },
-  { key: 'material', src: '/visuals/supply-chain-node-material-v2.webp', delay: -4.212 },
+  { key: 'lab', delay: -3.316 },
+  { key: 'factory', delay: -.76 },
+  { key: 'retail', delay: -9.542 },
+  { key: 'materials', delay: -6.832 },
+  { key: 'material', delay: -4.212 },
 ] as const
 
-function SupplyChainDiagram({ label = 'PFAS FREE' }: { label?: string }) {
+function SupplyChainDiagram({ label }: { label?: string }) {
+  const { bootstrap, t } = useSiteLocale()
+  const config = bootstrap.home_config.technical_visuals
   const uid = useId().replace(/:/g, '')
   const glowId = `supply-glow-${uid}`
   return (
-    <div className="supply-chain-scene" role="img" aria-label="原料、材料、实验验证、制造与终端应用的供应链示意图">
+    <div className="supply-chain-scene" role={config?.supply_label ? 'img' : undefined} aria-label={config?.supply_label ? t(config.supply_label) : undefined}>
       <div className="supply-chain-canvas" aria-hidden="true">
-        <img src="/visuals/supply-chain-ribbon-v2.webp" alt="" loading="lazy" decoding="async" fetchPriority="low" className="supply-chain-ribbon" />
+        {config?.supply_ribbon_image && <img src={config.supply_ribbon_image} alt="" loading="lazy" decoding="async" fetchPriority="low" className="supply-chain-ribbon" />}
         <svg viewBox="0 0 1746 901" className="supply-chain-flow" fill="none">
           <defs>
             <filter id={glowId} x="-60%" y="-80%" width="220%" height="260%">
@@ -204,24 +202,25 @@ function SupplyChainDiagram({ label = 'PFAS FREE' }: { label?: string }) {
           </defs>
           <ellipse cx="873" cy="466" rx="642" ry="278" pathLength="100" className="supply-chain-pulse" filter={`url(#${glowId})`} />
         </svg>
-        {SUPPLY_CHAIN_NODES.map((node) => (
+        {SUPPLY_CHAIN_NODES.filter(node => config?.[`supply_${node.key}_image`]).map((node) => (
           <div
             key={node.key}
             className={`supply-chain-node supply-chain-node-${node.key}`}
             style={{ '--supply-delay': `${node.delay}s` } as CSSProperties}
           >
-            <img src={node.src} alt="" loading="lazy" decoding="async" fetchPriority="low" />
+            <img src={config?.[`supply_${node.key}_image`]} alt="" loading="lazy" decoding="async" fetchPriority="low" />
           </div>
         ))}
-        <div className="supply-chain-center"><span>{label}</span></div>
+        {label && <div className="supply-chain-center"><span><InlineMarkup text={label} /></span></div>}
       </div>
     </div>
   )
 }
 
 export function SupplyChainVisual() {
+  const { bootstrap } = useSiteLocale()
   const ready = useTechnicalVisualsReady()
-  return <MotionInView className={`rpo-supply-animation supply-chain-motion ${ready ? 'media-ready' : ''}`}><SupplyChainDiagram label="GONYIK" /></MotionInView>
+  return <MotionInView className={`rpo-supply-animation supply-chain-motion ${ready ? 'media-ready' : ''}`}><SupplyChainDiagram label={bootstrap.home_config.technical_visuals?.supply_rpo_center} /></MotionInView>
 }
 
 export function MaterialTechnologyVisual({ kind }: { kind: 'membrane' | 'lamination' }) {
@@ -229,35 +228,31 @@ export function MaterialTechnologyVisual({ kind }: { kind: 'membrane' | 'laminat
   return <MotionInView className={`rpo-material-animation material-system-visual ${ready ? 'media-ready' : ''}`}><MaterialDiagram kind={kind} /></MotionInView>
 }
 
-const MATERIAL_KINDS: MaterialKind[] = ['membrane', 'lamination', 'supply']
-
 function MaterialDiagram({ kind }: { kind: MaterialKind }) {
+  const { bootstrap } = useSiteLocale()
   if (kind === 'membrane') return <MembraneDiagram />
   if (kind === 'lamination') return <LaminationDiagram />
-  return <SupplyChainDiagram />
+  return <SupplyChainDiagram label={bootstrap.home_config.technical_visuals?.supply_home_center} />
 }
 
-export function MaterialSystemVisual({ items, href, itemHrefs }: { items: HomePlatformCard[]; href: string; itemHrefs?: string[] }) {
+export function MaterialSystemVisual({ items }: { items: HomePlatformCard[] }) {
+  const { path } = useSiteLocale()
   const mediaReady = useTechnicalVisualsReady()
   return (
     <MotionInView className={`material-system-visual home-technology-list supply-chain-motion ${mediaReady ? 'media-ready' : ''}`}>
-      {items.slice(0, 3).map((item, index) => (
-        <Link
-          key={`${item.title}-${index}`}
-          to={itemHrefs?.[index] || href}
-          data-motion-item
-          style={{ '--motion-delay': `${index * 90}ms` } as CSSProperties}
-          className="material-system-row home-technology-row"
-        >
+      {items.slice(0, 3).map((item, index) => {
+        const content = <>
           <div className="relative z-10 min-w-0">
-            <div className="home-technology-row-heading"><h3 className="type-card-title text-primary"><InlineMarkup text={item.title} /></h3><ArrowUpRight className="home-technology-arrow" size={18} strokeWidth={1.5} aria-hidden="true" /></div>
-            <p className="mt-2 body-copy text-secondary"><InlineMarkup text={item.subtitle || item.description || ''} /></p>
+            <div className="home-technology-row-heading"><h3 className="type-card-title text-primary"><InlineMarkup text={item.title} /></h3>{item.link && <ArrowUpRight className="home-technology-arrow" size={18} strokeWidth={1.5} aria-hidden="true" />}</div>
+            {item.subtitle && <p className="mt-2 body-copy text-secondary"><InlineMarkup text={item.subtitle} /></p>}
           </div>
           <div className="material-system-media relative z-0 h-[150px] min-w-0 overflow-hidden text-primary">
-            <MaterialDiagram kind={MATERIAL_KINDS[index]} />
+            {item.visual === 'membrane' || item.visual === 'lamination' || item.visual === 'supply' ? <MaterialDiagram kind={item.visual} /> : item.visual === 'image' && item.image_url ? <img src={item.image_url} alt="" loading="lazy" decoding="async" className="h-full w-full object-contain" /> : null}
           </div>
-        </Link>
-      ))}
+        </>
+        const props = { 'data-motion-item': true, style: { '--motion-delay': `${index * 90}ms` } as CSSProperties, className: 'material-system-row home-technology-row' }
+        return item.link ? <Link key={`${item.title}-${index}`} to={path(item.link)} {...props}>{content}</Link> : <article key={`${item.title}-${index}`} {...props}>{content}</article>
+      })}
     </MotionInView>
   )
 }

@@ -29,8 +29,8 @@ export default function Footer() {
             <p className="mt-5 hidden max-w-[520px] text-[14px] leading-7 text-secondary md:block"><InlineMarkup text={footer?.brand_description} /></p>
           </div>
 
-          <FooterColumn title={footer?.material_title || '材料与应用'} links={navigation.slice(0, 3)} />
-          <FooterColumn title={footer?.support_title || '服务与支持'} links={navigation.slice(3)} />
+          <FooterColumn title={footer?.material_title || ''} links={navigation.slice(0, 3)} />
+          <FooterColumn title={footer?.support_title || ''} links={navigation.slice(3)} />
 
           <div className="col-span-2 lg:col-span-3">
             <p className="label-zh border-b border-border pb-3 text-secondary md:pb-4"><InlineMarkup text={footer?.contact_title} /></p>
@@ -41,7 +41,7 @@ export default function Footer() {
         </div>
 
         <div className="pt-6 text-[12px] leading-5 text-secondary md:flex md:items-center md:justify-between">
-          <span className="block"><InlineMarkup text={footer?.copyright || '© 2026 港翼科技 GONYIK 版权所有'} /></span>
+          <span className="block"><InlineMarkup text={footer?.copyright} /></span>
           <div className="mt-5 grid grid-cols-[minmax(0,1fr)_28px] items-end gap-x-4 md:mt-0 md:flex md:items-center md:gap-0">
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
               <Link to={localePath(footer?.privacy_policy_link || '/privacy-policy')} className="hover:text-primary"><InlineMarkup text="隐私政策" /></Link>

@@ -19,7 +19,7 @@ function readValues(value?: unknown) {
   return []
 }
 
-export function getFabricCapabilityIds(features?: unknown, legacySummary?: unknown, capabilities: FabricCapabilityDefinition[] = DEFAULT_FABRIC_CAPABILITIES) {
+function getFabricCapabilityIds(features?: unknown, legacySummary?: unknown, capabilities: FabricCapabilityDefinition[] = DEFAULT_FABRIC_CAPABILITIES) {
   const values = [...readValues(features), ...readValues(legacySummary)]
   return capabilities.filter((capability) => values.some((value) => {
     const normalized = value.trim().toLowerCase()

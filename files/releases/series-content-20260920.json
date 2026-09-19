@@ -1,0 +1,440 @@
+[
+  {
+    "collection": "home_config",
+    "field": "platform_cards",
+    "before": [
+      {
+        "icon": "Layers",
+        "title": "膜技术",
+        "subtitle": "以 RPO-SOTEX 功能膜实现防水透湿。",
+        "description": "RPO-SOTEX 以聚烯烃材料与超微孔结构实现防水透湿",
+        "evidence": "数百种目标PFAS，通过SGS检测，均未检出",
+        "footer": "MEMBRANE"
+      },
+      {
+        "icon": "Hexagon",
+        "title": "面料复合",
+        "subtitle": "通过复合工艺，协调面层、功能层与内层的表现。",
+        "description": "兼顾防护、透湿、手感与耐久表现",
+        "footer": "LAMINATION"
+      },
+      {
+        "icon": "Network",
+        "title": "供应链协同",
+        "subtitle": "衔接材料、工艺、制造与交付。",
+        "description": "连接材料、工艺、制造与交付",
+        "footer": "SUPPLY CHAIN"
+      }
+    ],
+    "after": [
+      {
+        "title": "膜技术",
+        "subtitle": "以 RPO-SOTEX 功能膜实现防水透湿。",
+        "link": "/pfas-free-innovation/rpo-sotex-membrane",
+        "visual": "membrane",
+        "image_url": ""
+      },
+      {
+        "title": "面料复合",
+        "subtitle": "通过复合工艺，协调面层、功能层与内层的表现。",
+        "link": "/pfas-free-innovation/lamination",
+        "visual": "lamination",
+        "image_url": ""
+      },
+      {
+        "title": "供应链协同",
+        "subtitle": "衔接材料、工艺、制造与交付。",
+        "link": "/pfas-free-innovation/supply-chain",
+        "visual": "supply",
+        "image_url": ""
+      }
+    ]
+  },
+  {
+    "collection": "home_config",
+    "field": "series_entries",
+    "before": {
+      "otter": {
+        "title": "防水透湿",
+        "description": "适用于冲锋衣、雨衣等户外服装。"
+      },
+      "rayo": {
+        "title": "防晒与日常户外",
+        "description": "适用于防晒衣、垂钓披风及轻户外服装。"
+      },
+      "kais": {
+        "title": "专业防护",
+        "description": "用于防护服装、手套及其他需要加强防护的部位。"
+      }
+    },
+    "after": {
+      "otter": {
+        "title": "专业户外",
+        "description": "风雨防护、高效透湿，兼顾运动舒适与耐磨耐用。"
+      },
+      "rayo": {
+        "title": "轻户外",
+        "description": "兼顾日常防护、透气排湿与耐用，更注重柔软手感和穿着舒适。"
+      },
+      "kais": {
+        "title": "专业防护",
+        "description": "用于防护服装、手套及其他需要加强防护的部位。"
+      }
+    }
+  },
+  {
+    "collection": "home_config",
+    "field": "technical_visuals",
+    "after": {
+      "membrane_image": "/visuals/membrane-waterdrops-v3.webp",
+      "membrane_label": "微孔膜阻挡液态水并允许湿气通过的示意图",
+      "lamination_top_image": "/visuals/lamination-layer-top-alpha-v3.webp",
+      "lamination_membrane_image": "/visuals/lamination-layer-membrane-alpha-v3.webp",
+      "lamination_backing_image": "/visuals/lamination-layer-backing-alpha-v3.webp",
+      "lamination_label": "织物、膜层和内层压合形成完整复合面料的示意图",
+      "supply_ribbon_image": "/visuals/supply-chain-ribbon-v2.webp",
+      "supply_lab_image": "/visuals/supply-chain-node-lab-v2.webp",
+      "supply_factory_image": "/visuals/supply-chain-node-factory-v2.webp",
+      "supply_retail_image": "/visuals/supply-chain-node-retail-v2.webp",
+      "supply_materials_image": "/visuals/supply-chain-node-materials-v2.webp",
+      "supply_material_image": "/visuals/supply-chain-node-material-v2.webp",
+      "supply_label": "原料、材料、实验验证、制造与终端应用的供应链示意图",
+      "supply_home_center": "PFAS FREE",
+      "supply_rpo_center": "GONYIK"
+    }
+  },
+  {
+    "collection": "fabric_series",
+    "id": 1,
+    "field": "story_title",
+    "before": "金奖膜技术，进入高性能面料",
+    "after": "专业户外"
+  },
+  {
+    "collection": "fabric_series",
+    "id": 1,
+    "field": "story_intro",
+    "before": "港翼 OTTER 采用获日内瓦国际发明展特别评审金奖的 RPO 膜技术，通过面层、功能膜与内层结构的协同设计，兼顾防水、透湿和舒适性表现。其 RPO-SOTEX 功能膜经 SGS 对数百种目标 PFAS 进行检测，结果均未检出。",
+    "after": "用于徒步、登山等专业户外服装与装备，注重风雨防护、运动排湿和反复使用中的耐久性。"
+  },
+  {
+    "collection": "fabric_series",
+    "id": 1,
+    "field": "story_highlights",
+    "before": [
+      "高性能防水",
+      "稳定透湿表现",
+      "轻量舒适结构"
+    ],
+    "after": [
+      "风雨防护",
+      "高效透湿",
+      "运动舒适",
+      "耐磨耐用"
+    ]
+  },
+  {
+    "collection": "fabric_series",
+    "id": 1,
+    "field": "story_features_label",
+    "after": "系列特点"
+  },
+  {
+    "collection": "fabric_series",
+    "id": 1,
+    "field": "story_icons",
+    "after": [
+      "cloud-rain",
+      "waves",
+      "feather",
+      "shield-check"
+    ]
+  },
+  {
+    "collection": "fabric_series",
+    "id": 1,
+    "field": "story_primary_label",
+    "after": "查看面料"
+  },
+  {
+    "collection": "fabric_series",
+    "id": 1,
+    "field": "story_primary_link",
+    "after": "/fabrics/catalog?series=otter#series-otter"
+  },
+  {
+    "collection": "fabric_series",
+    "id": 1,
+    "field": "story_secondary_label",
+    "after": "咨询选材"
+  },
+  {
+    "collection": "fabric_series",
+    "id": 1,
+    "field": "story_secondary_link",
+    "after": "/contact?series=otter&source=fabric-series"
+  },
+  {
+    "collection": "fabric_series",
+    "id": 2,
+    "field": "order_index",
+    "before": 1,
+    "after": 2
+  },
+  {
+    "collection": "fabric_series",
+    "id": 2,
+    "field": "story_title",
+    "before": "面向特种场景，构建关键材料",
+    "after": "专业防护"
+  },
+  {
+    "collection": "fabric_series",
+    "id": 2,
+    "field": "story_intro",
+    "before": "KAIS 面向消防、防化及其他特种场景，围绕高性能纤维、功能膜、织物结构与复合工艺进行针对性开发，为不同专业任务提供可进一步适配与验证的材料基础。",
+    "after": "面向防割、防刺需求开发柔性材料。用于防护服装、手套及需要加强防护的部位，兼顾防护与活动需要。"
+  },
+  {
+    "collection": "fabric_series",
+    "id": 2,
+    "field": "story_highlights",
+    "before": [
+      "特种场景适配",
+      "多材料协同",
+      "项目化开发"
+    ],
+    "after": [
+      "防割防刺",
+      "柔性穿着"
+    ]
+  },
+  {
+    "collection": "fabric_series",
+    "id": 2,
+    "field": "story_features_label",
+    "after": "系列特点"
+  },
+  {
+    "collection": "fabric_series",
+    "id": 2,
+    "field": "story_icons",
+    "after": [
+      "shield",
+      "layers"
+    ]
+  },
+  {
+    "collection": "fabric_series",
+    "id": 2,
+    "field": "story_primary_label",
+    "after": "查看面料"
+  },
+  {
+    "collection": "fabric_series",
+    "id": 2,
+    "field": "story_primary_link",
+    "after": "/fabrics/catalog?series=kais#series-kais"
+  },
+  {
+    "collection": "fabric_series",
+    "id": 2,
+    "field": "story_secondary_label",
+    "after": "咨询选材"
+  },
+  {
+    "collection": "fabric_series",
+    "id": 2,
+    "field": "story_secondary_link",
+    "after": "/contact?series=kais&source=fabric-series"
+  },
+  {
+    "collection": "fabric_series",
+    "id": 3,
+    "field": "order_index",
+    "before": 2,
+    "after": 1
+  },
+  {
+    "collection": "fabric_series",
+    "id": 3,
+    "field": "story_title",
+    "before": "把防晒、导湿与凉感织进结构",
+    "after": "轻户外"
+  },
+  {
+    "collection": "fabric_series",
+    "id": 3,
+    "field": "story_intro",
+    "before": "RAYO 面向日常与运动场景，从纤维配方与织物结构出发，兼顾防晒、导湿、速干与接触凉感，让功能表现建立在材料与结构本身。",
+    "after": "日常出行、垂钓或周末户外，兼顾所需的防护、排湿和耐用性，更注重柔软手感与穿着舒适。"
+  },
+  {
+    "collection": "fabric_series",
+    "id": 3,
+    "field": "story_highlights",
+    "before": [
+      "UPF 50+",
+      "导湿速干",
+      "接触凉感"
+    ],
+    "after": [
+      "日常防护",
+      "透气排湿",
+      "柔软亲肤",
+      "日常耐用"
+    ]
+  },
+  {
+    "collection": "fabric_series",
+    "id": 3,
+    "field": "story_features_label",
+    "after": "系列特点"
+  },
+  {
+    "collection": "fabric_series",
+    "id": 3,
+    "field": "story_icons",
+    "after": [
+      "cloud-sun",
+      "waves",
+      "feather",
+      "shield-check"
+    ]
+  },
+  {
+    "collection": "fabric_series",
+    "id": 3,
+    "field": "story_primary_label",
+    "after": "查看面料"
+  },
+  {
+    "collection": "fabric_series",
+    "id": 3,
+    "field": "story_primary_link",
+    "after": "/fabrics/catalog?series=rayo#series-rayo"
+  },
+  {
+    "collection": "fabric_series",
+    "id": 3,
+    "field": "story_secondary_label",
+    "after": "咨询选材"
+  },
+  {
+    "collection": "fabric_series",
+    "id": 3,
+    "field": "story_secondary_link",
+    "after": "/contact?series=rayo&source=fabric-series"
+  },
+  {
+    "collection": "navigation",
+    "id": 2,
+    "field": "mega_menu",
+    "before": [
+      {
+        "id": "overview-2",
+        "title": "面料系列",
+        "description": "从户外穿着到专业防护，按使用需求了解面料。",
+        "image_url": "/uploads/1783870881229-286570534.jpg",
+        "link": "/fabrics",
+        "order_index": 0,
+        "items": []
+      },
+      {
+        "id": "2-v8-series-group",
+        "title": "系列平台",
+        "order_index": 1,
+        "items": [
+          {
+            "id": "2-v8-series-item-1",
+            "label": "OTTER 系列",
+            "link": "/fabrics/series/otter",
+            "order_index": 0,
+            "description": "防水透湿"
+          },
+          {
+            "id": "2-v8-series-item-2",
+            "label": "RAYO 系列",
+            "link": "/fabrics/series/rayo",
+            "order_index": 1,
+            "description": "防晒与轻户外"
+          },
+          {
+            "id": "2-v8-series-item-3",
+            "label": "KAIS 系列",
+            "link": "/fabrics/series/kais",
+            "order_index": 2,
+            "description": "专业防护"
+          }
+        ]
+      }
+    ],
+    "after": [
+      {
+        "id": "overview-2",
+        "title": "面料系列",
+        "description": "从户外穿着到专业防护，按使用需求了解面料。",
+        "image_url": "/uploads/1783870881229-286570534.jpg",
+        "link": "/fabrics",
+        "order_index": 0,
+        "items": []
+      },
+      {
+        "id": "2-v8-series-group",
+        "title": "系列平台",
+        "order_index": 1,
+        "items": [
+          {
+            "id": "2-v8-series-item-1",
+            "label": "OTTER 系列",
+            "link": "/fabrics#series-otter",
+            "order_index": 0,
+            "description": "专业户外"
+          },
+          {
+            "id": "2-v8-series-item-2",
+            "label": "RAYO 系列",
+            "link": "/fabrics#series-rayo",
+            "order_index": 1,
+            "description": "轻户外"
+          },
+          {
+            "id": "2-v8-series-item-3",
+            "label": "KAIS 系列",
+            "link": "/fabrics#series-kais",
+            "order_index": 2,
+            "description": "专业防护"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "collection": "translations",
+    "field": "en",
+    "before": {},
+    "after": {
+      "专业户外": "Technical outdoor",
+      "轻户外": "Everyday outdoor",
+      "专业防护": "Specialist protection",
+      "用于徒步、登山等专业户外服装与装备，注重风雨防护、运动排湿和反复使用中的耐久性。": "For technical outdoor clothing and equipment used in hiking and mountaineering, with a focus on weather protection, moisture transfer during activity and durability through repeated use.",
+      "日常出行、垂钓或周末户外，兼顾所需的防护、排湿和耐用性，更注重柔软手感与穿着舒适。": "For everyday outings, fishing and weekends outdoors, balancing protection, moisture management and durability with a greater emphasis on softness and wearing comfort.",
+      "面向防割、防刺需求开发柔性材料。用于防护服装、手套及需要加强防护的部位，兼顾防护与活动需要。": "Flexible materials developed for cut and puncture protection in protective clothing, gloves and reinforced areas, balancing protection with freedom of movement.",
+      "风雨防护、高效透湿，兼顾运动舒适与耐磨耐用。": "Weather protection and efficient moisture transfer, with comfort during activity and resistance to wear.",
+      "兼顾日常防护、透气排湿与耐用，更注重柔软手感和穿着舒适。": "Everyday protection, breathability and durability, with an emphasis on softness and wearing comfort.",
+      "风雨防护": "Weather protection",
+      "高效透湿": "Efficient moisture transfer",
+      "运动舒适": "Active comfort",
+      "耐磨耐用": "Resistance to wear",
+      "日常防护": "Everyday protection",
+      "透气排湿": "Breathability and moisture management",
+      "柔软亲肤": "Soft next to skin",
+      "日常耐用": "Everyday durability",
+      "防割防刺": "Cut and puncture protection",
+      "柔性穿着": "Flexible comfort",
+      "系列特点": "Series features",
+      "查看面料": "Explore fabrics",
+      "咨询选材": "Discuss material selection"
+    }
+  }
+]

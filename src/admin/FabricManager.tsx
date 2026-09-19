@@ -15,6 +15,7 @@ import { FabricCapabilitySelector } from '@/components/FabricCapabilities'
 import FabricCapabilityLibrary from './components/FabricCapabilityLibrary'
 import CroppedImageField, { type CroppedImageChange } from './components/CroppedImageField'
 import type { FabricCapabilityDefinition } from '@/config/fabricCapabilities'
+import { SERIES_FEATURE_ICONS } from '@/config/seriesFeatures'
 import type { RailEndCardConfig } from '@/components/RailEndCard'
 
 const DEFAULT_RAIL: RailEndCardConfig = { rail_end_card_visible: true, rail_end_card_title: '面料定制与联合开发', rail_end_card_description: '围绕应用环境与目标性能，提供选材建议、打样与联合开发支持。', rail_end_card_cta_label: '咨询开发方案', rail_end_card_cta_href: '/contact' }
@@ -86,6 +87,10 @@ export default function AdminFabricManager() {
         const up = await uploadFile(seriesImage.file)
         home_image = up.data.url || up.data.data?.url || ''
       }
+      const storyFeatures = Array.from({ length: 6 }, (_, index) => ({
+        text: String(data[`story_highlight_${index}`] || '').trim(),
+        icon: String(data[`story_icon_${index}`] || 'none'),
+      })).filter((item) => item.text)
       const payload = {
         name: data.name as string,
         slug: data.slug as string,
@@ -93,7 +98,13 @@ export default function AdminFabricManager() {
         description: (data.description as string) || '',
         story_title: (data.story_title as string) || '',
         story_intro: (data.story_intro as string) || '',
-        story_highlights: String(data.story_highlights || '').split(/[、,，\n]/).map((item) => item.trim()).filter(Boolean).slice(0, 6),
+        story_features_label: String(data.story_features_label || ''),
+        story_highlights: storyFeatures.map((item) => item.text),
+        story_icons: storyFeatures.map((item) => item.icon),
+        story_primary_label: String(data.story_primary_label || ''),
+        story_primary_link: String(data.story_primary_link || ''),
+        story_secondary_label: String(data.story_secondary_label || ''),
+        story_secondary_link: String(data.story_secondary_link || ''),
         home_image,
       }
       if (editingSeries?.id) await api.put(`/fabrics/admin/series/${editingSeries.id}`, payload)
@@ -217,7 +228,7 @@ export default function AdminFabricManager() {
           <table className="w-full text-left text-[13px]">
             <thead className="border-b border-white/10 text-accent uppercase">
               <tr>
-                <th className="px-6 py-3">首页卡片图</th>
+                <th className="px-6 py-3">系列主图</th>
                 <th className="px-6 py-3">名称</th>
                 <th className="px-6 py-3">Slug</th>
                 <th className="px-6 py-3">描述</th>
@@ -303,11 +314,24 @@ export default function AdminFabricManager() {
               <FormField label="标语 Tagline" name="tagline" markup="inline" defaultValue={editingSeries?.tagline} />
               <FormField label="描述" name="description" markup="inline" defaultValue={editingSeries?.description} textarea />
               <details className="border border-white/10 p-4" open={Boolean(editingSeries?.story_title || editingSeries?.story_intro)}>
-                <summary className="cursor-pointer text-[13px] font-medium text-white">系列故事页</summary>
+                <summary className="cursor-pointer text-[13px] font-medium text-white">系列分屏内容</summary>
                 <div className="mt-4 space-y-4">
-                  <FormField label="故事页主标题" name="story_title" markup="inline" defaultValue={editingSeries?.story_title} placeholder="留空时使用系统暂定文案" />
-                  <FormField label="故事页导语" name="story_intro" markup="inline" defaultValue={editingSeries?.story_intro} textarea placeholder="留空时使用系统暂定文案" />
-                  <FormField label="核心能力（最多 6 项）" name="story_highlights" defaultValue={Array.isArray(editingSeries?.story_highlights) ? editingSeries.story_highlights.join('、') : ''} placeholder="例如 全天候防护、持久防水、耐磨耐久" />
+                  <FormField label="系列定位" name="story_title" markup="inline" defaultValue={editingSeries?.story_title} placeholder="留空则不显示" />
+                  <FormField label="系列说明" name="story_intro" markup="inline" defaultValue={editingSeries?.story_intro} textarea placeholder="留空则不显示" />
+                  <FormField label="特点区域标题" name="story_features_label" markup="inline" defaultValue={editingSeries?.story_features_label} placeholder="留空则不显示标题" />
+                  <p className="text-[12px] text-secondary">系列特点建议填写 3 项，最多 6 项；空白项不显示。</p>
+                  {Array.from({ length: 6 }, (_, index) => (
+                    <div key={index} className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_150px]">
+                      <FormField label={`特点 ${index + 1}`} name={`story_highlight_${index}`} markup="inline" defaultValue={editingSeries?.story_highlights?.[index]} placeholder="留空则不显示" />
+                      <FormField label={`特点 ${index + 1} 图标`} name={`story_icon_${index}`} select defaultValue={editingSeries?.story_icons?.[index] || 'none'} options={SERIES_FEATURE_ICONS.map((item) => ({ value: item.key, label: item.label }))} />
+                    </div>
+                  ))}
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <FormField label="主按钮文字" name="story_primary_label" defaultValue={editingSeries?.story_primary_label} placeholder="留空则不显示按钮" />
+                    <FormField label="主按钮链接" name="story_primary_link" defaultValue={editingSeries?.story_primary_link} placeholder="站内路径或 https:// 链接" />
+                    <FormField label="次按钮文字" name="story_secondary_label" defaultValue={editingSeries?.story_secondary_label} placeholder="留空则不显示按钮" />
+                    <FormField label="次按钮链接" name="story_secondary_link" defaultValue={editingSeries?.story_secondary_link} placeholder="站内路径或 https:// 链接" />
+                  </div>
                 </div>
               </details>
               <div>
@@ -317,7 +341,7 @@ export default function AdminFabricManager() {
                       setSeries((items) => items.map((item) => item.id === editingSeries.id ? { ...item, ...patch } : item))
                     }} />
                 ) : (
-                  <CroppedImageField label="首页卡片背景图" aspect={4 / 3} fileBaseName="series-home" onChange={setSeriesImage} help="新增系列保存时一并上传；保存后可继续替换或移除。" />
+                  <CroppedImageField label="系列主图（首页与系列页共用）" aspect={4 / 3} fileBaseName="series-home" onChange={setSeriesImage} help="新增系列保存时一并上传；保存后可继续替换或移除。" />
                 )}
               </div>
               {seriesError && <p className="border border-error/40 bg-error/10 px-3 py-2 text-[13px] text-error">{seriesError}</p>}

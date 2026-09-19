@@ -125,7 +125,7 @@ export default function SeriesHomeImageEditor({ series, onChange }: SeriesHomeIm
 
   return (
     <div>
-      <CroppedImageField key={series.home_image || 'empty'} label="首页卡片背景图" currentSrc={series.home_image} aspect={4 / 3} fileBaseName={`${series.slug}-home`} onChange={handleHomeImageChange} confirmRemove={() => confirm(`确定移除${series.name}的首页卡片图？`)} help={busy ? '图片处理中…' : '统一使用 4:3 裁切，保存为 WebP。'} />
+      <CroppedImageField key={series.home_image || 'empty'} label="系列主图（首页与系列页共用）" currentSrc={series.home_image} aspect={4 / 3} fileBaseName={`${series.slug}-home`} onChange={handleHomeImageChange} confirmRemove={() => confirm(`确定移除${series.name}的系列主图？`)} help={busy ? '图片处理中…' : '统一使用 4:3 裁切，保存为 WebP。系列页按屏幕比例铺满，重要主体请靠近画面中央。'} />
 
       <div className="mt-5 border-t border-white/10 pt-5">
         <p className="mb-2 text-[12px] uppercase text-secondary">左下角透明徽章</p>
