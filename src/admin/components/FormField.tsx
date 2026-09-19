@@ -1,3 +1,4 @@
+import { useId } from 'react'
 import type { ReactNode, SelectHTMLAttributes, InputHTMLAttributes, TextareaHTMLAttributes } from 'react'
 import MarkupSyntaxHelp from './MarkupSyntaxHelp'
 
@@ -55,14 +56,16 @@ const inputClass =
 
 export default function FormField(props: FormFieldProps) {
   const { label, name, required, className = '' } = props
+  const inputId = useId()
 
   return (
     <div className={className}>
-      <label className="block text-[12px] text-secondary uppercase mb-1">
+      <label htmlFor={inputId} className="block text-[12px] text-secondary uppercase mb-1">
         {label}
       </label>
       {'select' in props && props.select ? (
         <select
+          id={inputId}
           name={name}
           required={required}
           defaultValue={props.defaultValue}
@@ -78,6 +81,7 @@ export default function FormField(props: FormFieldProps) {
         </select>
       ) : 'textarea' in props && props.textarea ? (
         <textarea
+          id={inputId}
           name={name}
           required={required}
           defaultValue={props.defaultValue}
@@ -91,6 +95,7 @@ export default function FormField(props: FormFieldProps) {
       ) : (
         <input
           type={props.type || 'text'}
+          id={inputId}
           name={name}
           required={required}
           defaultValue={props.defaultValue}

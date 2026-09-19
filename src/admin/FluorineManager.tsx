@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
-import { ArrowDown, ArrowUp, Edit2, Trash2 } from 'lucide-react'
+import { ArrowDown, ArrowUp, Edit2, Plus, Trash2 } from 'lucide-react'
 import api, { uploadFile } from '@/api/client'
-import type { FluorineSection, TechnologyContentBlock } from '@/types'
+import type { FluorineSection, TechnologyContentBlock, TechnologyContentItem, TechnologyMedia } from '@/types'
 import { findTechnologyPage, getTechnologyGroupLabel, getTechnologyPagePath } from '@/config/technologyPages'
 import Dashboard from './Dashboard'
 import AdminHeader from './components/AdminHeader'
@@ -10,344 +10,82 @@ import FormField from './components/FormField'
 import Modal from './components/Modal'
 import SaveCancelButtons from './components/SaveCancelButtons'
 import ResponsiveAdminList from './components/ResponsiveAdminList'
-import CroppedImageField, { type CroppedImageChange } from './components/CroppedImageField'
 
-type SectionDraft = Pick<FluorineSection, 'section_key' | 'title' | 'subtitle' | 'content' | 'image_url' | 'image_fit' | 'nav_label' | 'status' | 'hero_statement' | 'hero_scroll_label' | 'content_blocks' | 'certification_logos'> & { id: number; order_index: number }
-
-const STRUCTURED_TECHNOLOGY_PAGES = [
-  'pfas-free-system',
-  'rpo-sotex-membrane',
-  'high-performance-fiber',
-  'lamination',
-  'supply-chain',
-  'testing-certification',
-]
-
-function effectiveStatus(section: Pick<FluorineSection, 'status'>) {
-  return section.status === 'draft' ? 'draft' : 'published'
+const layouts=[['matrix','分组要点'],['logos','机构与资质展示'],['intro','正文说明'],['cards','材料入口卡片'],['delivery','开发与验证入口'],['series','面料系列入口'],['note','补充说明'],['split','文字与配图'],['comparison','结构对比'],['feature','配图与性能要点'],['tabs','结构切换'],['steps','流程步骤'],['columns','并列要点'],['checklist','说明与检查项目'],['exit','底部咨询入口']].map(([value,label])=>({value,label}))
+const visuals=[['image','静态配图'],['membrane','首页膜技术动画'],['lamination','首页复合动画'],['supply','首页供应链动画'],['layers-waterproof','防水透湿分层'],['layers-light','轻户外分层'],['layers-protection','防护分层']].map(([value,label])=>({value,label}))
+function MediaFields({value,onChange,name,imageOnly=false}:{value:TechnologyMedia;onChange:(next:TechnologyMedia)=>void;name:string;imageOnly?:boolean}) {
+  const [busy,setBusy]=useState(false)
+  const [error,setError]=useState('')
+  return <div className="space-y-3 border-l border-white/15 pl-4">
+    {!imageOnly&&<FormField label="配图或动画" name={`${name}-visual`} select options={visuals} value={value.visual||'image'} onChange={e=>onChange({...value,visual:e.target.value})}/>}
+    {(!value.visual||value.visual==='image')&&<>
+      <FormField label="配图地址（可清空）" name={`${name}-image`} value={value.image_url||''} onChange={e=>onChange({...value,image_url:e.target.value})}/>
+      {value.image_url&&<img src={value.image_url} alt="当前配图" className="h-24 max-w-full object-contain bg-white/5"/>}
+      <label className="inline-block cursor-pointer border border-white/20 px-3 py-2 text-sm">{busy?'上传中…':'上传或替换配图'}<input type="file" className="sr-only" accept="image/png,image/jpeg,image/webp" disabled={busy} onChange={async e=>{const file=e.target.files?.[0];e.target.value='';if(!file)return;setBusy(true);setError('');try{const res=await uploadFile(file);const url=res.data.url||res.data.data?.url;if(!url)throw Error('上传未返回地址');onChange({...value,image_url:url})}catch{setError('上传失败，请重试')}finally{setBusy(false)}}}/></label>
+    </>}
+    {!imageOnly&&<FormField label="图注" name={`${name}-caption`} value={value.caption||''} onChange={e=>onChange({...value,caption:e.target.value})}/>}
+    {error&&<p role="alert" className="text-error">{error}</p>}
+  </div>
 }
-
-export default function AdminFluorineManager() {
-  const [sections, setSections] = useState<FluorineSection[]>([])
-  const [draft, setDraft] = useState<SectionDraft | null>(null)
-  const [imageChange, setImageChange] = useState<CroppedImageChange>({ file: null, removeCurrent: false })
-  const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
-  const [uploadingCertificationLogo, setUploadingCertificationLogo] = useState(false)
-  const [message, setMessage] = useState('')
-  const [formError, setFormError] = useState('')
-  const [previewSectionKey, setPreviewSectionKey] = useState('')
-  const [previewVersion, setPreviewVersion] = useState(0)
-
-  const load = async () => {
-    setLoading(true)
-    try {
-      const response = await api.get('/admin/content-sections/pfas-free-innovation')
-      const nextSections = response.data.data || []
-      setSections(nextSections)
-      setPreviewSectionKey((current) => current || nextSections[0]?.section_key || '')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => { load() }, [])
-
-  const openEditor = (section: FluorineSection) => {
-    setDraft({ ...section, status: effectiveStatus(section) })
-    setPreviewSectionKey(section.section_key || '')
-    setImageChange({ file: null, removeCurrent: false })
-    setFormError('')
-  }
-
-  const closeEditor = () => {
-    setDraft(null)
-    setImageChange({ file: null, removeCurrent: false })
-    setFormError('')
-    setUploadingCertificationLogo(false)
-  }
-
-  const updateContentBlock = (index: number, next: TechnologyContentBlock) => {
-    if (!draft) return
-    const blocks = [...(draft.content_blocks || [])]
-    blocks[index] = next
-    setDraft({ ...draft, content_blocks: blocks })
-  }
-
-  const uploadCertificationLogo = async (file: File | undefined) => {
-    if (!file || !draft) return
-    const logos = draft.certification_logos || []
-    if (logos.length >= 8) {
-      setFormError('最多可配置 8 个认证标志')
-      return
-    }
-    if (!['image/png', 'image/webp', 'image/jpeg'].includes(file.type)) {
-      setFormError('标志图片请使用透明 PNG、WebP 或 JPEG 格式')
-      return
-    }
-    setUploadingCertificationLogo(true)
-    setFormError('')
-    try {
-      const response = await uploadFile(file)
-      const imageUrl = response.data.url || response.data.data?.url
-      if (!imageUrl) throw new Error('上传结果缺少图片地址')
-      const name = file.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ').trim() || `认证标志 ${logos.length + 1}`
-      setDraft((current) => current ? {
-        ...current,
-        certification_logos: [...(current.certification_logos || []), { name, image_url: imageUrl }].slice(0, 8),
-      } : current)
-    } catch (error: any) {
-      setFormError(error?.response?.data?.error || error?.message || '认证标志上传失败')
-    } finally {
-      setUploadingCertificationLogo(false)
-    }
-  }
-
-  const moveCertificationLogo = (index: number, direction: -1 | 1) => {
-    if (!draft) return
-    const logos = [...(draft.certification_logos || [])]
-    const target = index + direction
-    if (target < 0 || target >= logos.length) return
-    ;[logos[index], logos[target]] = [logos[target], logos[index]]
-    setDraft({ ...draft, certification_logos: logos })
-  }
-
-  const submit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    if (!draft?.id || !draft.title.trim()) return
-    setSaving(true)
-    setFormError('')
-    try {
-      let imageUrl = imageChange.removeCurrent ? null : draft.image_url
-      if (imageChange.file) {
-        const response = await uploadFile(imageChange.file)
-        imageUrl = response.data.url || response.data.data?.url
-      }
-      const payload = {
-        title: draft.title.trim(),
-        nav_label: draft.nav_label?.trim() || draft.title.trim(),
-        subtitle: draft.subtitle.trim(),
-        content: draft.content,
-        image_url: imageUrl,
-        image_fit: draft.image_fit,
-        status: draft.status || 'draft',
-        hero_statement: draft.hero_statement || '',
-        hero_scroll_label: draft.hero_scroll_label || '',
-        content_blocks: draft.content_blocks || [],
-        ...(draft.section_key === 'supply-chain' ? { certification_logos: draft.certification_logos || [] } : {}),
-      }
-      await api.put(`/admin/content-sections/pfas-free-innovation/${draft.id}`, payload)
-      closeEditor()
-      setMessage('技术页面已保存')
-      await load()
-      setPreviewVersion((value) => value + 1)
-    } catch (error: any) {
-      setFormError(error?.response?.data?.error || '保存失败，请检查内容后重试')
-    } finally {
-      setSaving(false)
-    }
-  }
-
-  const previewSection: FluorineSection | null = draft ? {
-    page_key: 'pfas-free-innovation',
-    ...draft,
-  } : null
-  const selectedPreview = sections.find((section) => section.section_key === previewSectionKey)
-
-  return (
-    <Dashboard>
-      <div className="max-w-[1200px]">
-        <AdminHeader
-          title="技术页面管理"
-        />
-
-        {message && <p className="mb-4 text-[13px] text-success">{message}</p>}
-        <div className="mb-5 border border-white/10 bg-white/[0.03] px-4 py-4 text-[12px] leading-5 text-muted">
-          技术创新入口直接进入“无氟技术体系”。下列页面共用 Hero、页面选择器、头图与正文结构；当前正文保留现有文案，后续可逐页完善。
-        </div>
-
-        {selectedPreview && <AdminPagePreview
-          publicPath={getTechnologyPagePath(selectedPreview.section_key || '')}
-          title={selectedPreview.title}
-          version={previewVersion}
-          helpText="预览使用真实技术详情页组件；进入编辑后，未保存的文案和图片也会实时同步到预览。"
-        />}
-
-        <div className="overflow-hidden bg-dark">
-          {loading ? (
-            <p className="p-8 text-center text-[13px] text-accent">加载中...</p>
-          ) : sections.length === 0 ? (
-            <p className="p-8 text-center text-[13px] text-accent">暂无技术模块</p>
-          ) : <ResponsiveAdminList
-            items={sections}
-            getKey={(section) => section.id}
-            renderTitle={(section) => <span className="flex flex-wrap items-center gap-2"><span>{section.title}</span><span className={`px-2 py-0.5 text-[10px] ${effectiveStatus(section) === 'published' ? 'bg-success/15 text-success' : 'bg-white/10 text-muted'}`}>{effectiveStatus(section) === 'published' ? '已发布' : '草稿'}</span></span>}
-            renderSubtitle={(section) => {
-              const definition = findTechnologyPage(section)
-              return `${getTechnologyGroupLabel(section)} · ${definition?.menuLabel || section.nav_label || section.title} · ${getTechnologyPagePath(section.section_key || '')}`
-            }}
-            renderActions={(section) => {
-              return <>
-                <button type="button" onClick={() => setPreviewSectionKey(section.section_key || '')} title="预览" aria-label={`预览${section.title}`} className="flex h-11 items-center justify-center px-3 text-[12px] text-accent hover:text-white">预览</button>
-                <button type="button" onClick={() => openEditor(section)} title="编辑" aria-label={`编辑${section.title}`} className="flex h-11 w-9 items-center justify-center text-accent hover:text-white"><Edit2 size={15} /></button>
-              </>
-            }}
-          />}
-        </div>
-      </div>
-
-      {draft && previewSection && (
-        <Modal title={`编辑技术页面 · ${draft.title}`} onClose={closeEditor} maxWidth="max-w-[1240px]">
-          <form onSubmit={submit} className="space-y-5">
-            <AdminPagePreview
-              publicPath={getTechnologyPagePath(draft.section_key || '')}
-              title={draft.title}
-              draftMessage={{ type: 'gonyik:technology-preview', payload: previewSection }}
-              helpText="这是未保存草稿的实时前台效果；关闭编辑不会写入服务器。"
-            />
-            <div className="grid gap-4 sm:grid-cols-2">
-              <FormField label="导航名称（最多 12 个字符）" name="nav_label" required markup="inline" maxLength={12} value={draft.nav_label || ''} onChange={(event) => setDraft({ ...draft, nav_label: event.target.value })}>
-                <span className="mt-1 block text-right text-[11px] text-muted">{Array.from(draft.nav_label || '').length}/12</span>
-              </FormField>
-              <FormField label="标题" name="title" required markup="inline" value={draft.title} onChange={(event) => setDraft({ ...draft, title: event.target.value })} />
-              <FormField className="sm:col-span-2" label="副标题" name="subtitle" markup="inline" value={draft.subtitle} onChange={(event) => setDraft({ ...draft, subtitle: event.target.value })} />
-              <FormField label="发布状态" name="status" select value={draft.status || 'draft'} onChange={(event) => setDraft({ ...draft, status: event.target.value as 'draft' | 'published' })} options={[{ value: 'draft', label: '草稿（前台不可见）' }, { value: 'published', label: '已发布' }]} />
-              <FormField label="图片显示" name="image_fit" select value={draft.image_fit} onChange={(event) => setDraft({ ...draft, image_fit: event.target.value as 'cover' | 'contain' })} options={[{ value: 'cover', label: '填满裁切' }, { value: 'contain', label: '完整显示' }]} />
-            </div>
-
-            {STRUCTURED_TECHNOLOGY_PAGES.includes(draft.section_key || '') ? (
-              <div className="space-y-5 border-y border-white/10 py-5">
-                {draft.section_key === 'pfas-free-system' && (
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <FormField label="头图主张" name="hero_statement" markup="inline" value={draft.hero_statement || ''} onChange={(event) => setDraft({ ...draft, hero_statement: event.target.value })} />
-                    <FormField label="下滑提示" name="hero_scroll_label" markup="inline" value={draft.hero_scroll_label || ''} onChange={(event) => setDraft({ ...draft, hero_scroll_label: event.target.value })} />
-                  </div>
-                )}
-                {(draft.content_blocks || []).map((block, blockIndex) => (
-                  <div key={block.key || blockIndex} className="space-y-4 border border-white/10 bg-white/[0.025] p-4">
-                    <p className="text-[11px] tracking-[0.14em] text-muted">正文画面 {blockIndex + 1}</p>
-                    <FormField label="画面标题" name={`block-${blockIndex}-title`} markup="inline" value={block.title} onChange={(event) => updateContentBlock(blockIndex, { ...block, title: event.target.value })} />
-                    <FormField label="画面正文" name={`block-${blockIndex}-content`} textarea rows={5} markup="block" value={block.content} onChange={(event) => updateContentBlock(blockIndex, { ...block, content: event.target.value })} />
-                    {block.highlights && (
-                      <FormField
-                        label="关键词（用中文逗号分隔）"
-                        name={`block-${blockIndex}-highlights`}
-                        value={block.highlights.join('，')}
-                        onChange={(event) => updateContentBlock(blockIndex, {
-                          ...block,
-                          highlights: event.target.value.split(/[，,]/).map((item) => item.trim()).filter(Boolean),
-                        })}
-                      />
-                    )}
-                    {block.items?.map((item, itemIndex) => (
-                      <div key={`${block.key}-${itemIndex}`} className="grid gap-3 sm:grid-cols-[0.7fr_1.3fr]">
-                        <FormField
-                          label={`要点 ${itemIndex + 1} 标题`}
-                          name={`block-${blockIndex}-item-${itemIndex}-title`}
-                          value={item.title}
-                          onChange={(event) => updateContentBlock(blockIndex, {
-                            ...block,
-                            items: block.items?.map((current, index) => index === itemIndex ? { ...current, title: event.target.value } : current),
-                          })}
-                        />
-                        <FormField
-                          label={`要点 ${itemIndex + 1} 说明`}
-                          name={`block-${blockIndex}-item-${itemIndex}-content`}
-                          value={item.content}
-                          onChange={(event) => updateContentBlock(blockIndex, {
-                            ...block,
-                            items: block.items?.map((current, index) => index === itemIndex ? { ...current, content: event.target.value } : current),
-                          })}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                ))}
-                <p className="text-[12px] leading-5 text-muted">
-                  {draft.section_key === 'pfas-free-system'
-                    ? '无氟技术体系采用固定三屏结构；这里维护文字，体系图和产业链动效由前台组件统一呈现。'
-                    : draft.section_key === 'rpo-sotex-membrane'
-                      ? '膜技术页采用固定章节结构；这里维护传湿机理、性能说明和核心能力，两种膜结构图与功能膜视觉由前台组件统一呈现。'
-                      : '该技术页采用固定章节结构；这里维护各章节标题和正文，章节视觉由前台组件统一呈现。'}
-                </p>
-                {draft.section_key === 'supply-chain' && (
-                  <div className="space-y-4 border border-white/10 bg-white/[0.025] p-4">
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                      <div>
-                        <p className="text-[13px] font-medium text-white">认证标志</p>
-                        <p className="mt-1 text-[11px] leading-5 text-muted">前台按数量自动横向均分；最多 8 个，平板和手机会自动换行。</p>
-                      </div>
-                      <span className="text-[11px] tabular-nums text-muted">{(draft.certification_logos || []).length}/8</span>
-                    </div>
-                    <div className="space-y-2">
-                      {(draft.certification_logos || []).map((logo, logoIndex) => (
-                        <div key={`${logo.image_url}-${logoIndex}`} className="grid items-center gap-3 border border-white/10 bg-black/10 p-3 sm:grid-cols-[140px_minmax(0,1fr)_auto]">
-                          <div className="grid h-16 place-items-center bg-white px-3">
-                            <img src={logo.image_url} alt="" className="max-h-10 max-w-full object-contain" />
-                          </div>
-                          <FormField
-                            label={`标志 ${logoIndex + 1} 名称`}
-                            name={`certification-logo-${logoIndex}`}
-                            maxLength={80}
-                            value={logo.name}
-                            onChange={(event) => setDraft({
-                              ...draft,
-                              certification_logos: (draft.certification_logos || []).map((item, index) => index === logoIndex ? { ...item, name: event.target.value } : item),
-                            })}
-                          />
-                          <div className="flex items-center gap-1">
-                            <button type="button" className="grid h-9 w-9 place-items-center border border-white/10 text-muted transition hover:border-white/25 hover:text-white disabled:opacity-25" disabled={logoIndex === 0} onClick={() => moveCertificationLogo(logoIndex, -1)} aria-label="向前移动"><ArrowUp size={15} /></button>
-                            <button type="button" className="grid h-9 w-9 place-items-center border border-white/10 text-muted transition hover:border-white/25 hover:text-white disabled:opacity-25" disabled={logoIndex === (draft.certification_logos || []).length - 1} onClick={() => moveCertificationLogo(logoIndex, 1)} aria-label="向后移动"><ArrowDown size={15} /></button>
-                            <button type="button" className="grid h-9 w-9 place-items-center border border-white/10 text-muted transition hover:border-error/40 hover:text-error" onClick={() => setDraft({ ...draft, certification_logos: (draft.certification_logos || []).filter((_, index) => index !== logoIndex) })} aria-label="删除标志"><Trash2 size={15} /></button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                    {(draft.certification_logos || []).length < 8 && (
-                      <label className="inline-flex cursor-pointer items-center border border-white/15 px-4 py-2 text-[12px] text-white transition hover:border-white/30 hover:bg-white/[0.04]">
-                        {uploadingCertificationLogo ? '上传中…' : '上传认证标志'}
-                        <input
-                          type="file"
-                          className="sr-only"
-                          accept="image/png,image/webp,image/jpeg"
-                          disabled={uploadingCertificationLogo}
-                          onChange={(event) => {
-                            void uploadCertificationLogo(event.target.files?.[0])
-                            event.target.value = ''
-                          }}
-                        />
-                      </label>
-                    )}
-                  </div>
-                )}
-              </div>
-            ) : (
-              <FormField label="正文内容" name="content" textarea rows={7} markup="block" value={draft.content} onChange={(event) => setDraft({ ...draft, content: event.target.value })} />
-            )}
-
-            <CroppedImageField
-              key={draft.id || 'new'}
-              label="页面头图"
-              currentSrc={draft.image_url}
-              aspect={3}
-              fileBaseName={`technology-${draft.id || 'new'}`}
-              maxOutputWidth={1760}
-              fit={draft.image_fit === 'contain' ? 'contain' : 'cover'}
-              onChange={(change) => {
-                setImageChange(change)
-                if (Object.prototype.hasOwnProperty.call(change, 'previewUrl')) {
-                  setDraft({ ...draft, image_url: change.previewUrl || null })
-                }
-              }}
-              help="建议使用横向图片，按 3:1 裁切并输出至 1760px 宽。前台会根据桌面视口剩余高度轻微中心裁切，使 Hero、选择器与头图合计约一屏。"
-            />
-            <FormField label="图片 URL（高级）" name="image_url" value={draft.image_url || ''} onChange={(event) => { setDraft({ ...draft, image_url: event.target.value || null }); setImageChange({ file: null, removeCurrent: false }) }} placeholder="也可以填写媒体库中的图片地址" />
-
-            {formError && <p className="border border-error/40 bg-error/10 px-3 py-2 text-[13px] text-error">{formError}</p>}
-            <SaveCancelButtons onCancel={closeEditor} loading={saving} submitLabel="保存修改" />
-          </form>
-        </Modal>
-      )}
-    </Dashboard>
-  )
+function Reorder({index,count,move,remove}:{index:number;count:number;move:(direction:-1|1)=>void;remove:()=>void}) {
+  return <div className="flex gap-2"><button type="button" aria-label="上移" disabled={!index} onClick={()=>move(-1)}><ArrowUp size={16}/></button><button type="button" aria-label="下移" disabled={index===count-1} onClick={()=>move(1)}><ArrowDown size={16}/></button><button type="button" aria-label="删除" onClick={remove}><Trash2 size={16}/></button></div>
+}
+function moved<T>(items:T[],index:number,direction:number){const next=[...items];[next[index],next[index+direction]]=[next[index+direction],next[index]];return next}
+export default function AdminFluorineManager(){
+  const [sections,setSections]=useState<FluorineSection[]>([])
+  const [draft,setDraft]=useState<FluorineSection|null>(null)
+  const [loading,setLoading]=useState(true)
+  const [saving,setSaving]=useState(false)
+  const [message,setMessage]=useState('')
+  const [error,setError]=useState('')
+  const [previewKey,setPreviewKey]=useState('rpo-material-platform')
+  const [version,setVersion]=useState(0)
+  const load=async()=>{setLoading(true);try{const res=await api.get('/admin/content-sections/pfas-free-innovation');setSections((res.data.data||[]).filter((s:FluorineSection)=>findTechnologyPage(s)))}catch{setError('页面加载失败，请刷新重试')}finally{setLoading(false)}}
+  useEffect(()=>{void load()},[])
+  const updateBlock=(index:number,block:TechnologyContentBlock)=>{if(draft)setDraft({...draft,content_blocks:draft.content_blocks?.map((b,i)=>i===index?block:b)})}
+  const submit=async(e:React.FormEvent)=>{e.preventDefault();if(!draft)return;setSaving(true);setError('');try{await api.put(`/admin/content-sections/pfas-free-innovation/${draft.id}`,draft);setDraft(null);setMessage('技术页面已保存');await load();setVersion(v=>v+1)}catch(e:any){setError(e?.response?.data?.error||'保存失败，请重试')}finally{setSaving(false)}}
+  const selected=sections.find(s=>s.section_key===previewKey)
+  return <Dashboard><div className="max-w-[1200px]"><AdminHeader title="RPO-Tech 页面管理"/>
+    <p className="mb-5 text-sm leading-6 text-muted">六个页面与前台一一对应。可维护文字、配图、动画类型、按钮、模块顺序和显示状态。Header 菜单在「Header 管理」维护；多语言内容在「翻译管理」维护。</p>
+    {message&&<p className="mb-4 text-success">{message}</p>}{error&&<p role="alert" className="mb-4 text-error">{error}</p>}
+    {selected&&<AdminPagePreview publicPath={getTechnologyPagePath(previewKey)} title={selected.title} version={version}/>}
+    {loading?<p>加载中…</p>:<ResponsiveAdminList items={sections} getKey={s=>s.id} renderTitle={s=><span>{s.title} · {s.status==='draft'?'草稿':'已发布'}</span>} renderSubtitle={s=>`${getTechnologyGroupLabel(s)} · ${(s.content_blocks||[]).length} 个模块`} renderActions={s=><><button type="button" className="px-3 py-3 text-accent" onClick={()=>setPreviewKey(s.section_key||'')}>预览</button><button type="button" aria-label={`编辑${s.title}`} onClick={()=>{setDraft(structuredClone(s));setPreviewKey(s.section_key||'');setError('')}} className="p-3 text-accent"><Edit2 size={16}/></button></>}/>}
+  </div>
+  {draft&&<Modal title={`编辑技术页面 · ${draft.title}`} onClose={()=>setDraft(null)} maxWidth="max-w-[1240px]"><form onSubmit={submit} className="space-y-6">
+    <AdminPagePreview publicPath={getTechnologyPagePath(draft.section_key||'')} title={draft.title} draftMessage={{type:'gonyik:technology-preview',payload:draft}} helpText="修改后实时预览；点击保存才更新页面内容。"/>
+    <fieldset className="grid gap-4 sm:grid-cols-2"><legend className="mb-4 font-semibold">页面首屏与导航</legend>
+      <FormField label="导航名称（最多 32 字符）" name="nav_label" maxLength={32} required value={draft.nav_label||''} onChange={e=>setDraft({...draft,nav_label:e.target.value})}/>
+      <FormField label="页面标题" name="title" required markup="inline" value={draft.title} onChange={e=>setDraft({...draft,title:e.target.value})}/>
+      <FormField label="顶部小标题" name="eyebrow" value={draft.eyebrow||''} onChange={e=>setDraft({...draft,eyebrow:e.target.value})}/>
+      <FormField label="副标题" name="subtitle" markup="inline" value={draft.subtitle} onChange={e=>setDraft({...draft,subtitle:e.target.value})}/>
+      <FormField label="发布状态" name="status" select options={[{value:'published',label:'已发布'},{value:'draft',label:'草稿（前台隐藏）'}]} value={draft.status||'published'} onChange={e=>setDraft({...draft,status:e.target.value as 'draft'|'published'})}/>
+      <FormField label="首屏呈现" name="hero_visual" select options={[{value:'image',label:'背景图片'},{value:'supply',label:'供应链动画'}]} value={draft.hero_visual||'image'} onChange={e=>setDraft({...draft,hero_visual:e.target.value})}/>
+      <FormField label="首屏按钮文字（留空隐藏）" name="hero_scroll_label" value={draft.hero_scroll_label||''} onChange={e=>setDraft({...draft,hero_scroll_label:e.target.value})}/>
+      <FormField label="首屏按钮链接" name="hero_link" value={draft.hero_link||''} onChange={e=>setDraft({...draft,hero_link:e.target.value})}/>
+    </fieldset>
+    {draft.hero_visual!=='supply'&&<><MediaFields imageOnly name="hero" value={{image_url:draft.image_url||'',visual:'image'}} onChange={m=>setDraft({...draft,image_url:m.image_url||null})}/><FormField label="头图裁切" name="image_fit" select options={[{value:'cover',label:'填满裁切'},{value:'contain',label:'完整显示'}]} value={draft.image_fit} onChange={e=>setDraft({...draft,image_fit:e.target.value as 'cover'|'contain'})}/></>}
+    {(draft.content_blocks||[]).map((block,bi)=><fieldset key={block.key} className="space-y-4 border border-white/15 p-5"><legend className="px-2">{bi+1}. {block.title||'正文说明'}</legend>
+      <div className="flex justify-between gap-3"><label className="text-sm"><input type="checkbox" checked={!block.hidden} onChange={e=>updateBlock(bi,{...block,hidden:!e.target.checked})}/> 显示此模块</label><Reorder index={bi} count={draft.content_blocks!.length} move={d=>setDraft({...draft,content_blocks:moved(draft.content_blocks!,bi,d)})} remove={()=>setDraft({...draft,content_blocks:draft.content_blocks?.filter((_,i)=>i!==bi)})}/></div>
+      <div className="grid gap-4 sm:grid-cols-2"><FormField label="模块版式" name={`b${bi}-layout`} select options={layouts} value={block.layout||'checklist'} onChange={e=>updateBlock(bi,{...block,layout:e.target.value})}/><FormField label="背景" name={`b${bi}-tone`} select options={[{value:'',label:'白色'},{value:'mist',label:'浅灰'},{value:'navy',label:'深蓝'}]} value={block.tone||''} onChange={e=>updateBlock(bi,{...block,tone:e.target.value})}/></div>
+      <FormField label="模块标题" name={`b${bi}-title`} markup="inline" value={block.title} onChange={e=>updateBlock(bi,{...block,title:e.target.value})}/>
+      <FormField label="模块正文" name={`b${bi}-content`} textarea rows={5} markup="block" value={block.content} onChange={e=>updateBlock(bi,{...block,content:e.target.value})}/>
+      <FormField label="补充说明（可留空）" name={`b${bi}-note`} textarea rows={2} markup="block" value={block.note||''} onChange={e=>updateBlock(bi,{...block,note:e.target.value})}/>
+      {['split','feature','checklist'].includes(block.layout||'')&&<MediaFields name={`b${bi}`} value={block} onChange={m=>updateBlock(bi,{...block,...m})}/>}
+      {block.layout==='split'&&<FormField label="关键词（中文逗号分隔）" name={`b${bi}-highlights`} value={(block.highlights||[]).join('，')} onChange={e=>updateBlock(bi,{...block,highlights:e.target.value.split(/[，,]/).filter(Boolean)})}/>}
+      {(block.items||[]).map((item,ii)=>{const update=(next:TechnologyContentItem)=>updateBlock(bi,{...block,items:block.items?.map((it,i)=>i===ii?next:it)});return <div key={ii} className="space-y-3 border border-white/10 bg-white/[0.025] p-4"><div className="flex justify-between"><span className="text-xs text-muted">条目 {ii+1}</span><Reorder index={ii} count={block.items!.length} move={d=>updateBlock(bi,{...block,items:moved(block.items!,ii,d)})} remove={()=>updateBlock(bi,{...block,items:block.items?.filter((_,i)=>i!==ii)})}/></div>
+        <FormField label="条目标题" name={`b${bi}-i${ii}-title`} value={item.title} onChange={e=>update({...item,title:e.target.value})}/><FormField label="条目正文" name={`b${bi}-i${ii}-content`} textarea rows={3} markup="block" value={item.content} onChange={e=>update({...item,content:e.target.value})}/>
+        {['cards','delivery','series','comparison','tabs','logos'].includes(block.layout||'')&&<MediaFields imageOnly={['comparison','logos'].includes(block.layout||'')} name={`b${bi}-i${ii}`} value={item} onChange={m=>update({...item,...m})}/>}
+        {block.layout==='comparison'&&<FormField label="图注" name={`b${bi}-i${ii}-caption`} value={item.caption||''} onChange={e=>update({...item,caption:e.target.value})}/>}
+        {['cards','series'].includes(block.layout||'')&&<FormField label="卡片链接" name={`b${bi}-i${ii}-url`} value={item.link_url||''} onChange={e=>update({...item,link_url:e.target.value})}/>}
+        {block.layout==='tabs'&&<FormField label="层次标签（中文逗号分隔）" name={`b${bi}-i${ii}-labels`} value={(item.highlights||[]).join('，')} onChange={e=>update({...item,highlights:e.target.value.split(/[，,]/).filter(Boolean)})}/>}
+        {!['comparison','steps','cards','series'].includes(block.layout||'')&&<div className="grid gap-3 sm:grid-cols-2"><FormField label="链接文字" name={`b${bi}-i${ii}-label`} value={item.link_label||''} onChange={e=>update({...item,link_label:e.target.value})}/><FormField label="链接地址（留空隐藏）" name={`b${bi}-i${ii}-url`} value={item.link_url||''} onChange={e=>update({...item,link_url:e.target.value})}/></div>}
+      </div>})}
+      {!['intro','note','split','exit'].includes(block.layout||'')&&(block.items||[]).length<8&&<button type="button" className="flex items-center gap-2 text-accent" onClick={()=>updateBlock(bi,{...block,items:[...(block.items||[]),{title:'新条目',content:''}]})}><Plus size={15}/>添加条目</button>}
+      {(block.links||[]).map((link,li)=><div key={li} className="grid items-end gap-3 sm:grid-cols-[1fr_1fr_auto]"><FormField label="按钮文字" name={`b${bi}-l${li}-label`} value={link.label} onChange={e=>updateBlock(bi,{...block,links:block.links?.map((l,i)=>i===li?{...l,label:e.target.value}:l)})}/><FormField label="按钮链接" name={`b${bi}-l${li}-href`} value={link.href} onChange={e=>updateBlock(bi,{...block,links:block.links?.map((l,i)=>i===li?{...l,href:e.target.value}:l)})}/><button type="button" aria-label="删除按钮" className="p-3" onClick={()=>updateBlock(bi,{...block,links:block.links?.filter((_,i)=>i!==li)})}><Trash2 size={16}/></button></div>)}
+      {(block.links||[]).length<4&&<button type="button" className="text-accent" onClick={()=>updateBlock(bi,{...block,links:[...(block.links||[]),{label:'了解更多',href:''}]})}>添加按钮</button>}
+    </fieldset>)}
+    {(draft.content_blocks||[]).length<16&&<button type="button" className="flex items-center gap-2 border border-white/20 px-4 py-3" onClick={()=>setDraft({...draft,content_blocks:[...(draft.content_blocks||[]),{key:`section-${Date.now()}`,title:'新模块',content:'',layout:'intro'}]})}><Plus size={16}/>添加模块</button>}
+    {error&&<p role="alert" className="text-error">{error}</p>}<SaveCancelButtons onCancel={()=>setDraft(null)} loading={saving} submitLabel="保存修改"/>
+  </form></Modal>}
+  </Dashboard>
 }

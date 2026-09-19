@@ -18,7 +18,10 @@
     "start": "node --import ./node_modules/tsx/dist/loader.mjs server/index.ts",
     "setup": "node -e \"import('tsx').then(() => import('./server/db.ts')).then(m => m.initDatabase())\"",
     "admin:init": "node --import tsx scripts/init-admin.ts",
-    "deploy": "node .agents/skills/gonyik-deploy/scripts/deploy.mjs"
+    "deploy": "node .agents/skills/gonyik-deploy/scripts/deploy.mjs",
+    "review:local": "npm run build && node --import tsx scripts/preview-local.ts",
+    "sync:public": "node scripts/sync-production-public.mjs",
+    "verify:preview": "node scripts/verify-production-preview.mjs"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.2.8",

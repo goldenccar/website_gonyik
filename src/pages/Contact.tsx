@@ -7,6 +7,7 @@ import { InlineMarkup } from '@/components/MarkupParser'
 import { useSiteLocale } from '@/i18n/SiteLocale'
 import PublicContentLoader from '@/components/PublicContentLoader'
 import { useSearchParams } from 'react-router-dom'
+import { RPO_LABELS } from '@/config/rpoContent'
 
 const EMPTY = { name: '', company: '', email: '', phone: '', subject: '', message: '', website: '', source_page: '', product_model: '' }
 
@@ -22,6 +23,8 @@ export default function Contact() {
   const inquirySku = String(searchParams.get('sku') || '').trim().slice(0, 80)
   const inquirySeries = String(searchParams.get('series') || '').trim().slice(0, 80)
   const inquirySource = String(searchParams.get('source') || '').trim().slice(0, 160)
+  const requestedTopic = searchParams.get('topic') || ''
+  const inquiryTopic = [RPO_LABELS.contact, RPO_LABELS.laminateContact, RPO_LABELS.productionContact, RPO_LABELS.testContact].includes(requestedTopic) ? requestedTopic : ''
 
   useEffect(() => {
     Promise.all([getPageConfig('contact'), getInquirySubjects()]).then(([config, options]) => {
@@ -36,9 +39,12 @@ export default function Contact() {
           source_page: inquirySource || '/fabrics',
           product_model: `${inquirySeries ? `${inquirySeries} / ` : ''}${inquirySku}`,
         }))
+      } else if (inquiryTopic) {
+        const preferred = nextSubjects.find((item: InquirySubject) => inquiryTopic === RPO_LABELS.testContact ? /资料|TDS/i.test(item.label) : /开发/.test(item.label))
+        setForm(current => ({ ...current, subject: current.subject || preferred?.label || '', source_page: inquirySource, message: current.message || t(inquiryTopic) }))
       }
     }).finally(() => setLoading(false))
-  }, [inquirySeries, inquirySku, inquirySource])
+  }, [inquirySeries, inquirySku, inquirySource, inquiryTopic])
 
   if (loading) return <PublicContentLoader label="正在加载联系信息" />
 

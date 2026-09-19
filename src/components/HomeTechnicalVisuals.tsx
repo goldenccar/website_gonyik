@@ -20,15 +20,6 @@ const TECHNICAL_VISUAL_ASSETS = [
   '/visuals/supply-chain-node-material-v2.webp',
 ] as const
 
-const SUPPLY_CHAIN_ASSETS = [
-  '/visuals/supply-chain-ribbon-v2.webp',
-  '/visuals/supply-chain-node-lab-v2.webp',
-  '/visuals/supply-chain-node-factory-v2.webp',
-  '/visuals/supply-chain-node-retail-v2.webp',
-  '/visuals/supply-chain-node-materials-v2.webp',
-  '/visuals/supply-chain-node-material-v2.webp',
-] as const
-
 function useImagesReady(assets: readonly string[]) {
   const [ready, setReady] = useState(false)
 
@@ -74,10 +65,6 @@ function useImagesReady(assets: readonly string[]) {
 
 function useTechnicalVisualsReady() {
   return useImagesReady(TECHNICAL_VISUAL_ASSETS)
-}
-
-export function useSupplyChainReady() {
-  return useImagesReady(SUPPLY_CHAIN_ASSETS)
 }
 
 type FlowPoint = { x: number; y: number; scale: number; delay: number }
@@ -179,7 +166,7 @@ function MembraneDiagram() {
   )
 }
 
-export function LaminationDiagram() {
+function LaminationDiagram() {
   return (
     <MaterialScene
       kind="lamination"
@@ -201,11 +188,11 @@ const SUPPLY_CHAIN_NODES = [
   { key: 'material', src: '/visuals/supply-chain-node-material-v2.webp', delay: -4.212 },
 ] as const
 
-export function SupplyChainDiagram() {
+function SupplyChainDiagram({ label = 'PFAS FREE' }: { label?: string }) {
   const uid = useId().replace(/:/g, '')
   const glowId = `supply-glow-${uid}`
   return (
-    <div className="supply-chain-scene" role="img" aria-label="从原料、材料、实验验证、制造到终端应用的无氟供应链闭环示意图">
+    <div className="supply-chain-scene" role="img" aria-label="原料、材料、实验验证、制造与终端应用的供应链示意图">
       <div className="supply-chain-canvas" aria-hidden="true">
         <img src="/visuals/supply-chain-ribbon-v2.webp" alt="" loading="lazy" decoding="async" fetchPriority="low" className="supply-chain-ribbon" />
         <svg viewBox="0 0 1746 901" className="supply-chain-flow" fill="none">
@@ -226,10 +213,20 @@ export function SupplyChainDiagram() {
             <img src={node.src} alt="" loading="lazy" decoding="async" fetchPriority="low" />
           </div>
         ))}
-        <div className="supply-chain-center"><span>PFAS FREE</span></div>
+        <div className="supply-chain-center"><span>{label}</span></div>
       </div>
     </div>
   )
+}
+
+export function SupplyChainVisual() {
+  const ready = useTechnicalVisualsReady()
+  return <MotionInView className={`rpo-supply-animation supply-chain-motion ${ready ? 'media-ready' : ''}`}><SupplyChainDiagram label="GONYIK" /></MotionInView>
+}
+
+export function MaterialTechnologyVisual({ kind }: { kind: 'membrane' | 'lamination' }) {
+  const ready = useTechnicalVisualsReady()
+  return <MotionInView className={`rpo-material-animation material-system-visual ${ready ? 'media-ready' : ''}`}><MaterialDiagram kind={kind} /></MotionInView>
 }
 
 const MATERIAL_KINDS: MaterialKind[] = ['membrane', 'lamination', 'supply']

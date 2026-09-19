@@ -1,19 +1,24 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type MouseEvent } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { ChevronDown, ChevronUp, Globe2, Menu, X } from 'lucide-react'
+import { ArrowUpRight, ChevronDown, ChevronUp, Globe2, Menu, X } from 'lucide-react'
 import { useSiteLocale } from '@/i18n/SiteLocale'
 import { marketPath, stripMarketPrefix } from '@/config/markets'
 import type { NavItem } from '@/types'
 import { InlineMarkup } from './MarkupParser'
 
 interface MegaMenuLink {
+  id: string
   label: string
   href: string
+  description?: string
 }
 
 interface MegaMenuGroup {
+  id: string
   title: string
   href?: string
+  description?: string
+  image_url?: string
   links: MegaMenuLink[]
 }
 
@@ -76,7 +81,10 @@ export default function Header() {
   useEffect(() => {
     if (desktopMenu) {
       setRenderedDesktopMenu(desktopMenu)
-      if (desktopMenuWasOpenRef.current) return
+      if (desktopMenuWasOpenRef.current) {
+        setDesktopPanelVisible(true)
+        return
+      }
       desktopMenuWasOpenRef.current = true
       setDesktopPanelVisible(false)
       let secondFrame = 0
@@ -133,11 +141,14 @@ export default function Header() {
       [...(item.mega_menu || [])]
         .sort((a, b) => a.order_index - b.order_index)
         .map((group) => ({
+          id: `${item.id}:${group.id}`,
           title: group.title,
           href: group.link,
+          description: group.description,
+          image_url: group.image_url,
           links: [...group.items]
             .sort((a, b) => a.order_index - b.order_index)
-            .map((link) => ({ label: link.label, href: link.link })),
+            .map((link) => ({ id: `${item.id}:${group.id}:${link.id}`, label: link.label, href: link.link, description: link.description })),
         }))
         .filter((group) => group.title && (group.href || group.links.length)),
     ]))
@@ -153,26 +164,15 @@ export default function Header() {
       const marketLeft = desktopMarketRef.current?.getBoundingClientRect().left
       const headerRight = desktopHeaderInnerRef.current?.getBoundingClientRect().right
       if (marketLeft == null || headerRight == null) return
-      setDesktopMegaShift(Math.max(0, headerRight - marketLeft))
+      const panelWidth = desktopMegaPanelRef.current?.getBoundingClientRect().width || 0
+      setDesktopMegaShift(Math.min(Math.max(0, headerRight - marketLeft), Math.max(0, window.innerWidth - 48 - panelWidth)))
     }
     updateAlignment()
     window.addEventListener('resize', updateAlignment)
     return () => window.removeEventListener('resize', updateAlignment)
-  }, [menuMounted, market.label])
-  const menuWidthClass = activeMenuGroups.length >= 4
-    ? 'max-w-[920px]'
-    : activeMenuGroups.length === 3
-      ? 'max-w-[760px]'
-      : activeMenuGroups.length === 2
-        ? 'max-w-[560px]'
-        : 'max-w-[360px]'
-  const menuGridClass = activeMenuGroups.length >= 4
-    ? 'grid-cols-4'
-    : activeMenuGroups.length === 3
-      ? 'grid-cols-3'
-      : activeMenuGroups.length === 2
-        ? 'grid-cols-2'
-        : 'grid-cols-1'
+  }, [menuMounted, market.label, activeMenuGroups.length])
+  const menuWidthClass = activeMenuGroups.length >= 3 ? 'max-w-[1060px]' : 'max-w-[760px]'
+
 
   return (
     <header className={`fixed left-0 top-0 z-50 h-[60px] w-screen px-6 transition-colors duration-300 ${menuMounted || scrolled ? 'border-b border-white/15 bg-[#041F38]' : 'border-b border-transparent bg-transparent'}`}>
@@ -250,28 +250,11 @@ export default function Header() {
           <div style={{ transform: `translateX(-${desktopMegaShift}px)` }} className="mx-auto flex w-full max-w-[1760px] justify-end px-0">
           <div ref={desktopMegaPanelRef} className={`w-full ${menuWidthClass} origin-top overflow-hidden border-b border-border bg-[#fbfcfd] shadow-[0_22px_52px_rgba(4,31,56,0.13)] transition-[clip-path] duration-[360ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${menuOpen ? '[clip-path:inset(0_0_0_0)]' : '[clip-path:inset(0_0_100%_0)]'}`}>
             <div className={`transition-[opacity,transform] ease-out motion-reduce:transition-none ${menuOpen ? 'translate-y-0 opacity-100 delay-[90ms] duration-[420ms]' : '-translate-y-1 opacity-0 delay-0 duration-[120ms]'}`}>
-            <div className="px-6 pb-3 pt-3 lg:px-7">
-              <div className="mb-3 flex min-h-8 items-start justify-end border-b border-border pb-2">
-                <Link to={localePath(activeMenuItem.link)} onClick={() => setDesktopMenu(null)} className="shrink-0 text-[13px] font-semibold leading-6 tracking-[0.02em] text-primary transition-colors duration-[var(--motion-instant)] hover:text-[#2f8191] focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-[#69B2C1]">{locale === 'en' ? 'View all ' : '查看全部'}<InlineMarkup text={activeMenuItem.label} /> →</Link>
-              </div>
-              <div className={`grid gap-x-8 gap-y-5 ${menuGridClass}`}>
-                {activeMenuGroups.map((group) => (
-                  <div key={group.title}>
-                    <div className="mb-1.5 border-b border-border pb-2 text-[12px] font-medium leading-[18px] tracking-[0.06em] text-secondary">
-                      {group.href
-                        ? <Link to={localePath(group.href)} onClick={() => setDesktopMenu(null)} className="inline-flex items-center gap-1.5 transition-colors duration-200 hover:text-[#2f8191] focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-[#69B2C1]"><InlineMarkup text={group.title} /><span aria-hidden="true">→</span></Link>
-                        : <InlineMarkup text={group.title} />}
-                    </div>
-                    <div>
-                      {group.links.map((link) => (
-                        <Link key={link.href} to={localePath(link.href)} onClick={() => setDesktopMenu(null)} className="group/link relative flex min-h-9 items-center text-[14px] font-medium leading-5 tracking-[0.01em] text-primary transition-colors duration-200 ease-out hover:text-[#2f8191] focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-[-1px] focus-visible:outline-[#69B2C1]">
-                          <InlineMarkup text={link.label} />
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
+            <div className="site-mega-menu" style={{'--menu-columns':Math.max(1,activeMenuGroups.length)} as CSSProperties}>
+              {activeMenuGroups.map((group)=>group.href && group.links.length === 0 ? <Link key={group.id} className="site-mega-feature" to={localePath(group.href)} onClick={()=>setDesktopMenu(null)}>
+                <div>{activeMenuItem.label !== group.title && <span className="site-mega-eyebrow"><InlineMarkup text={activeMenuItem.label}/></span>}<h2><InlineMarkup text={group.title}/></h2>{group.description&&<p><InlineMarkup text={group.description}/></p>}<ArrowUpRight size={23} aria-hidden="true"/></div>
+                {group.image_url&&<img src={group.image_url} alt=""/>}
+              </Link>:<div key={group.id} className="site-mega-group"><h3>{group.href?<Link to={localePath(group.href)} onClick={()=>setDesktopMenu(null)}><InlineMarkup text={group.title}/><ArrowUpRight size={13} aria-hidden="true"/></Link>:<InlineMarkup text={group.title}/>}</h3>{group.description&&<p className="mb-3 text-xs leading-5 text-secondary"><InlineMarkup text={group.description}/></p>}{group.links.map(link=><Link key={link.id} to={localePath(link.href)} onClick={()=>setDesktopMenu(null)}><span><strong><InlineMarkup text={link.label}/></strong>{link.description&&<small><InlineMarkup text={link.description}/></small>}</span><ArrowUpRight size={17} aria-hidden="true"/></Link>)}</div>)}
             </div>
             <button
               type="button"
@@ -310,14 +293,15 @@ export default function Header() {
                   <div className="overflow-hidden">
                     <div className="space-y-5 pb-5 pl-4">
                       {groups.map((group) => (
-                        <div key={group.title}>
+                        <div key={group.id}>
                           <div className="mb-2 text-[10px] font-medium tracking-[0.12em] text-white/45">
                             {group.href
                               ? <Link to={localePath(group.href)} tabIndex={mobileOpen && expanded ? 0 : -1} onClick={(event) => handleMobileNavigation(event, group.href || '/')} className="inline-flex items-center gap-1.5"><InlineMarkup text={group.title} /><span aria-hidden="true">→</span></Link>
                               : <InlineMarkup text={group.title} />}
                           </div>
+                          {group.description && <p className="mb-3 text-[12px] leading-6 text-white/60"><InlineMarkup text={group.description}/></p>}
                           <div className="flex flex-col">
-                            {group.links.map((link) => <Link key={link.href} to={localePath(link.href)} tabIndex={mobileOpen && expanded ? 0 : -1} onClick={(event) => handleMobileNavigation(event, link.href)} className="py-2 text-[14px] text-white/75"><InlineMarkup text={link.label} /></Link>)}
+                            {group.links.map((link) => <Link key={link.id} to={localePath(link.href)} tabIndex={mobileOpen && expanded ? 0 : -1} onClick={(event) => handleMobileNavigation(event, link.href)} className="py-2 text-[14px] text-white/75"><InlineMarkup text={link.label} /></Link>)}
                           </div>
                         </div>
                       ))}

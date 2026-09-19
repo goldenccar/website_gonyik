@@ -9,7 +9,7 @@ import { SITE_LOCALES, type MarketVisibility, type SiteMarket } from '../../src/
 import { configuredMarkets, pageKeyForLink, pageVisible, requestMarket, visibleInMarket } from '../market'
 
 const router = Router()
-const TECHNOLOGY_NAV_LABEL_MAX_LENGTH = 12
+const TECHNOLOGY_NAV_LABEL_MAX_LENGTH = 32
 const MARKET_VISIBILITIES = new Set<MarketVisibility>(['inherit', 'public', 'hidden'])
 
 function technologyVisibleForLink(link: string, market: SiteMarket) {
@@ -19,7 +19,7 @@ function technologyVisibleForLink(link: string, market: SiteMarket) {
   const section = db.fluorine_sections.find((item) => (
     item.page_key === 'pfas-free-innovation' && item.section_key === sectionKey
   ))
-  return !section || visibleInMarket(section, market)
+  return !section || (section.status !== 'draft' && visibleInMarket(section, market))
 }
 
 function navigationForMarket(market: SiteMarket) {
@@ -36,7 +36,7 @@ function navigationForMarket(market: SiteMarket) {
           )),
         }))
         .filter((group: any) => (
-          (!group.link || pageVisible(pageKeyForLink(group.link), market))
+          (!group.link || (pageVisible(pageKeyForLink(group.link), market) && technologyVisibleForLink(group.link, market)))
           && (group.link || group.items.length > 0)
         )),
     }))
@@ -115,7 +115,18 @@ function validateTechnologyNavLabel(value: unknown, fallback: string) {
 
 function normalizeTechnologyContentBlocks(value: unknown) {
   if (!Array.isArray(value)) return undefined
-  return value.slice(0, 8).map((block: any, index: number) => ({
+  const media = (item: any) => ({
+    visual: ['image', 'membrane', 'lamination', 'supply', 'layers-waterproof', 'layers-light', 'layers-protection'].includes(item?.visual) ? item.visual : 'image',
+    image_url: safeContentUrl(item?.image_url),
+    caption: String(item?.caption || '').slice(0, 500),
+  })
+  return value.slice(0, 16).map((block: any, index: number) => ({
+    ...media(block),
+    layout: ['matrix', 'logos', 'intro', 'cards', 'delivery', 'series', 'note', 'split', 'comparison', 'feature', 'tabs', 'steps', 'columns', 'checklist', 'exit'].includes(block?.layout) ? block.layout : 'checklist',
+    tone: ['mist', 'navy'].includes(block?.tone) ? block.tone : '',
+    hidden: block?.hidden === true,
+    note: String(block?.note || ''),
+    links: Array.isArray(block?.links) ? block.links.slice(0, 4).map((link: any) => ({ label: String(link?.label || '').trim(), href: safeContentUrl(link?.href) })).filter((link: any) => link.label && link.href) : [],
     key: String(block?.key || `section-${index + 1}`).trim(),
     title: String(block?.title || '').trim(),
     content: String(block?.content || ''),
@@ -124,11 +135,20 @@ function normalizeTechnologyContentBlocks(value: unknown) {
       : undefined,
     items: Array.isArray(block?.items)
       ? block.items.slice(0, 8).map((item: any) => ({
+          ...media(item),
+          link_label: String(item?.link_label || '').trim(),
+          link_url: safeContentUrl(item?.link_url),
+          highlights: Array.isArray(item?.highlights) ? item.highlights.slice(0, 8).map(String) : [],
           title: String(item?.title || '').trim(),
           content: String(item?.content || ''),
         })).filter((item: any) => item.title || item.content)
       : undefined,
   })).filter((block) => block.title || block.content)
+}
+
+function safeContentUrl(value: unknown) {
+  const url = String(value || '').trim().slice(0, 1500)
+  return /^(\/(?!\/)|#|https?:\/\/)/i.test(url) ? url : ''
 }
 
 function normalizeCertificationLogos(value: unknown) {
@@ -371,6 +391,8 @@ router.post('/admin/content-sections/:pageKey', authMiddleware, (req: AuthReques
     status,
     hero_statement: String(req.body.hero_statement || '').trim(),
     hero_scroll_label: String(req.body.hero_scroll_label || '').trim(),
+    hero_visual: req.body.hero_visual === 'supply' ? 'supply' : 'image',
+    hero_link: safeContentUrl(req.body.hero_link),
     content_blocks: normalizeTechnologyContentBlocks(req.body.content_blocks),
     certification_logos: normalizeCertificationLogos(req.body.certification_logos),
     market_visibility: sanitizeVisibilityMap(req.body.market_visibility, new Set(configuredMarkets().map((market) => market.code))),
@@ -407,6 +429,8 @@ router.put('/admin/content-sections/:pageKey/:id', authMiddleware, (req: AuthReq
     status,
     hero_statement: String(req.body.hero_statement ?? existing.hero_statement ?? '').trim(),
     hero_scroll_label: String(req.body.hero_scroll_label ?? existing.hero_scroll_label ?? '').trim(),
+    hero_visual: (req.body.hero_visual ?? existing.hero_visual) === 'supply' ? 'supply' : 'image',
+    hero_link: safeContentUrl(req.body.hero_link ?? existing.hero_link),
     content_blocks: Object.prototype.hasOwnProperty.call(req.body, 'content_blocks')
       ? normalizeTechnologyContentBlocks(req.body.content_blocks)
       : existing.content_blocks,
@@ -494,12 +518,15 @@ router.put('/admin/navigation', authMiddleware, (req: AuthRequest, res) => {
           id: cleanText(group.id) || `nav-${id}-group-${groupIndex + 1}`,
           title: cleanText(group.title),
           link: cleanText(group.link),
+          description: cleanText(group.description),
+          image_url: safeContentUrl(group.image_url),
           order_index: groupIndex,
           items: (Array.isArray(group.items) ? group.items : [])
             .map((link: any, linkIndex: number) => ({
               id: cleanText(link.id) || `nav-${id}-group-${groupIndex + 1}-item-${linkIndex + 1}`,
               label: cleanText(link.label),
               link: cleanText(link.link),
+              description: cleanText(link.description),
               order_index: linkIndex,
             }))
             .filter((link: any) => link.label && link.link),

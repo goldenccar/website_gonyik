@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
 import { getPublicBootstrap } from '@/api/client'
+import { RPO_ENGLISH } from '@/config/rpoContent'
 import { DEFAULT_SITE_MARKETS, marketCodeFromPath, marketPath, type SiteLocale, type SiteMarket } from '@/config/markets'
 import type { FabricSeries, FooterConfig, HomeConfig, NavItem, SocialMedia } from '@/types'
 
@@ -312,7 +313,7 @@ export function SiteLocaleProvider({ children }: { children: ReactNode }) {
     t(text) {
       if (!text) return ''
       if (locale === 'zh-CN') return text
-      return cmsCopy[text] || (locale === 'en' ? ENGLISH_COPY[text] : undefined) || text
+      return cmsCopy[text] || (locale === 'en' ? RPO_ENGLISH[text] || ENGLISH_COPY[text] : undefined) || text
     },
     path(href) {
       return marketPath(href, market.code)

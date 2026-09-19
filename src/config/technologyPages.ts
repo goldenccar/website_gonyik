@@ -17,26 +17,25 @@ export interface TechnologyGroupDefinition {
 export const TECHNOLOGY_GROUPS: TechnologyGroupDefinition[] = [
   {
     key: 'system',
-    label: '技术体系',
+    label: 'RPO TECHNOLOGY',
     pages: [
-      { sectionKey: 'pfas-free-system', group: 'system', menuLabel: '无氟技术体系', legacyTitles: ['无氟技术体系'] },
-      { sectionKey: 'rpo-material-platform', group: 'system', menuLabel: 'RPO 高性能材料平台', legacyTitles: ['RPO 高性能材料平台'] },
+      { sectionKey: 'rpo-material-platform', group: 'system', menuLabel: 'RPO TECHNOLOGY', legacyTitles: ['RPO 高性能材料平台', 'RPO 技术平台'] },
     ],
   },
   {
     key: 'material',
-    label: '核心材料',
+    label: '材料与工艺',
     pages: [
       { sectionKey: 'rpo-sotex-membrane', group: 'material', menuLabel: '膜技术', legacyTitles: ['高性能膜技术', '膜技术', '膜技术体系'], relatedSeries: 'otter' },
       { sectionKey: 'high-performance-fiber', group: 'material', menuLabel: '高性能纤维', legacyTitles: ['高性能纤维', '纤维技术体系'] },
+      { sectionKey: 'lamination', group: 'material', menuLabel: '复合技术', legacyTitles: ['面料复合技术', '复合技术'] },
     ],
   },
   {
     key: 'assurance',
-    label: '工艺与验证',
+    label: '开发与验证',
     pages: [
-      { sectionKey: 'lamination', group: 'assurance', menuLabel: '复合技术', legacyTitles: ['面料复合技术', '复合技术'], relatedSeries: 'otter' },
-      { sectionKey: 'supply-chain', group: 'assurance', menuLabel: '供应链管理', legacyTitles: ['供应链管理', '材料与供应链管理'] },
+      { sectionKey: 'supply-chain', group: 'assurance', menuLabel: '供应链', legacyTitles: ['供应链', '供应链管理', '材料与供应链管理'] },
       { sectionKey: 'testing-certification', group: 'assurance', menuLabel: '测试与认证', legacyTitles: ['测试与验证', '测试与认证'] },
     ],
   },

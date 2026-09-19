@@ -1,0 +1,1267 @@
+[
+  {
+    "collection": "home_config",
+    "field": "platform_section_link_text",
+    "before": "探索 RPO 材料平台",
+    "after": "探索 RPO 技术平台"
+  },
+  {
+    "collection": "navigation",
+    "id": 4,
+    "field": "label",
+    "before": "材料科技",
+    "after": "RPO-Tech"
+  },
+  {
+    "collection": "navigation",
+    "id": 4,
+    "field": "mega_menu",
+    "before": [
+      {
+        "id": "4-v8-group-1",
+        "title": "技术体系",
+        "order_index": 0,
+        "items": [
+          {
+            "id": "4-v8-1-item-1",
+            "label": "无氟技术体系",
+            "link": "/pfas-free-innovation/pfas-free-system",
+            "order_index": 0
+          },
+          {
+            "id": "4-v8-1-item-2",
+            "label": "RPO 材料平台",
+            "link": "/pfas-free-innovation/rpo-material-platform",
+            "order_index": 1
+          }
+        ]
+      },
+      {
+        "id": "4-v8-group-2",
+        "title": "核心材料",
+        "order_index": 1,
+        "items": [
+          {
+            "id": "4-v8-2-item-1",
+            "label": "高性能膜技术",
+            "link": "/pfas-free-innovation/rpo-sotex-membrane",
+            "order_index": 0
+          },
+          {
+            "id": "4-v8-2-item-2",
+            "label": "高性能纤维",
+            "link": "/pfas-free-innovation/high-performance-fiber",
+            "order_index": 1
+          }
+        ]
+      },
+      {
+        "id": "4-v8-group-3",
+        "title": "工艺与验证",
+        "order_index": 2,
+        "items": [
+          {
+            "id": "4-v8-3-item-1",
+            "label": "面料复合技术",
+            "link": "/pfas-free-innovation/lamination",
+            "order_index": 0
+          },
+          {
+            "id": "4-v8-3-item-2",
+            "label": "供应链管理",
+            "link": "/pfas-free-innovation/supply-chain",
+            "order_index": 1
+          },
+          {
+            "id": "4-v8-3-item-3",
+            "label": "测试与验证",
+            "link": "/pfas-free-innovation/testing-certification",
+            "order_index": 2
+          }
+        ]
+      }
+    ],
+    "after": [
+      {
+        "id": "rpo-system",
+        "title": "RPO TECHNOLOGY",
+        "order_index": 0,
+        "link": "/pfas-free-innovation/rpo-material-platform",
+        "items": [],
+        "description": "膜、纤维与复合技术，以及供应链和测试。",
+        "image_url": "/visuals/technology-fiber-material-v1.webp"
+      },
+      {
+        "id": "rpo-material",
+        "title": "材料与工艺",
+        "order_index": 1,
+        "items": [
+          {
+            "id": "rpo-rpo-sotex-membrane",
+            "label": "膜技术",
+            "link": "/pfas-free-innovation/rpo-sotex-membrane",
+            "order_index": 0,
+            "description": "防水与透湿"
+          },
+          {
+            "id": "rpo-high-performance-fiber",
+            "label": "高性能纤维",
+            "link": "/pfas-free-innovation/high-performance-fiber",
+            "order_index": 1,
+            "description": "纤维配方与织物结构"
+          },
+          {
+            "id": "rpo-lamination",
+            "label": "复合技术",
+            "link": "/pfas-free-innovation/lamination",
+            "order_index": 2,
+            "description": "材料搭配与复合工艺"
+          }
+        ]
+      },
+      {
+        "id": "rpo-assurance",
+        "title": "开发与验证",
+        "order_index": 2,
+        "items": [
+          {
+            "id": "rpo-supply-chain",
+            "label": "供应链",
+            "link": "/pfas-free-innovation/supply-chain",
+            "order_index": 0,
+            "description": "开发与生产"
+          },
+          {
+            "id": "rpo-testing-certification",
+            "label": "测试与认证",
+            "link": "/pfas-free-innovation/testing-certification",
+            "order_index": 1,
+            "description": "性能测试与第三方检测"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "collection": "navigation",
+    "id": 2,
+    "field": "mega_menu",
+    "before": [
+      {
+        "id": "2-v8-series-group",
+        "title": "系列平台",
+        "order_index": 0,
+        "items": [
+          {
+            "id": "2-v8-series-item-1",
+            "label": "OTTER 系列",
+            "link": "/fabrics/series/otter",
+            "order_index": 0
+          },
+          {
+            "id": "2-v8-series-item-2",
+            "label": "RAYO 系列",
+            "link": "/fabrics/series/rayo",
+            "order_index": 1
+          },
+          {
+            "id": "2-v8-series-item-3",
+            "label": "KAIS 系列",
+            "link": "/fabrics/series/kais",
+            "order_index": 2
+          }
+        ]
+      }
+    ],
+    "after": [
+      {
+        "id": "overview-2",
+        "title": "面料系列",
+        "description": "从户外穿着到专业防护，按使用需求了解面料。",
+        "image_url": "/uploads/1783870881229-286570534.jpg",
+        "link": "/fabrics",
+        "order_index": 0,
+        "items": []
+      },
+      {
+        "id": "2-v8-series-group",
+        "title": "系列平台",
+        "order_index": 1,
+        "items": [
+          {
+            "id": "2-v8-series-item-1",
+            "label": "OTTER 系列",
+            "link": "/fabrics/series/otter",
+            "order_index": 0,
+            "description": "防水透湿"
+          },
+          {
+            "id": "2-v8-series-item-2",
+            "label": "RAYO 系列",
+            "link": "/fabrics/series/rayo",
+            "order_index": 1,
+            "description": "防晒与轻户外"
+          },
+          {
+            "id": "2-v8-series-item-3",
+            "label": "KAIS 系列",
+            "link": "/fabrics/series/kais",
+            "order_index": 2,
+            "description": "专业防护"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "collection": "navigation",
+    "id": 3,
+    "field": "mega_menu",
+    "before": [
+      {
+        "id": "3-equipment-group-1",
+        "title": "成衣",
+        "link": "/equipment?type=apparel",
+        "order_index": 0,
+        "items": [
+          {
+            "id": "3-equipment-1-item-1",
+            "label": "日常通勤",
+            "link": "/equipment?type=apparel&category=daily",
+            "order_index": 0
+          },
+          {
+            "id": "3-equipment-1-item-2",
+            "label": "户外防护",
+            "link": "/equipment?type=apparel&category=outdoor",
+            "order_index": 1
+          },
+          {
+            "id": "3-equipment-1-item-3",
+            "label": "专业与特种",
+            "link": "/equipment?type=apparel&category=professional",
+            "order_index": 2
+          }
+        ]
+      },
+      {
+        "id": "3-equipment-group-2",
+        "title": "配件",
+        "link": "/equipment?type=accessories",
+        "order_index": 1,
+        "items": [
+          {
+            "id": "3-equipment-2-item-1",
+            "label": "养护用品",
+            "link": "/equipment?type=accessories&category=care",
+            "order_index": 0
+          },
+          {
+            "id": "3-equipment-2-item-2",
+            "label": "穿戴配件",
+            "link": "/equipment?type=accessories&category=wearable",
+            "order_index": 1
+          },
+          {
+            "id": "3-equipment-2-item-3",
+            "label": "功能组件",
+            "link": "/equipment?type=accessories&category=components",
+            "order_index": 2
+          }
+        ]
+      }
+    ],
+    "after": [
+      {
+        "id": "overview-3",
+        "title": "产品应用",
+        "description": "从面料到成品，了解材料在不同产品中的应用。",
+        "image_url": "/uploads/1783959932963-982327398.jpg",
+        "link": "/equipment",
+        "order_index": 0,
+        "items": []
+      },
+      {
+        "id": "3-equipment-group-1",
+        "title": "成衣",
+        "link": "/equipment?type=apparel",
+        "order_index": 1,
+        "items": [
+          {
+            "id": "3-equipment-1-item-1",
+            "label": "日常通勤",
+            "link": "/equipment?type=apparel&category=daily",
+            "order_index": 0
+          },
+          {
+            "id": "3-equipment-1-item-2",
+            "label": "户外防护",
+            "link": "/equipment?type=apparel&category=outdoor",
+            "order_index": 1
+          },
+          {
+            "id": "3-equipment-1-item-3",
+            "label": "专业与特种",
+            "link": "/equipment?type=apparel&category=professional",
+            "order_index": 2
+          }
+        ]
+      },
+      {
+        "id": "3-equipment-group-2",
+        "title": "配件",
+        "link": "/equipment?type=accessories",
+        "order_index": 2,
+        "items": [
+          {
+            "id": "3-equipment-2-item-1",
+            "label": "养护用品",
+            "link": "/equipment?type=accessories&category=care",
+            "order_index": 0
+          },
+          {
+            "id": "3-equipment-2-item-2",
+            "label": "穿戴配件",
+            "link": "/equipment?type=accessories&category=wearable",
+            "order_index": 1
+          },
+          {
+            "id": "3-equipment-2-item-3",
+            "label": "功能组件",
+            "link": "/equipment?type=accessories&category=components",
+            "order_index": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "collection": "navigation",
+    "id": 5,
+    "field": "mega_menu",
+    "before": [
+      {
+        "id": "5-group-1",
+        "title": "专业支持",
+        "order_index": 0,
+        "items": [
+          {
+            "id": "5-0-item-1",
+            "label": "材料与性能支持",
+            "link": "/services/material-care",
+            "order_index": 0
+          },
+          {
+            "id": "5-0-item-2",
+            "label": "使用与养护",
+            "link": "/services/garment-care",
+            "order_index": 1
+          },
+          {
+            "id": "5-0-item-3",
+            "label": "数字面料与虚拟打样",
+            "link": "/services/digital-fabrics",
+            "order_index": 2
+          }
+        ]
+      }
+    ],
+    "after": [
+      {
+        "id": "overview-5",
+        "title": "专业支持",
+        "description": "材料选用、数字打样与使用养护。",
+        "image_url": "/uploads/1783877676932-234722141.jpg",
+        "link": "/services",
+        "order_index": 0,
+        "items": []
+      },
+      {
+        "id": "5-group-1",
+        "title": "专业支持",
+        "order_index": 1,
+        "items": [
+          {
+            "id": "5-0-item-1",
+            "label": "材料与性能支持",
+            "link": "/services/material-care",
+            "order_index": 0,
+            "description": "材料选择与性能信息"
+          },
+          {
+            "id": "5-0-item-2",
+            "label": "使用与养护",
+            "link": "/services/garment-care",
+            "order_index": 1,
+            "description": "清洁、使用与保养"
+          },
+          {
+            "id": "5-0-item-3",
+            "label": "数字面料与虚拟打样",
+            "link": "/services/digital-fabrics",
+            "order_index": 2,
+            "description": "面料数字化与产品开发"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 6,
+    "field": "status",
+    "before": "published",
+    "after": "draft"
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 12,
+    "field": "module_type",
+    "before": "technology-page",
+    "after": "rpo-platform-v1"
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 12,
+    "field": "nav_label",
+    "before": "RPO 材料平台",
+    "after": "RPO TECHNOLOGY"
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 12,
+    "field": "eyebrow",
+    "before": "",
+    "after": "GONYIK / RPO TECHNOLOGY"
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 12,
+    "field": "title",
+    "before": "RPO 高性能材料平台",
+    "after": "RPO TECHNOLOGY"
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 12,
+    "field": "subtitle",
+    "before": "让实验室材料，进入可制造的高性能面料",
+    "after": "港翼的材料与面料开发平台。膜、纤维、复合技术，以及配套的供应链和测试。"
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 12,
+    "field": "content",
+    "before": "港翼技术顾问高平教授拥有30余年高分子材料研究经验。港翼源自固纳内部孵化的功能材料项目，依托设于香港科技大学（广州）多功能高聚物薄膜中央实验室的固纳 RPO Lab，推动 RPO 膜与高性能纤维从实验室走向应用。/hRPO 材料平台围绕 RPO-SOTEX 超微孔功能膜与 RPO 高性能纤维展开，通过材料结构、形态和加工适配性的持续开发，在轻量、强度、耐久与功能界面之间建立新的性能基础。/h港翼根据不同使用场景，将 RPO 材料与织物结构、功能整理和复合工艺协同设计，使底层材料转化为可制造、可验证的面料，并进一步服务于防水透湿、高强耐磨及特种材料等产品方向。",
+    "after": ""
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 12,
+    "field": "order_index",
+    "before": 1,
+    "after": 0
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 12,
+    "field": "content_blocks",
+    "after": [
+      {
+        "key": "platform-capabilities",
+        "title": "膜、纤维与复合",
+        "content": "从原料选择、织物设计到复合加工，为不同用途开发面料。",
+        "items": [
+          {
+            "title": "膜技术",
+            "content": "RPO-SOTEX 功能膜，用于防水透湿面料。",
+            "visual": "membrane",
+            "image_url": "",
+            "link_url": "/pfas-free-innovation/rpo-sotex-membrane"
+          },
+          {
+            "title": "高性能纤维",
+            "content": "纤维选择、纱线组合与织物设计。",
+            "visual": "image",
+            "image_url": "/visuals/technology-fiber-material-v1.webp",
+            "link_url": "/pfas-free-innovation/high-performance-fiber"
+          },
+          {
+            "title": "复合技术",
+            "content": "将不同材料复合，调整成品的功能与手感。",
+            "visual": "lamination",
+            "image_url": "",
+            "link_url": "/pfas-free-innovation/lamination"
+          }
+        ],
+        "layout": "cards",
+        "tone": "",
+        "links": []
+      },
+      {
+        "key": "delivery",
+        "title": "从样品到量产",
+        "content": "打样、测试、调整，再确定生产规格。",
+        "items": [
+          {
+            "title": "供应链",
+            "content": "协调原料、织造、染整和复合的开发与生产。",
+            "visual": "supply",
+            "image_url": "",
+            "link_url": "/pfas-free-innovation/supply-chain",
+            "link_label": "了解供应链"
+          },
+          {
+            "title": "测试与认证",
+            "content": "样品对比、性能测试与第三方检测。",
+            "visual": "image",
+            "image_url": "/visuals/technology-testing-hero-v2.jpg",
+            "link_url": "/pfas-free-innovation/testing-certification",
+            "link_label": "了解测试与认证"
+          }
+        ],
+        "layout": "delivery",
+        "tone": "mist",
+        "links": []
+      },
+      {
+        "key": "material-choice",
+        "title": "材料与化学品要求",
+        "content": "膜、纤维、整理剂与复合用胶，都需要符合项目的材料要求。RPO-SOTEX 的材料说明及检测信息见膜技术页。",
+        "layout": "note",
+        "tone": "",
+        "links": [
+          {
+            "label": "查看 RPO-SOTEX",
+            "href": "/pfas-free-innovation/rpo-sotex-membrane#material-testing"
+          }
+        ]
+      },
+      {
+        "key": "series",
+        "title": "面料系列",
+        "content": "",
+        "layout": "series",
+        "tone": "",
+        "links": [],
+        "items": [
+          {
+            "title": "OTTER",
+            "content": "适用于冲锋衣、雨衣等户外服装。",
+            "image_url": "/uploads/1781366172477-254637203.png",
+            "link_url": "/fabrics/series/otter"
+          },
+          {
+            "title": "RAYO",
+            "content": "适用于防晒衣、垂钓披风及轻户外服装。",
+            "image_url": "/uploads/1783927272832-864591800.jpg",
+            "link_url": "/fabrics/series/rayo"
+          },
+          {
+            "title": "KAIS",
+            "content": "用于防护服装、手套及其他需要加强防护的部位。",
+            "image_url": "/uploads/1783927258734-23082948.jpg",
+            "link_url": "/fabrics/series/kais"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 12,
+    "field": "hero_statement",
+    "after": ""
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 12,
+    "field": "hero_scroll_label",
+    "after": "了解平台能力"
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 12,
+    "field": "hero_visual",
+    "after": "image"
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 12,
+    "field": "hero_link",
+    "after": "#platform-capabilities"
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 1,
+    "field": "order_index",
+    "before": 2,
+    "after": 1
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 1,
+    "field": "content",
+    "before": "RPO-SOTEX 以聚烯烃材料与超微孔结构实现防水透湿，不依赖含氟膜材料体系。经 SGS 对数百种目标 PFAS 进行检测，结果均未检出。",
+    "after": ""
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 1,
+    "field": "nav_label",
+    "before": "高性能膜技术",
+    "after": "膜技术"
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 1,
+    "field": "module_type",
+    "before": "technology-page",
+    "after": "rpo-platform-v1"
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 1,
+    "field": "eyebrow",
+    "before": "",
+    "after": "GONYIK / RPO TECHNOLOGY"
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 1,
+    "field": "content_blocks",
+    "before": [
+      {
+        "key": "transport-mechanism",
+        "title": "水汽如何穿过一层防水膜",
+        "content": "防水透湿膜需要完成两件看似相反的事：阻挡外部液态水，同时让人体产生的水汽持续向外释放。不同膜结构实现透湿的路径并不相同。/h传统无孔膜依靠材料对水分子的吸附、扩散与解吸完成传递；RPO-SOTEX 则在连续膜体内部形成细小、不规则且相互连通的超微孔，让水汽经孔道向外扩散。"
+      },
+      {
+        "key": "waterproof-mechanism",
+        "title": "透气膜怎么防水",
+        "content": "水汽可以沿连通微孔向外扩散，液态水面对的却是另一套界面条件。RPO-SOTEX 的疏水微孔远小于液滴，水在孔口形成弯月面；只有当外部水压超过孔隙对应的进入压力，液态水才可能进入膜层。/h因此，防水能力并不是把孔完全封死，而是通过材料表面性质、孔径分布与膜层均匀性共同建立稳定的液态水屏障。"
+      },
+      {
+        "key": "performance-foundation",
+        "title": "一张膜，需要同时成立的性能",
+        "content": "RPO-SOTEX 基于增韧聚烯烃材料体系与微孔结构调控，将聚烯烃材料、连通超微孔和高强韧膜体结合在同一结构中。/h它追求的不是某一个孤立指标的峰值，而是在复合加工与长期使用中，持续维持防水、透湿、强韧和耐候之间的平衡。",
+        "items": [
+          {
+            "title": "减少含氟依赖",
+            "content": "RPO-SOTEX 采用聚烯烃材料体系，从核心膜层减少对含氟材料的依赖。经 SGS 对数百种目标 PFAS 进行检测，结果均未检出。"
+          },
+          {
+            "title": "超微孔直接传递",
+            "content": "膜体内部形成细小、连续的微孔结构，为水汽提供直接的传递通道，减少对材料吸湿扩散过程的依赖。"
+          },
+          {
+            "title": "强韧与耐候基础",
+            "content": "高强韧膜体为后续复合加工、反复弯折、磨损和环境变化中的稳定表现提供材料基础。"
+          }
+        ]
+      }
+    ],
+    "after": [
+      {
+        "key": "material-testing",
+        "layout": "intro",
+        "title": "",
+        "content": "RPO-SOTEX 以聚烯烃材料与超微孔结构实现防水透湿，不依赖含氟膜材料体系。经 SGS 对数百种目标 PFAS 进行检测，结果均未检出。",
+        "note": "“未检出”指报告所列目标物低于相应方法检出限，具体检测范围以技术资料为准。"
+      },
+      {
+        "key": "transport-mechanism",
+        "title": "水汽如何穿过一层防水膜",
+        "content": "防水透湿膜需要完成两件看似相反的事：阻挡外部液态水，同时让人体产生的水汽持续向外释放。不同膜结构实现透湿的路径并不相同。/h传统无孔膜依靠材料对水分子的吸附、扩散与解吸完成传递；RPO-SOTEX 则在连续膜体内部形成细小、不规则且相互连通的超微孔，让水汽经孔道向外扩散。",
+        "layout": "comparison",
+        "items": [
+          {
+            "title": "传统无孔结构",
+            "content": "吸湿—扩散—解吸",
+            "image_url": "/visuals/pfas-microstructure-dense-v3.webp"
+          },
+          {
+            "title": "RPO-SOTEX 超微孔结构",
+            "content": "连通微孔—直接传递",
+            "image_url": "/visuals/pfas-microstructure-porous-v4.webp",
+            "caption": "膜层厚度 < 5 μm"
+          }
+        ]
+      },
+      {
+        "key": "waterproof-mechanism",
+        "title": "透气膜怎么防水",
+        "content": "水汽可以沿连通微孔向外扩散，液态水面对的却是另一套界面条件。RPO-SOTEX 的疏水微孔远小于液滴，水在孔口形成弯月面；只有当外部水压超过孔隙对应的进入压力，液态水才可能进入膜层。/h因此，防水能力并不是把孔完全封死，而是通过材料表面性质、孔径分布与膜层均匀性共同建立稳定的液态水屏障。",
+        "layout": "feature",
+        "tone": "mist",
+        "image_url": "/visuals/membrane-waterproof-mechanism-v1.jpg",
+        "caption": "液滴停留在 RPO-SOTEX 超微孔膜表面",
+        "items": [
+          {
+            "title": "尺度差",
+            "content": "液滴尺度远大于连通微孔"
+          },
+          {
+            "title": "超低表面能",
+            "content": "降低液态水对膜面的润湿倾向"
+          },
+          {
+            "title": "孔口毛细阻力",
+            "content": "进入压力阻止液态水穿透"
+          }
+        ]
+      },
+      {
+        "key": "performance-foundation",
+        "title": "一张膜，需要同时成立的性能",
+        "content": "RPO-SOTEX 基于增韧聚烯烃材料体系与微孔结构调控，将聚烯烃材料、连通超微孔和高强韧膜体结合在同一结构中。/h它追求的不是某一个孤立指标的峰值，而是在复合加工与长期使用中，持续维持防水、透湿、强韧和耐候之间的平衡。",
+        "items": [
+          {
+            "title": "减少含氟依赖",
+            "content": "RPO-SOTEX 采用聚烯烃材料体系，从核心膜层减少对含氟材料的依赖。经 SGS 对数百种目标 PFAS 进行检测，结果均未检出。"
+          },
+          {
+            "title": "超微孔直接传递",
+            "content": "膜体内部形成细小、连续的微孔结构，为水汽提供直接的传递通道，减少对材料吸湿扩散过程的依赖。"
+          },
+          {
+            "title": "强韧与耐候基础",
+            "content": "高强韧膜体为后续复合加工、反复弯折、磨损和环境变化中的稳定表现提供材料基础。"
+          }
+        ],
+        "layout": "feature",
+        "visual": "membrane",
+        "caption": "RPO-SOTEX 超微孔功能膜"
+      }
+    ]
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 1,
+    "field": "hero_statement",
+    "after": ""
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 1,
+    "field": "hero_scroll_label",
+    "after": ""
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 1,
+    "field": "hero_visual",
+    "after": "image"
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 1,
+    "field": "hero_link",
+    "after": ""
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 2,
+    "field": "order_index",
+    "before": 3,
+    "after": 2
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 2,
+    "field": "content",
+    "before": "一块面料的强度、重量、触感与耐用性，在织造成形之前就已经从纤维开始。港翼根据使用环境，将 RPO 高性能纤维与其他高品质纤维组合，并进一步匹配纱线规格与织物组织，让不同材料各自承担增强、耐磨、弹性或舒适的作用。/h这套配方由拥有二十余年织造与染整经验的核心纺织合作伙伴共同转化为稳定的织物结构。/hRPO 高性能纤维具有突出的比强度、耐磨性与耐候基础，可在较低材料重量下提供有效增强。面向轻量防护、高磨损区域或需要长期使用的产品，港翼通过纤维比例与组织密度的调整，把材料能力放在真正需要的位置。",
+    "after": ""
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 2,
+    "field": "module_type",
+    "before": "technology-page",
+    "after": "rpo-platform-v1"
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 2,
+    "field": "eyebrow",
+    "before": "",
+    "after": "GONYIK / RPO TECHNOLOGY"
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 2,
+    "field": "content_blocks",
+    "before": [
+      {
+        "key": "fiber-formula",
+        "title": "高性能，来自于正确的纤维配方",
+        "content": "一块面料的强度、重量、触感与耐用性，在织造成形之前就已经从纤维开始。港翼根据使用环境，将 RPO 高性能纤维与其他高品质纤维组合，并进一步匹配纱线规格与织物组织，让不同材料各自承担增强、耐磨、弹性或舒适的作用。/h这套配方由拥有二十余年织造与染整经验的核心纺织合作伙伴共同转化为稳定的织物结构。",
+        "highlights": [
+          "RPO 高性能纤维",
+          "其他高品质纤维",
+          "纱线与织物组织"
+        ]
+      },
+      {
+        "key": "fiber-specific-strength",
+        "title": "更轻的结构，仍然保留防护余量",
+        "content": "RPO 高性能纤维具有突出的比强度、耐磨性与耐候基础，可在较低材料重量下提供有效增强。面向轻量防护、高磨损区域或需要长期使用的产品，港翼通过纤维比例与组织密度的调整，把材料能力放在真正需要的位置。",
+        "items": [
+          {
+            "title": "高比强度",
+            "content": "以更少的材料重量，为织物提供有效的承载与增强基础。"
+          },
+          {
+            "title": "耐磨增强",
+            "content": "针对高接触、高摩擦区域，提高织物抵抗持续磨耗的能力。"
+          },
+          {
+            "title": "耐候基础",
+            "content": "为户外暴露、反复使用和复杂环境中的性能保持提供材料基础。"
+          }
+        ]
+      }
+    ],
+    "after": [
+      {
+        "key": "fiber-formula",
+        "title": "高性能，来自于正确的纤维配方",
+        "content": "一块面料的强度、重量、触感与耐用性，在织造成形之前就已经从纤维开始。港翼根据使用环境，将 RPO 高性能纤维与其他高品质纤维组合，并进一步匹配纱线规格与织物组织，让不同材料各自承担增强、耐磨、弹性或舒适的作用。/h这套配方由拥有二十余年织造与染整经验的核心纺织合作伙伴共同转化为稳定的织物结构。",
+        "highlights": [
+          "RPO 高性能纤维",
+          "其他高品质纤维",
+          "纱线与织物组织"
+        ],
+        "layout": "split",
+        "image_url": "/visuals/technology-fiber-material-v1.webp",
+        "caption": "纤维、纱线与织物结构示意"
+      },
+      {
+        "key": "fiber-specific-strength",
+        "title": "更轻的结构，仍然保留防护余量",
+        "content": "RPO 高性能纤维具有突出的比强度、耐磨性与耐候基础，可在较低材料重量下提供有效增强。面向轻量防护、高磨损区域或需要长期使用的产品，港翼通过纤维比例与组织密度的调整，把材料能力放在真正需要的位置。",
+        "items": [
+          {
+            "title": "高比强度",
+            "content": "以更少的材料重量，为织物提供有效的承载与增强基础。"
+          },
+          {
+            "title": "耐磨增强",
+            "content": "针对高接触、高摩擦区域，提高织物抵抗持续磨耗的能力。"
+          },
+          {
+            "title": "耐候基础",
+            "content": "为户外暴露、反复使用和复杂环境中的性能保持提供材料基础。"
+          }
+        ],
+        "layout": "columns",
+        "tone": "mist"
+      }
+    ]
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 2,
+    "field": "hero_statement",
+    "after": ""
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 2,
+    "field": "hero_scroll_label",
+    "after": ""
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 2,
+    "field": "hero_visual",
+    "after": "image"
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 2,
+    "field": "hero_link",
+    "after": ""
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 3,
+    "field": "order_index",
+    "before": 4,
+    "after": 3
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 3,
+    "field": "content",
+    "before": "面层决定外观、触感与表面防护，RPO-SOTEX 功能膜承担防水透湿，内层则影响贴肤体验与结构保护。真正的复合不是简单地把三层粘在一起，而是让它们在弯折、拉伸、湿热与持续穿着中保持协同。/hRPO-SOTEX 的材料特性使传统复合参数难以直接套用。港翼围绕胶黏剂体系、施胶结构、温度与压力、速度与张力持续建立专属工艺窗口，使层间结合达到可靠水平，同时保留膜层的透湿能力、面料手感与耐久表现。",
+    "after": ""
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 3,
+    "field": "nav_label",
+    "before": "面料复合技术",
+    "after": "复合技术"
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 3,
+    "field": "module_type",
+    "before": "technology-page",
+    "after": "rpo-platform-v1"
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 3,
+    "field": "eyebrow",
+    "before": "",
+    "after": "GONYIK / RPO TECHNOLOGY"
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 3,
+    "field": "content_blocks",
+    "before": [
+      {
+        "key": "lamination-interface",
+        "title": "三层材料，最终成为一块面料",
+        "content": "面层决定外观、触感与表面防护，RPO-SOTEX 功能膜承担防水透湿，内层则影响贴肤体验与结构保护。真正的复合不是简单地把三层粘在一起，而是让它们在弯折、拉伸、湿热与持续穿着中保持协同。",
+        "highlights": [
+          "面层",
+          "RPO-SOTEX 功能膜",
+          "内层"
+        ]
+      },
+      {
+        "key": "lamination-window",
+        "title": "为 RPO-SOTEX 建立专属复合工艺",
+        "content": "RPO-SOTEX 的材料特性使传统复合参数难以直接套用。港翼围绕胶黏剂体系、施胶结构、温度与压力、速度与张力持续建立专属工艺窗口，使层间结合达到可靠水平，同时保留膜层的透湿能力、面料手感与耐久表现。",
+        "items": [
+          {
+            "title": "可靠结合",
+            "content": "使面层、功能层与内层在反复使用中维持完整结构。"
+          },
+          {
+            "title": "保留透湿",
+            "content": "控制施胶形态与覆盖关系，避免功能通道被不必要地占用。"
+          },
+          {
+            "title": "兼顾手感",
+            "content": "让复合后的面料仍具有适合具体产品的柔软度与活动自由度。"
+          },
+          {
+            "title": "面向耐久",
+            "content": "围绕湿热、弯折与洗护条件，持续优化层间稳定性。"
+          }
+        ]
+      }
+    ],
+    "after": [
+      {
+        "key": "lamination-interface",
+        "title": "三层材料，最终成为一块面料",
+        "content": "面层决定外观、触感与表面防护，RPO-SOTEX 功能膜承担防水透湿，内层则影响贴肤体验与结构保护。真正的复合不是简单地把三层粘在一起，而是让它们在弯折、拉伸、湿热与持续穿着中保持协同。",
+        "highlights": [
+          "面层",
+          "RPO-SOTEX 功能膜",
+          "内层"
+        ],
+        "layout": "split",
+        "visual": "lamination",
+        "caption": ""
+      },
+      {
+        "key": "lamination-window",
+        "title": "为 RPO-SOTEX 建立专属复合工艺",
+        "content": "RPO-SOTEX 的材料特性使传统复合参数难以直接套用。港翼围绕胶黏剂体系、施胶结构、温度与压力、速度与张力持续建立专属工艺窗口，使层间结合达到可靠水平，同时保留膜层的透湿能力、面料手感与耐久表现。",
+        "items": [
+          {
+            "title": "可靠结合",
+            "content": "使面层、功能层与内层在反复使用中维持完整结构。"
+          },
+          {
+            "title": "保留透湿",
+            "content": "控制施胶形态与覆盖关系，避免功能通道被不必要地占用。"
+          },
+          {
+            "title": "兼顾手感",
+            "content": "让复合后的面料仍具有适合具体产品的柔软度与活动自由度。"
+          },
+          {
+            "title": "面向耐久",
+            "content": "围绕湿热、弯折与洗护条件，持续优化层间稳定性。"
+          }
+        ],
+        "layout": "matrix",
+        "tone": "navy"
+      },
+      {
+        "key": "lamination-development",
+        "layout": "note",
+        "title": "复合工艺与材料开发",
+        "content": "面层、功能层与内层的搭配，需要与具体用途、手感和性能要求一起确定。",
+        "links": [
+          {
+            "label": "咨询复合技术",
+            "href": "/contact?topic=咨询复合开发&source=lamination"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 3,
+    "field": "hero_statement",
+    "after": ""
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 3,
+    "field": "hero_scroll_label",
+    "after": ""
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 3,
+    "field": "hero_visual",
+    "after": "image"
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 3,
+    "field": "hero_link",
+    "after": ""
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 4,
+    "field": "order_index",
+    "before": 5,
+    "after": 4
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 4,
+    "field": "content",
+    "before": "港翼优选具备 bluesign®、GRS、OEKO-TEX® 认证基础的面料与供应链合作伙伴。具体适用范围以对应产品资料为准。",
+    "after": ""
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 4,
+    "field": "nav_label",
+    "before": "供应链管理",
+    "after": "供应链"
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 4,
+    "field": "module_type",
+    "before": "technology-page",
+    "after": "rpo-platform-v1"
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 4,
+    "field": "eyebrow",
+    "before": "",
+    "after": "GONYIK / RPO TECHNOLOGY"
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 4,
+    "field": "content_blocks",
+    "before": [
+      {
+        "key": "supply-chain",
+        "title": "让材料能力沿着产业链完整传递",
+        "content": "一块高性能面料，来自纤维、织造、染整、功能膜与复合工艺的连续协同。港翼把底层材料开发与成熟纺织制造能力连接起来，让每一个生产环节都围绕最终应用共同工作。"
+      },
+      {
+        "key": "supply-foundation",
+        "title": "二十余年的纺织经验，进入新的材料体系",
+        "content": "核心纺织合作伙伴长期积累的织造与染整能力，为纤维选择、织物开发、颜色与手感控制提供成熟基础。港翼在此基础上引入 RPO-SOTEX 功能膜与无氟技术路径，把新的材料能力转化为可制造的面料产品。",
+        "highlights": [
+          "纤维与纱线",
+          "织造与染整",
+          "功能膜",
+          "复合与成品"
+        ]
+      },
+      {
+        "key": "supply-assurance",
+        "title": "材料信息与品质依据，同步进入开发过程",
+        "content": "港翼优选具备 bluesign®、GRS、OEKO-TEX® 认证基础的面料与供应链合作伙伴。具体适用范围以对应产品资料为准。"
+      }
+    ],
+    "after": [
+      {
+        "key": "supply-chain",
+        "title": "让材料能力沿着产业链完整传递",
+        "content": "一块高性能面料，来自纤维、织造、染整、功能膜与复合工艺的连续协同。港翼把底层材料开发与成熟纺织制造能力连接起来，让每一个生产环节都围绕最终应用共同工作。",
+        "layout": "split",
+        "visual": "supply"
+      },
+      {
+        "key": "supply-foundation",
+        "title": "二十余年的纺织经验",
+        "content": "核心纺织合作伙伴长期积累的织造与染整能力，为纤维选择、织物开发、颜色与手感控制提供成熟基础。港翼在此基础上引入 RPO-SOTEX 功能膜与无氟技术路径，把新的材料能力转化为可制造的面料产品。",
+        "highlights": [
+          "纤维与纱线",
+          "织造与染整",
+          "功能膜",
+          "复合与成品"
+        ],
+        "layout": "split",
+        "tone": "mist",
+        "image_url": "/visuals/technology-fiber-production-hero-v2.webp",
+        "caption": "织造与染整能力，与功能材料开发相衔接"
+      },
+      {
+        "key": "supply-assurance",
+        "title": "材料信息与品质依据，同步进入开发过程",
+        "content": "港翼优选具备 bluesign®、GRS、OEKO-TEX® 认证基础的面料与供应链合作伙伴。具体适用范围以对应产品资料为准。",
+        "layout": "logos",
+        "items": [
+          {
+            "title": "bluesign",
+            "content": "",
+            "image_url": "/uploads/1785658131306-08e5b0c2-816b-4b49-806b-3e6b4fc42830.png"
+          },
+          {
+            "title": "OEKO-TEX",
+            "content": "",
+            "image_url": "/uploads/1785658146022-20221f09-015d-411c-8f42-9c81107959c5.jpg"
+          },
+          {
+            "title": "Global Recycled Standard",
+            "content": "",
+            "image_url": "/uploads/1785658162991-718d2b7b-41ef-4df3-bf75-4431246d3105.png"
+          }
+        ],
+        "links": [
+          {
+            "label": "咨询材料与供应链",
+            "href": "/contact?topic=联系港翼&source=supply-chain"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 4,
+    "field": "hero_visual",
+    "after": "image"
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 4,
+    "field": "hero_link",
+    "after": ""
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 5,
+    "field": "order_index",
+    "before": 6,
+    "after": 5
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 5,
+    "field": "content",
+    "before": "从防水透湿、耐磨强度到弯折耐久，港翼围绕功能面料的关键表现开展测试，并根据具体产品与项目要求，由 SGS、中纺标 CTTC 等专业机构进行独立检测。",
+    "after": ""
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 5,
+    "field": "nav_label",
+    "before": "测试与验证",
+    "after": "测试与认证"
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 5,
+    "field": "module_type",
+    "before": "technology-page",
+    "after": "rpo-platform-v1"
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 5,
+    "field": "eyebrow",
+    "before": "",
+    "after": "GONYIK / RPO TECHNOLOGY"
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 5,
+    "field": "content_blocks",
+    "before": [
+      {
+        "key": "testing-chain",
+        "title": "验证，从单项材料开始",
+        "content": "港翼围绕材料筛选、结构开发、样品对比与耐久表现开展内部测试。"
+      },
+      {
+        "key": "testing-lab",
+        "title": "从内部实验，到独立第三方验证",
+        "content": "根据具体产品与项目要求，由 SGS、中纺标 CTTC 等专业机构进行独立检测。",
+        "highlights": [
+          "材料与结构验证",
+          "样品与耐久对比",
+          "独立第三方检测"
+        ]
+      },
+      {
+        "key": "testing-result",
+        "title": "从性能数据，到产品选择",
+        "content": "防水、透湿、耐磨、强度与耐久等关键表现，最终都要服务于真实产品。港翼为品牌提供面料型号、性能信息与技术支持，帮助开发团队更快比较方案、确认选材并推进打样。"
+      }
+    ],
+    "after": [
+      {
+        "key": "testing-chain",
+        "layout": "split",
+        "title": "材料与面料测试",
+        "content": "从防水透湿到强度、耐磨与耐久，港翼通过测试比较材料和样品表现。根据项目需要，委托 SGS、中纺标 CTTC 等机构进行独立检测。",
+        "image_url": "/visuals/technology-testing-hero-v1.webp",
+        "caption": "面料测试场景示意",
+        "links": [
+          {
+            "label": "咨询测试资料",
+            "href": "/contact?topic=咨询测试资料&source=testing-certification"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 5,
+    "field": "hero_statement",
+    "after": ""
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 5,
+    "field": "hero_scroll_label",
+    "after": ""
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 5,
+    "field": "hero_visual",
+    "after": "image"
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 5,
+    "field": "hero_link",
+    "after": ""
+  }
+]

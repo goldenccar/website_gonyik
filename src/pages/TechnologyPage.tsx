@@ -1,54 +1,32 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Link, Navigate, useLocation, useNavigate, useParams } from 'react-router-dom'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { Link, Navigate, useLocation, useParams } from 'react-router-dom'
 import { getContentSections } from '@/api/client'
-import CatalogSelectorBar from '@/components/CatalogSelectorBar'
-import MarkupParser, { InlineMarkup } from '@/components/MarkupParser'
+import { InlineMarkup } from '@/components/MarkupParser'
 import { PageSection, PageShell } from '@/components/PageLayout'
-import MembraneStructureStory from '@/components/technology/MembraneStructureStory'
-import PfasSystemStory from '@/components/technology/PfasSystemStory'
-import TechnologyStory, { type TechnologyStoryKind } from '@/components/technology/TechnologyStory'
-import { getTechnologyPagePath, TECHNOLOGY_GROUPS, TECHNOLOGY_PAGES } from '@/config/technologyPages'
+import RpoPlatformStory from '@/components/technology/RpoPlatformStory'
+import { SupplyChainVisual } from '@/components/HomeTechnicalVisuals'
+import { getTechnologyPagePath, TECHNOLOGY_PAGES } from '@/config/technologyPages'
+import { RPO_LABELS } from '@/config/rpoContent'
 import { useSiteLocale } from '@/i18n/SiteLocale'
 import type { FluorineSection } from '@/types'
 import PublicContentLoader from '@/components/PublicContentLoader'
-import RelatedAction from '@/components/RelatedAction'
+import '@/styles/rpo-platform.css'
 
 const PREVIEW_MESSAGE = 'gonyik:technology-preview'
-const DEFAULT_TECHNOLOGY_HERO_IMAGES: Record<string, string> = {
-  'pfas-free-system': '/visuals/pfas-system-hero-v8.jpg',
-  'rpo-material-platform': '/visuals/technology-rpo-platform-hero-v1.webp',
-  'rpo-sotex-membrane': '/visuals/technology-membrane-production-hero-v1.webp',
-  'high-performance-fiber': '/visuals/technology-fiber-production-hero-v2.webp',
-  'lamination': '/visuals/technology-lamination-hero-v1.webp',
-  'supply-chain': '/visuals/technology-supply-chain-hero-v1.webp',
-  'testing-certification': '/visuals/technology-testing-hero-v2.jpg',
-}
-const DEFAULT_PFAS_SECTION: FluorineSection = {
-  id: 0,
-  page_key: 'pfas-free-innovation',
-  section_key: 'pfas-free-system',
-  order_index: 0,
-  title: '无氟技术体系',
-  subtitle: '从新的材料体系出发，重建高性能防护的结构与体验。',
-  content: '',
-  image_url: '/visuals/pfas-system-hero-v8.jpg',
-  image_fit: 'cover',
-}
 
 export default function TechnologyPage() {
   const { technologyKey = '' } = useParams()
   const location = useLocation()
-  const navigate = useNavigate()
   const { path: localePath, t } = useSiteLocale()
   const previewMode = new URLSearchParams(location.search).has('cms-preview')
   const [sections, setSections] = useState<FluorineSection[]>([])
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading')
   const [previewSection, setPreviewSection] = useState<FluorineSection | null>(null)
-
+  const navRef = useRef<HTMLElement>(null)
   const loadSections = useCallback(() => {
     setStatus('loading')
     getContentSections('pfas-free-innovation')
-      .then((response) => { setSections(response.data.data || []); setStatus('ready') })
+      .then(response => { setSections(response.data.data || []); setStatus('ready') })
       .catch(() => setStatus('error'))
   }, [])
   useEffect(loadSections, [loadSections])
@@ -66,117 +44,41 @@ export default function TechnologyPage() {
     return () => window.removeEventListener('message', receivePreview)
   }, [previewMode, technologyKey])
 
-  const section = useMemo(() => (
-    previewSection
-    || sections.find((item) => item.section_key === technologyKey)
-    || null
-  ), [previewSection, sections, technologyKey])
-  const definitionExists = TECHNOLOGY_PAGES.some((page) => page.sectionKey === technologyKey)
-  const pageDefinition = TECHNOLOGY_PAGES.find((page) => page.sectionKey === technologyKey)
-  const isPfasSystem = technologyKey === 'pfas-free-system'
-  const isMembraneTechnology = technologyKey === 'rpo-sotex-membrane'
-  const storyKind: TechnologyStoryKind | null = technologyKey === 'high-performance-fiber'
-    ? 'fiber'
-    : technologyKey === 'lamination'
-      ? 'lamination'
-      : technologyKey === 'supply-chain'
-        ? 'supply'
-        : technologyKey === 'testing-certification'
-          ? 'testing'
-          : null
-  const effectiveSection = isPfasSystem
-    ? { ...DEFAULT_PFAS_SECTION, ...(section || {}), image_url: section?.image_url || DEFAULT_PFAS_SECTION.image_url }
-    : section
-  const heroImage = effectiveSection?.image_url
-    || DEFAULT_TECHNOLOGY_HERO_IMAGES[technologyKey]
-    || null
-  const selectorSections = previewSection
-    ? sections.some((item) => item.section_key === previewSection.section_key)
-      ? sections.map((item) => item.section_key === previewSection.section_key ? previewSection : item)
-      : [...sections, previewSection]
-    : sections
+  useEffect(() => {
+    if (status !== 'ready') return
+    const nav = navRef.current
+    const active = nav?.querySelector<HTMLElement>('[aria-current="page"]')
+    if (nav && active) nav.scrollTo({ left: active.offsetLeft - 24, behavior: 'auto' })
+    if (!location.hash) return
+    const frame = requestAnimationFrame(() => document.getElementById(location.hash.slice(1))?.scrollIntoView({ block: 'start', behavior: 'instant' }))
+    return () => cancelAnimationFrame(frame)
+  }, [technologyKey, location.hash, status])
 
-  if (!definitionExists) {
-    return <Navigate to={localePath(getTechnologyPagePath(TECHNOLOGY_PAGES[0].sectionKey))} replace />
-  }
+  const definition = TECHNOLOGY_PAGES.find(page => page.sectionKey === technologyKey)
+  const section = previewSection?.section_key === technologyKey ? previewSection : sections.find(item => item.section_key === technologyKey)
+  if (!definition) return <Navigate to={localePath(`${getTechnologyPagePath('rpo-material-platform')}${technologyKey === 'pfas-free-system' ? '#material-choice' : ''}`)} replace />
   if (status === 'loading' && !previewSection) return <PublicContentLoader label="正在加载材料科技内容" />
-  if (status === 'error' && !previewSection) return <PageShell><PageSection tone="white"><div role="alert" className="border-l-2 border-[#69B2C1] pl-5"><p className="text-[16px] text-primary">材料科技内容加载失败。</p><button type="button" onClick={loadSections} className="mt-4 border-b border-primary text-[14px] text-primary">重新加载</button></div></PageSection></PageShell>
-
-  return (
-    <PageShell className="technology-reading">
-      <section className="technology-feature-shell bg-[#041f38]">
-        <div className={`technology-feature-hero ${heroImage ? 'has-image' : ''} relative flex w-full items-center overflow-hidden`}>
-          {heroImage
-            ? <img src={heroImage} alt="" loading="eager" fetchPriority="high" decoding="async" className={`absolute inset-0 h-full w-full ${effectiveSection?.image_fit === 'contain' ? 'object-contain' : 'object-cover'}`} />
-            : <div className="technology-feature-fallback absolute inset-0" aria-hidden="true" />}
-          <div className="technology-feature-shade absolute inset-0" />
-          <div className="technology-feature-copy relative z-10 w-full text-white">
-            <div className="mx-auto w-full max-w-[1760px] px-7 py-24 md:px-12 md:py-28 lg:px-20 lg:py-32">
-              <h1 className="type-hero max-w-[900px] text-balance text-white">
-                <InlineMarkup text={effectiveSection?.title || '材料科技'} />
-              </h1>
-              {effectiveSection?.subtitle && <p className="body-copy mt-5 max-w-[660px] text-white/78"><InlineMarkup text={effectiveSection.subtitle} /></p>}
-              {isPfasSystem && effectiveSection?.hero_statement && (
-                <p className="mt-7 max-w-[980px] text-balance text-[20px] font-medium leading-[1.45] text-white/92 md:text-[25px]">
-                  <InlineMarkup text={effectiveSection.hero_statement} />
-                </p>
-              )}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <CatalogSelectorBar
-        label={t('材料科技')}
-        variant="technology"
-        groups={TECHNOLOGY_GROUPS.map((group) => ({
-          label: t(group.label),
-          items: group.pages.flatMap((page) => {
-            const cmsSection = selectorSections.find((item) => item.section_key === page.sectionKey)
-            if (!cmsSection && sections.length > 0) return []
-            return [{
-              key: page.sectionKey,
-              label: t(cmsSection?.nav_label || page.menuLabel),
-              active: page.sectionKey === technologyKey,
-              onSelect: () => navigate(localePath(getTechnologyPagePath(page.sectionKey))),
-            }]
-          }),
-        }))}
-      />
-
-      {isPfasSystem ? (
-        <PfasSystemStory section={effectiveSection as FluorineSection} />
-      ) : (
-        <>
-          {isMembraneTechnology && effectiveSection
-            ? <MembraneStructureStory section={effectiveSection} />
-            : storyKind && effectiveSection
-              ? <TechnologyStory kind={storyKind} section={effectiveSection} />
-            : section?.content ? (
-              <PageSection tone="white" className="min-h-[520px]">
-                <article className="max-w-[820px]">
-                  <MarkupParser text={section.content} className="technical-copy text-secondary" />
-                  {technologyKey === 'testing-certification' && (
-                    <Link to={localePath('/contact')} className="mt-8 inline-block text-[14px] font-medium text-primary underline decoration-border underline-offset-4 hover:decoration-primary">
-                      <InlineMarkup text="获取适用型号的 TDS 与测试资料" /> →
-                    </Link>
-                  )}
-                </article>
-              </PageSection>
-            ) : null}
-        </>
-      )}
-
-      <RelatedAction
-        title={pageDefinition?.relatedSeries ? `查看 ${pageDefinition.relatedSeries.toUpperCase()} 系列面料` : '从材料能力进入具体面料'}
-        description={pageDefinition?.relatedSeries
-          ? `查看采用相关材料与工艺的 ${pageDefinition.relatedSeries.toUpperCase()} 系列现有型号与代表性性能。`
-          : '进入面料数据库，按系列查看现有型号、材料结构与代表性性能。'}
-        label="查看相关面料"
-        to={localePath(pageDefinition?.relatedSeries
-          ? `/fabrics?series=${pageDefinition.relatedSeries}#series-${pageDefinition.relatedSeries}`
-          : '/fabrics')}
-      />
-    </PageShell>
-  )
+  if (status === 'error' && !previewSection) return <PageShell><PageSection tone="white"><div role="alert"><p>材料科技内容加载失败。</p><button type="button" onClick={loadSections} className="mt-4 underline">重新加载</button></div></PageSection></PageShell>
+  if (!section) return <PageShell><PageSection><p>{t('该页面暂未开放。')}</p><Link to={localePath('/pfas-free-innovation')}>{t(RPO_LABELS.overview)}</Link></PageSection></PageShell>
+  const effectiveSection = section
+  const heroImage = section.image_url
+  return <PageShell className={`technology-reading rpo-page rpo-page--${technologyKey} ${section.hero_visual === 'supply' ? 'rpo-hero-has-animation' : ''}`}>
+    <section className="technology-feature-shell bg-[#041f38]">
+      <div className="technology-feature-hero has-image relative flex w-full items-center overflow-hidden">
+        {section.hero_visual === 'supply'
+          ? <div className="rpo-supply-hero"><SupplyChainVisual /></div>
+          : <>{heroImage && <img src={heroImage} alt="" loading="eager" fetchPriority="high" decoding="async" className={`absolute inset-0 h-full w-full ${effectiveSection.image_fit === 'contain' ? 'object-contain' : 'object-cover'}`} />}<div className="technology-feature-shade absolute inset-0" /></>}
+        <div className="technology-feature-copy relative z-10 w-full text-white"><div className="rpo-container">
+          {section.eyebrow && <span className="rpo-hero-kicker"><InlineMarkup text={section.eyebrow} /></span>}
+          <h1 className="type-hero text-white"><InlineMarkup text={effectiveSection.title} /></h1>
+          <p><InlineMarkup text={effectiveSection.subtitle} /></p>
+          {section.hero_scroll_label && section.hero_link && <Link className="rpo-text-link" to={localePath(section.hero_link)}><InlineMarkup text={section.hero_scroll_label} /><span aria-hidden="true">↓</span></Link>}
+        </div></div>
+      </div>
+    </section>
+    <div className="rpo-nav"><div className="rpo-container"><Link className="rpo-nav-brand" to={localePath(getTechnologyPagePath('rpo-material-platform'))} aria-current={technologyKey === 'rpo-material-platform' ? 'page' : undefined}><InlineMarkup text={sections.find(item => item.section_key === 'rpo-material-platform')?.nav_label || 'RPO TECHNOLOGY'} /></Link><nav ref={navRef} aria-label={t('材料科技')}>
+      {TECHNOLOGY_PAGES.filter(page => page.sectionKey !== 'rpo-material-platform' && (sections.some(item => item.section_key === page.sectionKey) || previewSection?.section_key === page.sectionKey)).map(page => <Link key={page.sectionKey} to={localePath(getTechnologyPagePath(page.sectionKey))} aria-current={page.sectionKey === technologyKey ? 'page' : undefined}><InlineMarkup text={sections.find(item => item.section_key === page.sectionKey)?.nav_label || page.menuLabel} /></Link>)}
+    </nav></div></div>
+    <RpoPlatformStory key={technologyKey} section={effectiveSection} />
+  </PageShell>
 }

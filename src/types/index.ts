@@ -73,12 +73,15 @@ export interface NavMenuLink {
   label: string
   link: string
   order_index: number
+  description?: string
 }
 
 export interface NavMenuGroup {
   id: string
   title: string
   link?: string
+  description?: string
+  image_url?: string
   order_index: number
   items: NavMenuLink[]
 }
@@ -246,6 +249,8 @@ export interface ContentSection {
   status?: 'draft' | 'published'
   hero_statement?: string
   hero_scroll_label?: string
+  hero_visual?: string
+  hero_link?: string
   content_blocks?: TechnologyContentBlock[]
   certification_logos?: CertificationLogo[]
 }
@@ -255,17 +260,31 @@ export interface CertificationLogo {
   image_url: string
 }
 
-export interface TechnologyContentItem {
-  title: string
-  content: string
+export interface TechnologyMedia {
+  visual?: string
+  image_url?: string
+  caption?: string
 }
 
-export interface TechnologyContentBlock {
+export interface TechnologyContentItem extends TechnologyMedia {
+  title: string
+  content: string
+  link_label?: string
+  link_url?: string
+  highlights?: string[]
+}
+
+export interface TechnologyContentBlock extends TechnologyMedia {
   key: string
   title: string
   content: string
   highlights?: string[]
   items?: TechnologyContentItem[]
+  layout?: string
+  tone?: string
+  hidden?: boolean
+  note?: string
+  links?: { label: string; href: string }[]
 }
 
 export type FluorineSection = ContentSection
