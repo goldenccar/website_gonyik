@@ -1,4 +1,5 @@
 import fs from 'fs'
+import { applyHomepageReview } from './homepageReview'
 import path from 'path'
 import { DEFAULT_FABRIC_CAPABILITIES } from '../src/config/fabricCapabilities'
 import { normalizeMaterialPlatforms } from '../src/config/materialPlatforms'
@@ -14,6 +15,7 @@ if (!fs.existsSync(UPLOADS_DIR)) {
 }
 
 export interface Database {
+  homepage_review_version?: number
   home_config: any
   site_config: any
   cms_config: any
@@ -2515,6 +2517,7 @@ export function initDatabase() {
     db.home_story_version = 4
     saveDb()
   }
+  if (applyHomepageReview(db)) saveDb()
   initializing = false
   if (pendingSave || !fs.existsSync(DB_PATH)) fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2))
 }

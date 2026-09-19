@@ -125,7 +125,7 @@ test('media inventory discovers referenced site visuals and blocks path traversa
   const references = getLocalMediaReferences()
   assert.ok([...references.keys()].some((url) => url.startsWith('/visuals/')))
   assert.equal(resolveLocalMediaPath('/visuals/../../etc/passwd'), null)
-  assert.match(resolveLocalMediaPath('/visuals/pfas-system-hero-v8.jpg') || '', /public\/visuals\/pfas-system-hero-v8\.jpg$/)
+  assert.equal(resolveLocalMediaPath('/visuals/pfas-system-hero-v8.jpg'), path.resolve('public/visuals/pfas-system-hero-v8.jpg'))
 })
 
 test('market route helper preserves query strings and hashes', () => {

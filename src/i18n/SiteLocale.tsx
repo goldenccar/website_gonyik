@@ -7,6 +7,17 @@ import type { FabricSeries, FooterConfig, HomeConfig, NavItem, SocialMedia } fro
 export type { SiteLocale } from '@/config/markets'
 
 export const ENGLISH_COPY: Record<string, string> = {
+  '港翼将 RPO 膜技术与织物结构、复合工艺结合，开发可用于实际产品的功能面料。': 'GONYIK combines RPO membrane technology, textile construction and lamination to develop functional fabrics for finished products.',
+  '以 RPO-SOTEX 功能膜实现防水透湿。': 'Waterproof, breathable performance with RPO-SOTEX membranes.',
+  '通过复合工艺，协调面层、功能层与内层的表现。': 'Lamination brings face fabrics, functional layers and backers together.',
+  '衔接材料、工艺、制造与交付。': 'Connecting materials, processes, manufacturing and delivery.',
+  '从材料筛选到成品面料，结合内部测试与第三方检测，验证具体样品的性能。': 'From material selection to finished fabric, internal and third-party testing evaluates the performance of specific samples.',
+  '了解测试与验证': 'Explore testing and validation',
+  '港翼专注功能性面料开发，为户外穿着与专业防护提供材料选择。': 'GONYIK develops functional textiles for outdoor apparel and professional protection.',
+  '适用于冲锋衣、雨衣等户外服装。': 'For shell jackets, rainwear and other outdoor apparel.',
+  '防晒与日常户外': 'Sun protection and everyday outdoor wear',
+  '适用于防晒衣、垂钓披风及轻户外服装。': 'For sun-protective clothing, fishing capes and casual outdoor apparel.',
+  '用于防护服装、手套及其他需要加强防护的部位。': 'For protective clothing, gloves and areas that need added protection.',
   '港翼科技': 'GONYIK',
   '材料科技': 'Material Science',
   '面料系列': 'Fabric Platforms',

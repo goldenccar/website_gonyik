@@ -17,6 +17,7 @@ export interface HomeVerificationImage {
 }
 
 export interface HomeConfig {
+  series_entries?: Record<string, { title: string; description: string }>
   id: number
   hero_tag: string
   hero_title: string

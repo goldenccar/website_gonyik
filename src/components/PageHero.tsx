@@ -40,8 +40,8 @@ export default function PageHero({ tag, title, subtitle, image, mobileImage, ima
         )}
         <div className={`absolute inset-0 -z-10 bg-[#03182b]/55 sm:bg-transparent sm:bg-gradient-to-r sm:from-[#03182b]/95 ${home ? 'sm:via-[#03182b]/55' : 'sm:via-[#03182b]/50'} sm:to-transparent`} />
         <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-24 bg-gradient-to-b from-[#03182b]/45 to-transparent" />
-        <div className="mx-auto w-full max-w-[1760px]">
-          <div className={`w-full px-7 text-white md:px-12 lg:px-16 ${home ? 'home-hero-copy max-w-[920px] pb-32 pt-16 md:pb-36' : 'max-w-[720px] py-12'}`}>
+        <div className={`mx-auto w-full ${home ? 'home-hero-frame max-w-[1264px] px-5 md:px-8' : 'max-w-[1760px]'}`}>
+          <div className={`w-full text-white ${home ? 'home-hero-copy max-w-[920px] pb-32 pt-16 md:pb-36' : 'max-w-[720px] px-7 py-12 md:px-12 lg:px-16'}`}>
             {home && tag && <p style={{ '--motion-delay': '70ms' } as CSSProperties} className="motion-hero-item label-en mb-6 text-white/80 md:mb-7"><InlineMarkup text={tag} /></p>}
             <h1 style={home ? { '--motion-delay': '140ms' } as CSSProperties : undefined} className={`whitespace-pre-line ${headingLanguageClass(title)} ${home ? 'motion-hero-item type-hero leading-[1.12] tracking-[-.02em]' : 'type-page-title'}`}><InlineMarkup text={title} /></h1>
             {subtitle && <p style={home ? { '--motion-delay': '220ms' } as CSSProperties : undefined} className={`body-copy mt-6 max-w-[540px] text-white/85 md:mt-7 ${home ? 'motion-hero-item text-balance leading-[1.75] md:leading-[1.85]' : ''}`}><InlineMarkup text={subtitle} /></p>}

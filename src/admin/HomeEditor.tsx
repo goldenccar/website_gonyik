@@ -11,8 +11,8 @@ import AdminPagePreview from './components/AdminPagePreview'
 
 const TABS = [
   { key: 'hero', label: 'Hero', icon: Home },
+  { key: 'series', label: '系列 Tab', icon: Shirt },
   { key: 'platform', label: '技术体系', icon: Layers },
-  { key: 'series', label: '三大面料平台', icon: Shirt },
   { key: 'verification', label: '验证体系', icon: Award },
 ]
 
@@ -334,15 +334,6 @@ export default function AdminHomeEditor() {
                     className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none"
                   />
                 </div>
-                <div className="sm:col-span-11">
-                  <label className="block text-[11px] text-muted mb-1">证据短句（可选）</label>
-                  <input
-                    type="text"
-                    value={item.evidence || ''}
-                    onChange={(e) => updateArrayItem('platform_cards', idx, { evidence: e.target.value })}
-                    className="w-full bg-white/5 border border-borderDark text-white px-3 py-2 text-[13px] focus:border-white focus:outline-none"
-                  />
-                </div>
                 <div className="text-right sm:col-span-1 sm:pt-6">
                   <button onClick={() => removeArrayItem('platform_cards', idx)} className="text-error hover:text-white">
                     ×
@@ -362,18 +353,15 @@ export default function AdminHomeEditor() {
       <div className="space-y-6">
         <div className="grid gap-6 sm:grid-cols-2">
           {textField('区块标题', 'series_section_title')}
-          {textField('链接文案', 'series_section_link_text')}
-          {textField('链接地址', 'series_section_link')}
         </div>
-        {textareaField('区块副标题', 'series_section_subtitle')}
 
         <div className="bg-dark border border-white/5 p-4">
-          <div className="mb-4"><p className="text-[13px] text-white mb-2">首页三大面料卡片</p><p className="text-[12px] text-muted">前台固定顺序：蓝标 OTTER、银标 RAYO、黑标 KAIS。图片在此处直接上传、替换或移除。</p></div>
+          <div className="mb-4"><p className="text-[13px] text-white mb-2">首页系列入口</p><p className="text-[12px] text-muted">固定顺序：OTTER、RAYO、KAIS，默认展示 OTTER，不自动轮播。以下定位与说明仅用于首页。</p></div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {displaySeries.map((s) => (
               <div key={s.id} className="bg-white/5 p-3 border border-white/5">
                 <p className="mb-1 text-[14px] font-medium text-white">{s.name}</p>
-                <p className="mb-3 truncate text-[11px] text-muted">{s.tagline}</p>
+                {['title', 'description'].map(key => <label key={key} className="mb-3 block text-[12px] text-muted">{key === 'title' ? '定位' : '简短说明'}<textarea rows={key === 'title' ? 1 : 3} value={form.series_entries?.[s.slug]?.[key] || ''} onChange={event => setForm({ ...form, series_entries: { ...form.series_entries, [s.slug]: { ...form.series_entries?.[s.slug], [key]: event.target.value } } })} className="mt-1 w-full border border-borderDark bg-white/5 px-3 py-2 text-[13px] text-white" /></label>)}
                 <SeriesHomeImageEditor series={s} onChange={(patch) => setSeries((items) => items.map((item) => item.id === s.id ? { ...item, ...patch } : item))} />
               </div>
             ))}
@@ -393,12 +381,12 @@ export default function AdminHomeEditor() {
       <div className="border border-white/5 bg-dark p-4">
         <label className="mb-3 block text-[12px] uppercase text-secondary">内部实验室图片（最多 5 张）</label>
         {validationCropSource ? (
-          <ImageCropper src={validationCropSource} aspect={16 / 6} onComplete={(blob) => applyValidationCrop(blob)} onCancel={cancelValidationCrop} />
+          <ImageCropper src={validationCropSource} aspect={8 / 3} onComplete={(blob) => applyValidationCrop(blob)} onCancel={cancelValidationCrop} />
         ) : ensureArray(form.verification_images).length ? (
           <div className="grid gap-3 sm:grid-cols-2">
             {ensureArray(form.verification_images).map((item: any, index: number) => (
               <div key={item.id || `${item.url}-${index}`} className="border border-white/10 bg-white/[0.03] p-2">
-                <div className="aspect-[16/6] overflow-hidden bg-white/5">
+                <div className="aspect-[8/3] overflow-hidden bg-white/5">
                   <img src={item.url} alt={`内部实验室图片 ${index + 1}`} className="h-full w-full object-cover" />
                 </div>
                 <div className="mt-2 flex items-center justify-between gap-2">
@@ -413,29 +401,17 @@ export default function AdminHomeEditor() {
               </div>
             ))}
           </div>
-        ) : <div className="flex aspect-[16/6] max-w-[720px] items-end border border-dashed border-borderDark bg-white/[0.03] p-4 text-[12px] text-muted">内部实验室图片占位</div>}
+        ) : <div className="flex aspect-[8/3] max-w-[720px] items-end border border-dashed border-borderDark bg-white/[0.03] p-4 text-[12px] text-muted">内部实验室图片占位</div>}
         {!validationCropSource && <div className="mt-3 flex flex-wrap items-center gap-3">
           {ensureArray(form.verification_images).length < 5 && <PrimaryButton type="button" onClick={() => { setValidationEditingIndex(null); document.getElementById('home-validation-image')?.click() }} size="sm" loading={validationUploading} icon={<Upload size={14} />}>{ensureArray(form.verification_images).length ? '添加图片' : '上传图片'}</PrimaryButton>}
           <input id="home-validation-image" type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={(event) => { const file = event.target.files?.[0]; if (file) startValidationCrop(file); event.currentTarget.value = '' }} />
-          <span className="text-[11px] text-muted">建议宽度不低于 1280px，上传后按当前前台 16:6 比例裁切；前台按此处顺序轮播。</span>
+          <span className="text-[11px] text-muted">建议宽度不低于 1280px，上传后按当前前台 8:3 宽幅比例裁切；前台按此处顺序轮播。</span>
         </div>}
       </div>
 
-      <div className="space-y-4">
-        {ensureArray(form.verifications).slice(0, 2).map((item: any, idx: number) => (
-          <div key={idx} className="border border-white/5 bg-dark p-4">
-            <p className="mb-3 text-[12px] uppercase text-secondary">{idx === 0 ? '内部实验室' : '第三方测试认证'}</p>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div><label className="mb-1 block text-[11px] text-muted">标题</label><input type="text" value={item.title || ''} onChange={(e) => updateArrayItem('verifications', idx, { title: e.target.value })} className="w-full border border-borderDark bg-white/5 px-3 py-2 text-[13px] text-white focus:border-white focus:outline-none" /></div>
-              <div><label className="mb-1 block text-[11px] text-muted">说明</label><textarea rows={3} value={item.subtitle || ''} onChange={(e) => updateArrayItem('verifications', idx, { subtitle: e.target.value })} className="w-full border border-borderDark bg-white/5 px-3 py-2 text-[13px] text-white focus:border-white focus:outline-none" /></div>
-            </div>
-          </div>
-        ))}
-      </div>
-
       <div className="grid gap-6 sm:grid-cols-2">
-        {textField('第三方测试认证链接文案', 'verification_section_link_text')}
-        {textField('跳转地址', 'verification_section_link', '/pfas-free-innovation#technology-testing-certification')}
+        {textField('详情入口文字', 'verification_section_link_text')}
+        {textField('跳转地址', 'verification_section_link', '/pfas-free-innovation/testing-certification')}
       </div>
     </div>
   )

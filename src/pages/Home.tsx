@@ -1,90 +1,80 @@
+import { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { ArrowUpRight } from 'lucide-react'
 import PageHero from '@/components/PageHero'
 import { PageSection, PageShell } from '@/components/PageLayout'
-import type { FabricSeries } from '@/types'
 import { InlineMarkup } from '@/components/MarkupParser'
 import { MaterialSystemVisual, MaterialValidationSummary } from '@/components/HomeTechnicalVisuals'
 import { useSiteLocale } from '@/i18n/SiteLocale'
 
-const SERIES_TITLES: Record<string, string> = {
-  otter: '蓝标 OTTER',
-  rayo: '银标 RAYO',
-  kais: '黑标 KAIS',
+const SERIES_COPY: Record<string, { title: string; description: string }> = {
+  otter: { title: '防水透湿', description: '适用于冲锋衣、雨衣等户外服装。' },
+  rayo: { title: '防晒与日常户外', description: '适用于防晒衣、垂钓披风及轻户外服装。' },
+  kais: { title: '专业防护', description: '用于防护服装、手套及其他需要加强防护的部位。' },
 }
 
 export default function Home() {
-  const { path: localePath, bootstrap } = useSiteLocale()
-  const config = bootstrap.home_config
-  const series = [...(bootstrap.series || [])].sort((a: FabricSeries, b: FabricSeries) => a.order_index - b.order_index)
+  const { path, t, bootstrap } = useSiteLocale()
+  const c = bootstrap.home_config
+  const series = ['otter', 'rayo', 'kais'].flatMap(slug => bootstrap.series.filter(s => s.slug === slug))
+  const [selected, setSelected] = useState('otter')
+  const active = series.find(s => s.slug === selected) || series[0]
+  const tabs = useRef<(HTMLButtonElement | null)[]>([])
 
-  return (
-    <PageShell>
-      <PageHero
-        variant="home"
-        tag={config.hero_tag || 'RPO MATERIAL PLATFORM'}
-        title={config.hero_title || '以材料科技\n重构高性能面料'}
-        subtitle={config.hero_slogan}
-        image={config.hero_background}
-        mobileImage={config.hero_mobile_background}
-        imageAlt="港翼复合面料与膜层微距"
-        scrollLabel="下滑探索港翼科技"
-        scrollTarget="#home-rpo-platform"
-      >
-        <div className="flex flex-wrap items-center gap-7">
-          <Link to={localePath(config.primary_btn_link || '/fabrics')} className="bg-[#0b4f87] px-6 py-3 text-[14px] font-medium text-white transition-colors hover:bg-[#12649f]"><InlineMarkup text={config.primary_btn_text || '探索面料系列'} /></Link>
-          <Link to={localePath(config.secondary_btn_link || '/pfas-free-innovation/rpo-material-platform')} className="py-3 text-[14px] font-medium text-white underline decoration-white/60 underline-offset-4 hover:decoration-white"><InlineMarkup text={config.secondary_btn_text || '了解 RPO 技术'} /> →</Link>
-        </div>
-      </PageHero>
+  return <PageShell className="home-release">
+    <div id="H01"><PageHero variant="home" tag={c.hero_tag} title={c.hero_title} subtitle={c.hero_slogan} image={c.hero_background} mobileImage={c.hero_mobile_background} imageAlt="港翼户外服装应用" scrollLabel="下滑探索港翼科技" scrollTarget="#H03">
+      <div className="flex flex-wrap items-center gap-7">
+        <Link to={path(c.primary_btn_link || '/fabrics')} className="bg-[#0b4f87] px-6 py-3 ui-copy text-white transition-colors hover:bg-[#12649f]"><InlineMarkup text={c.primary_btn_text || '探索面料系列'} /></Link>
+        <Link to={path(c.secondary_btn_link || '/pfas-free-innovation/rpo-material-platform')} className="py-3 ui-copy text-white underline decoration-white/60 underline-offset-4 hover:decoration-white"><InlineMarkup text={c.secondary_btn_text || '了解 RPO 技术'} /> →</Link>
+      </div>
+    </PageHero></div>
 
-      <PageSection id="home-rpo-platform" className="scroll-mt-[60px] lg:!py-16">
-        <div className="grid gap-10 lg:grid-cols-12 lg:gap-x-16 lg:gap-y-12">
-          <div className="lg:col-span-4 lg:col-start-1 lg:row-start-1">
-            <h2 className="type-section-title text-primary"><InlineMarkup text={config.platform_section_title} /></h2>
-            <p className="body-copy mt-4 max-w-[420px] text-secondary"><InlineMarkup text={config.platform_section_subtitle} /></p>
-            <Link to={localePath(config.platform_section_link)} className="mt-8 inline-block text-[14px] underline underline-offset-4"><InlineMarkup text={config.platform_section_link_text} /> →</Link>
+    {!!series.length && <PageSection variant="home" id="H03" tone="white" className="!py-12 md:!py-16" outerClassName="home-section-frame scroll-mt-[60px]">
+      <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+      <h2 className="type-section-title text-primary"><InlineMarkup text={c.series_section_title || '面料系列'} /></h2>
+      <div role="tablist" aria-label={t('面料系列')} className="home-series-tabs">
+        {series.map((s, index) => <button key={s.slug} type="button" role="tab" id={`home-tab-${s.slug}`} aria-controls={`home-panel-${s.slug}`} aria-selected={active?.slug === s.slug} tabIndex={active?.slug === s.slug ? 0 : -1} ref={node => { tabs.current[index] = node }}
+          onClick={() => setSelected(s.slug)}
+          onKeyDown={event => {
+            const next = event.key === 'ArrowRight' ? (index + 1) % series.length : event.key === 'ArrowLeft' ? (index - 1 + series.length) % series.length : event.key === 'Home' ? 0 : event.key === 'End' ? series.length - 1 : null
+            if (next === null) return
+            event.preventDefault()
+            setSelected(series[next].slug)
+            tabs.current[next]?.focus()
+          }}
+          className="type-small-title">{s.slug.toUpperCase()}</button>)}
+      </div>
+      </div>
+      {series.map(s => {
+        const copy = c.series_entries?.[s.slug] || SERIES_COPY[s.slug]
+        return <div key={s.slug} id={`home-panel-${s.slug}`} role="tabpanel" aria-labelledby={`home-tab-${s.slug}`} hidden={active?.slug !== s.slug} tabIndex={0} className="pt-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent md:pt-8">
+          <div className="home-series-stage">
+            <div className="home-series-image">
+              {s.home_image ? <img src={s.home_image} alt={t(s.slug.toUpperCase() + ' 系列面料')} loading="lazy" decoding="async" className="h-full w-full object-cover" /> : <div className="gonyik-fabric-placeholder h-full w-full" />}
+            </div>
+            <div className="home-series-copy">
+              <h3 className="type-hero type-heading-en text-white">{s.slug.toUpperCase()}</h3>
+              <p className="type-card-title mt-5 text-white"><InlineMarkup text={copy.title} /></p>
+              <p className="body-copy mt-2 max-w-[420px] text-white/75"><InlineMarkup text={copy.description} /></p>
+              <Link to={path('/fabrics/series/' + s.slug)} className="home-series-link ui-copy"><span>{t('探索系列')}</span><ArrowUpRight size={22} strokeWidth={1.5} aria-hidden="true" /></Link>
+            </div>
           </div>
-          <MaterialSystemVisual
-            items={config.platform_cards || []}
-            href={localePath(config.platform_section_link)}
-            itemHrefs={[
-              localePath('/pfas-free-innovation/rpo-sotex-membrane'),
-              localePath('/pfas-free-innovation/lamination'),
-              localePath('/pfas-free-innovation/supply-chain'),
-            ]}
-          />
-          <MaterialValidationSummary
-            image={config.verification_image}
-            images={config.verification_images || []}
-            title={config.verification_section_title}
-            subtitle={config.verification_section_subtitle}
-            items={config.verifications || []}
-            linkText={config.verification_section_link_text}
-            linkTo={localePath(config.verification_section_link || '/pfas-free-innovation#technology-testing-certification')}
-          />
         </div>
-      </PageSection>
+      })}
+    </PageSection>}
 
-      <PageSection tone="white" className="!py-20 md:!py-24 lg:!py-28">
-        <div className="mx-auto max-w-[940px] text-center">
-          <h2 className="text-balance text-[clamp(34px,4vw,58px)] font-semibold leading-[1.12] tracking-[-.035em] text-primary"><InlineMarkup text={config.series_section_title} /></h2>
-          <p className="mx-auto mt-6 max-w-[760px] text-[16px] leading-8 text-secondary md:text-[18px]"><InlineMarkup text={config.series_section_subtitle} /></p>
-          {config.series_section_link_text && <Link to={localePath(config.series_section_link || '/fabrics')} className="mt-7 inline-block border-b border-primary/35 pb-1 text-[14px] font-medium text-primary"><InlineMarkup text={config.series_section_link_text} /> →</Link>}
+    <PageSection variant="home" id="home-rpo-platform" className="scroll-mt-[60px] lg:!py-16" outerClassName="home-section-frame">
+      <div className="home-technology-intro">
+        <div>
+          <h2 className="type-section-title text-primary"><InlineMarkup text={c.platform_section_title} /></h2>
+          <p className="body-copy mt-4 text-secondary"><InlineMarkup text={c.platform_section_subtitle} /></p>
         </div>
-
-        <div className="mt-14 grid items-stretch gap-x-7 gap-y-12 md:mt-16 md:grid-cols-3">
-          {['otter', 'rayo', 'kais'].map((slug) => series.find((item) => item.slug === slug)).filter(Boolean).map((item) => {
-            return <Link key={item!.id} to={localePath(`/fabrics/series/${item!.slug}`)} className="group relative flex h-full min-w-0 flex-col focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#69B2C1]">
-              <div className="relative aspect-[4/3] overflow-hidden bg-[#edf2f4]">
-                {item!.home_image ? <img src={item!.home_image} alt={item!.name} loading="lazy" decoding="async" className="h-full w-full object-cover transition-[transform,filter] duration-[var(--motion-media)] ease-apple group-hover:scale-[1.022] group-hover:brightness-[1.04] group-focus-visible:scale-[1.022] group-focus-visible:brightness-[1.04]" /> : <div className="gonyik-fabric-placeholder h-full w-full" />}
-                <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-px origin-left scale-x-0 bg-[#69B2C1] transition-transform duration-[var(--motion-switch)] group-hover:scale-x-100 group-focus-visible:scale-x-100" />
-              </div>
-              <h3 className="mt-6 text-[26px] font-semibold tracking-[-.025em] text-primary"><InlineMarkup text={SERIES_TITLES[item!.slug] || item!.name} /></h3>
-              <p className="mt-2 max-w-[360px] text-[15px] leading-6 text-secondary"><InlineMarkup text={item!.tagline} /></p>
-              <span className="mt-auto pt-6 text-[13px] font-medium text-primary"><span className="border-b border-primary/30 pb-1 transition-colors group-hover:border-[#69B2C1] group-focus-visible:border-[#69B2C1]">探索系列 <span className="ml-1 inline-block transition-transform duration-[var(--motion-instant)] group-hover:translate-x-1 group-focus-visible:translate-x-1">→</span></span></span>
-            </Link>
-          })}
-        </div>
-      </PageSection>
-    </PageShell>
-  )
+        <Link to={path(c.platform_section_link)} className="home-technology-link ui-copy"><InlineMarkup text={c.platform_section_link_text} /><ArrowUpRight size={20} strokeWidth={1.5} aria-hidden="true" /></Link>
+      </div>
+      <div className="home-technology-layout">
+        <MaterialValidationSummary image={c.verification_image} images={c.verification_images || []} title={c.verification_section_title} subtitle={c.verification_section_subtitle} linkText={c.verification_section_link_text} linkTo={path(c.verification_section_link || '/pfas-free-innovation/testing-certification')} />
+        <MaterialSystemVisual items={c.platform_cards || []} href={path(c.platform_section_link)} itemHrefs={['rpo-sotex-membrane', 'lamination', 'supply-chain'].map(key => path('/pfas-free-innovation/' + key))} />
+      </div>
+    </PageSection>
+  </PageShell>
 }

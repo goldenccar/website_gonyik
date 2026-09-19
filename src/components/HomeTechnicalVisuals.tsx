@@ -1,7 +1,7 @@
 import { useEffect, useId, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
-import type { HomePlatformCard, HomeVerification, HomeVerificationImage } from '@/types'
+import { ArrowUpRight, ChevronLeft, ChevronRight } from 'lucide-react'
+import type { HomePlatformCard, HomeVerificationImage } from '@/types'
 import MotionInView from './MotionInView'
 import { InlineMarkup } from './MarkupParser'
 
@@ -243,22 +243,20 @@ function MaterialDiagram({ kind }: { kind: MaterialKind }) {
 export function MaterialSystemVisual({ items, href, itemHrefs }: { items: HomePlatformCard[]; href: string; itemHrefs?: string[] }) {
   const mediaReady = useTechnicalVisualsReady()
   return (
-    <MotionInView className={`material-system-visual supply-chain-motion ${mediaReady ? 'media-ready' : ''} grid border-y border-border bg-white lg:col-span-8 lg:col-start-5 lg:row-span-2 lg:row-start-1 lg:mt-[34px]`}>
+    <MotionInView className={`material-system-visual home-technology-list supply-chain-motion ${mediaReady ? 'media-ready' : ''}`}>
       {items.slice(0, 3).map((item, index) => (
         <Link
           key={`${item.title}-${index}`}
           to={itemHrefs?.[index] || href}
           data-motion-item
           style={{ '--motion-delay': `${index * 90}ms` } as CSSProperties}
-          className="material-system-row group relative isolate grid min-h-[218px] overflow-hidden border-t border-border bg-transparent px-5 py-4 first:border-t-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent md:grid-cols-[minmax(220px,0.9fr)_minmax(0,1.35fr)] md:items-center md:gap-5 md:px-10 lg:min-h-[218px]"
+          className="material-system-row home-technology-row"
         >
-          <div className="relative z-10 pr-4">
-            <h3 className="type-card-title text-primary"><InlineMarkup text={item.title} /></h3>
-            <p className="mt-3 text-[14px] leading-6 text-secondary"><InlineMarkup text={item.subtitle || item.description || ''} /></p>
-            {item.description && item.description !== item.subtitle && <p className="mt-1 text-[14px] leading-6 text-secondary"><InlineMarkup text={item.description} /></p>}
-            {item.evidence && <p className="mt-3 border-l-2 border-accent pl-3 text-[13px] font-semibold leading-5 text-primary"><InlineMarkup text={item.evidence} /></p>}
+          <div className="relative z-10 min-w-0">
+            <div className="home-technology-row-heading"><h3 className="type-card-title text-primary"><InlineMarkup text={item.title} /></h3><ArrowUpRight className="home-technology-arrow" size={18} strokeWidth={1.5} aria-hidden="true" /></div>
+            <p className="mt-2 body-copy text-secondary"><InlineMarkup text={item.subtitle || item.description || ''} /></p>
           </div>
-          <div className="material-system-media relative z-0 mt-3 h-[170px] min-w-0 overflow-hidden text-primary md:mt-0 md:h-[182px]">
+          <div className="material-system-media relative z-0 h-[150px] min-w-0 overflow-hidden text-primary">
             <MaterialDiagram kind={MATERIAL_KINDS[index]} />
           </div>
         </Link>
@@ -322,11 +320,11 @@ function VerificationGallery({
     manualTimer.current = window.setTimeout(() => setManualPaused(false), 10000)
   }
 
-  if (!slides.length) return <div className="gonyik-material-placeholder h-full w-full" />
+  if (!slides.length) return <div className="gonyik-material-placeholder aspect-[8/3] w-full" />
 
   return (
     <div
-      className="group relative h-full w-full overflow-hidden bg-[#e8edf0]"
+      className="home-lab-gallery"
       onMouseEnter={() => setPointerPaused(true)}
       onMouseLeave={() => setPointerPaused(false)}
       onFocusCapture={() => setFocusPaused(true)}
@@ -334,7 +332,7 @@ function VerificationGallery({
         if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setFocusPaused(false)
       }}
     >
-      {slides.map((slide, index) => (
+      <div className="home-lab-photo">{slides.map((slide, index) => (
         <img
           key={slide.id || `${slide.url}-${index}`}
           src={slide.url}
@@ -342,34 +340,34 @@ function VerificationGallery({
           aria-hidden={index !== activeIndex}
           loading={index === 0 ? 'eager' : 'lazy'}
           decoding="async"
-          className={`absolute inset-0 h-full w-full object-cover transition-[opacity,transform] duration-700 ease-apple motion-reduce:transition-none ${
-            index === activeIndex ? 'scale-100 opacity-100' : 'pointer-events-none scale-[1.006] opacity-0'
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-apple motion-reduce:transition-none ${
+            index === activeIndex ? 'opacity-100' : 'pointer-events-none opacity-0'
           }`}
         />
-      ))}
+      ))}</div>
       {slides.length > 1 && (
-        <>
+        <div className="home-lab-controls">
           <span className="sr-only" aria-live="polite">正在显示第 {activeIndex + 1} 张，共 {slides.length} 张</span>
+          <span aria-hidden="true" className="home-lab-counter caption-copy tabular-nums"><span>{String(activeIndex + 1).padStart(2, '0')}</span><span className="text-secondary">/ {String(slides.length).padStart(2, '0')}</span></span>
+          <div className="flex gap-2">
           <button
             type="button"
             onClick={() => selectSlide(activeIndex - 1)}
             aria-label="上一张实验室图片"
-            className="group/previous absolute left-3 top-1/2 z-10 grid size-10 -translate-y-1/2 place-items-center border border-white/45 bg-primary/65 text-white shadow-[0_8px_22px_rgba(4,31,56,0.18)] backdrop-blur-md transition-[background-color,border-color,transform] hover:border-white/70 hover:bg-primary/80 active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white md:size-11"
+            className="home-lab-control"
           >
-            <ChevronLeft aria-hidden="true" size={22} strokeWidth={1.6} className="transition-transform group-hover/previous:-translate-x-0.5" />
+              <ChevronLeft aria-hidden="true" size={20} strokeWidth={1.5} />
           </button>
-          <span aria-hidden="true" className="absolute bottom-3 left-1/2 z-10 -translate-x-1/2 border border-white/40 bg-primary/60 px-3 py-1.5 text-[10px] tabular-nums tracking-[0.12em] text-white shadow-sm backdrop-blur-md">
-            {String(activeIndex + 1).padStart(2, '0')} / {String(slides.length).padStart(2, '0')}
-          </span>
           <button
             type="button"
             onClick={() => selectSlide(activeIndex + 1)}
             aria-label="下一张实验室图片"
-            className="group/next absolute right-3 top-1/2 z-10 grid size-10 -translate-y-1/2 place-items-center border border-white/45 bg-primary/65 text-white shadow-[0_8px_22px_rgba(4,31,56,0.18)] backdrop-blur-md transition-[background-color,border-color,transform] hover:border-white/70 hover:bg-primary/80 active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white md:size-11"
+            className="home-lab-control"
           >
-            <ChevronRight aria-hidden="true" size={22} strokeWidth={1.6} className="transition-transform group-hover/next:translate-x-0.5" />
+            <ChevronRight aria-hidden="true" size={20} strokeWidth={1.5} />
           </button>
-        </>
+          </div>
+        </div>
       )}
     </div>
   )
@@ -380,7 +378,6 @@ export function MaterialValidationSummary({
   images,
   title,
   subtitle,
-  items,
   linkText,
   linkTo,
 }: {
@@ -388,33 +385,19 @@ export function MaterialValidationSummary({
   images: HomeVerificationImage[]
   title: string
   subtitle: string
-  items: HomeVerification[]
   linkText: string
   linkTo: string
 }) {
-  const internal = items[0]
-  const certification = items[1]
   return (
-    <MotionInView className="material-validation-summary max-w-[560px] lg:col-span-4 lg:col-start-1 lg:row-start-2 lg:self-start">
-      <div data-motion-item className="border-l-2 border-accent pl-4">
-        <h3 className="text-[18px] font-medium leading-7 text-primary"><InlineMarkup text={title} /></h3>
-        {subtitle && <p className="mt-1.5 text-[13px] leading-5 text-secondary"><InlineMarkup text={subtitle} /></p>}
+    <MotionInView className="material-validation-summary home-lab-feature">
+      <div data-motion-item>
+        <VerificationGallery images={images} fallbackImage={image} alt="材料测试实验室" />
       </div>
-      <div data-motion-item style={{ '--motion-delay': '70ms' } as CSSProperties} className="mt-3 aspect-[16/6] overflow-hidden bg-[#e8edf0]">
-        <VerificationGallery images={images} fallbackImage={image} alt={internal?.title || '内部实验室'} />
+      <div className="home-lab-copy">
+        <h3 className="type-card-title text-primary"><InlineMarkup text={title} /></h3>
+        {subtitle && <p className="mt-3 body-copy text-secondary"><InlineMarkup text={subtitle} /></p>}
+        <Link to={linkTo} className="home-technology-link home-lab-link ui-copy"><InlineMarkup text={linkText || '了解测试与验证'} /><ArrowUpRight size={22} strokeWidth={1.5} aria-hidden="true" /></Link>
       </div>
-      {internal && <div data-motion-item style={{ '--motion-delay': '120ms' } as CSSProperties} className="border-b border-border py-3">
-        <h4 className="text-[15px] font-medium leading-6 text-primary"><InlineMarkup text={internal.title} /></h4>
-        <p className="mt-1 text-[12px] leading-[1.65] text-secondary"><InlineMarkup text={internal.subtitle} /></p>
-      </div>}
-      {certification && <Link to={linkTo} data-motion-item style={{ '--motion-delay': '170ms' } as CSSProperties} className="group flex items-start justify-between gap-5 pt-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent">
-        <div className="min-w-0">
-          <h4 className="text-[15px] font-medium leading-6 text-primary"><InlineMarkup text={certification.title} /></h4>
-          <p className="mt-1 text-[12px] leading-[1.65] text-secondary"><InlineMarkup text={certification.subtitle} /></p>
-          <span className="sr-only"><InlineMarkup text={linkText} /></span>
-        </div>
-        <span aria-hidden="true" className="mt-0.5 shrink-0 text-[17px] leading-6 text-primary transition-transform duration-[var(--motion-switch)] ease-apple group-hover:translate-x-1 group-focus-visible:translate-x-1">→</span>
-      </Link>}
     </MotionInView>
   )
 }
