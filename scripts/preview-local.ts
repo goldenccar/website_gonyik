@@ -14,12 +14,7 @@ const { createApp } = await import('../server/app')
 const database = await import('../server/db')
 const app = express()
 app.get('/review.html', (_req, res) => res.redirect('/'))
-// Public category totals include non-public records; retain the published catalog
-// instead of fetching private records to reconstruct those totals locally.
-app.get('/api/equipment/catalog', (req, res) => {
-  const market = String(req.query.market || req.get('x-gonyik-market') || 'cn')
-  res.json(responses['/api/equipment/catalog?market=' + market] || responses['/api/equipment/catalog?market=cn'])
-})
+// Read application content from the same local CMS database as all other pages.
 app.post('/api/contact', (_req, res) => res.status(503).json({ error: '本地预览不发送咨询，请在正式官网提交。' }))
 app.use('/visuals', express.static(path.join(directory, 'production-assets/visuals')))
 app.use(createApp())

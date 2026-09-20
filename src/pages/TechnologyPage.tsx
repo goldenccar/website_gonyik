@@ -1,8 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link, Navigate, useLocation, useParams } from 'react-router-dom'
 import { getContentSections } from '@/api/client'
 import { InlineMarkup } from '@/components/MarkupParser'
 import { PageSection, PageShell } from '@/components/PageLayout'
+import PageHero from '@/components/PageHero'
+import CatalogSelectorBar from '@/components/CatalogSelectorBar'
 import RpoPlatformStory from '@/components/technology/RpoPlatformStory'
 import { SupplyChainVisual } from '@/components/HomeTechnicalVisuals'
 import { getTechnologyPagePath, TECHNOLOGY_PAGES } from '@/config/technologyPages'
@@ -22,7 +24,6 @@ export default function TechnologyPage() {
   const [sections, setSections] = useState<FluorineSection[]>([])
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading')
   const [previewSection, setPreviewSection] = useState<FluorineSection | null>(null)
-  const navRef = useRef<HTMLElement>(null)
   const loadSections = useCallback(() => {
     setStatus('loading')
     getContentSections('pfas-free-innovation')
@@ -46,9 +47,6 @@ export default function TechnologyPage() {
 
   useEffect(() => {
     if (status !== 'ready') return
-    const nav = navRef.current
-    const active = nav?.querySelector<HTMLElement>('[aria-current="page"]')
-    if (nav && active) nav.scrollTo({ left: active.offsetLeft - 24, behavior: 'auto' })
     if (!location.hash) return
     const frame = requestAnimationFrame(() => document.getElementById(location.hash.slice(1))?.scrollIntoView({ block: 'start', behavior: 'instant' }))
     return () => cancelAnimationFrame(frame)
@@ -63,7 +61,9 @@ export default function TechnologyPage() {
   const effectiveSection = section
   const heroImage = section.image_url
   return <PageShell className={`technology-reading rpo-page rpo-page--${technologyKey} ${section.hero_visual === 'supply' ? 'rpo-hero-has-animation' : ''}`}>
-    <section className="technology-feature-shell bg-[#041f38]">
+    {technologyKey === 'rpo-material-platform' ? <PageHero variant="editorial" title={section.title} subtitle={section.subtitle} image={heroImage}>
+      {section.hero_scroll_label && section.hero_link && <Link className="rpo-text-link" to={localePath(section.hero_link)}><InlineMarkup text={section.hero_scroll_label} /><span aria-hidden="true">↓</span></Link>}
+    </PageHero> : <section className="technology-feature-shell bg-[#041f38]">
       <div className="technology-feature-hero has-image relative flex w-full items-center overflow-hidden">
         {section.hero_visual === 'supply'
           ? <div className="rpo-supply-hero"><SupplyChainVisual /></div>
@@ -75,10 +75,8 @@ export default function TechnologyPage() {
           {section.hero_scroll_label && section.hero_link && <Link className="rpo-text-link" to={localePath(section.hero_link)}><InlineMarkup text={section.hero_scroll_label} /><span aria-hidden="true">↓</span></Link>}
         </div></div>
       </div>
-    </section>
-    <div className="rpo-nav"><div className="rpo-container"><Link className="rpo-nav-brand" to={localePath(getTechnologyPagePath('rpo-material-platform'))} aria-current={technologyKey === 'rpo-material-platform' ? 'page' : undefined}><InlineMarkup text={sections.find(item => item.section_key === 'rpo-material-platform')?.nav_label || 'RPO TECHNOLOGY'} /></Link><nav ref={navRef} aria-label={t('材料科技')}>
-      {TECHNOLOGY_PAGES.filter(page => page.sectionKey !== 'rpo-material-platform' && (sections.some(item => item.section_key === page.sectionKey) || previewSection?.section_key === page.sectionKey)).map(page => <Link key={page.sectionKey} to={localePath(getTechnologyPagePath(page.sectionKey))} aria-current={page.sectionKey === technologyKey ? 'page' : undefined}><InlineMarkup text={sections.find(item => item.section_key === page.sectionKey)?.nav_label || page.menuLabel} /></Link>)}
-    </nav></div></div>
+    </section>}
+    <CatalogSelectorBar label={t('材料科技')} overview={{label: sections.find(item => item.section_key === 'rpo-material-platform')?.nav_label || '', href:localePath(getTechnologyPagePath('rpo-material-platform'))}} groups={[{label:'',items:TECHNOLOGY_PAGES.filter(page => page.sectionKey !== 'rpo-material-platform' && (sections.some(item => item.section_key === page.sectionKey) || previewSection?.section_key === page.sectionKey)).map(page=>({key:page.sectionKey,label:t(sections.find(item=>item.section_key===page.sectionKey)?.nav_label || page.menuLabel),active:page.sectionKey===technologyKey,href:localePath(getTechnologyPagePath(page.sectionKey))}))}]} />
     <RpoPlatformStory key={technologyKey} section={effectiveSection} />
   </PageShell>
 }

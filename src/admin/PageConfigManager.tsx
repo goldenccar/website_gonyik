@@ -8,6 +8,7 @@ import FormField from './components/FormField'
 import AdminPagePreview from './components/AdminPagePreview'
 
 interface PageConfigItem {
+  page_tag?: string
   page_key: string
   page_title: string
   page_subtitle: string
@@ -17,7 +18,7 @@ interface PageConfigItem {
 
 const PAGE_KEY_MAP: Record<string, { label: string; publicPath: string }> = {
   fabrics: { label: '面料数据库', publicPath: '/fabrics/catalog' },
-  equipment: { label: '终端装备', publicPath: '/equipment' },
+  equipment: { label: '面料应用', publicPath: '/equipment' },
   services: { label: '服务与支持', publicPath: '/services' },
   contact: { label: '联系我们', publicPath: '/contact' },
 }
@@ -50,6 +51,7 @@ export default function PageConfigManager({ pageKey }: PageConfigManagerProps = 
     setSaving(true)
     try {
       await updatePageConfig(targetKey, {
+        ...(targetKey === 'equipment' ? { page_tag: config.page_tag || '' } : {}),
         page_title: config.page_title,
         page_subtitle: config.page_subtitle,
         hero_background: config.hero_background,
@@ -107,6 +109,7 @@ export default function PageConfigManager({ pageKey }: PageConfigManagerProps = 
             <div className="md:col-span-2">
               <label className="block text-[12px] text-secondary uppercase mb-1.5">Hero 图片</label>
               {config.hero_background && <img src={config.hero_background} alt="当前 Hero" className="mb-3 aspect-[3/1] w-full object-cover" />}
+              {config.hero_background && <button type="button" className="mb-3 block text-sm text-accent" onClick={() => setConfig({ ...config, hero_background: null })}>移除首屏图片</button>}
               {cropSrc ? <ImageCropper src={cropSrc} onComplete={(blob) => applyCrop(blob)} onCancel={() => { URL.revokeObjectURL(cropSrc); setCropSrc(null) }} /> : <input type="file" accept="image/*" disabled={uploading} onChange={(event) => { const file = event.target.files?.[0]; if (file) setCropSrc(URL.createObjectURL(file)); event.currentTarget.value = '' }} className="text-[13px] text-white" />}
               <p className="mt-2 text-[12px] text-muted">{uploading ? '上传中…' : '上传后可裁剪；保存页面配置后同步到前台。'}</p>
             </div>

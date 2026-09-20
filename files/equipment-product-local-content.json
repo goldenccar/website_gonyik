@@ -1,0 +1,121 @@
+{
+  "6": {
+    "card_summary": "用于徒步、登山等户外活动的外层服装。",
+    "detail_title": "户外风雨防护",
+    "detail_body": "围绕户外活动中的防水、透湿与耐候需求进行选材。",
+    "feature_icons": [
+      "cloud-rain",
+      "waves",
+      "shield-check"
+    ],
+    "visibility": "public",
+    "materials_title": "所用面料",
+    "development_title": "开发咨询",
+    "development_body": "如需了解样品或讨论开发，请说明使用场景与关注的功能。",
+    "cta_label": "咨询这款产品",
+    "cta_href": "/contact"
+  },
+  "1": {
+    "card_summary": "适合通勤与日常出行的轻便外套。",
+    "detail_title": "日常穿着，简洁利落",
+    "detail_body": "翻领与前中拉链，配合简洁的口袋设计，适合城市通勤穿着。",
+    "feature_icons": [
+      "feather",
+      "wind",
+      "waves"
+    ],
+    "hero_image": "/uploads/1784533665626-546518643.png",
+    "gallery": [
+      {
+        "image": "/uploads/1784533665626-546518643.png",
+        "alt": "男士通勤夹克产品图"
+      }
+    ],
+    "visibility": "public",
+    "materials_title": "所用面料",
+    "development_title": "开发咨询",
+    "development_body": "如需了解样品或讨论开发，请说明使用场景与关注的功能。",
+    "cta_label": "咨询这款产品",
+    "cta_href": "/contact"
+  },
+  "3": {
+    "card_summary": "兼顾日常穿着与周末户外的外层服装。",
+    "detail_title": "从日常出行到轻户外",
+    "detail_body": "围绕防风、防水与透湿需求选材，结合实际样品比较手感与穿着表现。",
+    "feature_icons": [
+      "wind",
+      "cloud-rain",
+      "waves"
+    ],
+    "visibility": "public",
+    "materials_title": "所用面料",
+    "development_title": "开发咨询",
+    "development_body": "如需了解样品或讨论开发，请说明使用场景与关注的功能。",
+    "cta_label": "咨询这款产品",
+    "cta_href": "/contact"
+  },
+  "8": {
+    "card_summary": "面向垂钓等水边活动的披风类产品。",
+    "detail_title": "水边活动的外层遮护",
+    "detail_body": "以披风形式满足水边活动的遮护需要，可结合使用环境讨论用料和结构。",
+    "feature_icons": [
+      "none",
+      "cloud-rain",
+      "waves"
+    ],
+    "visibility": "public",
+    "materials_title": "所用面料",
+    "development_title": "开发咨询",
+    "development_body": "如需了解样品或讨论开发，请说明使用场景与关注的功能。",
+    "cta_label": "咨询这款产品",
+    "cta_href": "/contact"
+  },
+  "2": {
+    "card_summary": "面向日常出行与轻户外的防晒服装。",
+    "detail_title": "日常防晒穿着",
+    "detail_body": "围绕轻便、透气与穿着舒适选材，关联 RAYO 30 防晒导湿面料。",
+    "feature_icons": [
+      "feather",
+      "wind",
+      "waves"
+    ],
+    "visibility": "public",
+    "materials_title": "所用面料",
+    "development_title": "开发咨询",
+    "development_body": "如需了解样品或讨论开发，请说明使用场景与关注的功能。",
+    "cta_label": "咨询这款产品",
+    "cta_href": "/contact"
+  },
+  "7": {
+    "card_summary": "面向滑雪活动的外层防护服装。",
+    "detail_title": "雪地活动的外层防护",
+    "detail_body": "选材关注防水、透湿与耐磨表现，并结合活动需求讨论成衣结构。",
+    "feature_icons": [
+      "cloud-rain",
+      "waves",
+      "shield-check"
+    ],
+    "visibility": "public",
+    "materials_title": "所用面料",
+    "development_title": "开发咨询",
+    "development_body": "如需了解样品或讨论开发，请说明使用场景与关注的功能。",
+    "cta_label": "咨询这款产品",
+    "cta_href": "/contact"
+  },
+  "4": {
+    "card_summary": "面向日常穿着的功能性衬衫。",
+    "detail_title": "贴近日常穿着",
+    "detail_body": "选材关注亲肤、防晒与吸湿表现，关联 RAYO 10 面料。",
+    "feature_icons": [
+      "feather",
+      "sun",
+      "waves"
+    ],
+    "visibility": "public",
+    "materials_title": "所用面料",
+    "development_title": "开发咨询",
+    "development_body": "如需了解样品或讨论开发，请说明使用场景与关注的功能。",
+    "cta_label": "咨询这款产品",
+    "cta_href": "/contact"
+  }
+}

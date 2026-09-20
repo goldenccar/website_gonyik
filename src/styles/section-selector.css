@@ -1,0 +1,13 @@
+.section-selector{position:sticky;top:60px;z-index:40;background:#fff;border-bottom:1px solid #dbe3e7;color:#08273b}
+.section-selector-frame{width:min(100%,1760px);padding-inline:clamp(28px,6.25vw,104px);margin-inline:auto;display:flex;align-items:center;gap:48px;min-width:0}
+.section-selector-items{display:flex;align-items:center;gap:28px;overflow-x:auto;scrollbar-width:none;min-width:0}
+.section-selector-items::-webkit-scrollbar{display:none}
+.section-selector-item{position:relative;display:inline-flex;align-items:center;flex:0 0 auto;min-height:64px;padding:0 2px;font-size:13px;font-weight:500;line-height:1.5;letter-spacing:.035em;color:#71808b;text-decoration:none;white-space:nowrap;transition:color .18s ease}
+.section-selector-item::after{content:'';position:absolute;bottom:0;left:50%;width:22px;height:2px;background:#69b2c1;transform:translateX(-50%);opacity:0}
+.section-selector-item[aria-current]{color:#08273b;font-weight:650}
+.section-selector-item[aria-current]::after{opacity:1}
+.section-selector-item:hover{color:#08273b}
+.section-selector-overview{font-size:13px;font-weight:650;color:#08273b;flex-shrink:0;text-decoration:none}
+.section-selector a:focus-visible,.section-selector button:focus-visible{outline:2px solid #40869a;outline-offset:-4px}
+@media(max-width:680px){.section-selector-frame{padding-inline:24px;gap:24px}.section-selector-items{gap:24px}.section-selector-item{font-size:12px}.section-selector-overview{display:none}}
+@media(prefers-reduced-motion:reduce){.section-selector-item{transition:none}}

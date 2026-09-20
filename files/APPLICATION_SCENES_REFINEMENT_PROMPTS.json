@@ -1,0 +1,38 @@
+[
+  {
+    "asset": "/visuals/application-scene-cape-v3.webp",
+    "prompt": "Edit the supplied photograph. Keep the EXACT composition, camera angle, person, face, hand positions, long changing robe shape and length, wind-blown hem, navy blue color, rocky shore, waves and diving fins. Change ONLY the garment exterior textile: make it look like a premium mountaineering hardshell jacket laminate, finer and denser plain-weave nylon surface with a dry matte touch, subtly structured crisp folds, controlled low specular response. Remove the current baggy shiny nylon/raincoat sheen. Exterior is smooth finely woven technical shell, not waxed cotton, not leather, not fleece. Keep existing construction seams and zipper and interior lining. Preserve natural overcast photographic light, authentic camera texture, asymmetry and slight weathering. Do not beautify person, change garment design, introduce branding, over-sharpen or add dramatic effects. Single 3:2 landscape photo.",
+    "reference": "application-scene-cape-v2.webp",
+    "source_kind": "AI-generated local review image"
+  },
+  {
+    "asset": "/visuals/application-scene-detail-v2.webp",
+    "prompt": "Edit only the visible ochre sleeve cuff in this exact supplied photograph: add a small dark charcoal GONYIK wordmark in plain clean uppercase sans-serif, exact spelling GONYIK. Make it a realistic subtle heat-transfer brand mark approximately 3 cm wide placed on the OUTER CUFF TAB, following the cuff angle, perspective and fabric folds. It must be legible, look physically printed on fabric, not an overlay or giant advertisement. Preserve absolutely everything else: crop, hand anatomy, droplets, ochre fabric, forest, backpack and lighting. Do not add any other text or symbols. Single 3:2 landscape photograph.",
+    "reference": "application-scene-detail-v1.webp",
+    "source_kind": "AI-generated local review image"
+  },
+  {
+    "asset": "/visuals/application-scene-business-v2.webp",
+    "prompt": "Reframe this supplied photograph to a tighter mid-shot of the SAME dark navy administrative zip-front stand-collar jacket and office commuter. The TOP image edge cuts through the LOWER FACE just below the nose: ONLY mouth and chin visible, no nose or eyes or hair. Frame from below nose to mid-thigh, emphasize the garment collar, zip, realistic cloth folds, cuff and natural walking hand. Keep the SAME understated navy jacket, pale shirt collar, gray glass office entrance setting, candid walking action, neutral daylight and restrained colors. Adjust camera crop/composition, not garment identity. Jacket is the subject, background softly subordinate, natural asymmetry. Photoreal documentary, not polished fashion campaign, no smoothing, no exaggerated bokeh, no branding or text. 3:2 landscape.",
+    "reference": "application-scene-business-v1.webp",
+    "source_kind": "AI-generated local review image"
+  },
+  {
+    "asset": "/visuals/application-scene-cycling-v1.webp",
+    "prompt": "Original single 3:2 landscape documentary photograph for lightweight outdoor fabrics. Close side three-quarter view of an adult woman commuting on a simple city bicycle on a leafy urban riverside bike lane in daytime. Wearing a very light pale cool sage hooded sun-protection jacket, thin matte finely woven breathable textile, gently billowing at upper arm from cycling air movement, realistic small folds at bent elbows. Wearing a bicycle helmet correctly, hood down. Frame mainly torso, sleeves, two hands naturally gripping straight handlebar and part of front bicycle frame; head is cropped by upper edge so face is not the subject. The bicycle is anatomically and mechanically coherent, no racing pose. Jacket occupies at least half the frame, natural sun filtered through trees, ordinary neutral white balance, slight motion in background, no glamour treatment. Real camera documentary aesthetic, honest fabric texture, no waxy skin, no glossy CG, no HDR, no super sharp outline, no text, logo, watermark or collage. Calm daily light outdoor use, not professional racing.",
+    "reference": null,
+    "source_kind": "AI-generated local review image"
+  },
+  {
+    "asset": "/visuals/application-scene-fishing-v1.webp",
+    "prompt": "Original single landscape 3:2 natural documentary photograph. Adult angler seated on a low folding stool at a quiet lakeside, seen from a close rear-side three-quarter angle. Wearing a lightweight pale gray-blue fishing shell jacket with hood loosely up, very thin matte technical woven fabric, soft natural creases at elbows and shoulders, light and comfortable not a heavy mountaineering shell, NOT a poncho. Hands naturally hold one fishing rod pointing across water; simple small tackle pouch nearby. Show enough seated bent legs and bank to read immediately as someone sitting fishing. Crop fairly close, jacket and seated action fill two thirds of frame, face turned toward water and concealed, no frontal portrait. Ordinary uneven grassy stony bank and reeds, gentle water ripples, soft morning daylight, natural true color and subtle camera grain. No epic mountain scenery, no golden cinematic glow, no oversaturated teal, no glassy skin, no perfect symmetrical pose. Accurate single rod and hands, plausible equipment. No words, brands or watermark.",
+    "reference": null,
+    "source_kind": "AI-generated local review image"
+  },
+  {
+    "asset": "/visuals/application-scene-commute-v1.webp",
+    "prompt": "Original 3:2 landscape candid editorial photograph for urban light outdoor fabric. Close detail of a woman commuter wearing a muted warm stone-gray lightweight hip-length jacket on a city sidewalk by a concrete building. Frame from BASE OF NECK to upper thighs, head and face COMPLETELY outside frame. A narrow woven strap of a small dark crossbody commuter bag crosses jacket; one hand lightly holds strap, the other sleeve hangs naturally as she walks. Subtle shirt beneath, simple dark trousers. Focus on collar, diagonal soft folds, matte finely woven textile, sleeve cuff, small practical bag. Contemporary everyday jacket, neither suit blazer nor heavy alpine hardshell. Natural overcast daylight, restrained street photography, human imperfection in fabric and gesture, gently soft background with curb and building edge. No intense cinematic lighting, no glossy plastic fabric, no beauty retouching, no oversharpening, no artificial extreme bokeh. No text, visible logo, watermark or collage.",
+    "reference": null,
+    "source_kind": "AI-generated local review image"
+  }
+]

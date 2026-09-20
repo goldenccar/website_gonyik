@@ -1,0 +1,76 @@
+{
+  "applications": {
+    "9": {
+      "scene_images": [
+        {
+          "image": "/visuals/application-scene-detail-v2.webp",
+          "alt": "雨中冲锋衣肩部与袖口近景"
+        },
+        {
+          "image": "/visuals/application-scene-ski-v1.webp",
+          "alt": "穿着防护外层在雪坡滑雪"
+        },
+        {
+          "image": "/visuals/application-scene-cape-v3.webp",
+          "alt": "水上活动结束后穿着防风雨披风"
+        },
+        {
+          "image": "/visuals/application-scene-rain-v1.webp",
+          "alt": "雨中林间徒步的服装与背包"
+        },
+        {
+          "image": "/visuals/application-scene-alpine-v1.webp",
+          "alt": "雪山攀登中的冲锋衣近景"
+        },
+        {
+          "image": "/visuals/application-scene-cliff-v1.webp",
+          "alt": "强风中海岸悬崖旁的户外徒步场景"
+        }
+      ]
+    },
+    "10": {
+      "scene_images": [
+        {
+          "image": "/visuals/application-scene-business-v2.webp",
+          "alt": "行政夹克的领口与衣身近景"
+        },
+        {
+          "image": "/visuals/application-scene-cycling-v1.webp",
+          "alt": "穿防晒服进行城市骑行"
+        },
+        {
+          "image": "/visuals/application-scene-fishing-v1.webp",
+          "alt": "穿轻薄钓鱼冲锋衣坐在水边垂钓"
+        },
+        {
+          "image": "/visuals/application-scene-commute-v1.webp",
+          "alt": "日常通勤外套与随身小包近景"
+        },
+        {
+          "image": "/visuals/application-scene-running-v1.webp",
+          "alt": "城市滨水步道跑步时的轻薄外套"
+        },
+        {
+          "image": "/visuals/application-scene-motorcycle-v1.webp",
+          "alt": "穿轻薄通勤夹克骑摩托车的近景"
+        }
+      ]
+    }
+  },
+  "fabric_entry": {
+    "layout": "feature",
+    "title": "面料系列",
+    "link": "/fabrics",
+    "description": "专业户外、轻户外与专业防护。",
+    "image_source": "page-hero",
+    "items": [
+      {
+        "id": "fabric-catalog-secondary",
+        "label": "面料数据库",
+        "link": "/fabrics/catalog",
+        "description": "浏览具体型号，比较功能特点与选材方向。",
+        "order_index": 0
+      }
+    ]
+  }
+}

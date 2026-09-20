@@ -1,0 +1,227 @@
+{
+  "page": {
+    "page_tag": "",
+    "page_title": "产品应用",
+    "page_subtitle": "面向户外服装、鞋材、软质箱包与柔性防护的面料应用。",
+    "hero_background": null,
+    "rail_end_card_visible": true,
+    "rail_end_card_title": "从你的产品需求开始",
+    "rail_end_card_description": "告诉我们使用场景、功能要求和期望的手感，一起确定合适的面料。",
+    "rail_end_card_cta_label": "咨询选材",
+    "rail_end_card_cta_href": "/contact?source=applications"
+  },
+  "products": [
+    {
+      "name": "户外服装",
+      "image": "/visuals/application-outdoor-scene-v2.webp",
+      "image_alt": "雾中山野徒步的户外服装使用场景",
+      "image_caption": "",
+      "image_fit": "cover",
+      "case_label": "",
+      "card_summary": "用于冲锋衣、夹克、滑雪服、水域披风等户外服装。围绕风雨、运动出汗和反复穿着，兼顾防护、排湿与耐用表现。",
+      "features": [
+        "风雨防护",
+        "运动排湿",
+        "耐磨耐用"
+      ],
+      "feature_icons": [
+        "cloud-rain",
+        "waves",
+        "shield-check"
+      ],
+      "features_label": "",
+      "detail_title": "",
+      "detail_body": "专业户外优先考虑 OTTER；更侧重日常穿着与柔软手感的款式，也可从 RAYO 选材。",
+      "series_label": "",
+      "series_slugs": [
+        "otter",
+        "rayo"
+      ],
+      "cta_label": "咨询这类应用",
+      "image_position": "50% 50%",
+      "previous_index": 0
+    },
+    {
+      "name": "轻户外服装",
+      "image": "/visuals/application-light-urban-v3.webp",
+      "image_alt": "城市街区中穿着浅色轻外套的日常出行场景",
+      "image_caption": "",
+      "image_fit": "cover",
+      "case_label": "",
+      "card_summary": "用于轻户外夹克、防晒衣、垂钓披风等，适合日常出行、周末徒步与长时间户外活动。在所需防护的基础上，兼顾排湿、柔软手感与穿着舒适。",
+      "features": [
+        "日常防护",
+        "透气排湿",
+        "柔软亲肤",
+        "日常耐用"
+      ],
+      "feature_icons": [
+        "cloud-sun",
+        "waves",
+        "feather",
+        "shield-check"
+      ],
+      "features_label": "",
+      "detail_title": "",
+      "detail_body": "以 RAYO 为主要选材方向；对风雨防护或持续使用有更高要求的款式，可结合 OTTER 开发。",
+      "series_label": "",
+      "series_slugs": [
+        "rayo",
+        "otter"
+      ],
+      "cta_label": "咨询这类应用",
+      "image_position": "50% 50%",
+      "previous_index": 1
+    },
+    {
+      "name": "户外鞋材",
+      "image": "/visuals/application-footwear-scene-v2.webp",
+      "image_alt": "雨后林间步道上的户外鞋穿着近景",
+      "image_caption": "",
+      "case_label": "",
+      "image_fit": "cover",
+      "image_position": "50% 50%",
+      "card_summary": "用于徒步鞋、户外休闲鞋等鞋面与内衬材料。根据穿着环境和鞋体结构，考虑防水透湿、反复弯折与摩擦，以及贴合后的支撑和脚感。",
+      "features": [
+        "防水透湿",
+        "耐折耐磨",
+        "贴合支撑"
+      ],
+      "feature_icons": [
+        "droplets",
+        "shield-check",
+        "layers"
+      ],
+      "features_label": "",
+      "detail_title": "",
+      "detail_body": "以 OTTER 为选材方向，结合鞋面、内衬和复合结构开发。面料性能与成鞋表现分别验证。",
+      "series_label": "",
+      "series_slugs": [
+        "otter"
+      ],
+      "cta_label": "咨询这类应用"
+    },
+    {
+      "name": "软质箱包",
+      "image": "/visuals/application-bags-scene-v2.webp",
+      "image_alt": "旅途中背包与软质旅行箱的携行场景",
+      "image_caption": "",
+      "case_label": "",
+      "image_fit": "cover",
+      "image_position": "50% 50%",
+      "card_summary": "用于背包、旅行袋与软质旅行箱。针对装载、搬运和户外使用中的摩擦、雨水及局部防护需求，选择外层面料与加强结构。",
+      "features": [
+        "耐磨耐用",
+        "防泼防潮",
+        "防割加强"
+      ],
+      "feature_icons": [
+        "shield-check",
+        "droplets",
+        "scissors"
+      ],
+      "features_label": "",
+      "detail_title": "",
+      "detail_body": "OTTER 用于外层防护，KAIS 用于需要防割或局部加强的部位。可按包体、底部和受力位置分别选材。",
+      "series_label": "",
+      "series_slugs": [
+        "otter",
+        "kais"
+      ],
+      "cta_label": "咨询这类应用"
+    },
+    {
+      "name": "柔性防护服装与配件",
+      "image": "/visuals/application-flexible-protection-v1.webp",
+      "image_alt": "柔性防护背心、手套与材料样片的应用示意",
+      "image_caption": "",
+      "image_fit": "cover",
+      "case_label": "",
+      "card_summary": "面向防割、防刺需求，为防护服装、手套及需要加强防护的部位开发柔性材料。结合使用部位与活动要求，选择材料和复合结构。",
+      "features": [
+        "防割防刺",
+        "柔性结构",
+        "灵活活动"
+      ],
+      "feature_icons": [
+        "shield",
+        "layers",
+        "feather"
+      ],
+      "features_label": "",
+      "detail_title": "围绕具体部位开发",
+      "detail_body": "整片防护与局部加强，对材料厚度、柔软度和结构的要求不同。按具体样品与使用条件开展测试。",
+      "series_label": "",
+      "series_slugs": [
+        "kais"
+      ],
+      "cta_label": "咨询这类应用",
+      "image_position": "50% 50%",
+      "previous_index": 2
+    }
+  ],
+  "translations": {
+    "为户外服装、轻户外穿着与柔性防护产品选择面料。": "Fabric choices for outdoor clothing, everyday outdoor wear and flexible protection.",
+    "从你的产品需求开始": "Start with your product",
+    "告诉我们使用场景、功能要求和期望的手感，一起确定合适的面料。": "Tell us where your product will be used, the functions it needs and the feel you want. We can help identify a suitable fabric.",
+    "外套与冲锋衣": "Jackets & shells",
+    "防晒衣与垂钓披风": "Sunwear & fishing capes",
+    "柔性防护服装与配件": "Flexible protective wear",
+    "户外服装": "Outdoor clothing",
+    "轻户外穿着": "EVERYDAY OUTDOOR WEAR",
+    "应用示意": "Application illustration",
+    "AI 生成 · 应用示意": "AI-generated application illustration",
+    "选材重点": "MATERIAL PRIORITIES",
+    "相关系列": "RELATED SERIES",
+    "咨询这类应用": "Discuss this application",
+    "从徒步、登山到日常出行，外层服装需要应对风雨，也要让运动产生的湿气及时排出。根据产品定位，调整防护、排湿、耐用与穿着感的侧重。": "From hiking and mountaineering to everyday outings, outerwear needs weather protection and moisture transfer during activity. Balance protection, moisture management, durability and feel around the intended use.",
+    "运动排湿": "Moisture transfer during activity",
+    "同样是外套，选材可以不同": "Different jackets, different priorities",
+    "专业户外更看重复杂环境中的持续表现；轻户外则在满足所需功能的同时，更注重柔软手感和日常穿着舒适。": "Technical outdoor products prioritise sustained performance in demanding conditions. Everyday outdoor products meet their functional needs with greater emphasis on softness and wearing comfort.",
+    "日常出行、周末户外或长时间垂钓，面料既要满足防晒与排湿需要，也要柔软、易于活动，适合长时间穿着。": "For daily outings, weekends outdoors or long hours fishing, fabrics need sun protection and moisture management alongside softness, ease of movement and lasting wearing comfort.",
+    "日晒防护": "Sun protection",
+    "排湿舒适": "Moisture management",
+    "柔软手感": "Soft feel",
+    "从披风的手感要求开始": "Starting with the feel of a cape",
+    "围绕客户提供的防晒披风，港翼已完成复合面料打样。在接近目标手感的基础上，进一步讨论所需的功能表现。": "GONYIK has developed laminated fabric samples around the feel of a customer-supplied sun cape. With the target feel as a starting point, the next discussion is about the functions required.",
+    "面向防割、防刺需求，为防护服装、手套及需要加强防护的部位开发柔性材料。结合使用部位与活动要求，选择材料和复合结构。": "Flexible materials developed for cut and puncture protection in clothing, gloves and reinforced areas. Material and laminate choices depend on the protected area and movement requirements.",
+    "柔性结构": "Flexible construction",
+    "活动需要": "Freedom of movement",
+    "围绕具体部位开发": "Developed for the area being protected",
+    "整片防护与局部加强，对材料厚度、柔软度和结构的要求不同。按具体样品与使用条件开展测试。": "Full-area protection and local reinforcement require different thicknesses, flexibility and constructions. Testing is based on specific samples and intended conditions.",
+    "风雨环境中的户外外套穿着示意": "Illustration of an outdoor jacket in wind and rain",
+    "湖边穿着浅色披风的垂钓场景示意": "Illustration of a light-colored cape worn while fishing by a lake",
+    "柔性防护背心、手套与材料样片的应用示意": "Application illustration of a flexible protective vest, gloves and fabric swatches",
+    "面向户外服装、鞋材、软质箱包与柔性防护的面料应用。": "Fabric applications for outdoor clothing, footwear, soft bags and luggage, and flexible protection.",
+    "深蓝色户外冲锋衣与面料样片": "Navy outdoor shell jacket and fabric swatches",
+    "用于冲锋衣、夹克、滑雪服、水域披风等户外服装。围绕风雨、运动出汗和反复穿着，兼顾防护、排湿与耐用表现。": "For shell jackets, outdoor jackets, skiwear and waterside capes. Balance weather protection, moisture transfer and durability for active, repeated outdoor use.",
+    "专业户外优先考虑 OTTER；更侧重日常穿着与柔软手感的款式，也可从 RAYO 选材。": "Consider OTTER first for technical outdoor use; RAYO also offers options for styles that place greater emphasis on everyday comfort and a soft feel.",
+    "轻户外服装": "Everyday outdoor clothing",
+    "浅灰绿色轻户外夹克与浅色防晒披风": "Light sage outdoor jacket and an ivory sun cape",
+    "用于轻户外夹克、防晒衣、垂钓披风等，适合日常出行、周末徒步与长时间户外活动。在所需防护的基础上，兼顾排湿、柔软手感与穿着舒适。": "For everyday outdoor jackets, sunwear and fishing capes, from daily outings to weekend walks and long hours outdoors. Combine the protection needed with moisture management, softness and wearing comfort.",
+    "日常防护": "Everyday protection",
+    "透气排湿": "Breathability and moisture management",
+    "柔软亲肤": "Soft comfort",
+    "日常耐用": "Everyday durability",
+    "以 RAYO 为主要选材方向；对风雨防护或持续使用有更高要求的款式，可结合 OTTER 开发。": "Start with RAYO; consider OTTER for styles with greater weather-protection demands or more sustained use.",
+    "户外鞋材": "Outdoor footwear materials",
+    "织物鞋面的户外鞋与鞋材样片": "Outdoor shoes with textile uppers and a material swatch",
+    "用于徒步鞋、户外休闲鞋等鞋面与内衬材料。根据穿着环境和鞋体结构，考虑防水透湿、反复弯折与摩擦，以及贴合后的支撑和脚感。": "For textile uppers and linings in hiking and outdoor casual footwear. Consider waterproof breathability, repeated flexing, abrasion, support and comfort around the intended conditions and shoe construction.",
+    "防水透湿": "Waterproof breathability",
+    "耐折耐磨": "Flex and abrasion resistance",
+    "贴合支撑": "Bonded support",
+    "以 OTTER 为选材方向，结合鞋面、内衬和复合结构开发。面料性能与成鞋表现分别验证。": "Develop upper, lining and laminate combinations with OTTER. Validate material performance separately from finished-footwear performance.",
+    "软质箱包": "Soft bags & luggage",
+    "织物背包与软质旅行箱": "Woven textile backpack and soft-sided travel case",
+    "用于背包、旅行袋与软质旅行箱。针对装载、搬运和户外使用中的摩擦、雨水及局部防护需求，选择外层面料与加强结构。": "For backpacks, travel bags and soft-sided luggage. Select outer fabrics and reinforcements for abrasion, rain exposure and local protection during packing, handling and outdoor use.",
+    "耐磨耐用": "Abrasion resistance",
+    "防泼防潮": "Water and moisture resistance",
+    "防割加强": "Cut-resistant reinforcement",
+    "OTTER 用于外层防护，KAIS 用于需要防割或局部加强的部位。可按包体、底部和受力位置分别选材。": "Use OTTER for outer protection and KAIS for cut-resistant or locally reinforced areas. Select materials separately for the body, base and load-bearing zones.",
+    "灵活活动": "Freedom of movement",
+    "雾中山野徒步的户外服装使用场景": "Outdoor clothing worn on a misty mountain trail",
+    "雨后林间步道上的户外鞋穿着近景": "Outdoor footwear on a damp woodland trail",
+    "旅途中背包与软质旅行箱的携行场景": "Backpack and soft-sided luggage in use while travelling",
+    "城市街区中穿着浅色轻外套的日常出行场景": "Everyday city wear in a light jacket on a tree-lined street"
+  }
+}

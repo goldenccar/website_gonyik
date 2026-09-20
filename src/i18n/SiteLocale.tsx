@@ -8,6 +8,8 @@ import type { FabricSeries, FooterConfig, HomeConfig, NavItem, SocialMedia } fro
 export type { SiteLocale } from '@/config/markets'
 
 export const ENGLISH_COPY: Record<string, string> = {
+  '上一张场景图': 'Previous scene',
+  '下一张场景图': 'Next scene',
   '港翼将 RPO 膜技术与织物结构、复合工艺结合，开发可用于实际产品的功能面料。': 'GONYIK combines RPO membrane technology, textile construction and lamination to develop functional fabrics for finished products.',
   '以 RPO-SOTEX 功能膜实现防水透湿。': 'Waterproof, breathable performance with RPO-SOTEX membranes.',
   '通过复合工艺，协调面层、功能层与内层的表现。': 'Lamination brings face fabrics, functional layers and backers together.',

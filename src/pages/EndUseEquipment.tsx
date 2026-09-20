@@ -1,128 +1,66 @@
-import { useEffect, useMemo, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { ArrowUpRight } from 'lucide-react'
+import { Link, useLocation } from 'react-router-dom'
 import { getEquipmentCatalog } from '@/api/client'
-import { CatalogEndCta } from '@/components/CatalogCard'
-import ApplicationCard from '@/components/ApplicationCard'
 import PageHero from '@/components/PageHero'
-import { PageSection, PageShell } from '@/components/PageLayout'
-import type { EquipmentCategory, EquipmentProduct, PageConfig } from '@/types'
-import { InlineMarkup } from '@/components/MarkupParser'
 import CatalogSelectorBar from '@/components/CatalogSelectorBar'
+import ApplicationCard from '@/components/ApplicationCard'
+import { InlineMarkup } from '@/components/MarkupParser'
 import PublicContentLoader from '@/components/PublicContentLoader'
+import { useSiteLocale } from '@/i18n/SiteLocale'
+import type { EquipmentProduct, PageConfig } from '@/types'
+import '@/styles/applications.css'
 
 export default function EndUseEquipment() {
-  const [searchParams, setSearchParams] = useSearchParams()
+  const { path, t } = useSiteLocale()
+  const { hash } = useLocation()
   const [page, setPage] = useState<PageConfig | null>(null)
-  const [categories, setCategories] = useState<EquipmentCategory[]>([])
   const [products, setProducts] = useState<EquipmentProduct[]>([])
+  const [activeApplication, setActiveApplication] = useState<number | null>(null)
   const [loading, setLoading] = useState(true)
-
   useEffect(() => {
     let current = true
-    getEquipmentCatalog()
-      .then((response) => {
-        if (!current) return
-        const catalog = response.data.data || {}
-        setPage(catalog.page || null)
-        setCategories(catalog.categories || [])
-        setProducts(catalog.products || [])
-      })
-      .finally(() => { if (current) setLoading(false) })
+    getEquipmentCatalog().then(response => {
+      if (!current) return
+      setPage(response.data.data?.page || null)
+      setProducts(response.data.data?.products || [])
+    }).finally(() => { if (current) setLoading(false) })
     return () => { current = false }
   }, [])
-
-  const roots = useMemo(
-    () => categories.filter((category) => category.parent_id == null).sort((a, b) => a.order_index - b.order_index),
-    [categories],
-  )
-  const requestedRoot = searchParams.get('type')
-  const activeRoot = roots.find((category) => category.slug === requestedRoot) || roots[0] || null
-  const children = useMemo(
-    () => categories.filter((category) => category.parent_id === activeRoot?.id).sort((a, b) => a.order_index - b.order_index),
-    [activeRoot?.id, categories],
-  )
-  const requestedChild = searchParams.get('category')
-  const activeChild = children.find((category) => category.slug === requestedChild) || null
-
   useEffect(() => {
-    if (!activeRoot || requestedRoot === activeRoot.slug) return
-    const next = new URLSearchParams(searchParams)
-    next.set('type', activeRoot.slug)
-    next.delete('category')
-    setSearchParams(next, { replace: true })
-  }, [activeRoot, requestedRoot, searchParams, setSearchParams])
-
+    if (loading || !hash) return
+    const frame = requestAnimationFrame(() => document.getElementById(hash.slice(1))?.scrollIntoView({ block: 'start' }))
+    return () => cancelAnimationFrame(frame)
+  }, [loading, hash])
   useEffect(() => {
-    if (loading || !requestedChild || activeChild) return
-    const next = new URLSearchParams(searchParams)
-    next.delete('category')
-    setSearchParams(next, { replace: true })
-  }, [activeChild, loading, requestedChild, searchParams, setSearchParams])
-
-  const filteredProducts = useMemo(() => {
-    if (!activeRoot) return []
-    const acceptedIds = new Set(activeChild ? [activeChild.id] : [activeRoot.id, ...children.map((category) => category.id)])
-    return products.filter((product) => product.category_ids.some((categoryId) => acceptedIds.has(categoryId)))
-  }, [activeChild, activeRoot, children, products])
-
-  const activeCategory = activeChild || activeRoot
-  const endCardVisible = page?.rail_end_card_visible !== false
-
-  const selectRoot = (category: EquipmentCategory) => {
-    const next = new URLSearchParams(searchParams)
-    next.set('type', category.slug)
-    next.delete('category')
-    setSearchParams(next)
-  }
-
-  const selectChild = (category: EquipmentCategory | null) => {
-    const next = new URLSearchParams(searchParams)
-    if (category) next.set('category', category.slug)
-    else next.delete('category')
-    setSearchParams(next)
-  }
-
-  if (loading) return <PublicContentLoader label="正在加载产品应用" />
-
-  return (
-    <PageShell>
-      <PageHero title={page?.page_title || ''} subtitle={page?.page_subtitle} image={page?.hero_background} imageAlt={page?.page_title} />
-      {!loading && <CatalogSelectorBar
-        label="终端装备分类"
-        groups={[
-          {
-            label: '产品类别',
-            items: roots.map((category) => ({ key: category.id, label: category.name, active: activeRoot?.id === category.id, onSelect: () => selectRoot(category) })),
-          },
-          ...(children.length > 0 ? [{
-            label: `${activeRoot?.name || ''}分类`,
-            items: [
-              { key: 'all', label: `全部${activeRoot?.name || ''}`, active: !activeChild, onSelect: () => selectChild(null) },
-              ...children.map((category) => ({ key: category.id, label: category.name, active: activeChild?.id === category.id, onSelect: () => selectChild(category) })),
-            ],
-          }] : []),
-        ]}
-      />}
-      <PageSection className="!py-9 lg:!py-12">
-        <div>
-            <div className="mb-7 max-w-[680px] border-l-2 border-[#69B2C1] pl-5 md:mb-9">
-              <h2 className="type-module-title text-primary"><InlineMarkup text={activeCategory?.name} /></h2>
-              <p className="mt-2 text-[14px] leading-6 text-secondary"><InlineMarkup text={activeCategory?.description} /></p>
-            </div>
-
-            <div className="min-h-[260px] motion-content-fade" key={`${activeRoot?.id || 'none'}-${activeChild?.id || 'all'}`}>
-              {filteredProducts.length > 0 && <div aria-label={`${activeCategory?.name || ''}应用`} className="grid items-stretch gap-5 md:grid-cols-2 md:gap-6 lg:grid-cols-3">
-                {filteredProducts.map((product) => {
-                  const mappedCategory = activeChild
-                    || product.categories?.find((category) => category.parent_id === activeRoot?.id)
-                    || activeRoot
-                  return <ApplicationCard key={product.id} product={product} categoryName={mappedCategory?.name} />
-                })}
-              </div>}
-              {endCardVisible && filteredProducts.length === 0 && page?.rail_end_card_title && <CatalogEndCta title={page.rail_end_card_title} description={page.rail_end_card_description || ''} label={page.rail_end_card_cta_label || ''} href={page.rail_end_card_cta_href || ''} />}
-            </div>
-        </div>
-      </PageSection>
-    </PageShell>
-  )
+    if (loading) return
+    let frame = 0
+    const update = () => {
+      frame = 0
+      const sections = products.map(product => ({id:product.id,top:document.getElementById('application-'+product.id)?.getBoundingClientRect().top ?? Infinity}))
+      const passed = sections.filter(section=>section.top <= 150)
+      setActiveApplication(passed.at(-1)?.id ?? products[0]?.id ?? null)
+    }
+    const schedule = () => { if (!frame) frame = requestAnimationFrame(update) }
+    update()
+    window.addEventListener('scroll',schedule,{passive:true})
+    window.addEventListener('resize',schedule)
+    return () => { window.removeEventListener('scroll',schedule);window.removeEventListener('resize',schedule);cancelAnimationFrame(frame) }
+  }, [loading, products])
+  if (loading) return <PublicContentLoader label={t('正在加载面料应用')} />
+  if (!page) return null
+  return <div className="applications-page">
+    <PageHero variant="editorial" title={page.page_title} subtitle={page.page_subtitle} image={page.hero_background} />
+    <CatalogSelectorBar label={t(page.page_title)} groups={[{label:'',items:products.map(product=>({key:product.id,label:t(product.name),active:(activeApplication ?? products[0]?.id)===product.id,href:path('/equipment')+'#application-'+product.id}))}]} />
+    <div className="applications-frame applications-stories">
+      {products.map(product => <ApplicationCard key={product.id} product={product} />)}
+    </div>
+    {page.rail_end_card_visible !== false && page.rail_end_card_title && <section className="applications-contact">
+      <div className="applications-frame applications-contact-inner">
+        <div><h2 className="type-module-title"><InlineMarkup text={page.rail_end_card_title} /></h2>
+          {page.rail_end_card_description && <p><InlineMarkup text={page.rail_end_card_description} /></p>}</div>
+        {page.rail_end_card_cta_label && page.rail_end_card_cta_href && <Link to={path(page.rail_end_card_cta_href)} className="applications-button"><InlineMarkup text={page.rail_end_card_cta_label} /><ArrowUpRight size={18} aria-hidden="true" /></Link>}
+      </div>
+    </section>}
+  </div>
 }

@@ -84,26 +84,7 @@ export const RPO_CONTENT: Record<string, { title: string; subtitle: string; imag
         "layout": "series",
         "tone": "",
         "links": [],
-        "items": [
-          {
-            "title": "OTTER",
-            "content": "适用于冲锋衣、雨衣等户外服装。",
-            "image_url": "/uploads/1781366172477-254637203.png",
-            "link_url": "/fabrics/series/otter"
-          },
-          {
-            "title": "RAYO",
-            "content": "适用于防晒衣、垂钓披风及轻户外服装。",
-            "image_url": "/uploads/1783927272832-864591800.jpg",
-            "link_url": "/fabrics/series/rayo"
-          },
-          {
-            "title": "KAIS",
-            "content": "用于防护服装、手套及其他需要加强防护的部位。",
-            "image_url": "/uploads/1783927258734-23082948.jpg",
-            "link_url": "/fabrics/series/kais"
-          }
-        ]
+        "items": []
       }
     ],
     "eyebrow": "GONYIK / RPO TECHNOLOGY",

@@ -23,6 +23,7 @@ export default function Contact() {
   const inquirySku = String(searchParams.get('sku') || '').trim().slice(0, 80)
   const inquirySeries = String(searchParams.get('series') || '').trim().slice(0, 80)
   const inquirySource = String(searchParams.get('source') || '').trim().slice(0, 160)
+  const inquiryApplication = String(searchParams.get('application') || '').trim().slice(0, 80)
   const requestedTopic = searchParams.get('topic') || ''
   const inquiryTopic = [RPO_LABELS.contact, RPO_LABELS.laminateContact, RPO_LABELS.productionContact, RPO_LABELS.testContact].includes(requestedTopic) ? requestedTopic : ''
 
@@ -31,20 +32,20 @@ export default function Contact() {
       setPage(config.data.data)
       const nextSubjects = options.data.data || []
       setSubjects(nextSubjects)
-      if (inquirySku || inquirySeries) {
-        const preferred = nextSubjects.find((item: InquirySubject) => /样品|资料|tds|材料/i.test(item.label))
+      if (inquirySku || inquirySeries || inquiryApplication) {
+        const preferred = inquiryApplication ? undefined : nextSubjects.find((item: InquirySubject) => /样品|资料|tds|材料/i.test(item.label))
         setForm((current) => ({
           ...current,
           subject: current.subject || preferred?.label || '',
-          source_page: inquirySource || '/fabrics',
-          product_model: [inquirySeries.toUpperCase(), inquirySku].filter(Boolean).join(' / '),
+          source_page: inquirySource || (inquiryApplication ? '/equipment' : '/fabrics'),
+          product_model: [inquiryApplication, inquirySeries.toUpperCase(), inquirySku].filter(Boolean).join(' / '),
         }))
       } else if (inquiryTopic) {
         const preferred = nextSubjects.find((item: InquirySubject) => inquiryTopic === RPO_LABELS.testContact ? /资料|TDS/i.test(item.label) : /开发/.test(item.label))
         setForm(current => ({ ...current, subject: current.subject || preferred?.label || '', source_page: inquirySource, message: current.message || t(inquiryTopic) }))
       }
     }).finally(() => setLoading(false))
-  }, [inquirySeries, inquirySku, inquirySource, inquiryTopic])
+  }, [inquirySeries, inquirySku, inquirySource, inquiryTopic, inquiryApplication])
 
   if (loading) return <PublicContentLoader label="正在加载联系信息" />
 
@@ -71,18 +72,18 @@ export default function Contact() {
   const fieldClass = 'w-full border border-border bg-bg px-3 py-2.5 text-[16px] font-medium text-primary outline-none focus:border-primary sm:text-[14px]'
   return (
     <PageShell>
-      <PageHero title={page?.page_title || ''} subtitle={page?.page_subtitle} image={page?.hero_background} imageAlt={page?.page_title} />
+      <PageHero variant="editorial" title={page?.page_title || ''} subtitle={page?.page_subtitle} image={page?.hero_background} />
       <PageSection className="!py-8 lg:!py-10">
         <div className="grid overflow-hidden lg:grid-cols-12">
           <aside className="bg-darker p-6 text-white lg:col-span-4 lg:p-8">
-            <p className="label-en text-white/75">CONTACT</p><h2 className="type-module-title mt-3">{t('材料与合作咨询')}</h2>
+            <h2 className="type-module-title">{t('材料与合作咨询')}</h2>
             <dl className="mt-8 space-y-5 text-[14px]">{contact?.email && <div><dt className="text-white/75">{t('邮箱')}</dt><dd className="mt-1"><a href={`mailto:${contact.email}`}>{contact.email}</a></dd></div>}{contact?.phone && <div><dt className="text-white/75">{t('电话')}</dt><dd className="mt-1"><InlineMarkup text={contact.phone} /></dd></div>}{contact?.address && <div><dt className="text-white/75">{t('地址')}</dt><dd className="mt-1"><InlineMarkup text={contact.address} /></dd></div>}</dl>
           </aside>
           <form onSubmit={submit} className="relative grid gap-3 bg-white p-6 sm:grid-cols-2 lg:col-span-8 lg:p-8">
             <div aria-hidden="true" className="hidden"><label>网站<input tabIndex={-1} autoComplete="off" name="website" value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} /></label></div>
-            {(inquirySku || inquirySeries) && (
+            {(inquirySku || inquirySeries || inquiryApplication) && (
               <p className="border-l-2 border-accent bg-bg px-4 py-3 text-[13px] font-medium text-primary sm:col-span-2">
-                {t('当前咨询')}：{[inquirySeries.toUpperCase(), inquirySku].filter(Boolean).join(' / ')}
+                {t('当前咨询')}：{[inquiryApplication, inquirySeries.toUpperCase(), inquirySku].filter(Boolean).join(' / ')}
               </p>
             )}
             <label className="grid gap-2 text-[13px] font-medium text-primary">{t('姓名 *')}<input className={fieldClass} autoComplete="name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></label>

@@ -1,0 +1,22 @@
+{
+  "tool": "built-in image_gen",
+  "purpose": "Local website review. Generated scenario illustrations, not documented customer deployments.",
+  "images": [
+    {
+      "key": "alpine",
+      "prompt": "Use case: photorealistic-natural. Website application scene photograph, landscape 3:2, 1536x1024. Authentic documentary outdoor apparel photography, subdued true-to-life colors, imperfect real fabric creases and fine woven texture, soft natural light. No text, logo, watermark or collage. Avoid CGI, illustration, waxy skin, glossy plastic clothing, HDR, teal-orange grading, hyper-sharpening or artificial studio lighting. Close-up of a mountaineer actively ascending a snowy alpine slope. Focus on the chest, sleeve and gloved hand of a deep muted orange technical hardshell jacket, backpack shoulder strap, snow crystals lightly caught on seams; cropped face, helmet or hood. A trekking/mountaineering pole held naturally, steep white snow and distant subdued rocky summit out of focus. Functional realistic shell construction, matte fine ripstop, photograph taken by a fellow climber nearby. Garment is main subject; convey snow climbing rather than skiing."
+    },
+    {
+      "key": "cliff",
+      "prompt": "Use case: photorealistic-natural. Website application scene photograph, landscape 3:2, 1536x1024. Authentic documentary outdoor apparel photography, subdued true-to-life colors, imperfect real fabric creases and fine woven texture, soft natural light. No text, logo, watermark or collage. Avoid CGI, illustration, waxy skin, glossy plastic clothing, HDR, teal-orange grading, hyper-sharpening or artificial studio lighting. Wide environmental long shot of one properly equipped hiker in a muted dark teal hardshell and small backpack, standing safely a few meters back from the edge of a rugged coastal cliff in very strong wind. Rear three-quarter view; figure small, about one quarter image height. Leaning slightly into wind, hood and hem visibly wind-pulled, grasses bent consistently, dark rough ocean and distant cliff coastline, overcast sky. Credible remote trekking scene, rich but natural texture, no heroic pose, no dramatic cinematic sunlight. Large landscape composition distinct from close-up photographs."
+    },
+    {
+      "key": "running",
+      "prompt": "Use case: photorealistic-natural. Website application scene photograph, landscape 3:2, 1536x1024. Authentic documentary outdoor apparel photography, subdued true-to-life colors, imperfect real fabric creases and fine woven texture, soft natural light. No text, logo, watermark or collage. Avoid CGI, illustration, waxy skin, glossy plastic clothing, HDR, teal-orange grading, hyper-sharpening or artificial studio lighting. Candid city park running scene, medium close crop from lower jaw to upper thighs, adult runner wearing a lightweight matte blue-gray running wind jacket with subtle natural folds and dark shorts. Arms in a believable mid-stride position, ordinary riverside urban running path and trees softly blurred. Face mostly outside frame, no identifiable full face. Light breathable clothing suitable for everyday exercise rather than mountaineering, natural cloudy daylight, slight real motion blur in background while torso fabric remains sharp. No fashion posing."
+    },
+    {
+      "key": "motorcycle",
+      "prompt": "Use case: photorealistic-natural. Website application scene photograph, landscape 3:2, 1536x1024. Authentic documentary outdoor apparel photography, subdued true-to-life colors, imperfect real fabric creases and fine woven texture, soft natural light. No text, logo, watermark or collage. Avoid CGI, illustration, waxy skin, glossy plastic clothing, HDR, teal-orange grading, hyper-sharpening or artificial studio lighting. Candid urban motorcycle commuting photograph, medium side three-quarter close-up of rider on a simple unbranded standard street motorcycle, wearing a lightweight taupe-gray textile commuting shell jacket over discreet riding protection, gloves and a full-face helmet with dark visor concealing face. Both hands naturally on handlebars, torso and upper motorcycle occupy frame; quiet city street and stone buildings softly in background. Stopped calmly at roadside or traffic light, no racing, no exaggerated leaning. Real fine woven jacket texture, restrained natural folds, soft overcast daylight, no logos."
+    }
+  ]
+}

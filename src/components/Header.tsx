@@ -19,6 +19,7 @@ interface MegaMenuGroup {
   href?: string
   description?: string
   image_url?: string
+  layout?: string
   links: MegaMenuLink[]
 }
 
@@ -37,7 +38,7 @@ export default function Header() {
   const mobileMarketRef = useRef<HTMLDetailsElement>(null)
   const location = useLocation()
   const navigate = useNavigate()
-  const { locale, market, markets, path: localePath, bootstrap } = useSiteLocale()
+  const { locale, market, markets, path: localePath, bootstrap, t } = useSiteLocale()
   const navItems: NavItem[] = bootstrap.navigation || []
   const siteConfig = bootstrap.site_config || {}
   const publicPath = stripMarketPrefix(location.pathname)
@@ -143,6 +144,7 @@ export default function Header() {
         .map((group) => ({
           id: `${item.id}:${group.id}`,
           title: group.title,
+          layout: group.layout,
           href: group.link,
           description: group.description,
           image_url: group.image_url,
@@ -171,11 +173,11 @@ export default function Header() {
     window.addEventListener('resize', updateAlignment)
     return () => window.removeEventListener('resize', updateAlignment)
   }, [menuMounted, market.label, activeMenuGroups.length])
-  const menuWidthClass = activeMenuGroups.length >= 3 ? 'max-w-[1060px]' : 'max-w-[760px]'
+  const menuWidthClass = activeMenuGroups.length >= 3 ? 'max-w-[1060px]' : activeMenuGroups.length === 1 ? 'max-w-[460px]' : 'max-w-[760px]'
 
 
   return (
-    <header className={`fixed left-0 top-0 z-50 h-[60px] w-screen px-6 transition-colors duration-300 ${menuMounted || scrolled ? 'border-b border-white/15 bg-[#041F38]' : 'border-b border-transparent bg-transparent'}`}>
+    <header className={`fixed left-0 top-0 z-50 h-[60px] w-screen px-6 transition-colors duration-300 ${menuMounted || scrolled || (publicPath.startsWith('/equipment') || publicPath === '/fabrics/catalog' || publicPath === '/contact' || publicPath.startsWith('/services') || publicPath === '/pfas-free-innovation/rpo-material-platform') ? 'border-b border-white/15 bg-[#041F38]' : 'border-b border-transparent bg-transparent'}`}>
       <div ref={desktopHeaderInnerRef} className="mx-auto flex h-full w-full max-w-[1760px] items-center px-0 lg:px-10">
         <Link to={localePath('/')} className="flex shrink-0 items-center" aria-label={locale === 'en' ? 'GONYIK home' : '港翼科技首页'}>
           {siteConfig.logo_url ? <img src={siteConfig.logo_url} alt="GONYIK" className="mr-2 h-7 w-auto" /> : <span className="mr-2 grid h-7 w-7 place-items-center bg-white text-[10px] font-semibold text-[#041F38]">GY</span>}
@@ -251,10 +253,13 @@ export default function Header() {
           <div ref={desktopMegaPanelRef} className={`w-full ${menuWidthClass} origin-top overflow-hidden border-b border-border bg-[#fbfcfd] shadow-[0_22px_52px_rgba(4,31,56,0.13)] transition-[clip-path] duration-[360ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${menuOpen ? '[clip-path:inset(0_0_0_0)]' : '[clip-path:inset(0_0_100%_0)]'}`}>
             <div className={`transition-[opacity,transform] ease-out motion-reduce:transition-none ${menuOpen ? 'translate-y-0 opacity-100 delay-[90ms] duration-[420ms]' : '-translate-y-1 opacity-0 delay-0 duration-[120ms]'}`}>
             <div className="site-mega-menu" style={{'--menu-columns':Math.max(1,activeMenuGroups.length)} as CSSProperties}>
-              {activeMenuGroups.map((group)=>group.href && group.links.length === 0 ? <Link key={group.id} className="site-mega-feature" to={localePath(group.href)} onClick={()=>setDesktopMenu(null)}>
-                <div>{activeMenuItem.label !== group.title && <span className="site-mega-eyebrow"><InlineMarkup text={activeMenuItem.label}/></span>}<h2><InlineMarkup text={group.title}/></h2>{group.description&&<p><InlineMarkup text={group.description}/></p>}<ArrowUpRight size={23} aria-hidden="true"/></div>
-                {group.image_url&&<img src={group.image_url} alt=""/>}
-              </Link>:<div key={group.id} className="site-mega-group"><h3>{group.href?<Link to={localePath(group.href)} onClick={()=>setDesktopMenu(null)}><InlineMarkup text={group.title}/><ArrowUpRight size={13} aria-hidden="true"/></Link>:<InlineMarkup text={group.title}/>}</h3>{group.description&&<p className="mb-3 text-xs leading-5 text-secondary"><InlineMarkup text={group.description}/></p>}{group.links.map(link=><Link key={link.id} to={localePath(link.href)} onClick={()=>setDesktopMenu(null)}><span><strong><InlineMarkup text={link.label}/></strong>{link.description&&<small><InlineMarkup text={link.description}/></small>}</span><ArrowUpRight size={17} aria-hidden="true"/></Link>)}</div>)}
+              {activeMenuGroups.map(group => group.href && (group.layout === 'feature' || group.links.length === 0) ? <div key={group.id} className="site-mega-feature">
+                <div>
+                  <Link className="site-mega-primary" to={localePath(group.href)} onClick={()=>setDesktopMenu(null)}><h2><InlineMarkup text={group.title}/></h2><ArrowUpRight size={23} aria-hidden="true"/>{group.description&&<p><InlineMarkup text={group.description}/></p>}</Link>
+                  {group.links.map(link=><Link key={link.id} className="site-mega-secondary" to={localePath(link.href)} onClick={()=>setDesktopMenu(null)}><span><strong><InlineMarkup text={link.label}/></strong>{link.description&&<small><InlineMarkup text={link.description}/></small>}</span><ArrowUpRight size={18} aria-hidden="true"/></Link>)}
+                </div>
+                {group.image_url&&<Link className="site-mega-image" to={localePath(group.href)} onClick={()=>setDesktopMenu(null)} aria-label={t(group.title)}><img src={group.image_url} alt="" loading="lazy" decoding="async"/></Link>}
+              </div>:<div key={group.id} className="site-mega-group">{group.links.map(link=><Link key={link.id} to={localePath(link.href)} onClick={()=>setDesktopMenu(null)}><span><strong><InlineMarkup text={link.label}/></strong>{link.description&&<small><InlineMarkup text={link.description}/></small>}</span><ArrowUpRight size={17} aria-hidden="true"/></Link>)}</div>)}
             </div>
             <button
               type="button"
@@ -270,7 +275,7 @@ export default function Header() {
         </section>
       </>}
 
-      <div aria-hidden={!mobileOpen} className={`fixed inset-0 z-[60] md:hidden ${mobileOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}>
+      <div aria-hidden={!mobileOpen} className={`fixed inset-0 z-[60] md:hidden ${mobileOpen ? 'visible pointer-events-auto' : 'invisible pointer-events-none'}`}>
         <button type="button" tabIndex={mobileOpen ? 0 : -1} aria-label="关闭导航" onClick={() => setMobileOpen(false)} className={`absolute inset-0 bg-[#041F38]/55 transition-opacity duration-[var(--motion-switch)] ease-apple ${mobileOpen ? 'opacity-100' : 'opacity-0'}`} />
         <div id="mobile-navigation" role="dialog" aria-modal="true" aria-label="主导航" className={`absolute inset-y-0 right-0 flex w-[min(86vw,360px)] flex-col bg-[#041F38] px-6 shadow-[-18px_0_50px_rgba(4,31,56,0.2)] transition-transform duration-[320ms] ease-apple ${mobileOpen ? 'translate-x-0' : 'translate-x-full'}`}>
           <div className="flex h-[60px] items-center justify-between border-b border-white/15">
@@ -294,12 +299,7 @@ export default function Header() {
                     <div className="space-y-5 pb-5 pl-4">
                       {groups.map((group) => (
                         <div key={group.id}>
-                          <div className="mb-2 text-[10px] font-medium tracking-[0.12em] text-white/45">
-                            {group.href
-                              ? <Link to={localePath(group.href)} tabIndex={mobileOpen && expanded ? 0 : -1} onClick={(event) => handleMobileNavigation(event, group.href || '/')} className="inline-flex items-center gap-1.5"><InlineMarkup text={group.title} /><span aria-hidden="true">→</span></Link>
-                              : <InlineMarkup text={group.title} />}
-                          </div>
-                          {group.description && <p className="mb-3 text-[12px] leading-6 text-white/60"><InlineMarkup text={group.description}/></p>}
+                          {group.href && (group.layout === 'feature' || group.links.length === 0) && <Link to={localePath(group.href)} tabIndex={mobileOpen && expanded ? 0 : -1} onClick={(event) => handleMobileNavigation(event, group.href || '/')} className="mb-2 inline-flex items-center gap-3 text-base text-white"><InlineMarkup text={group.title} /><ArrowUpRight size={16}/></Link>}
                           <div className="flex flex-col">
                             {group.links.map((link) => <Link key={link.id} to={localePath(link.href)} tabIndex={mobileOpen && expanded ? 0 : -1} onClick={(event) => handleMobileNavigation(event, link.href)} className="py-2 text-[14px] text-white/75"><InlineMarkup text={link.label} /></Link>)}
                           </div>

@@ -43,7 +43,7 @@ function seriesStoryFields(body: Record<string, any>, existing: Record<string, a
 }
 
 function toPublicSku(sku: any) {
-  const { internal_code: _internalCode, ...publicSku } = sku
+  const { internal_code: _internalCode, specifications: _specifications, ...publicSku } = sku
   return publicSku
 }
 
@@ -283,6 +283,7 @@ router.get('/admin/sku', authMiddleware, (req, res) => {
 
 router.post('/admin/sku', authMiddleware, upload.single('image'), (req: AuthRequest, res) => {
   const { series_id, name, internal_code, public_name, product_type, features, specifications, card_summary, visibility, status } = req.body
+  if (['public_description', 'application_notes'].some(key => req.body[key] !== undefined && (typeof req.body[key] !== 'string' || req.body[key].length > 2000))) { res.status(400).json({ error: '面料说明须为 2000 字以内的文本' }); return }
   const targetSeriesId = Number(series_id)
   const publicName = String(public_name || '').trim()
   const internalCode = String(internal_code || '').trim().toUpperCase()
@@ -302,6 +303,8 @@ router.post('/admin/sku', authMiddleware, upload.single('image'), (req: AuthRequ
     internal_code: internalCode,
     public_name: publicName,
     product_type: String(product_type || '').trim(),
+    public_description: (req.body.public_description || '').trim(),
+    application_notes: (req.body.application_notes || '').trim(),
     position_performance: parsePosition(req.body.position_performance),
     position_durability: parsePosition(req.body.position_durability),
     position_handfeel: parsePosition(req.body.position_handfeel),
@@ -336,6 +339,7 @@ router.put('/admin/sku/:id', authMiddleware, upload.single('image'), (req: AuthR
   const existing = db.fabric_sku.find((k) => k.id === id)
   if (!existing) { res.status(404).json({ error: 'Not found' }); return }
   const { series_id, name, internal_code, public_name, product_type, features, specifications, card_summary, visibility, status, order_index } = req.body
+  if (['public_description', 'application_notes'].some(key => req.body[key] !== undefined && (typeof req.body[key] !== 'string' || req.body[key].length > 2000))) { res.status(400).json({ error: '面料说明须为 2000 字以内的文本' }); return }
   const externalCode = existing.sku_code
   const internalCode = internal_code === undefined ? existing.internal_code : String(internal_code).trim().toUpperCase()
   const publicName = public_name === undefined ? existing.public_name : String(public_name).trim()
@@ -359,6 +363,8 @@ router.put('/admin/sku/:id', authMiddleware, upload.single('image'), (req: AuthR
     internal_code: internalCode,
     public_name: publicName,
     product_type: product_type === undefined ? existing.product_type : String(product_type).trim(),
+    public_description: req.body.public_description === undefined ? existing.public_description : req.body.public_description.trim(),
+    application_notes: req.body.application_notes === undefined ? existing.application_notes : req.body.application_notes.trim(),
     position_performance: req.body.position_performance === undefined ? existing.position_performance : parsePosition(req.body.position_performance),
     position_durability: req.body.position_durability === undefined ? existing.position_durability : parsePosition(req.body.position_durability),
     position_handfeel: req.body.position_handfeel === undefined ? existing.position_handfeel : parsePosition(req.body.position_handfeel),

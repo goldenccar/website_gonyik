@@ -116,6 +116,7 @@ function App() {
             <Route path="/fabrics/series/:seriesSlug" element={<FabricSeriesStory />} />
 
             <Route path="/equipment" element={<EndUseEquipment />} />
+            <Route path="/equipment/products/:productId" element={<Navigate to="../.." relative="path" replace />} />
             <Route path="/pfas-free-innovation" element={<Navigate to="/pfas-free-innovation/rpo-material-platform" replace />} />
             <Route path="/pfas-free-innovation/:technologyKey" element={<TechnologyPage />} />
             <Route path="/fluorine-free" element={<Navigate to="/pfas-free-innovation" replace />} />
@@ -133,6 +134,7 @@ function App() {
             <Route path="/global/fabrics/catalog" element={<FabricDatabase />} />
             <Route path="/global/fabrics/series/:seriesSlug" element={<FabricSeriesStory />} />
             <Route path="/global/equipment" element={<EndUseEquipment />} />
+            <Route path="/global/equipment/products/:productId" element={<Navigate to="../.." relative="path" replace />} />
             <Route path="/global/pfas-free-innovation" element={<Navigate to="/global/pfas-free-innovation/rpo-material-platform" replace />} />
             <Route path="/global/pfas-free-innovation/:technologyKey" element={<TechnologyPage />} />
             <Route path="/global/fluorine-free" element={<Navigate to="/global/pfas-free-innovation" replace />} />
@@ -152,6 +154,7 @@ function App() {
             <Route path="/:marketCode/fabrics/catalog" element={<FabricDatabase />} />
             <Route path="/:marketCode/fabrics/series/:seriesSlug" element={<FabricSeriesStory />} />
             <Route path="/:marketCode/equipment" element={<EndUseEquipment />} />
+            <Route path="/:marketCode/equipment/products/:productId" element={<Navigate to="../.." relative="path" replace />} />
             <Route path="/:marketCode/pfas-free-innovation" element={<Navigate to="rpo-material-platform" replace />} />
             <Route path="/:marketCode/pfas-free-innovation/:technologyKey" element={<TechnologyPage />} />
             <Route path="/:marketCode/fluorine-free" element={<Navigate to="../pfas-free-innovation" replace />} />

@@ -54,8 +54,12 @@ function ConstructionTabs({ block }: { block: TechnologyContentBlock }) {
   </div>
 }
 function Cards({ block }: { block: TechnologyContentBlock }) {
-  const { path }=useSiteLocale()
-  return <div className={`rpo-${block.layout==='series'?'series-links':'material-grid'}`}>{block.items?.map((item,index)=>{
+  const { path, bootstrap, t }=useSiteLocale()
+  const items = block.layout === 'series' ? [...bootstrap.series].sort((a,b)=>a.order_index-b.order_index).map(series=>({
+    title: series.name.toUpperCase(), content: [series.story_title, series.story_intro].filter((text): text is string => Boolean(text)).map(t).join('/h'),
+    image_url: series.home_image || undefined, link_url: `/fabrics#series-${series.slug}`,
+  })) : block.items
+  return <div className={`rpo-${block.layout==='series'?'series-links':'material-grid'}`}>{items?.map((item,index)=>{
     const content=<><ContentMedia media={item} /><div className="rpo-card-copy"><span className="rpo-index" aria-hidden="true">0{index+1}</span><h3><InlineMarkup text={item.title} /></h3>{item.link_url && <ArrowUpRight size={21} aria-hidden="true" />}<MarkupParser text={item.content} className="rpo-card-description" /></div></>
     return item.link_url ? <Link className={block.layout==='series'?'rpo-series-card':'rpo-material-card'} to={path(item.link_url)} key={index}>{content}</Link> : <article className="rpo-material-card" key={index}>{content}</article>
   })}</div>

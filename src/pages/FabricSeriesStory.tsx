@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, Navigate, useLocation, useParams } from 'react-router-dom'
-import { ArrowUpRight, Droplets, Wind, Waves, CloudRain, CloudSun, ShieldCheck, Sun, Feather, Shield, Layers, Scissors } from 'lucide-react'
+import { ArrowUpRight } from 'lucide-react'
+import CatalogSelectorBar from '@/components/CatalogSelectorBar'
+import FeatureIcon from '@/components/FeatureIcon'
 import { InlineMarkup } from '@/components/MarkupParser'
 import { useSiteLocale } from '@/i18n/SiteLocale'
 import '@/styles/fabric-series.css'
 
-const FEATURE_ICONS = { droplets: Droplets, wind: Wind, waves: Waves, 'cloud-rain': CloudRain, 'cloud-sun': CloudSun, 'shield-check': ShieldCheck, sun: Sun, feather: Feather, shield: Shield, layers: Layers, scissors: Scissors }
 
 export default function FabricSeriesStory() {
   const { bootstrap, path, t } = useSiteLocale()
@@ -31,10 +32,10 @@ export default function FabricSeriesStory() {
     let frame = 0
     const update = () => {
       frame = 0
-      const midpoint = 112 + (window.innerHeight - 112) / 2
+      const selectorEdge = 125
       const current = series.find(item => {
         const rect = sections.current[item.slug]?.getBoundingClientRect()
-        return rect && rect.top <= midpoint && rect.bottom > midpoint
+        return rect && rect.top <= selectorEdge && rect.bottom > selectorEdge
       })
       if (current) setActive(current.slug)
     }
@@ -52,17 +53,9 @@ export default function FabricSeriesStory() {
   if (seriesSlug) return <Navigate replace to={path(`/fabrics${series.some(item => item.slug === seriesSlug) ? `#series-${seriesSlug}` : ''}`)} />
   if (catalogRequest) return <Navigate replace to={path(`/fabrics/catalog${location.search}${location.hash}`)} />
 
-  return <div className="fabric-platforms">
+  return <div className="fabric-platforms" data-active-series={active || series[0]?.slug}>
     <h1 className="sr-only">{t('面料系列')}</h1>
-    <nav className="fabric-platforms-nav" aria-label={t('面料系列')}>
-      <div className="fabric-platforms-nav-inner">
-        <div className="fabric-platforms-nav-links">
-          {series.map(item => <a key={item.id} href={`#series-${item.slug}`} aria-current={(active || series[0]?.slug) === item.slug ? 'location' : undefined}>
-            {item.name.toUpperCase()}
-          </a>)}
-        </div>
-      </div>
-    </nav>
+    <CatalogSelectorBar label={t('面料系列')} groups={[{label:'',uppercase:true,items:series.map(item=>({key:item.id,label:item.name,active:(active || series[0]?.slug)===item.slug,href:path('/fabrics')+'#series-'+item.slug}))}]} />
     {series.map((item, index) => <section
       key={item.id} id={`series-${item.slug}`} data-series={item.slug}
       className={`fabric-platform-screen fabric-platform-screen--${item.slug}`}
@@ -86,8 +79,7 @@ export default function FabricSeriesStory() {
         {Boolean(item.story_highlights?.length) && <aside className="fabric-platform-features" aria-label={t(item.story_features_label || item.name)}>
           {item.story_features_label && <p className="fabric-platform-features-label"><InlineMarkup text={item.story_features_label} /></p>}
           <ul>{item.story_highlights!.map((feature, i) => {
-            const Icon = FEATURE_ICONS[item.story_icons?.[i] as keyof typeof FEATURE_ICONS]
-            return <li key={`${i}-${feature}`}>{Icon && <Icon size={32} strokeWidth={1.5} aria-hidden="true" />}<span><InlineMarkup text={feature} /></span></li>
+            return <li key={`${i}-${feature}`}><FeatureIcon name={item.story_icons?.[i]} size={32} /><span><InlineMarkup text={feature} /></span></li>
           })}</ul>
         </aside>}
         </div>

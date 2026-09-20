@@ -1,39 +1,91 @@
-import type { EquipmentProduct } from '@/types'
+import { useEffect, useRef } from 'react'
+import { ArrowLeft, ArrowRight, ArrowUpRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import type { EquipmentProduct } from '@/types'
 import { InlineMarkup } from './MarkupParser'
-import { CatalogCardMedia, CatalogCardShell } from './CatalogCard'
-import { materialPlatformLabel } from '@/config/materialPlatforms'
+import FeatureIcon from './FeatureIcon'
 import { useSiteLocale } from '@/i18n/SiteLocale'
 
-function parseFeatures(value: string) {
-  try { return JSON.parse(value) as string[] } catch { return [] }
+function ApplicationScenes({ product }: { product: EquipmentProduct }) {
+  const { t } = useSiteLocale()
+  const track = useRef<HTMLDivElement>(null)
+  const settle = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  const scenes = product.scene_images || []
+  const loop = scenes.length > 4
+  const step = () => {
+    const el = track.current
+    return el?.children[1] ? el.children[1].getBoundingClientRect().left - el.children[0].getBoundingClientRect().left : 0
+  }
+  const normalize = () => {
+    const el = track.current
+    const span = step() * scenes.length
+    if (!el || !span || !loop) return
+    if (el.scrollLeft < span - 1 || el.scrollLeft >= span * 2 - 1) {
+      el.scrollTo({ left: span + ((el.scrollLeft % span) + span) % span, behavior: 'instant' })
+    }
+  }
+  useEffect(() => {
+    const el = track.current
+    if (!el || !loop) return
+    let previousStep = 0
+    const resize = new ResizeObserver(() => {
+      const nextStep = step()
+      if (nextStep === previousStep) return
+      const index = previousStep ? Math.round(el.scrollLeft / previousStep) % scenes.length : 0
+      el.scrollTo({ left: (scenes.length + index) * nextStep, behavior: 'instant' })
+      previousStep = nextStep
+    })
+    resize.observe(el)
+    return () => { resize.disconnect(); clearTimeout(settle.current) }
+  }, [scenes.length, loop])
+  const move = (direction: number) => {
+    clearTimeout(settle.current)
+    normalize()
+    track.current?.scrollBy({ left: direction * step(), behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' })
+  }
+  if (!scenes.length) return null
+  return <div className="application-scenes">
+    {loop && <div className="application-scene-controls">
+      <button type="button" aria-label={t('上一张场景图')} aria-controls={`scenes-${product.id}`} onClick={() => move(-1)}><ArrowLeft size={18} aria-hidden="true" /></button>
+      <button type="button" aria-label={t('下一张场景图')} aria-controls={`scenes-${product.id}`} onClick={() => move(1)}><ArrowRight size={18} aria-hidden="true" /></button>
+    </div>}
+    <div id={`scenes-${product.id}`} ref={track} className="application-scene-track" tabIndex={loop ? 0 : undefined} role="region" aria-label={t(product.name)}
+      onScroll={() => { clearTimeout(settle.current); if (loop) settle.current = setTimeout(normalize, 160) }}
+      onKeyDown={event => { if (loop && ['ArrowLeft', 'ArrowRight'].includes(event.key)) { event.preventDefault(); move(event.key === 'ArrowRight' ? 1 : -1) } }}>
+      {(loop ? [0, 1, 2] : [1]).flatMap(copy => scenes.map((scene, index) => <img key={`${copy}-${index}`} src={scene.image} alt={copy === 1 ? t(scene.alt) : ''} aria-hidden={copy !== 1 || undefined} loading="lazy" decoding="async" width="960" height="640" draggable={false} />))}
+    </div>
+  </div>
 }
 
-export default function ApplicationCard({ product, categoryName }: { product: EquipmentProduct; categoryName?: string }) {
-  const { path: localePath } = useSiteLocale()
-  const summary = product.card_summary || parseFeatures(product.features).slice(0, 3).join(' · ')
-  const fallback = (
-    <div className="gonyik-application-placeholder flex h-full w-full flex-col justify-end p-5">
-      <p className="text-[10px] font-medium tracking-[0.18em] text-secondary/70">APPLICATION STUDY</p>
-      <p className="mt-2 text-[17px] font-semibold text-primary"><InlineMarkup text={product.name} /></p>
-    </div>
-  )
-
-  return <CatalogCardShell interactive className="snap-start md:grid md:min-h-[340px] md:grid-cols-[44%_1fr] xl:grid-cols-[48%_1fr]">
-    <CatalogCardMedia src={product.image} alt={product.name} placeholder={fallback} ratio="portrait" fit="contain" className="!bg-white md:!aspect-auto md:h-full" />
-    <div className="flex min-w-0 flex-1 flex-col p-5 md:p-6">
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-        <p className="label-zh text-secondary"><InlineMarkup text={categoryName} /></p>
-        {product.material_platforms.map((platform) => <span key={platform} className="border border-[#8fc6d1] bg-[#eef8fa] px-2 py-1 text-[10px] font-semibold tracking-[0.08em] text-[#235d69]">{materialPlatformLabel(platform, 'badge')}</span>)}
-      </div>
-      <h3 className="type-card-title mt-2 text-primary"><InlineMarkup text={product.name} /></h3>
-      <p className="mt-3 line-clamp-2 text-[14px] leading-6 text-secondary"><InlineMarkup text={summary} /></p>
-      {Boolean(product.related_skus?.length) && <div className="mt-10 border-t border-border/80 pt-4 md:mt-12">
-        <p className="text-[11px] font-medium tracking-[0.08em] text-secondary">采用面料</p>
-        <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2">
-          {product.related_skus?.map((sku) => <Link key={sku.id} to={localePath(`/fabrics/catalog?series=${encodeURIComponent(sku.series_slug)}&sku=${sku.id}`)} className="text-[13px] font-medium text-primary underline decoration-border underline-offset-4 transition-colors hover:decoration-primary">{sku.public_name || sku.name}</Link>)}
-        </div>
+export default function ApplicationCard({ product }: { product: EquipmentProduct }) {
+  const { path, t } = useSiteLocale()
+  let features: string[] = []
+  try { const value = JSON.parse(product.features || '[]'); if (Array.isArray(value)) features = value.filter(item => typeof item === 'string' && item.trim()) } catch { /* Empty malformed legacy features, never synthesize claims. */ }
+  return <section id={`application-${product.id}`} className={`application-story ${product.image ? '' : 'application-story-text'}`} aria-labelledby={`application-title-${product.id}`}>
+    {product.image && <figure className="application-media">
+      <img src={product.image} alt={t(product.image_alt || product.name)} style={{ objectFit: product.image_fit || 'cover', objectPosition: product.image_position || undefined }} loading="lazy" decoding="async" />
+      {product.image_caption && <figcaption><InlineMarkup text={product.image_caption} /></figcaption>}
+    </figure>}
+    <div className="application-copy">
+      {product.case_label && <p className="applications-kicker"><InlineMarkup text={product.case_label} /></p>}
+      <h2 id={`application-title-${product.id}`} className="type-module-title"><InlineMarkup text={product.name} /></h2>
+      {product.card_summary && <p className="application-description"><InlineMarkup text={product.card_summary} /></p>}
+      {features.length > 0 && <div className="application-features">
+        {product.features_label && <p className="application-label"><InlineMarkup text={product.features_label} /></p>}
+        <ul>{features.map((feature, i) => <li key={i}><FeatureIcon name={product.feature_icons?.[i]} /><InlineMarkup text={feature} /></li>)}</ul>
       </div>}
+      {(product.detail_title || product.detail_body) && <div className="application-detail">
+        {product.detail_title && <h3><InlineMarkup text={product.detail_title} /></h3>}
+        {product.detail_body && <p><InlineMarkup text={product.detail_body} /></p>}
+      </div>}
+      {Boolean(product.related_series?.length) && <div className="application-series">
+        {product.series_label && <p className="application-label"><InlineMarkup text={product.series_label} /></p>}
+        <div>{product.related_series!.map(series => <Link key={series.id} to={path(`/fabrics#series-${series.slug}`)}><span>{series.name.toUpperCase()}</span><ArrowUpRight size={16} aria-hidden="true" /></Link>)}</div>
+      </div>}
+      <div className="application-actions">
+        {product.cta_label && product.cta_href && <Link className="applications-button" to={path(product.cta_href)}><InlineMarkup text={product.cta_label} /><ArrowUpRight size={18} aria-hidden="true" /></Link>}
+      </div>
     </div>
-  </CatalogCardShell>
+    <ApplicationScenes product={product} />
+  </section>
 }

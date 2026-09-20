@@ -4,9 +4,62 @@ import { registerUploadedFile } from '../mediaAssets'
 import { authMiddleware, AuthRequest } from '../middleware/auth'
 import { upload } from '../middleware/upload'
 import { normalizeMaterialPlatforms } from '../../src/config/materialPlatforms'
-import { pageVisible, requestMarket } from '../market'
+import { pageVisible, requestMarket, visibleInMarket, configuredMarkets } from '../market'
+import { SERIES_FEATURE_ICONS } from '../../src/config/seriesFeatures'
 
 const router = Router()
+
+function applicationFields(body: Record<string, any>) {
+  const fields: Record<string, any> = {}
+  if (body.entry_type !== undefined) {
+    if (!['application', 'sample'].includes(body.entry_type)) throw Error('条目类型无效')
+    fields.entry_type = body.entry_type
+  }
+  if (body.sample_ids !== undefined) fields.sample_ids = parseIdList(body.sample_ids).filter(id => db.equipment_products.some(p => p.id === id && p.entry_type === 'sample'))
+  for (const key of ['case_label', 'image_alt', 'image_caption', 'features_label', 'detail_title', 'detail_body', 'series_label', 'cta_label', 'cta_href']) {
+    if (body[key] !== undefined) fields[key] = String(body[key] ?? '').trim()
+  }
+  for (const key of ['cta_href', 'image']) {
+    if (body[key] === undefined) continue
+    const value = String(body[key] ?? '').trim()
+    if (value && (/[\\\u0000-\u001f\u007f]/.test(value) || !(value.startsWith('/') && !value.startsWith('//') || /^https?:\/\//i.test(value)))) throw Error('链接须为站内路径或 HTTP(S) 地址')
+    if (/^https?:/i.test(value)) { try { new URL(value) } catch { throw Error('链接地址无效') } }
+    fields[key] = value
+  }
+  if (body.scene_images !== undefined) {
+    const scenes = typeof body.scene_images === 'string' ? JSON.parse(body.scene_images) : body.scene_images
+    if (!Array.isArray(scenes) || scenes.length > 16) throw Error('场景图片须为数组，最多 16 张')
+    fields.scene_images = scenes.map(scene => {
+      if (!scene || typeof scene.image !== 'string' || typeof scene.alt !== 'string') throw Error('场景图片需包含地址及替代文本')
+      const image = scene.image.trim()
+      if (!image) throw Error('场景图片地址不能为空')
+      const validated = applicationFields({ image })
+      return { image: validated.image, alt: scene.alt.trim().slice(0, 300) }
+    })
+  }
+  if (body.image_fit !== undefined) fields.image_fit = body.image_fit === 'contain' ? 'contain' : 'cover'
+  if (body.image_position !== undefined) {
+    const position = String(body.image_position || '').trim()
+    if (position && !/^(100|\d{1,2})% (100|\d{1,2})%$/.test(position)) throw Error('图片焦点格式为 0% 0% 至 100% 100%')
+    fields.image_position = position
+  }
+  if (body.related_series_ids !== undefined) fields.related_series_ids = parseIdList(body.related_series_ids).filter(id => db.fabric_series.some(s => s.id === id))
+  if (body.feature_icons !== undefined) {
+    const icons = typeof body.feature_icons === 'string' ? JSON.parse(body.feature_icons) : body.feature_icons
+    fields.feature_icons = Array.isArray(icons) ? icons.slice(0, 8).map(icon => SERIES_FEATURE_ICONS.some(i => i.key === icon) ? icon : 'none') : []
+  }
+  if (body.market_visibility !== undefined) {
+    const raw = typeof body.market_visibility === 'string' ? JSON.parse(body.market_visibility) : body.market_visibility
+    fields.market_visibility = Object.fromEntries(configuredMarkets().flatMap(market => ['inherit', 'public', 'hidden'].includes(raw?.[market.code]) ? [[market.code, raw[market.code]]] : []))
+  }
+  return fields
+}
+
+// Validate before saving uploads or changing any database fields.
+function validateApplication(req: AuthRequest, res: any, next: () => void) {
+  try { res.locals.application = applicationFields(req.body); next() }
+  catch (error) { res.status(400).json({ error: error instanceof Error ? error.message : '应用内容无效' }) }
+}
 
 function parseIdList(value: unknown): number[] {
   const normalize = (items: unknown[]) => [...new Set(items.map(Number).filter((id) => Number.isInteger(id) && id > 0))]
@@ -52,7 +105,7 @@ function visibleCategories() {
     })
 }
 
-function enrichProduct(product: any, publicOnly = false) {
+function enrichProduct(product: any, publicOnly = false, market?: ReturnType<typeof requestMarket>, includeSamples = true): any {
   const allowedCategories = publicOnly ? visibleCategories() : db.equipment_categories
   const allowedCategoryIds = new Set(allowedCategories.map((category) => category.id))
   const category_ids = productCategoryIds(product.id).filter((id) => allowedCategoryIds.has(id))
@@ -65,10 +118,22 @@ function enrichProduct(product: any, publicOnly = false) {
     const sku = db.fabric_sku.find((item: any) => item.id === id && (!publicOnly || (item.visibility !== 'hidden' && item.status !== 'archived')))
     if (!sku) return []
     const series = db.fabric_series.find((item: any) => item.id === sku.series_id)
-    if (!series) return []
+    if (!series || (publicOnly && (series.visibility === 'hidden' || series.status === 'archived' || (market && !visibleInMarket(series, market))))) return []
     return [{ id: sku.id, sku_code: sku.sku_code, public_name: sku.public_name, name: sku.name, series_slug: series.slug, series_name: series.name }]
   })
-  return { ...product, material_platforms: normalizeMaterialPlatforms(product.material_platforms), category_ids, categories, related_sku_ids, related_skus }
+  const related_series_ids = parseIdList(product.related_series_ids)
+  const related_series = related_series_ids.flatMap(id => {
+    const series = db.fabric_series.find(s => s.id === id && (!publicOnly || ((!market || visibleInMarket(s, market)) && s.visibility !== 'hidden' && s.status !== 'archived')))
+    return series ? [{ id: series.id, name: series.name, slug: series.slug, story_title: series.story_title }] : []
+  })
+  const sample_ids = parseIdList(product.sample_ids)
+  const samples = includeSamples ? sample_ids.flatMap(id => {
+    const sample = db.equipment_products.find(p => p.id === id && p.id !== product.id && p.entry_type === 'sample')
+    if (!sample || (publicOnly && (sample.visibility === 'hidden' || sample.status === 'archived' || (market && !visibleInMarket(sample, market))))) return []
+    const enriched = enrichProduct(sample, publicOnly, market, false)
+    return publicOnly && !enriched.category_ids.length ? [] : [enriched]
+  }) : []
+  return { ...product, material_platforms: normalizeMaterialPlatforms(product.material_platforms), category_ids, categories, related_sku_ids, related_skus, related_series_ids, related_series, sample_ids, samples }
 }
 
 function nextProductOrderIndex(excludeId?: number) {
@@ -116,12 +181,15 @@ router.get('/catalog', (req, res) => {
     res.json({ data: { page: null, categories: [], products: [] } })
     return
   }
-  const categories = visibleCategories().map(categoryPayload)
   const products = db.equipment_products
-    .filter((product) => product.visibility !== 'hidden' && product.status !== 'archived')
+    .filter((product) => product.entry_type !== 'sample' && product.visibility !== 'hidden' && product.status !== 'archived' && visibleInMarket(product, market))
     .sort(sortByOrderIndex)
-    .map((product) => enrichProduct(product, true))
+    .map((product) => enrichProduct(product, true, market))
     .filter((product) => product.category_ids.length > 0)
+  const categories = visibleCategories().map(category => {
+    const ids = new Set([category.id, ...db.equipment_categories.filter(c => c.parent_id === category.id).map(c => c.id)])
+    return { ...category, product_count: products.filter(p => p.category_ids.some((id: number) => ids.has(id))).length }
+  }).filter(category => category.product_count > 0)
   res.json({ data: { page, categories, products } })
 })
 
@@ -237,11 +305,12 @@ router.get('/admin/products', authMiddleware, (req, res) => {
   res.json({ data: [...rows].sort(sortByOrderIndex).map((product) => enrichProduct(product)) })
 })
 
-router.post('/admin/products', authMiddleware, upload.single('image'), (req: AuthRequest, res) => {
+router.post('/admin/products', authMiddleware, upload.single('image'), validateApplication, (req: AuthRequest, res) => {
   const { name, features, card_summary, visibility, status, related_sku_ids, category_ids } = req.body
   if (!String(name || '').trim()) { res.status(400).json({ error: '产品名不能为空' }); return }
-  const image = req.file ? registerUploadedFile(req.file, 'equipment', '装备产品图片').url : null
+  const image = req.file ? registerUploadedFile(req.file, 'equipment', '装备产品图片').url : res.locals.application.image || null
   const newProduct = {
+    ...res.locals.application,
     id: getNextId(db.equipment_products),
     name: String(name).trim(),
     image,
@@ -271,15 +340,16 @@ router.put('/admin/product-order', authMiddleware, (req: AuthRequest, res) => {
   res.json({ success: true })
 })
 
-router.put('/admin/products/:id', authMiddleware, upload.single('image'), (req: AuthRequest, res) => {
+router.put('/admin/products/:id', authMiddleware, upload.single('image'), validateApplication, (req: AuthRequest, res) => {
   const id = Number(req.params.id)
   const existing = db.equipment_products.find((product) => product.id === id)
   if (!existing) { res.status(404).json({ error: '产品不存在' }); return }
   const { name, features, card_summary, visibility, status, order_index, related_sku_ids, category_ids } = req.body
   if (name !== undefined && !String(name).trim()) { res.status(400).json({ error: '产品名不能为空' }); return }
   const removeImage = req.body.remove_image === 'true'
-  const image = req.file ? registerUploadedFile(req.file, 'equipment', '装备产品图片').url : (removeImage ? null : existing.image)
+  const image = req.file ? registerUploadedFile(req.file, 'equipment', '装备产品图片').url : (removeImage ? null : res.locals.application.image ?? existing.image)
   updateById(db.equipment_products, id, {
+    ...res.locals.application,
     name: name === undefined ? existing.name : String(name).trim(),
     image,
     features: features ?? existing.features,

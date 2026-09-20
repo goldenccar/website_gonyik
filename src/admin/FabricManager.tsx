@@ -130,6 +130,8 @@ export default function AdminFabricManager() {
     formData.append('name', data.public_name as string)
     formData.append('internal_code', data.internal_code as string)
     formData.append('public_name', data.public_name as string)
+    formData.append('public_description', String(data.public_description || ''))
+    formData.append('application_notes', String(data.application_notes || ''))
     formData.append('product_type', (data.product_type as string) || '')
     formData.append('position_performance', (data.position_performance as string) || '')
     formData.append('position_durability', (data.position_durability as string) || '')
@@ -360,20 +362,22 @@ export default function AdminFabricManager() {
                 <FormField label={`内部编号${editingSku?.internal_code ? '（已锁定）' : ''}`} name="internal_code" defaultValue={editingSku?.internal_code} placeholder="例如 OT3-PAEL70-V15-PES50-B" required readOnly={Boolean(editingSku?.internal_code)} />
               </div>
               <FormField label="产品定位副标题" name="product_type" markup="inline" defaultValue={editingSku?.product_type} placeholder="例如 三层防护复合面料" required />
+              <FormField label="翻面：面料说明" name="public_description" textarea rows={3} maxLength={2000} markup="inline" defaultValue={editingSku?.public_description} />
+              <FormField label="翻面：适用方向" name="application_notes" textarea rows={2} maxLength={2000} markup="inline" defaultValue={editingSku?.application_notes} />
               <FabricCapabilitySelector key={`capabilities-${editingSku?.id || 'new'}`} features={editingSku?.features} legacySummary={editingSku?.card_summary} capabilities={capabilities} max={3} />
               <div>
                 <label className="mb-1 block text-[12px] uppercase text-secondary">三轴产品定位</label>
                 <p className="mb-3 text-[12px] text-muted">后台维护 1–9 分，前台仅显示位置，不显示数字。</p>
                 <div className="grid gap-3 sm:grid-cols-3">
-                  <FormField label="性能：日常 → 专业" name="position_performance" select options={POSITION_OPTIONS} defaultValue={editingSku?.position_performance == null ? '' : String(editingSku.position_performance)} />
-                  <FormField label="重量：轻盈 → 强韧" name="position_durability" select options={POSITION_OPTIONS} defaultValue={editingSku?.position_durability == null ? '' : String(editingSku.position_durability)} />
+                  <FormField label="防护：日常 → 专业" name="position_performance" select options={POSITION_OPTIONS} defaultValue={editingSku?.position_performance == null ? '' : String(editingSku.position_performance)} />
+                  <FormField label="厚薄：轻薄 → 厚实" name="position_durability" select options={POSITION_OPTIONS} defaultValue={editingSku?.position_durability == null ? '' : String(editingSku.position_durability)} />
                   <FormField label="手感：柔软 → 挺括" name="position_handfeel" select options={POSITION_OPTIONS} defaultValue={editingSku?.position_handfeel == null ? '' : String(editingSku.position_handfeel)} />
                 </div>
               </div>
               <FormField label="前台显示" name="visibility" select defaultValue={editingSku?.visibility || 'public'} options={[{ value: 'public', label: '显示' }, { value: 'hidden', label: '隐藏' }]} />
               <details className="border border-white/10 p-4">
                 <summary className="cursor-pointer text-[13px] font-medium text-white">详细性能数据（可选）</summary>
-                <p className="mb-3 mt-3 text-[12px] text-muted">最多三项，只在用户展开卡片后显示。</p>
+                <p className="mb-3 mt-3 text-[12px] text-muted">仅后台维护，不在公开卡片和公开接口中展示。</p>
                 {[0, 1, 2].map((index) => {
                   let entries: [string, string][] = []
                   try { entries = Object.entries(JSON.parse(editingSku?.specifications || '{}')) as [string, string][] } catch { entries = [] }

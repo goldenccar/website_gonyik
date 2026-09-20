@@ -103,8 +103,12 @@ export default function AdminHeaderManager() {
                     </div>
 
                     <div className="mb-4 grid gap-3">
+                      <label className="flex items-center gap-2 text-sm text-accent"><input type="checkbox" checked={group.layout === 'feature'} onChange={event=>updateGroups(navIndex,groups=>groups.map((entry,index)=>index===groupIndex?{...entry,layout:event.target.checked?'feature':undefined}:entry))} />作为主入口展示（子链接排列在入口下方）</label>
                       <input aria-label="分组介绍" placeholder="分组介绍" value={group.description || ''} onChange={event=>updateGroups(navIndex,groups=>groups.map((entry,index)=>index===groupIndex?{...entry,description:event.target.value}:entry))} className="border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"/>
-                      {group.link && group.items.length === 0 && <input aria-label="总入口配图" placeholder="总入口配图地址，可从媒体库复制" value={group.image_url || ''} onChange={event=>updateGroups(navIndex,groups=>groups.map((entry,index)=>index===groupIndex?{...entry,image_url:event.target.value}:entry))} className="border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"/>}
+                      {group.link && (group.layout === 'feature' || group.items.length === 0) && <>
+                        <label className="flex items-center gap-2 text-sm text-accent"><input type="checkbox" checked={group.image_source === 'page-hero'} onChange={event=>updateGroups(navIndex,groups=>groups.map((entry,index)=>index===groupIndex?{...entry,image_source:event.target.checked?'page-hero':'custom'}:entry))} />配图跟随目标页面 Hero（换图后菜单自动同步）</label>
+                        {group.image_source !== 'page-hero' && <input aria-label="总入口配图" placeholder="总入口配图地址，可从媒体库复制" value={group.image_url || ''} onChange={event=>updateGroups(navIndex,groups=>groups.map((entry,index)=>index===groupIndex?{...entry,image_url:event.target.value}:entry))} className="border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"/>}
+                      </>}
                     </div>
                     <div className="space-y-2 pl-1">
                       {group.items.map((link, linkIndex) => (

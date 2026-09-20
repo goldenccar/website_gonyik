@@ -12,13 +12,8 @@ import type { FabricSeries, FabricSku, PageConfig } from '@/types'
 import { useSiteLocale } from '@/i18n/SiteLocale'
 import PublicContentLoader from '@/components/PublicContentLoader'
 
-const SERIES_ORDER = ['otter', 'rayo', 'kais'] as const
-type SeriesSlug = typeof SERIES_ORDER[number]
+type SeriesSlug = string
 type SeriesDetail = FabricSeries & { skus: FabricSku[]; capabilities?: FabricCapabilityDefinition[] }
-
-function isSeriesSlug(value: string | null): value is SeriesSlug {
-  return Boolean(value && SERIES_ORDER.includes(value as SeriesSlug))
-}
 
 export default function FabricDatabase() {
   const { path: localePath } = useSiteLocale()
@@ -28,7 +23,7 @@ export default function FabricDatabase() {
   const [series, setSeries] = useState<FabricSeries[]>([])
   const [details, setDetails] = useState<Partial<Record<SeriesSlug, SeriesDetail>>>({})
   const [detailLoading, setDetailLoading] = useState(true)
-  const [active, setActive] = useState<SeriesSlug>(isSeriesSlug(params.get('series')) ? params.get('series') as SeriesSlug : 'otter')
+  const [active, setActive] = useState<SeriesSlug>(params.get('series') || '')
   const [openSkuIds, setOpenSkuIds] = useState<Set<number>>(() => new Set())
   const seriesRefs = useRef<Partial<Record<SeriesSlug, HTMLElement | null>>>({})
   const handledRequestedSku = useRef('')
@@ -52,10 +47,12 @@ export default function FabricDatabase() {
     return () => { current = false }
   }, [])
 
+  const isSeriesSlug = (value: string | null): value is string => Boolean(value && series.some(item => item.slug === value))
+
   useEffect(() => {
     const requested = params.get('series')
     if (isSeriesSlug(requested)) setActive(requested)
-  }, [params])
+  }, [params, series])
 
   useEffect(() => {
     if (detailLoading) return
@@ -98,7 +95,7 @@ export default function FabricDatabase() {
           return
         }
       }
-      const positions = SERIES_ORDER
+      const positions = series.map(item => item.slug)
         .map((slug) => ({ slug, top: seriesRefs.current[slug]?.getBoundingClientRect().top ?? Number.POSITIVE_INFINITY }))
         .filter((item) => Number.isFinite(item.top))
       const passed = positions.filter((item) => item.top <= anchor)
@@ -116,10 +113,10 @@ export default function FabricDatabase() {
       window.removeEventListener('resize', schedule)
       if (frame) window.cancelAnimationFrame(frame)
     }
-  }, [detailLoading])
+  }, [detailLoading, series])
 
   const orderedSeries = useMemo(
-    () => SERIES_ORDER.map((slug) => series.find((item) => item.slug === slug) || details[slug]).filter(Boolean) as FabricSeries[],
+    () => [...series].sort((a, b) => a.order_index - b.order_index),
     [details, series],
   )
 
@@ -132,39 +129,25 @@ export default function FabricDatabase() {
 
   const openSku = (slug: SeriesSlug, sku: FabricSku) => {
     setActive(slug)
-    setOpenSkuIds((currentIds) => {
-      const next = new Set(currentIds)
-      if (next.has(sku.id)) next.delete(sku.id)
-      else next.add(sku.id)
-      const remaining = [...next]
-      setParams(remaining.length ? { series: slug, sku: String(remaining[remaining.length - 1]) } : { series: slug }, { replace: true })
-      return next
-    })
+    const next = new Set(openSkuIds)
+    if (next.has(sku.id)) next.delete(sku.id)
+    else next.add(sku.id)
+    setOpenSkuIds(next)
+    // User flips keep their scroll position; only incoming SKU links scroll to a section.
+    const requestedId = next.has(sku.id) ? sku.id : 0
+    handledRequestedSku.current = `${slug}:${requestedId}`
+    setParams(requestedId ? { series: slug, sku: String(requestedId) } : { series: slug }, { replace: true })
   }
 
   if (detailLoading) return <PublicContentLoader label="正在加载面料产品" />
 
   return (
-    <PageShell>
-      <PageHero title={page?.page_title || ''} subtitle={page?.page_subtitle} image={page?.hero_background} imageAlt={page?.page_title} />
+    <PageShell className="fabric-catalog">
+      <PageHero variant="editorial" title={page?.page_title || ''} subtitle={page?.page_subtitle} image={page?.hero_background} imageAlt={page?.page_title} />
 
-      <CatalogSelectorBar
-        label="面料系列"
-        groups={[
-          {
-            label: '日常与户外使用',
-            uppercase: true,
-            items: ['otter', 'rayo'].map((slug) => ({ key: slug, label: slug, active: active === slug, onSelect: () => selectSeries(slug as SeriesSlug) })),
-          },
-          {
-            label: '特种场景',
-            uppercase: true,
-            items: [{ key: 'kais', label: 'kais', active: active === 'kais', onSelect: () => selectSeries('kais') }],
-          },
-        ]}
-      />
+      <CatalogSelectorBar label={page?.page_title || ''} groups={[{label:'',uppercase:true,items:series.map(item=>({key:item.id,label:item.name,active:active===item.slug,onSelect:()=>selectSeries(item.slug as SeriesSlug)}))}]} />
 
-      <PageSection id="series-content" className="!pt-8 md:!pt-12">
+      <PageSection id="series-content" outerClassName="!px-0" className="!px-[clamp(24px,6.25vw,104px)] !pt-8 md:!pt-12">
         {detailLoading && <div className="border-t border-border py-10 text-body text-secondary">正在加载面料资料…</div>}
         {!detailLoading && <div className="divide-y divide-border">
           {orderedSeries.map((seriesItem, index) => {
@@ -176,26 +159,25 @@ export default function FabricDatabase() {
                 ref={(node) => { seriesRefs.current[slug] = node }}
                 data-series={slug}
                 id={`series-${slug}`}
-                className={`fabric-series-section scroll-mt-[118px] ${index === 0 ? 'pb-16 md:pb-20' : 'py-16 md:py-20'}`}
+                className={`fabric-series-section scroll-mt-[124px] ${index === 0 ? 'pb-16 md:pb-20' : 'py-16 md:py-20'}`}
               >
-                <div className="mb-8 grid gap-4 md:mb-10 md:grid-cols-[minmax(220px,0.65fr)_minmax(320px,1fr)] md:items-end md:gap-12">
+                <div className="fabric-catalog-heading">
                   <div>
-                    <p className="label-en -ml-px text-secondary"><InlineMarkup text={seriesItem.name || slug} /></p>
-                    <h2 className="type-section-title mt-3 text-primary"><InlineMarkup text={seriesItem.story_title || seriesItem.tagline} /></h2>
+                    <h2 className="type-section-title text-primary"><InlineMarkup text={seriesItem.story_title || seriesItem.tagline} /></h2>
+                    <p className="body-copy text-secondary"><InlineMarkup text={seriesItem.story_intro || seriesItem.description} /></p>
+                  </div>
                     <Link
                       to={localePath(`/fabrics/series/${slug}`)}
-                      className="fabric-series-story-link group mt-5 inline-flex items-center pb-1 text-[13px] font-medium text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+                      className="fabric-series-story-link group"
                       aria-label={`探索 ${seriesItem.name} 系列`}
                     >
                       <span>探索 {seriesItem.name.toUpperCase()} 系列</span>
                       <span aria-hidden="true" className="ml-2 inline-block transition-transform duration-[var(--motion-instant)] group-hover:translate-x-1">→</span>
                     </Link>
-                  </div>
-                  <p className="body-copy max-w-[680px] text-secondary"><InlineMarkup text={seriesItem.story_intro || seriesItem.description} /></p>
                 </div>
 
                 {detail?.skus?.length ? (
-                  <div role="list" aria-label={`${detail.name} 面料型号`} className="grid max-w-[1384px] items-start gap-5 md:grid-cols-2 md:gap-6">
+                  <div role="list" aria-label={`${detail.name} 面料型号`} className="fabric-catalog-grid">
                     {detail.skus.map((sku) => (
                       <div role="listitem" key={`${sku.series_id}-${sku.id}`} className="min-w-0">
                         <SkuCard
@@ -203,7 +185,7 @@ export default function FabricDatabase() {
                           seriesName={detail.name}
                           capabilities={detail.capabilities}
                           expanded={openSkuIds.has(sku.id)}
-                          detailTitle={page?.core_performance_title || '核心性能'}
+                          detailTitle={page?.core_performance_title || '适用方向'}
                           onClick={() => openSku(slug, sku)}
                         />
                       </div>

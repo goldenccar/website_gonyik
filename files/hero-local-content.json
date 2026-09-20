@@ -1,0 +1,44 @@
+{
+  "pages": {
+    "equipment": {
+      "page_title": "面料应用",
+      "page_subtitle": "从日常穿着到专业装备，为服装、鞋材、箱包与柔性防护选择合适的面料。",
+      "hero_background": "/visuals/hero-applications-editorial-v3.webp",
+      "page_tag": ""
+    },
+    "services": {
+      "page_subtitle": "材料选用、数字打样与使用养护，提供产品开发和使用所需的支持。",
+      "hero_background": "/visuals/hero-support-editorial-v2.webp",
+      "page_tag": ""
+    },
+    "contact": {
+      "hero_background": "/visuals/hero-contact-editorial-v2.webp",
+      "page_tag": ""
+    }
+  },
+  "platform": {
+    "image_url": "/visuals/hero-rpo-editorial-v3.webp",
+    "eyebrow": "",
+    "subtitle": "从膜与纤维到复合面料，结合供应链和测试能力，支持产品开发。"
+  },
+  "application_samples": {
+    "9": [
+      6,
+      7,
+      8
+    ],
+    "10": [
+      1,
+      3,
+      2,
+      4
+    ]
+  },
+  "translations": {
+    "面料应用": "Fabric Applications",
+    "正在加载面料应用": "Loading fabric applications",
+    "从日常穿着到专业装备，为服装、鞋材、箱包与柔性防护选择合适的面料。": "Materials for everyday clothing and technical equipment, from apparel and footwear to bags and flexible protection.",
+    "材料选用、数字打样与使用养护，提供产品开发和使用所需的支持。": "Support for material selection, digital sampling and care throughout product development and use.",
+    "从膜与纤维到复合面料，结合供应链和测试能力，支持产品开发。": "Membranes, fibers and laminated fabrics, backed by supply chain and testing capabilities for product development."
+  }
+}

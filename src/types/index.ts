@@ -62,6 +62,7 @@ export interface HomeConfig {
 }
 
 export interface PageConfig {
+  page_tag?: string
   id: number
   page_key: string
   page_title: string
@@ -92,6 +93,8 @@ export interface NavMenuLink {
 }
 
 export interface NavMenuGroup {
+  layout?: 'feature' | 'links'
+  image_source?: 'custom' | 'page-hero'
   id: string
   title: string
   link?: string
@@ -158,6 +161,8 @@ export interface FabricSku {
   specifications: string // JSON
   card_summary?: string
   public_name?: string
+  public_description?: string
+  application_notes?: string
   product_type?: string
   position_performance?: number | null
   position_durability?: number | null
@@ -179,11 +184,30 @@ export interface EquipmentCategory {
 }
 
 export interface EquipmentProduct {
+  scene_images?: Array<{ image: string; alt: string }>
+  entry_type?: 'application' | 'sample'
+  sample_ids?: number[]
+  samples?: EquipmentProduct[]
   id: number
   name: string
   image: string | null
   features: string // JSON
   card_summary?: string
+  case_label?: string
+  image_alt?: string
+  image_caption?: string
+  image_fit?: 'cover' | 'contain'
+  image_position?: string
+  features_label?: string
+  feature_icons?: string[]
+  detail_title?: string
+  detail_body?: string
+  series_label?: string
+  cta_label?: string
+  cta_href?: string
+  related_series_ids?: number[]
+  related_series?: Array<{ id: number; name: string; slug: string; story_title?: string }>
+  market_visibility?: Record<string, 'inherit' | 'public' | 'hidden'>
   material_platforms: string[]
   visibility?: 'public' | 'hidden'
   status?: 'active' | 'archived'

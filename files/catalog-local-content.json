@@ -1,0 +1,32 @@
+{
+  "page": {
+    "page_subtitle": "按系列了解面料型号、功能特点与适用方向，找到适合项目的材料。",
+    "core_performance_title": "适用方向"
+  },
+  "skus": {
+    "OTTER T70": {
+      "public_description": "三层复合结构，将面层、功能层与里层组合，用于户外服装开发。",
+      "application_notes": "冲锋衣、户外夹克。"
+    },
+    "OTTER T50": {
+      "public_description": "以 50D 面布开发的三层复合面料，可结合防水、透湿与穿着手感比较样品。",
+      "application_notes": "冲锋衣、户外夹克。"
+    },
+    "OTTER T70-V": {
+      "public_description": "面向专业户外服装开发，关注风雨防护、运动排湿与使用耐久性。",
+      "application_notes": "专业户外服装与装备。"
+    },
+    "RAYO 30": {
+      "public_description": "30D 纱线与定制织物结构，兼顾防晒、导湿和穿着舒适。",
+      "application_notes": "日常防晒服、轻户外服装。"
+    },
+    "RAYO 10": {
+      "public_description": "亲肤防晒面料，关注吸湿排汗与速干表现。",
+      "application_notes": "日常防晒服、轻户外服装。"
+    },
+    "KAIS inside": {
+      "public_description": "采用高性能纤维与复合结构，面向柔性防割、防刺产品开发。",
+      "application_notes": "防护服装及需要加强防护的部位。"
+    }
+  }
+}

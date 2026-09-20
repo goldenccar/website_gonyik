@@ -1,0 +1,1696 @@
+[
+  {
+    "collection": "navigation",
+    "id": 4,
+    "field": "mega_menu",
+    "before": [
+      {
+        "id": "rpo-system",
+        "title": "RPO TECHNOLOGY",
+        "order_index": 0,
+        "link": "/pfas-free-innovation/rpo-material-platform",
+        "items": [],
+        "description": "膜、纤维与复合技术，以及供应链和测试。",
+        "image_url": "/visuals/technology-fiber-material-v1.webp"
+      },
+      {
+        "id": "rpo-material",
+        "title": "材料与工艺",
+        "order_index": 1,
+        "items": [
+          {
+            "id": "rpo-rpo-sotex-membrane",
+            "label": "膜技术",
+            "link": "/pfas-free-innovation/rpo-sotex-membrane",
+            "order_index": 0,
+            "description": "防水与透湿"
+          },
+          {
+            "id": "rpo-high-performance-fiber",
+            "label": "高性能纤维",
+            "link": "/pfas-free-innovation/high-performance-fiber",
+            "order_index": 1,
+            "description": "纤维配方与织物结构"
+          },
+          {
+            "id": "rpo-lamination",
+            "label": "复合技术",
+            "link": "/pfas-free-innovation/lamination",
+            "order_index": 2,
+            "description": "材料搭配与复合工艺"
+          }
+        ]
+      },
+      {
+        "id": "rpo-assurance",
+        "title": "开发与验证",
+        "order_index": 2,
+        "items": [
+          {
+            "id": "rpo-supply-chain",
+            "label": "供应链",
+            "link": "/pfas-free-innovation/supply-chain",
+            "order_index": 0,
+            "description": "开发与生产"
+          },
+          {
+            "id": "rpo-testing-certification",
+            "label": "测试与认证",
+            "link": "/pfas-free-innovation/testing-certification",
+            "order_index": 1,
+            "description": "性能测试与第三方检测"
+          }
+        ]
+      }
+    ],
+    "after": [
+      {
+        "id": "rpo-system",
+        "title": "RPO TECHNOLOGY",
+        "order_index": 0,
+        "link": "/pfas-free-innovation/rpo-material-platform",
+        "items": [],
+        "description": "膜、纤维与复合技术，以及供应链和测试。",
+        "image_url": "",
+        "image_source": "page-hero"
+      },
+      {
+        "id": "rpo-material",
+        "title": "材料与工艺",
+        "order_index": 1,
+        "items": [
+          {
+            "id": "rpo-rpo-sotex-membrane",
+            "label": "膜技术",
+            "link": "/pfas-free-innovation/rpo-sotex-membrane",
+            "order_index": 0,
+            "description": "防水与透湿"
+          },
+          {
+            "id": "rpo-high-performance-fiber",
+            "label": "高性能纤维",
+            "link": "/pfas-free-innovation/high-performance-fiber",
+            "order_index": 1,
+            "description": "纤维配方与织物结构"
+          },
+          {
+            "id": "rpo-lamination",
+            "label": "复合技术",
+            "link": "/pfas-free-innovation/lamination",
+            "order_index": 2,
+            "description": "材料搭配与复合工艺"
+          }
+        ]
+      },
+      {
+        "id": "rpo-assurance",
+        "title": "开发与验证",
+        "order_index": 2,
+        "items": [
+          {
+            "id": "rpo-supply-chain",
+            "label": "供应链",
+            "link": "/pfas-free-innovation/supply-chain",
+            "order_index": 0,
+            "description": "开发与生产"
+          },
+          {
+            "id": "rpo-testing-certification",
+            "label": "测试与认证",
+            "link": "/pfas-free-innovation/testing-certification",
+            "order_index": 1,
+            "description": "性能测试与第三方检测"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "collection": "navigation",
+    "id": 2,
+    "field": "mega_menu",
+    "before": [
+      {
+        "id": "overview-2",
+        "title": "面料系列",
+        "description": "从户外穿着到专业防护，按使用需求了解面料。",
+        "image_url": "/uploads/1783870881229-286570534.jpg",
+        "link": "/fabrics",
+        "order_index": 0,
+        "items": []
+      },
+      {
+        "id": "2-v8-series-group",
+        "title": "系列平台",
+        "order_index": 1,
+        "items": [
+          {
+            "id": "2-v8-series-item-1",
+            "label": "OTTER 系列",
+            "link": "/fabrics#series-otter",
+            "order_index": 0,
+            "description": "专业户外"
+          },
+          {
+            "id": "2-v8-series-item-2",
+            "label": "RAYO 系列",
+            "link": "/fabrics#series-rayo",
+            "order_index": 1,
+            "description": "轻户外"
+          },
+          {
+            "id": "2-v8-series-item-3",
+            "label": "KAIS 系列",
+            "link": "/fabrics#series-kais",
+            "order_index": 2,
+            "description": "专业防护"
+          }
+        ]
+      }
+    ],
+    "after": [
+      {
+        "id": "fabric-catalog-entry",
+        "title": "面料系列",
+        "description": "专业户外、轻户外与专业防护。",
+        "link": "/fabrics",
+        "image_source": "page-hero",
+        "image_url": "",
+        "order_index": 0,
+        "items": [
+          {
+            "id": "fabric-catalog-secondary",
+            "label": "面料数据库",
+            "link": "/fabrics/catalog",
+            "description": "浏览具体型号，比较功能特点与选材方向。",
+            "order_index": 0
+          }
+        ],
+        "layout": "feature"
+      },
+      {
+        "id": "2-v8-series-group",
+        "title": "面料系列",
+        "order_index": 1,
+        "items": [
+          {
+            "id": "2-v8-series-item-1",
+            "label": "OTTER 系列",
+            "link": "/fabrics#series-otter",
+            "order_index": 0,
+            "description": "专业户外"
+          },
+          {
+            "id": "2-v8-series-item-2",
+            "label": "RAYO 系列",
+            "link": "/fabrics#series-rayo",
+            "order_index": 1,
+            "description": "轻户外"
+          },
+          {
+            "id": "2-v8-series-item-3",
+            "label": "KAIS 系列",
+            "link": "/fabrics#series-kais",
+            "order_index": 2,
+            "description": "专业防护"
+          }
+        ],
+        "link": "/fabrics"
+      }
+    ]
+  },
+  {
+    "collection": "navigation",
+    "id": 3,
+    "field": "label",
+    "before": "产品应用",
+    "after": "面料应用"
+  },
+  {
+    "collection": "navigation",
+    "id": 3,
+    "field": "mega_menu",
+    "before": [
+      {
+        "id": "overview-3",
+        "title": "产品应用",
+        "description": "从面料到成品，了解材料在不同产品中的应用。",
+        "image_url": "/uploads/1783959932963-982327398.jpg",
+        "link": "/equipment",
+        "order_index": 0,
+        "items": []
+      },
+      {
+        "id": "3-equipment-group-1",
+        "title": "成衣",
+        "link": "/equipment?type=apparel",
+        "order_index": 1,
+        "items": [
+          {
+            "id": "3-equipment-1-item-1",
+            "label": "日常通勤",
+            "link": "/equipment?type=apparel&category=daily",
+            "order_index": 0
+          },
+          {
+            "id": "3-equipment-1-item-2",
+            "label": "户外防护",
+            "link": "/equipment?type=apparel&category=outdoor",
+            "order_index": 1
+          },
+          {
+            "id": "3-equipment-1-item-3",
+            "label": "专业与特种",
+            "link": "/equipment?type=apparel&category=professional",
+            "order_index": 2
+          }
+        ]
+      },
+      {
+        "id": "3-equipment-group-2",
+        "title": "配件",
+        "link": "/equipment?type=accessories",
+        "order_index": 2,
+        "items": [
+          {
+            "id": "3-equipment-2-item-1",
+            "label": "养护用品",
+            "link": "/equipment?type=accessories&category=care",
+            "order_index": 0
+          },
+          {
+            "id": "3-equipment-2-item-2",
+            "label": "穿戴配件",
+            "link": "/equipment?type=accessories&category=wearable",
+            "order_index": 1
+          },
+          {
+            "id": "3-equipment-2-item-3",
+            "label": "功能组件",
+            "link": "/equipment?type=accessories&category=components",
+            "order_index": 2
+          }
+        ]
+      }
+    ],
+    "after": [
+      {
+        "id": "applications-overview",
+        "title": "面料应用",
+        "description": "从日常穿着到专业装备，为服装、鞋材、箱包与柔性防护选择合适的面料。",
+        "image_url": "",
+        "link": "/equipment",
+        "order_index": 0,
+        "items": [],
+        "image_source": "page-hero"
+      },
+      {
+        "id": "applications-directions",
+        "title": "面料应用",
+        "order_index": 1,
+        "items": [
+          {
+            "id": "application-9",
+            "label": "户外服装",
+            "description": "",
+            "link": "/equipment#application-9",
+            "order_index": 0
+          },
+          {
+            "id": "application-10",
+            "label": "轻户外服装",
+            "description": "",
+            "link": "/equipment#application-10",
+            "order_index": 1
+          },
+          {
+            "id": "application-12",
+            "label": "户外鞋材",
+            "description": "",
+            "link": "/equipment#application-12",
+            "order_index": 2
+          },
+          {
+            "id": "application-13",
+            "label": "软质箱包",
+            "description": "",
+            "link": "/equipment#application-13",
+            "order_index": 3
+          },
+          {
+            "id": "application-11",
+            "label": "柔性防护服装与配件",
+            "description": "",
+            "link": "/equipment#application-11",
+            "order_index": 4
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "collection": "navigation",
+    "id": 5,
+    "field": "mega_menu",
+    "before": [
+      {
+        "id": "overview-5",
+        "title": "专业支持",
+        "description": "材料选用、数字打样与使用养护。",
+        "image_url": "/uploads/1783877676932-234722141.jpg",
+        "link": "/services",
+        "order_index": 0,
+        "items": []
+      },
+      {
+        "id": "5-group-1",
+        "title": "专业支持",
+        "order_index": 1,
+        "items": [
+          {
+            "id": "5-0-item-1",
+            "label": "材料与性能支持",
+            "link": "/services/material-care",
+            "order_index": 0,
+            "description": "材料选择与性能信息"
+          },
+          {
+            "id": "5-0-item-2",
+            "label": "使用与养护",
+            "link": "/services/garment-care",
+            "order_index": 1,
+            "description": "清洁、使用与保养"
+          },
+          {
+            "id": "5-0-item-3",
+            "label": "数字面料与虚拟打样",
+            "link": "/services/digital-fabrics",
+            "order_index": 2,
+            "description": "面料数字化与产品开发"
+          }
+        ]
+      }
+    ],
+    "after": [
+      {
+        "id": "overview-5",
+        "title": "专业支持",
+        "description": "材料选用、数字打样与使用养护。",
+        "image_url": "",
+        "link": "/services",
+        "order_index": 0,
+        "items": [],
+        "image_source": "page-hero"
+      },
+      {
+        "id": "5-group-1",
+        "title": "专业支持",
+        "order_index": 1,
+        "items": [
+          {
+            "id": "5-0-item-1",
+            "label": "材料与性能支持",
+            "link": "/services/material-care",
+            "order_index": 0,
+            "description": "材料选择与性能信息"
+          },
+          {
+            "id": "5-0-item-2",
+            "label": "使用与养护",
+            "link": "/services/garment-care",
+            "order_index": 1,
+            "description": "清洁、使用与保养"
+          },
+          {
+            "id": "5-0-item-3",
+            "label": "数字面料与虚拟打样",
+            "link": "/services/digital-fabrics",
+            "order_index": 2,
+            "description": "面料数字化与产品开发"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 12,
+    "field": "content_blocks",
+    "before": [
+      {
+        "key": "platform-capabilities",
+        "title": "膜、纤维与复合",
+        "content": "从原料选择、织物设计到复合加工，为不同用途开发面料。",
+        "items": [
+          {
+            "title": "膜技术",
+            "content": "RPO-SOTEX 功能膜，用于防水透湿面料。",
+            "visual": "membrane",
+            "image_url": "",
+            "link_url": "/pfas-free-innovation/rpo-sotex-membrane"
+          },
+          {
+            "title": "高性能纤维",
+            "content": "纤维选择、纱线组合与织物设计。",
+            "visual": "image",
+            "image_url": "/visuals/technology-fiber-material-v1.webp",
+            "link_url": "/pfas-free-innovation/high-performance-fiber"
+          },
+          {
+            "title": "复合技术",
+            "content": "将不同材料复合，调整成品的功能与手感。",
+            "visual": "lamination",
+            "image_url": "",
+            "link_url": "/pfas-free-innovation/lamination"
+          }
+        ],
+        "layout": "cards",
+        "tone": "",
+        "links": []
+      },
+      {
+        "key": "delivery",
+        "title": "从样品到量产",
+        "content": "打样、测试、调整，再确定生产规格。",
+        "items": [
+          {
+            "title": "供应链",
+            "content": "协调原料、织造、染整和复合的开发与生产。",
+            "visual": "supply",
+            "image_url": "",
+            "link_url": "/pfas-free-innovation/supply-chain",
+            "link_label": "了解供应链"
+          },
+          {
+            "title": "测试与认证",
+            "content": "样品对比、性能测试与第三方检测。",
+            "visual": "image",
+            "image_url": "/visuals/technology-testing-hero-v2.jpg",
+            "link_url": "/pfas-free-innovation/testing-certification",
+            "link_label": "了解测试与认证"
+          }
+        ],
+        "layout": "delivery",
+        "tone": "mist",
+        "links": []
+      },
+      {
+        "key": "material-choice",
+        "title": "材料与化学品要求",
+        "content": "膜、纤维、整理剂与复合用胶，都需要符合项目的材料要求。RPO-SOTEX 的材料说明及检测信息见膜技术页。",
+        "layout": "note",
+        "tone": "",
+        "links": [
+          {
+            "label": "查看 RPO-SOTEX",
+            "href": "/pfas-free-innovation/rpo-sotex-membrane#material-testing"
+          }
+        ]
+      },
+      {
+        "key": "series",
+        "title": "面料系列",
+        "content": "",
+        "layout": "series",
+        "tone": "",
+        "links": [],
+        "items": [
+          {
+            "title": "OTTER",
+            "content": "适用于冲锋衣、雨衣等户外服装。",
+            "image_url": "/uploads/1781366172477-254637203.png",
+            "link_url": "/fabrics/series/otter"
+          },
+          {
+            "title": "RAYO",
+            "content": "适用于防晒衣、垂钓披风及轻户外服装。",
+            "image_url": "/uploads/1783927272832-864591800.jpg",
+            "link_url": "/fabrics/series/rayo"
+          },
+          {
+            "title": "KAIS",
+            "content": "用于防护服装、手套及其他需要加强防护的部位。",
+            "image_url": "/uploads/1783927258734-23082948.jpg",
+            "link_url": "/fabrics/series/kais"
+          }
+        ]
+      }
+    ],
+    "after": [
+      {
+        "key": "platform-capabilities",
+        "title": "膜、纤维与复合",
+        "content": "从原料选择、织物设计到复合加工，为不同用途开发面料。",
+        "items": [
+          {
+            "title": "膜技术",
+            "content": "RPO-SOTEX 功能膜，用于防水透湿面料。",
+            "visual": "membrane",
+            "image_url": "",
+            "link_url": "/pfas-free-innovation/rpo-sotex-membrane"
+          },
+          {
+            "title": "高性能纤维",
+            "content": "纤维选择、纱线组合与织物设计。",
+            "visual": "image",
+            "image_url": "/visuals/technology-fiber-material-v1.webp",
+            "link_url": "/pfas-free-innovation/high-performance-fiber"
+          },
+          {
+            "title": "复合技术",
+            "content": "将不同材料复合，调整成品的功能与手感。",
+            "visual": "lamination",
+            "image_url": "",
+            "link_url": "/pfas-free-innovation/lamination"
+          }
+        ],
+        "layout": "cards",
+        "tone": "",
+        "links": []
+      },
+      {
+        "key": "delivery",
+        "title": "从样品到量产",
+        "content": "打样、测试、调整，再确定生产规格。",
+        "items": [
+          {
+            "title": "供应链",
+            "content": "协调原料、织造、染整和复合的开发与生产。",
+            "visual": "supply",
+            "image_url": "",
+            "link_url": "/pfas-free-innovation/supply-chain",
+            "link_label": "了解供应链"
+          },
+          {
+            "title": "测试与认证",
+            "content": "样品对比、性能测试与第三方检测。",
+            "visual": "image",
+            "image_url": "/visuals/technology-testing-hero-v2.jpg",
+            "link_url": "/pfas-free-innovation/testing-certification",
+            "link_label": "了解测试与认证"
+          }
+        ],
+        "layout": "delivery",
+        "tone": "mist",
+        "links": []
+      },
+      {
+        "key": "material-choice",
+        "title": "材料与化学品要求",
+        "content": "膜、纤维、整理剂与复合用胶，都需要符合项目的材料要求。RPO-SOTEX 的材料说明及检测信息见膜技术页。",
+        "layout": "note",
+        "tone": "",
+        "links": [
+          {
+            "label": "查看 RPO-SOTEX",
+            "href": "/pfas-free-innovation/rpo-sotex-membrane#material-testing"
+          }
+        ]
+      },
+      {
+        "key": "series",
+        "title": "面料系列",
+        "content": "",
+        "layout": "series",
+        "tone": "",
+        "links": [],
+        "items": []
+      }
+    ]
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 12,
+    "field": "eyebrow",
+    "before": "GONYIK / RPO TECHNOLOGY",
+    "after": ""
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 12,
+    "field": "image_url",
+    "before": "/visuals/technology-rpo-platform-hero-v1.webp",
+    "after": "/visuals/hero-rpo-editorial-v3.webp"
+  },
+  {
+    "collection": "fluorine_sections",
+    "id": 12,
+    "field": "subtitle",
+    "before": "港翼的材料与面料开发平台。膜、纤维、复合技术，以及配套的供应链和测试。",
+    "after": "从膜与纤维到复合面料，结合供应链和测试能力，支持产品开发。"
+  },
+  {
+    "collection": "fabric_series",
+    "id": 1,
+    "field": "home_image",
+    "before": "/uploads/1781366172477-254637203.png",
+    "after": "/visuals/series-otter-macro-v2.webp"
+  },
+  {
+    "collection": "fabric_series",
+    "id": 2,
+    "field": "home_image",
+    "before": "/uploads/1783927258734-23082948.jpg",
+    "after": "/visuals/series-kais-macro-v2.webp"
+  },
+  {
+    "collection": "fabric_series",
+    "id": 3,
+    "field": "home_image",
+    "before": "/uploads/1783927272832-864591800.jpg",
+    "after": "/visuals/series-rayo-macro-v2.webp"
+  },
+  {
+    "collection": "fabric_sku",
+    "id": 7,
+    "field": "application_notes",
+    "after": "冲锋衣、户外夹克。"
+  },
+  {
+    "collection": "fabric_sku",
+    "id": 7,
+    "field": "public_description",
+    "after": "三层复合结构，将面层、功能层与里层组合，用于户外服装开发。"
+  },
+  {
+    "collection": "fabric_sku",
+    "id": 10,
+    "field": "application_notes",
+    "after": "冲锋衣、户外夹克。"
+  },
+  {
+    "collection": "fabric_sku",
+    "id": 10,
+    "field": "public_description",
+    "after": "以 50D 面布开发的三层复合面料，可结合防水、透湿与穿着手感比较样品。"
+  },
+  {
+    "collection": "fabric_sku",
+    "id": 14,
+    "field": "application_notes",
+    "after": "专业户外服装与装备。"
+  },
+  {
+    "collection": "fabric_sku",
+    "id": 14,
+    "field": "public_description",
+    "after": "面向专业户外服装开发，关注风雨防护、运动排湿与使用耐久性。"
+  },
+  {
+    "collection": "fabric_sku",
+    "id": 12,
+    "field": "application_notes",
+    "after": "防护服装及需要加强防护的部位。"
+  },
+  {
+    "collection": "fabric_sku",
+    "id": 12,
+    "field": "public_description",
+    "after": "采用高性能纤维与复合结构，面向柔性防割、防刺产品开发。"
+  },
+  {
+    "collection": "fabric_sku",
+    "id": 11,
+    "field": "application_notes",
+    "after": "日常防晒服、轻户外服装。"
+  },
+  {
+    "collection": "fabric_sku",
+    "id": 11,
+    "field": "public_description",
+    "after": "30D 纱线与定制织物结构，兼顾防晒、导湿和穿着舒适。"
+  },
+  {
+    "collection": "fabric_sku",
+    "id": 13,
+    "field": "application_notes",
+    "after": "日常防晒服、轻户外服装。"
+  },
+  {
+    "collection": "fabric_sku",
+    "id": 13,
+    "field": "public_description",
+    "after": "亲肤防晒面料，关注吸湿排汗与速干表现。"
+  },
+  {
+    "collection": "page_configs",
+    "id": 1,
+    "field": "core_performance_title",
+    "before": "核心性能",
+    "after": "适用方向"
+  },
+  {
+    "collection": "page_configs",
+    "id": 1,
+    "field": "page_subtitle",
+    "before": "全流程高性能无氟面料产品，覆盖都市生活、户外生活、专业运动、特种防护等全场景",
+    "after": "按系列了解面料型号、功能特点与适用方向，找到适合项目的材料。"
+  },
+  {
+    "collection": "page_configs",
+    "id": 2,
+    "field": "hero_background",
+    "before": "/uploads/1783959932963-982327398.jpg",
+    "after": "/visuals/hero-applications-editorial-v3.webp"
+  },
+  {
+    "collection": "page_configs",
+    "id": 2,
+    "field": "page_subtitle",
+    "before": "查看港翼面料在成衣、鞋履与配件中的应用，以及材料与产品之间的对应关系。",
+    "after": "从日常穿着到专业装备，为服装、鞋材、箱包与柔性防护选择合适的面料。"
+  },
+  {
+    "collection": "page_configs",
+    "id": 2,
+    "field": "page_tag",
+    "before": "END-USE APPLICATIONS",
+    "after": ""
+  },
+  {
+    "collection": "page_configs",
+    "id": 2,
+    "field": "page_title",
+    "before": "产品应用",
+    "after": "面料应用"
+  },
+  {
+    "collection": "page_configs",
+    "id": 2,
+    "field": "rail_end_card_cta_href",
+    "before": "/contact",
+    "after": "/contact?source=applications"
+  },
+  {
+    "collection": "page_configs",
+    "id": 2,
+    "field": "rail_end_card_cta_label",
+    "before": "",
+    "after": "咨询选材"
+  },
+  {
+    "collection": "page_configs",
+    "id": 2,
+    "field": "rail_end_card_description",
+    "before": "围绕任务环境、材料需求与产品形态，提供应用建议与合作支持。",
+    "after": "告诉我们使用场景、功能要求和期望的手感，一起确定合适的面料。"
+  },
+  {
+    "collection": "page_configs",
+    "id": 2,
+    "field": "rail_end_card_title",
+    "before": "应用合作咨询",
+    "after": "从你的产品需求开始"
+  },
+  {
+    "collection": "page_configs",
+    "id": 4,
+    "field": "hero_background",
+    "before": "/uploads/1783877676932-234722141.jpg",
+    "after": "/visuals/hero-support-editorial-v2.webp"
+  },
+  {
+    "collection": "page_configs",
+    "id": 4,
+    "field": "page_subtitle",
+    "before": "围绕材料选用、数字打样与使用养护，为产品开发和长期使用提供支持。",
+    "after": "材料选用、数字打样与使用养护，提供产品开发和使用所需的支持。"
+  },
+  {
+    "collection": "page_configs",
+    "id": 5,
+    "field": "hero_background",
+    "before": "/uploads/1783926241172-138183362.jpg",
+    "after": "/visuals/hero-contact-editorial-v2.webp"
+  },
+  {
+    "collection": "page_configs",
+    "id": 5,
+    "field": "page_tag",
+    "before": "CONTACT US",
+    "after": ""
+  },
+  {
+    "collection": "equipment_products",
+    "id": 6,
+    "field": "card_summary",
+    "before": "",
+    "after": "用于徒步、登山等户外活动的外层服装。"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 6,
+    "field": "cta_href",
+    "after": "/contact"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 6,
+    "field": "cta_label",
+    "after": "咨询这款产品"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 6,
+    "field": "detail_body",
+    "after": "围绕户外活动中的防水、透湿与耐候需求进行选材。"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 6,
+    "field": "detail_title",
+    "after": "户外风雨防护"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 6,
+    "field": "development_body",
+    "after": "如需了解样品或讨论开发，请说明使用场景与关注的功能。"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 6,
+    "field": "development_title",
+    "after": "开发咨询"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 6,
+    "field": "entry_type",
+    "after": "sample"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 6,
+    "field": "feature_icons",
+    "after": [
+      "cloud-rain",
+      "waves",
+      "shield-check"
+    ]
+  },
+  {
+    "collection": "equipment_products",
+    "id": 6,
+    "field": "materials_title",
+    "after": "所用面料"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 1,
+    "field": "card_summary",
+    "before": "防风、防水、透湿",
+    "after": "适合通勤与日常出行的轻便外套。"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 1,
+    "field": "cta_href",
+    "after": "/contact"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 1,
+    "field": "cta_label",
+    "after": "咨询这款产品"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 1,
+    "field": "detail_body",
+    "after": "翻领与前中拉链，配合简洁的口袋设计，适合城市通勤穿着。"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 1,
+    "field": "detail_title",
+    "after": "日常穿着，简洁利落"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 1,
+    "field": "development_body",
+    "after": "如需了解样品或讨论开发，请说明使用场景与关注的功能。"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 1,
+    "field": "development_title",
+    "after": "开发咨询"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 1,
+    "field": "entry_type",
+    "after": "sample"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 1,
+    "field": "feature_icons",
+    "after": [
+      "feather",
+      "wind",
+      "waves"
+    ]
+  },
+  {
+    "collection": "equipment_products",
+    "id": 1,
+    "field": "gallery",
+    "after": [
+      {
+        "image": "/uploads/1784533665626-546518643.png",
+        "alt": "男士通勤夹克产品图"
+      }
+    ]
+  },
+  {
+    "collection": "equipment_products",
+    "id": 1,
+    "field": "hero_image",
+    "after": "/uploads/1784533665626-546518643.png"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 1,
+    "field": "materials_title",
+    "after": "所用面料"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 3,
+    "field": "card_summary",
+    "before": "",
+    "after": "兼顾日常穿着与周末户外的外层服装。"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 3,
+    "field": "cta_href",
+    "after": "/contact"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 3,
+    "field": "cta_label",
+    "after": "咨询这款产品"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 3,
+    "field": "detail_body",
+    "after": "围绕防风、防水与透湿需求选材，结合实际样品比较手感与穿着表现。"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 3,
+    "field": "detail_title",
+    "after": "从日常出行到轻户外"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 3,
+    "field": "development_body",
+    "after": "如需了解样品或讨论开发，请说明使用场景与关注的功能。"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 3,
+    "field": "development_title",
+    "after": "开发咨询"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 3,
+    "field": "entry_type",
+    "after": "sample"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 3,
+    "field": "feature_icons",
+    "after": [
+      "wind",
+      "cloud-rain",
+      "waves"
+    ]
+  },
+  {
+    "collection": "equipment_products",
+    "id": 3,
+    "field": "materials_title",
+    "after": "所用面料"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 8,
+    "field": "card_summary",
+    "before": "",
+    "after": "面向垂钓等水边活动的披风类产品。"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 8,
+    "field": "cta_href",
+    "after": "/contact"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 8,
+    "field": "cta_label",
+    "after": "咨询这款产品"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 8,
+    "field": "detail_body",
+    "after": "以披风形式满足水边活动的遮护需要，可结合使用环境讨论用料和结构。"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 8,
+    "field": "detail_title",
+    "after": "水边活动的外层遮护"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 8,
+    "field": "development_body",
+    "after": "如需了解样品或讨论开发，请说明使用场景与关注的功能。"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 8,
+    "field": "development_title",
+    "after": "开发咨询"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 8,
+    "field": "entry_type",
+    "after": "sample"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 8,
+    "field": "feature_icons",
+    "after": [
+      "none",
+      "cloud-rain",
+      "waves"
+    ]
+  },
+  {
+    "collection": "equipment_products",
+    "id": 8,
+    "field": "materials_title",
+    "after": "所用面料"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 2,
+    "field": "card_summary",
+    "before": "",
+    "after": "面向日常出行与轻户外的防晒服装。"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 2,
+    "field": "cta_href",
+    "after": "/contact"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 2,
+    "field": "cta_label",
+    "after": "咨询这款产品"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 2,
+    "field": "detail_body",
+    "after": "围绕轻便、透气与穿着舒适选材，关联 RAYO 30 防晒导湿面料。"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 2,
+    "field": "detail_title",
+    "after": "日常防晒穿着"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 2,
+    "field": "development_body",
+    "after": "如需了解样品或讨论开发，请说明使用场景与关注的功能。"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 2,
+    "field": "development_title",
+    "after": "开发咨询"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 2,
+    "field": "entry_type",
+    "after": "sample"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 2,
+    "field": "feature_icons",
+    "after": [
+      "feather",
+      "wind",
+      "waves"
+    ]
+  },
+  {
+    "collection": "equipment_products",
+    "id": 2,
+    "field": "materials_title",
+    "after": "所用面料"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 7,
+    "field": "card_summary",
+    "before": "",
+    "after": "面向滑雪活动的外层防护服装。"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 7,
+    "field": "cta_href",
+    "after": "/contact"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 7,
+    "field": "cta_label",
+    "after": "咨询这款产品"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 7,
+    "field": "detail_body",
+    "after": "选材关注防水、透湿与耐磨表现，并结合活动需求讨论成衣结构。"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 7,
+    "field": "detail_title",
+    "after": "雪地活动的外层防护"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 7,
+    "field": "development_body",
+    "after": "如需了解样品或讨论开发，请说明使用场景与关注的功能。"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 7,
+    "field": "development_title",
+    "after": "开发咨询"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 7,
+    "field": "entry_type",
+    "after": "sample"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 7,
+    "field": "feature_icons",
+    "after": [
+      "cloud-rain",
+      "waves",
+      "shield-check"
+    ]
+  },
+  {
+    "collection": "equipment_products",
+    "id": 7,
+    "field": "materials_title",
+    "after": "所用面料"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 4,
+    "field": "card_summary",
+    "before": "",
+    "after": "面向日常穿着的功能性衬衫。"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 4,
+    "field": "cta_href",
+    "after": "/contact"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 4,
+    "field": "cta_label",
+    "after": "咨询这款产品"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 4,
+    "field": "detail_body",
+    "after": "选材关注亲肤、防晒与吸湿表现，关联 RAYO 10 面料。"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 4,
+    "field": "detail_title",
+    "after": "贴近日常穿着"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 4,
+    "field": "development_body",
+    "after": "如需了解样品或讨论开发，请说明使用场景与关注的功能。"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 4,
+    "field": "development_title",
+    "after": "开发咨询"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 4,
+    "field": "entry_type",
+    "after": "sample"
+  },
+  {
+    "collection": "equipment_products",
+    "id": 4,
+    "field": "feature_icons",
+    "after": [
+      "feather",
+      "sun",
+      "waves"
+    ]
+  },
+  {
+    "collection": "equipment_products",
+    "id": 4,
+    "field": "materials_title",
+    "after": "所用面料"
+  },
+  {
+    "collection": "equipment_products",
+    "add": {
+      "name": "户外服装",
+      "image": "/visuals/application-outdoor-scene-v2.webp",
+      "image_alt": "雾中山野徒步的户外服装使用场景",
+      "image_caption": "",
+      "image_fit": "cover",
+      "case_label": "",
+      "card_summary": "用于冲锋衣、夹克、滑雪服、水域披风等户外服装。围绕风雨、运动出汗和反复穿着，兼顾防护、排湿与耐用表现。",
+      "feature_icons": [
+        "cloud-rain",
+        "waves",
+        "shield-check"
+      ],
+      "features_label": "",
+      "detail_title": "",
+      "detail_body": "专业户外优先考虑 OTTER；更侧重日常穿着与柔软手感的款式，也可从 RAYO 选材。",
+      "series_label": "",
+      "cta_label": "咨询这类应用",
+      "id": 9,
+      "order_index": 0,
+      "features": "[\"风雨防护\",\"运动排湿\",\"耐磨耐用\"]",
+      "related_series_ids": [
+        1,
+        3
+      ],
+      "related_sku_ids": [],
+      "material_platforms": [],
+      "status": "active",
+      "visibility": "public",
+      "market_visibility": {},
+      "cta_href": "/contact?application=%E6%88%B7%E5%A4%96%E6%9C%8D%E8%A3%85&source=applications",
+      "image_position": "50% 50%",
+      "entry_type": "application",
+      "sample_ids": [
+        6,
+        7,
+        8
+      ],
+      "scene_images": [
+        {
+          "image": "/visuals/application-scene-detail-v2.webp",
+          "alt": "雨中冲锋衣肩部与袖口近景"
+        },
+        {
+          "image": "/visuals/application-scene-ski-v1.webp",
+          "alt": "穿着防护外层在雪坡滑雪"
+        },
+        {
+          "image": "/visuals/application-scene-cape-v3.webp",
+          "alt": "水上活动结束后穿着防风雨披风"
+        },
+        {
+          "image": "/visuals/application-scene-rain-v1.webp",
+          "alt": "雨中林间徒步的服装与背包"
+        },
+        {
+          "image": "/visuals/application-scene-alpine-v1.webp",
+          "alt": "雪山攀登中的冲锋衣近景"
+        },
+        {
+          "image": "/visuals/application-scene-cliff-v1.webp",
+          "alt": "强风中海岸悬崖旁的户外徒步场景"
+        }
+      ]
+    }
+  },
+  {
+    "collection": "equipment_products",
+    "add": {
+      "name": "轻户外服装",
+      "image": "/visuals/application-light-urban-v3.webp",
+      "image_alt": "城市街区中穿着浅色轻外套的日常出行场景",
+      "image_caption": "",
+      "image_fit": "cover",
+      "case_label": "",
+      "card_summary": "用于轻户外夹克、防晒衣、垂钓披风等，适合日常出行、周末徒步与长时间户外活动。在所需防护的基础上，兼顾排湿、柔软手感与穿着舒适。",
+      "feature_icons": [
+        "cloud-sun",
+        "waves",
+        "feather",
+        "shield-check"
+      ],
+      "features_label": "",
+      "detail_title": "",
+      "detail_body": "以 RAYO 为主要选材方向；对风雨防护或持续使用有更高要求的款式，可结合 OTTER 开发。",
+      "series_label": "",
+      "cta_label": "咨询这类应用",
+      "id": 10,
+      "order_index": 1,
+      "features": "[\"日常防护\",\"透气排湿\",\"柔软亲肤\",\"日常耐用\"]",
+      "related_series_ids": [
+        3,
+        1
+      ],
+      "related_sku_ids": [],
+      "material_platforms": [],
+      "status": "active",
+      "visibility": "public",
+      "market_visibility": {},
+      "cta_href": "/contact?application=%E8%BD%BB%E6%88%B7%E5%A4%96%E6%9C%8D%E8%A3%85&source=applications",
+      "image_position": "50% 50%",
+      "entry_type": "application",
+      "sample_ids": [
+        1,
+        3,
+        2,
+        4
+      ],
+      "scene_images": [
+        {
+          "image": "/visuals/application-scene-business-v2.webp",
+          "alt": "行政夹克的领口与衣身近景"
+        },
+        {
+          "image": "/visuals/application-scene-cycling-v1.webp",
+          "alt": "穿防晒服进行城市骑行"
+        },
+        {
+          "image": "/visuals/application-scene-fishing-v1.webp",
+          "alt": "穿轻薄钓鱼冲锋衣坐在水边垂钓"
+        },
+        {
+          "image": "/visuals/application-scene-commute-v1.webp",
+          "alt": "日常通勤外套与随身小包近景"
+        },
+        {
+          "image": "/visuals/application-scene-running-v1.webp",
+          "alt": "城市滨水步道跑步时的轻薄外套"
+        },
+        {
+          "image": "/visuals/application-scene-motorcycle-v1.webp",
+          "alt": "穿轻薄通勤夹克骑摩托车的近景"
+        }
+      ]
+    }
+  },
+  {
+    "collection": "equipment_products",
+    "add": {
+      "name": "柔性防护服装与配件",
+      "image": "/visuals/application-flexible-protection-v1.webp",
+      "image_alt": "柔性防护背心、手套与材料样片的应用示意",
+      "image_caption": "",
+      "image_fit": "cover",
+      "case_label": "",
+      "card_summary": "面向防割、防刺需求，为防护服装、手套及需要加强防护的部位开发柔性材料。结合使用部位与活动要求，选择材料和复合结构。",
+      "feature_icons": [
+        "shield",
+        "layers",
+        "feather"
+      ],
+      "features_label": "",
+      "detail_title": "围绕具体部位开发",
+      "detail_body": "整片防护与局部加强，对材料厚度、柔软度和结构的要求不同。按具体样品与使用条件开展测试。",
+      "series_label": "",
+      "cta_label": "咨询这类应用",
+      "id": 11,
+      "order_index": 4,
+      "features": "[\"防割防刺\",\"柔性结构\",\"灵活活动\"]",
+      "related_series_ids": [
+        2
+      ],
+      "related_sku_ids": [],
+      "material_platforms": [],
+      "status": "active",
+      "visibility": "public",
+      "market_visibility": {},
+      "cta_href": "/contact?application=%E6%9F%94%E6%80%A7%E9%98%B2%E6%8A%A4%E6%9C%8D%E8%A3%85%E4%B8%8E%E9%85%8D%E4%BB%B6&source=applications",
+      "image_position": "50% 50%"
+    }
+  },
+  {
+    "collection": "equipment_products",
+    "add": {
+      "name": "户外鞋材",
+      "image": "/visuals/application-footwear-scene-v2.webp",
+      "image_alt": "雨后林间步道上的户外鞋穿着近景",
+      "image_caption": "",
+      "case_label": "",
+      "image_fit": "cover",
+      "image_position": "50% 50%",
+      "card_summary": "用于徒步鞋、户外休闲鞋等鞋面与内衬材料。根据穿着环境和鞋体结构，考虑防水透湿、反复弯折与摩擦，以及贴合后的支撑和脚感。",
+      "feature_icons": [
+        "droplets",
+        "shield-check",
+        "layers"
+      ],
+      "features_label": "",
+      "detail_title": "",
+      "detail_body": "以 OTTER 为选材方向，结合鞋面、内衬和复合结构开发。面料性能与成鞋表现分别验证。",
+      "series_label": "",
+      "cta_label": "咨询这类应用",
+      "id": 12,
+      "order_index": 2,
+      "features": "[\"防水透湿\",\"耐折耐磨\",\"贴合支撑\"]",
+      "related_series_ids": [
+        1
+      ],
+      "related_sku_ids": [],
+      "material_platforms": [],
+      "status": "active",
+      "visibility": "public",
+      "market_visibility": {},
+      "cta_href": "/contact?application=%E6%88%B7%E5%A4%96%E9%9E%8B%E6%9D%90&source=applications"
+    }
+  },
+  {
+    "collection": "equipment_products",
+    "add": {
+      "name": "软质箱包",
+      "image": "/visuals/application-bags-scene-v2.webp",
+      "image_alt": "旅途中背包与软质旅行箱的携行场景",
+      "image_caption": "",
+      "case_label": "",
+      "image_fit": "cover",
+      "image_position": "50% 50%",
+      "card_summary": "用于背包、旅行袋与软质旅行箱。针对装载、搬运和户外使用中的摩擦、雨水及局部防护需求，选择外层面料与加强结构。",
+      "feature_icons": [
+        "shield-check",
+        "droplets",
+        "scissors"
+      ],
+      "features_label": "",
+      "detail_title": "",
+      "detail_body": "OTTER 用于外层防护，KAIS 用于需要防割或局部加强的部位。可按包体、底部和受力位置分别选材。",
+      "series_label": "",
+      "cta_label": "咨询这类应用",
+      "id": 13,
+      "order_index": 3,
+      "features": "[\"耐磨耐用\",\"防泼防潮\",\"防割加强\"]",
+      "related_series_ids": [
+        1,
+        2
+      ],
+      "related_sku_ids": [],
+      "material_platforms": [],
+      "status": "active",
+      "visibility": "public",
+      "market_visibility": {},
+      "cta_href": "/contact?application=%E8%BD%AF%E8%B4%A8%E7%AE%B1%E5%8C%85&source=applications"
+    }
+  },
+  {
+    "collection": "translations",
+    "field": "en",
+    "before": {
+      "专业户外": "Technical outdoor",
+      "轻户外": "Everyday outdoor",
+      "专业防护": "Specialist protection",
+      "用于徒步、登山等专业户外服装与装备，注重风雨防护、运动排湿和反复使用中的耐久性。": "For technical outdoor clothing and equipment used in hiking and mountaineering, with a focus on weather protection, moisture transfer during activity and durability through repeated use.",
+      "日常出行、垂钓或周末户外，兼顾所需的防护、排湿和耐用性，更注重柔软手感与穿着舒适。": "For everyday outings, fishing and weekends outdoors, balancing protection, moisture management and durability with a greater emphasis on softness and wearing comfort.",
+      "面向防割、防刺需求开发柔性材料。用于防护服装、手套及需要加强防护的部位，兼顾防护与活动需要。": "Flexible materials developed for cut and puncture protection in protective clothing, gloves and reinforced areas, balancing protection with freedom of movement.",
+      "风雨防护、高效透湿，兼顾运动舒适与耐磨耐用。": "Weather protection and efficient moisture transfer, with comfort during activity and resistance to wear.",
+      "兼顾日常防护、透气排湿与耐用，更注重柔软手感和穿着舒适。": "Everyday protection, breathability and durability, with an emphasis on softness and wearing comfort.",
+      "风雨防护": "Weather protection",
+      "高效透湿": "Efficient moisture transfer",
+      "运动舒适": "Active comfort",
+      "耐磨耐用": "Resistance to wear",
+      "日常防护": "Everyday protection",
+      "透气排湿": "Breathability and moisture management",
+      "柔软亲肤": "Soft next to skin",
+      "日常耐用": "Everyday durability",
+      "防割防刺": "Cut and puncture protection",
+      "柔性穿着": "Flexible comfort",
+      "系列特点": "Series features",
+      "查看面料": "Explore fabrics",
+      "咨询选材": "Discuss material selection"
+    },
+    "after": {
+      "专业户外": "Technical outdoor",
+      "轻户外": "Everyday outdoor",
+      "专业防护": "Specialist protection",
+      "用于徒步、登山等专业户外服装与装备，注重风雨防护、运动排湿和反复使用中的耐久性。": "For technical outdoor clothing and equipment used in hiking and mountaineering, with a focus on weather protection, moisture transfer during activity and durability through repeated use.",
+      "日常出行、垂钓或周末户外，兼顾所需的防护、排湿和耐用性，更注重柔软手感与穿着舒适。": "For everyday outings, fishing and weekends outdoors, balancing protection, moisture management and durability with a greater emphasis on softness and wearing comfort.",
+      "面向防割、防刺需求开发柔性材料。用于防护服装、手套及需要加强防护的部位，兼顾防护与活动需要。": "Flexible materials developed for cut and puncture protection in protective clothing, gloves and reinforced areas, balancing protection with freedom of movement.",
+      "风雨防护、高效透湿，兼顾运动舒适与耐磨耐用。": "Weather protection and efficient moisture transfer, with comfort during activity and resistance to wear.",
+      "兼顾日常防护、透气排湿与耐用，更注重柔软手感和穿着舒适。": "Everyday protection, breathability and durability, with an emphasis on softness and wearing comfort.",
+      "风雨防护": "Weather protection",
+      "高效透湿": "Efficient moisture transfer",
+      "运动舒适": "Active comfort",
+      "耐磨耐用": "Abrasion resistance",
+      "日常防护": "Everyday protection",
+      "透气排湿": "Breathability and moisture management",
+      "柔软亲肤": "Soft comfort",
+      "日常耐用": "Everyday durability",
+      "防割防刺": "Cut and puncture protection",
+      "柔性穿着": "Flexible comfort",
+      "系列特点": "Series features",
+      "查看面料": "Explore fabrics",
+      "咨询选材": "Discuss material selection",
+      "为户外服装、轻户外穿着与柔性防护产品选择面料。": "Fabric choices for outdoor clothing, everyday outdoor wear and flexible protection.",
+      "从你的产品需求开始": "Start with your product",
+      "告诉我们使用场景、功能要求和期望的手感，一起确定合适的面料。": "Tell us where your product will be used, the functions it needs and the feel you want. We can help identify a suitable fabric.",
+      "外套与冲锋衣": "Jackets & shells",
+      "防晒衣与垂钓披风": "Sunwear & fishing capes",
+      "柔性防护服装与配件": "Flexible protective wear",
+      "户外服装": "Outdoor clothing",
+      "轻户外穿着": "EVERYDAY OUTDOOR WEAR",
+      "应用示意": "Application illustration",
+      "AI 生成 · 应用示意": "AI-generated application illustration",
+      "选材重点": "MATERIAL PRIORITIES",
+      "相关系列": "RELATED SERIES",
+      "咨询这类应用": "Discuss this application",
+      "从徒步、登山到日常出行，外层服装需要应对风雨，也要让运动产生的湿气及时排出。根据产品定位，调整防护、排湿、耐用与穿着感的侧重。": "From hiking and mountaineering to everyday outings, outerwear needs weather protection and moisture transfer during activity. Balance protection, moisture management, durability and feel around the intended use.",
+      "运动排湿": "Moisture transfer during activity",
+      "同样是外套，选材可以不同": "Different jackets, different priorities",
+      "专业户外更看重复杂环境中的持续表现；轻户外则在满足所需功能的同时，更注重柔软手感和日常穿着舒适。": "Technical outdoor products prioritise sustained performance in demanding conditions. Everyday outdoor products meet their functional needs with greater emphasis on softness and wearing comfort.",
+      "日常出行、周末户外或长时间垂钓，面料既要满足防晒与排湿需要，也要柔软、易于活动，适合长时间穿着。": "For daily outings, weekends outdoors or long hours fishing, fabrics need sun protection and moisture management alongside softness, ease of movement and lasting wearing comfort.",
+      "日晒防护": "Sun protection",
+      "排湿舒适": "Moisture management",
+      "柔软手感": "Soft feel",
+      "从披风的手感要求开始": "Starting with the feel of a cape",
+      "围绕客户提供的防晒披风，港翼已完成复合面料打样。在接近目标手感的基础上，进一步讨论所需的功能表现。": "GONYIK has developed laminated fabric samples around the feel of a customer-supplied sun cape. With the target feel as a starting point, the next discussion is about the functions required.",
+      "面向防割、防刺需求，为防护服装、手套及需要加强防护的部位开发柔性材料。结合使用部位与活动要求，选择材料和复合结构。": "Flexible materials developed for cut and puncture protection in clothing, gloves and reinforced areas. Material and laminate choices depend on the protected area and movement requirements.",
+      "柔性结构": "Flexible construction",
+      "活动需要": "Freedom of movement",
+      "围绕具体部位开发": "Developed for the area being protected",
+      "整片防护与局部加强，对材料厚度、柔软度和结构的要求不同。按具体样品与使用条件开展测试。": "Full-area protection and local reinforcement require different thicknesses, flexibility and constructions. Testing is based on specific samples and intended conditions.",
+      "风雨环境中的户外外套穿着示意": "Illustration of an outdoor jacket in wind and rain",
+      "湖边穿着浅色披风的垂钓场景示意": "Illustration of a light-colored cape worn while fishing by a lake",
+      "柔性防护背心、手套与材料样片的应用示意": "Application illustration of a flexible protective vest, gloves and fabric swatches",
+      "面向户外服装、鞋材、软质箱包与柔性防护的面料应用。": "Fabric applications for outdoor clothing, footwear, soft bags and luggage, and flexible protection.",
+      "深蓝色户外冲锋衣与面料样片": "Navy outdoor shell jacket and fabric swatches",
+      "用于冲锋衣、夹克、滑雪服、水域披风等户外服装。围绕风雨、运动出汗和反复穿着，兼顾防护、排湿与耐用表现。": "For shell jackets, outdoor jackets, skiwear and waterside capes. Balance weather protection, moisture transfer and durability for active, repeated outdoor use.",
+      "专业户外优先考虑 OTTER；更侧重日常穿着与柔软手感的款式，也可从 RAYO 选材。": "Consider OTTER first for technical outdoor use; RAYO also offers options for styles that place greater emphasis on everyday comfort and a soft feel.",
+      "轻户外服装": "Everyday outdoor clothing",
+      "浅灰绿色轻户外夹克与浅色防晒披风": "Light sage outdoor jacket and an ivory sun cape",
+      "用于轻户外夹克、防晒衣、垂钓披风等，适合日常出行、周末徒步与长时间户外活动。在所需防护的基础上，兼顾排湿、柔软手感与穿着舒适。": "For everyday outdoor jackets, sunwear and fishing capes, from daily outings to weekend walks and long hours outdoors. Combine the protection needed with moisture management, softness and wearing comfort.",
+      "以 RAYO 为主要选材方向；对风雨防护或持续使用有更高要求的款式，可结合 OTTER 开发。": "Start with RAYO; consider OTTER for styles with greater weather-protection demands or more sustained use.",
+      "户外鞋材": "Outdoor footwear materials",
+      "织物鞋面的户外鞋与鞋材样片": "Outdoor shoes with textile uppers and a material swatch",
+      "用于徒步鞋、户外休闲鞋等鞋面与内衬材料。根据穿着环境和鞋体结构，考虑防水透湿、反复弯折与摩擦，以及贴合后的支撑和脚感。": "For textile uppers and linings in hiking and outdoor casual footwear. Consider waterproof breathability, repeated flexing, abrasion, support and comfort around the intended conditions and shoe construction.",
+      "防水透湿": "Waterproof breathability",
+      "耐折耐磨": "Flex and abrasion resistance",
+      "贴合支撑": "Bonded support",
+      "以 OTTER 为选材方向，结合鞋面、内衬和复合结构开发。面料性能与成鞋表现分别验证。": "Develop upper, lining and laminate combinations with OTTER. Validate material performance separately from finished-footwear performance.",
+      "软质箱包": "Soft bags & luggage",
+      "织物背包与软质旅行箱": "Woven textile backpack and soft-sided travel case",
+      "用于背包、旅行袋与软质旅行箱。针对装载、搬运和户外使用中的摩擦、雨水及局部防护需求，选择外层面料与加强结构。": "For backpacks, travel bags and soft-sided luggage. Select outer fabrics and reinforcements for abrasion, rain exposure and local protection during packing, handling and outdoor use.",
+      "防泼防潮": "Water and moisture resistance",
+      "防割加强": "Cut-resistant reinforcement",
+      "OTTER 用于外层防护，KAIS 用于需要防割或局部加强的部位。可按包体、底部和受力位置分别选材。": "Use OTTER for outer protection and KAIS for cut-resistant or locally reinforced areas. Select materials separately for the body, base and load-bearing zones.",
+      "灵活活动": "Freedom of movement",
+      "雾中山野徒步的户外服装使用场景": "Outdoor clothing worn on a misty mountain trail",
+      "雨后林间步道上的户外鞋穿着近景": "Outdoor footwear on a damp woodland trail",
+      "旅途中背包与软质旅行箱的携行场景": "Backpack and soft-sided luggage in use while travelling",
+      "城市街区中穿着浅色轻外套的日常出行场景": "Everyday city wear in a light jacket on a tree-lined street",
+      "面料应用": "Fabric Applications",
+      "正在加载面料应用": "Loading fabric applications",
+      "从日常穿着到专业装备，为服装、鞋材、箱包与柔性防护选择合适的面料。": "Materials for everyday clothing and technical equipment, from apparel and footwear to bags and flexible protection.",
+      "材料选用、数字打样与使用养护，提供产品开发和使用所需的支持。": "Support for material selection, digital sampling and care throughout product development and use.",
+      "从膜与纤维到复合面料，结合供应链和测试能力，支持产品开发。": "Membranes, fibers and laminated fabrics, backed by supply chain and testing capabilities for product development."
+    }
+  },
+  {
+    "collection": "equipment_product_categories",
+    "add": {
+      "product_id": 9,
+      "category_id": 1
+    }
+  },
+  {
+    "collection": "equipment_product_categories",
+    "add": {
+      "product_id": 10,
+      "category_id": 1
+    }
+  },
+  {
+    "collection": "equipment_product_categories",
+    "add": {
+      "product_id": 11,
+      "category_id": 1
+    }
+  },
+  {
+    "collection": "equipment_product_categories",
+    "add": {
+      "product_id": 12,
+      "category_id": 1
+    }
+  },
+  {
+    "collection": "equipment_product_categories",
+    "add": {
+      "product_id": 13,
+      "category_id": 1
+    }
+  }
+]

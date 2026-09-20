@@ -49,8 +49,8 @@ export default function ServicesLayout() {
   if (status === 'error') return <PageShell><div role="alert" className="mx-auto w-full max-w-[1760px] px-7 py-24 md:px-12 lg:px-20"><div className="border-l-2 border-[#69B2C1] pl-5"><p className="text-[16px] text-primary">专业支持内容加载失败。</p><button type="button" onClick={load} className="mt-4 border-b border-primary text-[14px] text-primary">重新加载</button></div></div></PageShell>
 
   return (
-    <PageShell>
-      <PageHero title={page?.page_title || '专业支持'} subtitle={page?.page_subtitle} image={page?.hero_background} imageAlt="功能材料护理与数字面料服务" />
+    <PageShell className="services-page">
+      <PageHero variant="editorial" title={page?.page_title || ''} subtitle={page?.page_subtitle} image={page?.hero_background} />
       {navigation.length > 0 && <CatalogSelectorBar
         label={t('专业支持')}
         groups={[{

@@ -3,13 +3,28 @@ import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { isDeepStrictEqual } from 'node:util'
 
-type Change = { collection: string; id?: number; field: string; before?: unknown; after?: unknown }
+type Change = { collection: string; id?: number; field?: string; before?: unknown; after?: unknown; add?: Record<string, any> }
 export function applyReviewedRpoContent(database: any, changes: Change[]) {
   const next = structuredClone(database)
   for (const change of changes) {
-    if (!['home_config', 'navigation', 'fluorine_sections', 'fabric_series', 'translations'].includes(change.collection)) throw Error('Unexpected content collection')
+    if (change.add) {
+      if (!['equipment_products','equipment_product_categories'].includes(change.collection)) throw Error('Unexpected content collection')
+      const row = change.add
+      const relation = change.collection === 'equipment_product_categories'
+      const keys = relation ? ['product_id','category_id'] : ['id']
+      if (keys.some(key => !Number.isSafeInteger(row[key]) || row[key] <= 0)) throw Error('Invalid new content identifier')
+      const existing = next[change.collection].find((item:any) => keys.every(key => item[key] === row[key]))
+      if (existing) {
+        if (!isDeepStrictEqual(existing,row)) throw Error(`Production content changed: ${change.collection}/${keys.map(key=>row[key]).join('/')}`)
+      } else {
+        if (relation && (!next.equipment_products.some((item:any)=>item.id===row.product_id) || !next.equipment_categories.some((item:any)=>item.id===row.category_id))) throw Error('Missing application relationship target')
+        next[change.collection].push(structuredClone(row))
+      }
+      continue
+    }
+    if (!['home_config', 'navigation', 'fluorine_sections', 'fabric_series', 'fabric_sku', 'page_configs', 'equipment_products', 'translations'].includes(change.collection)) throw Error('Unexpected content collection')
     const target = change.id === undefined ? next[change.collection] : next[change.collection].find((row: any) => row.id === change.id)
-    if (!target || ['__proto__', 'prototype', 'constructor'].includes(change.field)) throw Error('Invalid content target')
+    if (!target || !change.field || ['__proto__', 'prototype', 'constructor'].includes(change.field)) throw Error('Invalid content target')
     if (isDeepStrictEqual(target[change.field], change.after)) continue
     if (!isDeepStrictEqual(target[change.field], change.before)) throw Error(`Production content changed: ${change.collection}/${change.id ?? ''}/${change.field}`)
     if (change.after === undefined) delete target[change.field]

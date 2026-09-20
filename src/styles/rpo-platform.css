@@ -7,15 +7,6 @@
 .rpo-hero-kicker { display:block; font-size:11px; letter-spacing:.19em; margin-bottom:24px; color:#a3bfcd; }
 .rpo-page .technology-feature-shade { background:linear-gradient(90deg,#041f38f5,#041f389c 49%,#041f3812); }
 .rpo-page .technology-feature-copy .rpo-text-link { color:#fff; border-color:#718998; margin-top:26px; }
-.rpo-page--rpo-material-platform .technology-feature-hero { min-height:clamp(480px,57svh,620px); }
-.rpo-nav { position:sticky; top:60px; z-index:40; background:rgb(255 255 255 / .98); border-bottom:1px solid var(--rpo-line); }
-.rpo-nav .rpo-container { display:flex; align-items:center; justify-content:space-between; gap:48px; }
-.rpo-nav .rpo-nav-brand { flex-shrink:0; font-size:15px; font-weight:650; letter-spacing:.04em; color:#0a2b43; border:0; }
-.rpo-nav nav { position:relative; display:flex; gap:clamp(20px,2.7vw,42px); overflow-x:auto; scrollbar-width:none; min-width:0; }
-.rpo-nav nav::-webkit-scrollbar { display:none; }
-.rpo-nav a { flex:0 0 auto; display:flex; align-items:center; min-height:72px; font-size:14px; color:#617381; border-bottom:2px solid transparent; padding-top:2px; white-space:nowrap; }
-.rpo-nav nav a[aria-current] { color:#092b43; border-color:#092b43; font-weight:600; }
-.rpo-nav a:hover { color:#33798a; }
 .rpo-page a:focus-visible,.rpo-page button:focus-visible,.rpo-page [role=tabpanel]:focus-visible { outline:2px solid #33798a; outline-offset:5px; }
 .rpo-section { padding-block:clamp(64px,6vw,104px); scroll-margin-top:156px; }
 .rpo-section--mist { background:#f2f5f6; }
@@ -88,9 +79,6 @@
 .rpo-hero-has-animation .technology-feature-copy p { max-width:38%; }
 @media (max-width:1100px) {
   .rpo-container { padding-inline:40px; }
-  .rpo-nav .rpo-container { gap:32px; }
-  .rpo-nav nav { gap:24px; }
-  .rpo-nav .rpo-nav-brand { font-size:13px; }
   .rpo-delivery-grid article { grid-template-columns:1fr; }
   .rpo-delivery-visual { min-height:220px; }
   .rpo-delivery-copy { padding:28px; }
@@ -109,10 +97,6 @@
   .rpo-page .technology-feature-copy p { font-size:17px; line-height:1.8; margin-top:22px; }
   .rpo-hero-kicker { font-size:10px; margin-bottom:20px; }
   .rpo-page .technology-feature-hero.has-image>img { object-position:65% center; }
-  .rpo-nav .rpo-container { display:block; padding-inline:0; }
-  .rpo-nav .rpo-nav-brand { min-height:40px; padding:8px 24px 0; font-size:11px; letter-spacing:.08em; }
-  .rpo-nav nav { padding-inline:24px; gap:26px; }
-  .rpo-nav nav a { min-height:48px; font-size:13px; }
   .rpo-section { padding-block:52px; scroll-margin-top:164px; }
   .rpo-intro { display:block; margin-bottom:30px; }
   .rpo-intro .rpo-copy { margin-top:18px; }

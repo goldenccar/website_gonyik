@@ -1,6 +1,7 @@
 import type { CSSProperties, ReactNode } from 'react'
 import { headingLanguageClass } from '@/utils/typography'
 import { InlineMarkup } from './MarkupParser'
+import '@/styles/page-hero.css'
 
 interface PageHeroProps {
   tag?: string
@@ -9,7 +10,7 @@ interface PageHeroProps {
   image?: string | null
   mobileImage?: string | null
   imageAlt?: string
-  variant?: 'home' | 'section'
+  variant?: 'home' | 'section' | 'editorial'
   className?: string
   children?: ReactNode
   scrollLabel?: string
@@ -19,6 +20,23 @@ interface PageHeroProps {
 export default function PageHero({ tag, title, subtitle, image, mobileImage, imageAlt = '', variant = 'section', className = '', children, scrollLabel, scrollTarget }: PageHeroProps) {
   const home = variant === 'home'
   const video = Boolean(image && /\.(mp4|webm|mov)(?:\?.*)?$/i.test(image))
+  if (variant === 'editorial') return (
+    <section className={`page-intro page-intro--${variant} ${className}`}>
+      <div className="page-intro-frame">
+        <div className="page-intro-copy">
+          <h1 className={headingLanguageClass(title)}><InlineMarkup text={title} /></h1>
+          {subtitle && <p><InlineMarkup text={subtitle} /></p>}
+          {children && <div className="page-intro-actions">{children}</div>}
+        </div>
+        {(image || mobileImage) && <div className="page-intro-media">
+          {video ? <video src={image || undefined} poster={mobileImage || undefined} autoPlay muted loop playsInline preload="metadata" aria-label={imageAlt} /> : <picture>
+            {mobileImage && <source media="(max-width: 639px)" srcSet={mobileImage} />}
+            <img src={image || mobileImage || ''} alt={imageAlt} fetchPriority="high" decoding="async" />
+          </picture>}
+        </div>}
+      </div>
+    </section>
+  )
   const height = home ? 'h-[100svh] min-h-[600px]' : 'min-h-[260px] lg:h-[300px]'
   const mediaClass = `absolute inset-0 -z-20 h-full w-full object-cover ${home ? 'motion-hero-media' : ''} ${home && !mobileImage ? 'object-[68%_center]' : 'object-center'} sm:object-center`
 

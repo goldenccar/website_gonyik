@@ -32,6 +32,7 @@ function navigationForMarket(market: SiteMarket) {
       mega_menu: (item.mega_menu || [])
         .map((group: any) => ({
           ...group,
+          image_url: group.image_source === 'page-hero' ? menuHeroImage(group.link || '') : group.image_url,
           items: (group.items || []).filter((link: any) => (
             pageVisible(pageKeyForLink(link.link), market) && technologyVisibleForLink(link.link, market)
           )),
@@ -41,6 +42,14 @@ function navigationForMarket(market: SiteMarket) {
           && (group.link || group.items.length > 0)
         )),
     }))
+}
+
+function menuHeroImage(link: string) {
+  const pathname = link.split(/[?#]/)[0]
+  if (pathname.startsWith('/pfas-free-innovation/')) {
+    return db.fluorine_sections.find(section => section.page_key === 'pfas-free-innovation' && section.section_key === pathname.split('/')[2])?.image_url || ''
+  }
+  return db.page_configs.find(page => page.page_key === pageKeyForLink(pathname))?.hero_background || ''
 }
 
 function sanitizeVisibilityMap(value: unknown, validMarketCodes: Set<string>) {
@@ -54,7 +63,7 @@ const NON_TRANSLATABLE_KEYS = new Set([
   'hero_background', 'hero_mobile_background', 'verification_image', 'url', 'link', 'href',
   'slug', 'sku_code', 'internal_code', 'email', 'phone', 'qrcode_url', 'logo_url', 'favicon_url',
   'status', 'visibility', 'role', 'platform', 'format', 'smtp_host', 'smtp_user', 'smtp_pass',
-  'certification_logos',
+  'certification_logos', 'image_source',
 ])
 
 function collectTranslatableStrings(value: unknown, output = new Set<string>(), key = ''): Set<string> {
@@ -521,6 +530,8 @@ router.put('/admin/navigation', authMiddleware, (req: AuthRequest, res) => {
           link: cleanText(group.link),
           description: cleanText(group.description),
           image_url: safeContentUrl(group.image_url),
+          layout: group.layout === 'feature' ? 'feature' : undefined,
+          image_source: group.image_source === 'page-hero' ? 'page-hero' : 'custom',
           order_index: groupIndex,
           items: (Array.isArray(group.items) ? group.items : [])
             .map((link: any, linkIndex: number) => ({
