@@ -10,11 +10,14 @@ import Modal from './components/Modal'
 import ResponsiveAdminList from './components/ResponsiveAdminList'
 import SaveCancelButtons from './components/SaveCancelButtons'
 import ServiceCollectionEditor from './components/ServiceCollectionEditor'
+import ServiceContentEditor from './components/ServiceContentEditor'
 
 export default function AdminServiceManager() {
   const [sections, setSections] = useState<ContentSection[]>([])
   const [activeModuleType, setActiveModuleType] = useState<ServiceModuleType>('material-care')
   const [sectionDraft, setSectionDraft] = useState<ContentSection | null>(null)
+  const [error, setError] = useState('')
+  const [saving, setSaving] = useState(false)
 
   const loadSections = async () => {
     const response = await api.get('/admin/content-sections/services')
@@ -34,15 +37,20 @@ export default function AdminServiceManager() {
   const saveSection = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     if (!sectionDraft) return
-    await api.put(`/admin/content-sections/services/${sectionDraft.id}`, {
-      nav_label: sectionDraft.nav_label,
-      title: sectionDraft.title,
-      subtitle: sectionDraft.subtitle,
-      content: sectionDraft.content,
-      status: sectionDraft.status || 'published',
-    })
-    await loadSections()
-    setSectionDraft(null)
+    setSaving(true)
+    setError('')
+    try {
+      await api.put(`/admin/content-sections/services/${sectionDraft.id}`, {
+        nav_label: sectionDraft.nav_label,
+        title: sectionDraft.title,
+        subtitle: sectionDraft.subtitle,
+        content: sectionDraft.content,
+        content_blocks: sectionDraft.content_blocks,
+        status: sectionDraft.status || 'published',
+      })
+      await loadSections()
+      setSectionDraft(null)
+    } catch { setError('保存失败，请重试。') } finally { setSaving(false) }
   }
 
   const moveModule = async (index: number, direction: -1 | 1) => {
@@ -60,7 +68,7 @@ export default function AdminServiceManager() {
       <section className="mb-8 bg-dark">
         <div className="border-b border-white/10 px-5 py-4">
           <h2 className="text-[15px] font-medium text-white">服务页面</h2>
-          <p className="mt-1 text-[12px] text-muted">三个页面共用服务 Hero；可调整导航顺序、前台名称和发布状态。联系我们保持独立页面。</p>
+          <p className="mt-1 text-[12px] text-muted">三个页面共用服务 Hero。编辑页面可维护说明、图解、图片、数字面料要点及咨询入口；下方维护护理步骤和问答分组。</p>
         </div>
         <ResponsiveAdminList items={sections} getKey={(section) => section.id} emptyLabel="暂无服务页面" renderTitle={(section) => section.nav_label || section.title} renderSubtitle={(section) => `${section.status === 'draft' ? '草稿' : '已发布'} · ${section.title}`} renderActions={(section) => {
           const index = sections.findIndex((item) => item.id === section.id)
@@ -91,7 +99,7 @@ export default function AdminServiceManager() {
       {activeSection && activeModuleType === 'digital-fabrics' && <ServiceCollectionEditor endpoint="digital-fabric-formats" kind="digital-format" itemLabel="软件格式" />}
 
       {sectionDraft && (
-        <Modal title="编辑服务页面" onClose={() => setSectionDraft(null)}>
+        <Modal title="编辑服务页面" onClose={() => setSectionDraft(null)} maxWidth="max-w-[1000px]">
           <form onSubmit={saveSection} className="space-y-4">
             <FormField label="导航名称" name="nav_label" required markup="inline" value={sectionDraft.nav_label || ''} onChange={(event) => setSectionDraft({ ...sectionDraft, nav_label: event.target.value })} />
             <FormField label="页面标题" name="title" required markup="inline" value={sectionDraft.title} onChange={(event) => setSectionDraft({ ...sectionDraft, title: event.target.value })} />
@@ -104,7 +112,9 @@ export default function AdminServiceManager() {
                 <option value="draft">草稿</option>
               </select>
             </label>
-            <SaveCancelButtons onCancel={() => setSectionDraft(null)} />
+            <ServiceContentEditor blocks={sectionDraft.content_blocks || []} onChange={content_blocks => setSectionDraft({ ...sectionDraft, content_blocks })} />
+            {error && <p role="alert" className="text-error">{error}</p>}
+            <SaveCancelButtons loading={saving} onCancel={() => setSectionDraft(null)} />
           </form>
         </Modal>
       )}

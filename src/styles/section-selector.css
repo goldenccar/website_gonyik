@@ -9,5 +9,5 @@
 .section-selector-item:hover{color:#08273b}
 .section-selector-overview{font-size:13px;font-weight:650;color:#08273b;flex-shrink:0;text-decoration:none}
 .section-selector a:focus-visible,.section-selector button:focus-visible{outline:2px solid #40869a;outline-offset:-4px}
-@media(max-width:680px){.section-selector-frame{padding-inline:24px;gap:24px}.section-selector-items{gap:24px}.section-selector-item{font-size:12px}.section-selector-overview{display:none}}
+@media(max-width:680px){.section-selector-frame{padding-inline:24px;gap:24px}.section-selector-items{gap:24px}.section-selector-item{font-size:12px;min-height:48px;max-width:190px;white-space:normal;line-height:1.45;padding-block:8px}.section-selector-items{--edge-left:0px;--edge-right:0px;mask-image:linear-gradient(to right,transparent,#000 var(--edge-left),#000 calc(100% - var(--edge-right)),transparent)}.section-selector-items[data-more-left=true]{--edge-left:12px}.section-selector-items[data-more-right=true]{--edge-right:12px}.section-selector-overview{display:none}}
 @media(prefers-reduced-motion:reduce){.section-selector-item{transition:none}}

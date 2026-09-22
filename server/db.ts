@@ -1,4 +1,5 @@
 import fs from 'fs'
+import { seedLocalizations } from './localization'
 import { applyHomepageReview } from './homepageReview'
 import path from 'path'
 import { DEFAULT_FABRIC_CAPABILITIES } from '../src/config/fabricCapabilities'
@@ -61,6 +62,8 @@ export interface Database {
   translations: Record<string, Record<string, string>>
   markets: any[]
   market_content_version?: number
+  language_menu_version?: number
+  localization_content_version?: number
 }
 
 const PFAS_SYSTEM_PAGE_COPY = {
@@ -2517,6 +2520,23 @@ export function initDatabase() {
     db.home_story_version = 4
     saveDb()
   }
+  if ((db.language_menu_version ?? 0) < 1) {
+    db.markets = (db.markets?.length ? db.markets : DEFAULT_SITE_MARKETS).map(market => ({ ...market }))
+    const traditional = db.markets.find(market => market.locale === 'zh-TW')
+    if (!traditional) db.markets.push({ ...DEFAULT_SITE_MARKETS[1] })
+    const labels: Record<string, string> = { 'zh-CN': '简体中文', 'zh-TW': '繁體中文', en: 'English' }
+    const order: Record<string, number> = { 'zh-CN': 0, 'zh-TW': 1, en: 2 }
+    db.markets.forEach(market => {
+      if (labels[market.locale]) {
+        market.label = labels[market.locale]
+        market.order_index = order[market.locale]
+      }
+    })
+    db.translations['zh-TW'] ||= {}
+    db.language_menu_version = 1
+    saveDb()
+  }
+  if (seedLocalizations(db)) saveDb()
   if (applyHomepageReview(db)) saveDb()
   initializing = false
   if (pendingSave || !fs.existsSync(DB_PATH)) fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2))

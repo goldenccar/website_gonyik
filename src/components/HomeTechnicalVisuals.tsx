@@ -1,6 +1,7 @@
 import { useEffect, useId, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowUpRight, ChevronLeft, ChevronRight } from 'lucide-react'
+import { ArrowUpRight } from 'lucide-react'
+import CarouselControls from './CarouselControls'
 import type { HomePlatformCard, HomeVerificationImage } from '@/types'
 import { useSiteLocale } from '@/i18n/SiteLocale'
 import MotionInView from './MotionInView'
@@ -276,6 +277,7 @@ function VerificationGallery({
     }
     return normalized
   }, [fallbackImage, images])
+  const { t } = useSiteLocale()
   const [activeIndex, setActiveIndex] = useState(0)
   const [pointerPaused, setPointerPaused] = useState(false)
   const [focusPaused, setFocusPaused] = useState(false)
@@ -328,7 +330,7 @@ function VerificationGallery({
         <img
           key={slide.id || `${slide.url}-${index}`}
           src={slide.url}
-          alt={index === activeIndex ? alt : ''}
+          alt={index === activeIndex ? t(alt) : ''}
           aria-hidden={index !== activeIndex}
           loading={index === 0 ? 'eager' : 'lazy'}
           decoding="async"
@@ -339,26 +341,9 @@ function VerificationGallery({
       ))}</div>
       {slides.length > 1 && (
         <div className="home-lab-controls">
-          <span className="sr-only" aria-live="polite">正在显示第 {activeIndex + 1} 张，共 {slides.length} 张</span>
+          <span className="sr-only" aria-live="polite">{t('图片 {current} / {total}').replace('{current}', String(activeIndex + 1)).replace('{total}', String(slides.length))}</span>
           <span aria-hidden="true" className="home-lab-counter caption-copy tabular-nums"><span>{String(activeIndex + 1).padStart(2, '0')}</span><span className="text-secondary">/ {String(slides.length).padStart(2, '0')}</span></span>
-          <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={() => selectSlide(activeIndex - 1)}
-            aria-label="上一张实验室图片"
-            className="home-lab-control"
-          >
-              <ChevronLeft aria-hidden="true" size={20} strokeWidth={1.5} />
-          </button>
-          <button
-            type="button"
-            onClick={() => selectSlide(activeIndex + 1)}
-            aria-label="下一张实验室图片"
-            className="home-lab-control"
-          >
-            <ChevronRight aria-hidden="true" size={20} strokeWidth={1.5} />
-          </button>
-          </div>
+          <CarouselControls previousLabel={t('上一张实验室图片')} nextLabel={t('下一张实验室图片')} onPrevious={() => selectSlide(activeIndex - 1)} onNext={() => selectSlide(activeIndex + 1)} />
         </div>
       )}
     </div>

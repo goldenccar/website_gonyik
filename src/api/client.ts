@@ -47,7 +47,7 @@ api.interceptors.response.use(
 
 export default api
 
-export const getPublicBootstrap = () => cachedGet('/bootstrap')
+export const getPublicBootstrap = (detectLanguage = false) => cachedGet('/bootstrap', detectLanguage ? { detect_language: '1' } : undefined)
 export const getAdminLocalizations = (locale: Exclude<SiteLocale, 'zh-CN'>) => api.get('/admin/localizations', { params: { locale } })
 export const updateLocalizations = (locale: Exclude<SiteLocale, 'zh-CN'>, translations: Record<string, string>) => api.put(`/admin/localizations/${locale}`, { translations })
 export const getAdminMarkets = () => api.get('/admin/markets')

@@ -1,6 +1,8 @@
+import { useSiteLocale } from '@/i18n/SiteLocale'
 import { useEffect, useRef } from 'react'
 
 export default function PageScrollProgress() {
+  const { t } = useSiteLocale()
   const rootRef = useRef<HTMLDivElement>(null)
   const barRef = useRef<HTMLSpanElement>(null)
 
@@ -26,5 +28,5 @@ export default function PageScrollProgress() {
     }
   }, [])
 
-  return <div ref={rootRef} role="progressbar" aria-label="页面阅读进度" aria-valuemin={0} aria-valuemax={100} aria-valuenow={0} className="pointer-events-none fixed bottom-0 right-0 top-[60px] z-40 w-px overflow-hidden bg-transparent opacity-0 transition-opacity duration-[var(--motion-instant)]"><span ref={barRef} className="block h-full w-full origin-top bg-[#69B2C1]" /></div>
+  return <div ref={rootRef} role="progressbar" aria-label={t('页面阅读进度')} aria-valuemin={0} aria-valuemax={100} aria-valuenow={0} className="pointer-events-none fixed bottom-0 right-0 top-[60px] z-40 w-px overflow-hidden bg-transparent opacity-0 transition-opacity duration-[var(--motion-instant)]"><span ref={barRef} className="block h-full w-full origin-top bg-[#69B2C1]" /></div>
 }

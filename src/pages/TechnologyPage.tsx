@@ -56,7 +56,7 @@ export default function TechnologyPage() {
   const section = previewSection?.section_key === technologyKey ? previewSection : sections.find(item => item.section_key === technologyKey)
   if (!definition) return <Navigate to={localePath(`${getTechnologyPagePath('rpo-material-platform')}${technologyKey === 'pfas-free-system' ? '#material-choice' : ''}`)} replace />
   if (status === 'loading' && !previewSection) return <PublicContentLoader label="正在加载材料科技内容" />
-  if (status === 'error' && !previewSection) return <PageShell><PageSection tone="white"><div role="alert"><p>材料科技内容加载失败。</p><button type="button" onClick={loadSections} className="mt-4 underline">重新加载</button></div></PageSection></PageShell>
+  if (status === 'error' && !previewSection) return <PageShell><PageSection tone="white"><div role="alert"><p>{t('材料科技内容加载失败。')}</p><button type="button" onClick={loadSections} className="mt-4 underline">{t('重新加载')}</button></div></PageSection></PageShell>
   if (!section) return <PageShell><PageSection><p>{t('该页面暂未开放。')}</p><Link to={localePath('/pfas-free-innovation')}>{t(RPO_LABELS.overview)}</Link></PageSection></PageShell>
   const effectiveSection = section
   const heroImage = section.image_url
@@ -76,7 +76,7 @@ export default function TechnologyPage() {
         </div></div>
       </div>
     </section>}
-    <CatalogSelectorBar label={t('材料科技')} overview={{label: sections.find(item => item.section_key === 'rpo-material-platform')?.nav_label || '', href:localePath(getTechnologyPagePath('rpo-material-platform'))}} groups={[{label:'',items:TECHNOLOGY_PAGES.filter(page => page.sectionKey !== 'rpo-material-platform' && (sections.some(item => item.section_key === page.sectionKey) || previewSection?.section_key === page.sectionKey)).map(page=>({key:page.sectionKey,label:t(sections.find(item=>item.section_key===page.sectionKey)?.nav_label || page.menuLabel),active:page.sectionKey===technologyKey,href:localePath(getTechnologyPagePath(page.sectionKey))}))}]} />
+    <CatalogSelectorBar label={t('材料科技')} overview={{label: t(sections.find(item => item.section_key === 'rpo-material-platform')?.nav_label || ''), href:localePath(getTechnologyPagePath('rpo-material-platform'))}} groups={[{label:'',items:TECHNOLOGY_PAGES.filter(page => page.sectionKey !== 'rpo-material-platform' && (sections.some(item => item.section_key === page.sectionKey) || previewSection?.section_key === page.sectionKey)).map(page=>({key:page.sectionKey,label:t(sections.find(item=>item.section_key===page.sectionKey)?.nav_label || page.menuLabel),active:page.sectionKey===technologyKey,href:localePath(getTechnologyPagePath(page.sectionKey))}))}]} />
     <RpoPlatformStory key={technologyKey} section={effectiveSection} />
   </PageShell>
 }

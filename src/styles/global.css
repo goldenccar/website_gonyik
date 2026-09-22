@@ -343,6 +343,20 @@
 .sku-back-applications { margin-top:32px; padding-top:24px; border-top:1px solid var(--color-border); }
 .sku-back-applications h4 { margin:0 0 10px; font-size:15px; font-weight:600; color:var(--color-primary); }
 .sku-inquiry { padding:18px 20px; background:#0c3045; color:white; border:0; }
+@media(max-width:639px) {
+  .fabric-catalog-grid { gap:20px; }
+  .sku-card .sku-card-media { aspect-ratio:2.4; }
+  .sku-card-content,.sku-flip-back { padding:20px; }
+  .sku-card h3 { font-size:23px; }
+  .sku-card-features { margin-top:14px; }
+  .sku-card-axes { gap:12px; margin-top:16px; }
+  .sku-card-cta { margin-top:18px; padding-top:14px; min-height:44px; }
+  .sku-return { width:44px; height:44px; }
+  .sku-back-copy { padding-top:24px; }
+  .sku-back-applications { margin-top:24px; padding-top:18px; }
+  .sku-inquiry { padding:14px 16px; }
+}
+@media(max-width:680px) { .fabric-series-section { scroll-margin-top:108px; } }
 @media(prefers-reduced-motion:reduce) { .sku-flip-face { transition:none; } }
 
 /* Homepage material diagrams */
@@ -1176,8 +1190,6 @@
 .home-hero-frame { max-width:1808px; }
 @media(min-width:1024px) {
  .gonyik-page .home-section-frame, .gonyik-page .home-hero-frame { padding-inline:64px; }
- body:has(.home-section-frame) footer { padding-inline:64px; }
- body:has(.home-section-frame) footer > div { max-width:1680px; padding-inline:0; }
  .home-section-frame .home-series-stage { min-height:clamp(360px,24vw,440px); }
 }
 @media(min-width:1600px) {
@@ -1199,8 +1211,6 @@
 .home-lab-photo { position:relative; aspect-ratio:8/3; overflow:hidden; background:#e8edf0; }
 .home-lab-controls { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-inline:32px; padding-block:12px; border-bottom:1px solid var(--color-border); }
 .home-lab-counter { display:flex; gap:10px; color:var(--color-primary); }
-.home-lab-control { display:grid; width:36px; height:36px; place-items:center; border:1px solid var(--color-border); color:var(--color-primary); transition:background-color .2s ease,border-color .2s ease; }
-.home-lab-control:hover { border-color:var(--color-primary); background:var(--color-bg); }
 .home-technology-list { display:grid; grid-template-rows:repeat(3,minmax(170px,1fr)); padding-inline:32px; background:white; }
 .home-technology-row { position:relative; isolation:isolate; display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,1fr); gap:24px; align-items:center; padding:16px 0; }
 .home-technology-row + .home-technology-row { border-top:1px solid var(--color-border); }
@@ -1223,7 +1233,6 @@
  .home-lab-photo { min-height:0; }
  .home-lab-copy { padding:24px; }
  .home-lab-controls { margin-inline:24px; }
- .home-lab-control { width:44px; height:44px; }
  .home-technology-list { padding-inline:24px; }
  .home-technology-row { grid-template-columns:minmax(0,1fr) 100px; gap:12px; padding:24px 0; }
  .home-technology-row .material-system-media { height:110px; }
@@ -1283,3 +1292,10 @@
 .site-mega-secondary strong{font-size:16px;font-weight:550}
 .site-mega-secondary small{display:block;margin-top:7px;font-size:12px;line-height:1.7;color:#607786}
 .site-mega-feature>div{padding-bottom:26px}
+
+/* Shared image-navigation controls: homepage and application galleries. */
+.carousel-controls{display:flex;align-items:center;gap:8px}
+.carousel-controls button{display:grid;place-items:center;flex-shrink:0;width:44px;height:44px;border:1px solid #c9d8df;border-radius:0;background:#fff;color:#153d50;transition:background .18s,color .18s,border-color .18s}
+.carousel-controls button:hover{background:#092c43;color:#fff;border-color:#092c43}
+.carousel-controls button:focus-visible{outline:2px solid #40869a;outline-offset:3px}
+@media(prefers-reduced-motion:reduce){.carousel-controls button{transition:none}}

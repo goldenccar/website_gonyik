@@ -6,6 +6,7 @@ import Modal from './Modal'
 import PrimaryButton from './PrimaryButton'
 import ResponsiveAdminList from './ResponsiveAdminList'
 import SaveCancelButtons from './SaveCancelButtons'
+import ServiceImageField from './ServiceImageField'
 
 type CollectionKind = 'guide' | 'faq' | 'digital-format'
 
@@ -21,6 +22,8 @@ export default function ServiceCollectionEditor({ endpoint, kind, itemLabel, cat
   const [editing, setEditing] = useState<any | null>(null)
   const [showForm, setShowForm] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [imageUrl, setImageUrl] = useState('')
+  const [error, setError] = useState('')
 
   const load = async () => {
     const response = await api.get(`/services/admin/${endpoint}`, { params: category ? { category } : undefined })
@@ -34,6 +37,8 @@ export default function ServiceCollectionEditor({ endpoint, kind, itemLabel, cat
 
   const openForm = (item: any | null = null) => {
     setEditing(item)
+    setImageUrl(item?.image_url || '')
+    setError('')
     setShowForm(true)
   }
 
@@ -41,17 +46,20 @@ export default function ServiceCollectionEditor({ endpoint, kind, itemLabel, cat
     event.preventDefault()
     const data = Object.fromEntries(new FormData(event.currentTarget))
     const payload = kind === 'guide'
-      ? { title: data.title, content: data.content }
+      ? { title: data.title, content: data.content, image_url: imageUrl, image_alt: data.image_alt || '' }
       : kind === 'faq'
-        ? { question: data.question, answer: data.answer, category }
+        ? { question: data.question, answer: data.answer, group: data.group || '', category }
         : { platform: data.platform, format: data.format, description: data.description, role: data.role === 'exchange' ? 'exchange' : 'primary' }
     setSaving(true)
+    setError('')
     try {
       const suffix = editing?.id ? `/${editing.id}` : ''
       await api[editing?.id ? 'put' : 'post'](`/services/admin/${endpoint}${suffix}`, payload)
       setShowForm(false)
       setEditing(null)
       await load()
+    } catch {
+      setError('保存失败，请重试。')
     } finally {
       setSaving(false)
     }
@@ -84,8 +92,10 @@ export default function ServiceCollectionEditor({ endpoint, kind, itemLabel, cat
             {kind === 'guide' && <>
               <FormField label="标题" name="title" markup="inline" defaultValue={editing?.title} required />
               <FormField label="说明" name="content" markup="inline" defaultValue={editing?.content} textarea rows={4} required />
+              {endpoint === 'care-guides' && <><ServiceImageField value={imageUrl} onChange={setImageUrl} /><FormField label="图片替代文本（不显示图注）" name="image_alt" defaultValue={editing?.image_alt || ''} /></>}
             </>}
             {kind === 'faq' && <>
+              <FormField label="问答分组（同名归为一组）" name="group" defaultValue={editing?.group || ''} />
               <FormField label="问题" name="question" markup="inline" defaultValue={editing?.question} required />
               <FormField label="答案" name="answer" markup="inline" defaultValue={editing?.answer} textarea rows={4} required />
             </>}
@@ -101,6 +111,7 @@ export default function ServiceCollectionEditor({ endpoint, kind, itemLabel, cat
                 </select>
               </label>
             </>}
+            {error && <p role="alert" className="text-error">{error}</p>}
             <SaveCancelButtons loading={saving} onCancel={() => setShowForm(false)} />
           </form>
         </Modal>

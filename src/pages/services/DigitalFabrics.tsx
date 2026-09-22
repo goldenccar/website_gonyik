@@ -1,67 +1,47 @@
-import { useEffect, useState } from 'react'
-import { Navigate, useOutletContext, Link } from 'react-router-dom'
-import { ArrowUpRight, Box, ScanLine, SlidersHorizontal } from 'lucide-react'
+import { useCallback, useEffect, useState } from 'react'
+import { Navigate, useOutletContext } from 'react-router-dom'
 import { getDigitalFabricFormats } from '@/api/client'
-import { PageSection } from '@/components/PageLayout'
 import ServiceSectionHeader from '@/components/service/ServiceSectionHeader'
+import ServiceContact from '@/components/service/ServiceContact'
+import PublicContentLoader from '@/components/PublicContentLoader'
 import { InlineMarkup } from '@/components/MarkupParser'
 import type { DigitalFabricFormat } from '@/types'
 import type { ServicesOutletContext } from './ServicesLayout'
 import { useSiteLocale } from '@/i18n/SiteLocale'
 
-const assetLayers = [
-  { icon: ScanLine, title: '视觉数据', text: '颜色、纹理、法线与表面表现，支持虚拟样衣的材料呈现。' },
-  { icon: SlidersHorizontal, title: '物理属性', text: '基于具体面料测试与软件参数体系，记录弯曲、拉伸、剪切等属性。' },
-  { icon: Box, title: '版本交付', text: '文件与面料型号、批次及软件版本对应，避免数字材料与实物信息脱节。' },
-]
-
 export default function DigitalFabrics() {
   const { path: localePath, t } = useSiteLocale()
   const { sections } = useOutletContext<ServicesOutletContext>()
-  const section = sections.find((item) => item.module_type === 'digital-fabrics')
+  const section = sections.find(item => item.module_type === 'digital-fabrics')
   const [formats, setFormats] = useState<DigitalFabricFormat[]>([])
-
-  useEffect(() => {
-    getDigitalFabricFormats().then((response) => setFormats(response.data.data || []))
+  const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading')
+  const load = useCallback(() => {
+    setStatus('loading')
+    getDigitalFabricFormats().then(response => { setFormats(response.data.data || []); setStatus('ready') }).catch(() => setStatus('error'))
   }, [])
-
+  useEffect(load, [load])
   if (!section) return <Navigate to={localePath('/services')} replace />
-
-  return (
-    <PageSection tone="white" className="space-y-16 md:space-y-20">
+  if (status === 'loading') return <PublicContentLoader label="正在加载数字面料内容" />
+  if (status === 'error') return <div className="support-frame py-20" role="alert"><p>{t('内容加载失败。')}</p><button type="button" onClick={load} className="mt-4 underline">{t('重新加载')}</button></div>
+  const blocks = section.content_blocks?.filter(block => !block.hidden) || []
+  const assets = blocks.find(block => block.key === 'assets')
+  const formatHeader = blocks.find(block => block.key === 'formats')
+  return <div className="support-body">
+    <div className="support-frame">
       <ServiceSectionHeader section={section} />
-      <section>
-        <div className="mb-6">
-          <p className="label-en text-secondary">SUPPORTED FORMATS</p>
-          <h2 className="mt-3 text-[24px] font-medium text-primary md:text-[30px]">{t('支持主流数字服装工作流')}</h2>
+      {assets && <section className="support-digital-feature">
+        {assets.image_url && <img src={assets.image_url} alt={t(assets.caption)} loading="lazy" decoding="async" width="1200" height="800" />}
+        <div className="support-digital-copy">
+          {assets.title && <h3><InlineMarkup text={assets.title} /></h3>}
+          {assets.content && <p><InlineMarkup text={assets.content} /></p>}
+          <dl>{assets.items?.map((item, index) => <div key={index}><dt><InlineMarkup text={item.title} /></dt><dd><InlineMarkup text={item.content} /></dd></div>)}</dl>
         </div>
-        <div className="grid gap-px border border-border bg-border sm:grid-cols-3">
-          {formats.map((item) => (
-            <article key={item.id} className="bg-white px-6 py-7 md:px-8 md:py-9">
-              <p className="label-en text-secondary"><InlineMarkup text={item.platform} /></p>
-              <p className="mt-5 text-[34px] font-medium tracking-[-0.03em] text-primary"><InlineMarkup text={item.format} /></p>
-              <p className="mt-4 text-[15px] leading-[1.72] text-secondary"><InlineMarkup text={item.description} /></p>
-            </article>
-          ))}
-        </div>
-      </section>
-      <section className="grid gap-px border border-border bg-border md:grid-cols-3">
-        {assetLayers.map(({ icon: Icon, title, text }) => (
-          <article key={title} className="bg-bg px-6 py-8 md:px-8 md:py-10">
-            <Icon size={20} className="text-[#4e9bab]" />
-            <h2 className="mt-6 text-[18px] font-medium text-primary">{t(title)}</h2>
-            <p className="mt-3 text-[16px] leading-[1.75] text-secondary"><InlineMarkup text={text} /></p>
-          </article>
-        ))}
-      </section>
-      <section className="flex flex-col gap-6 border-t border-border pt-9 md:flex-row md:items-end md:justify-between">
-        <div>
-          <p className="label-en text-secondary">PROJECT ACCESS</p>
-          <h2 className="mt-3 text-[24px] font-medium text-primary">{t('需要指定面料的数字模型？')}</h2>
-          <p className="mt-3 max-w-[680px] text-[16px] leading-[1.75] text-secondary"><InlineMarkup text="请提供目标面料型号、使用软件与应用场景，我们将为项目匹配相应的数字面料文件与技术资料。" /></p>
-        </div>
-        <Link to={localePath('/contact')} className="inline-flex shrink-0 items-center gap-3 border border-primary px-5 py-3 text-[14px] font-medium text-primary transition-colors hover:bg-primary hover:text-white"><InlineMarkup text="提交需求" /> <ArrowUpRight size={16} /></Link>
-      </section>
-    </PageSection>
-  )
+      </section>}
+      {formats.length > 0 && !section.content_blocks?.find(block => block.key === 'formats')?.hidden && <section className="support-formats">
+        <div><h2><InlineMarkup text={formatHeader?.title} /></h2><p><InlineMarkup text={formatHeader?.content} /></p></div>
+        <ul>{formats.map(item => <li key={item.id}><h3><InlineMarkup text={item.platform} /></h3><span className="support-format-ext"><InlineMarkup text={item.format} /></span><p><InlineMarkup text={item.description} /></p></li>)}</ul>
+      </section>}
+    </div>
+    <ServiceContact block={blocks.find(block => block.key === 'contact')} />
+  </div>
 }

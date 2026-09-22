@@ -8,6 +8,9 @@ import { updateContactConfiguration, validateContactSubmission } from '../contac
 import { SITE_LOCALES, type MarketVisibility, type SiteMarket } from '../../src/config/markets'
 import { configuredMarkets, pageKeyForLink, pageVisible, requestMarket, visibleInMarket } from '../market'
 import { normalizeHomeMedia } from '../homeMedia'
+import { preferredLanguageMarket } from '../language'
+import { traditionalTranslations } from '../localization'
+import { publicTranslationSources } from '../localizationSources'
 
 const router = Router()
 const TECHNOLOGY_NAV_LABEL_MAX_LENGTH = 32
@@ -56,59 +59,6 @@ function sanitizeVisibilityMap(value: unknown, validMarketCodes: Set<string>) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return {}
   return Object.fromEntries(Object.entries(value as Record<string, unknown>)
     .filter(([code, visibility]) => validMarketCodes.has(code) && MARKET_VISIBILITIES.has(visibility as MarketVisibility)))
-}
-
-const NON_TRANSLATABLE_KEYS = new Set([
-  'id', 'order_index', 'page_key', 'section_key', 'module_type', 'image_url', 'image_fit',
-  'hero_background', 'hero_mobile_background', 'verification_image', 'url', 'link', 'href',
-  'slug', 'sku_code', 'internal_code', 'email', 'phone', 'qrcode_url', 'logo_url', 'favicon_url',
-  'status', 'visibility', 'role', 'platform', 'format', 'smtp_host', 'smtp_user', 'smtp_pass',
-  'certification_logos', 'image_source',
-])
-
-function collectTranslatableStrings(value: unknown, output = new Set<string>(), key = ''): Set<string> {
-  if (NON_TRANSLATABLE_KEYS.has(key)) return output
-  if (typeof value === 'string') {
-    const normalized = value.trim()
-    if (normalized && /[\u3400-\u9fff]/.test(normalized) && !normalized.startsWith('data:')) output.add(normalized)
-    return output
-  }
-  if (Array.isArray(value)) {
-    value.forEach((item) => collectTranslatableStrings(item, output, key))
-    return output
-  }
-  if (value && typeof value === 'object') {
-    Object.entries(value as Record<string, unknown>).forEach(([childKey, childValue]) => {
-      collectTranslatableStrings(childValue, output, childKey)
-    })
-  }
-  return output
-}
-
-function publicTranslationSources() {
-  const publicContent = {
-    home_config: db.home_config,
-    site_config: db.site_config,
-    page_configs: db.page_configs,
-    navigation: db.navigation,
-    footer_config: db.footer_config,
-    fabric_series: db.fabric_series,
-    fabric_capabilities: db.fabric_capabilities,
-    fabric_sku: db.fabric_sku,
-    equipment_categories: db.equipment_categories,
-    equipment_products: db.equipment_products,
-    material_care_guides: db.material_care_guides,
-    care_guides: db.care_guides,
-    faqs: db.faqs,
-    digital_fabric_formats: db.digital_fabric_formats,
-    contact_config: {
-      address: db.contact_config?.address,
-      response_text: db.contact_config?.response_text,
-    },
-    fluorine_sections: db.fluorine_sections,
-    inquiry_subjects: db.inquiry_subjects,
-  }
-  return [...collectTranslatableStrings(publicContent)].sort((a, b) => a.localeCompare(b, 'zh-CN'))
 }
 
 function characterLength(value: string) {
@@ -177,7 +127,13 @@ router.get('/home', (_req, res) => {
 })
 
 router.get('/bootstrap', (req, res) => {
-  const market = requestMarket(req)
+  const detect = req.query.detect_language === '1' && (!req.query.market || req.query.market === 'cn')
+  const market = (detect ? preferredLanguageMarket(req, configuredMarkets()) : undefined) || requestMarket(req)
+  if (detect) {
+    res.setHeader('Cache-Control', 'private, no-store')
+    res.vary('Cookie')
+    res.vary('Accept-Language')
+  }
   const { email, phone, address, response_text } = db.contact_config
   res.json({
     site_config: db.site_config,
@@ -187,7 +143,9 @@ router.get('/bootstrap', (req, res) => {
     footer_config: db.footer_config,
     contact_config: { email, phone, address, response_text },
     socials: db.social_media,
-    translations: market.locale === 'zh-CN' ? {} : (db.translations?.[market.locale] || {}),
+    translations: market.locale === 'zh-CN' ? {} : market.locale === 'zh-TW'
+      ? traditionalTranslations(publicTranslationSources(db), db.translations?.['zh-TW'])
+      : (db.translations?.[market.locale] || {}),
     markets: configuredMarkets().map(({ code, label, locale, enabled, is_default, default_visibility, order_index }) => ({ code, label, locale, enabled, is_default, default_visibility, order_index })),
     current_market: market.code,
     current_locale: market.locale,
@@ -200,8 +158,9 @@ router.get('/admin/localizations', authMiddleware, (req, res) => {
   res.json({
     data: {
       locale,
-      sources: publicTranslationSources(),
+      sources: publicTranslationSources(db),
       translations: db.translations?.[locale] || {},
+      automatic_translations: locale === 'zh-TW' ? traditionalTranslations(publicTranslationSources(db)) : {},
     },
   })
 })
@@ -214,7 +173,7 @@ router.put('/admin/localizations/:locale', authMiddleware, (req: AuthRequest, re
     res.status(400).json({ error: '翻译数据格式无效' })
     return
   }
-  const allowedSources = new Set(publicTranslationSources())
+  const allowedSources = new Set(publicTranslationSources(db))
   const next: Record<string, string> = {}
   for (const [source, translation] of Object.entries(incoming as Record<string, unknown>)) {
     const normalizedSource = String(source).trim()

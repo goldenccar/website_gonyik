@@ -8,6 +8,7 @@ import { getServiceModuleDefinition, isServiceModuleType } from '@/config/servic
 import type { ContentSection, PageConfig } from '@/types'
 import { useSiteLocale } from '@/i18n/SiteLocale'
 import PublicContentLoader from '@/components/PublicContentLoader'
+import '@/styles/services.css'
 
 export interface ServicesOutletContext {
   sections: ContentSection[]
@@ -46,7 +47,7 @@ export default function ServicesLayout() {
   }, [status, location.pathname, navigate, navigation])
 
   if (status === 'loading') return <PublicContentLoader label="正在加载专业支持内容" />
-  if (status === 'error') return <PageShell><div role="alert" className="mx-auto w-full max-w-[1760px] px-7 py-24 md:px-12 lg:px-20"><div className="border-l-2 border-[#69B2C1] pl-5"><p className="text-[16px] text-primary">专业支持内容加载失败。</p><button type="button" onClick={load} className="mt-4 border-b border-primary text-[14px] text-primary">重新加载</button></div></div></PageShell>
+  if (status === 'error') return <PageShell><div role="alert" className="mx-auto w-full max-w-[1760px] px-7 py-24 md:px-12 lg:px-20"><div className="border-l-2 border-[#69B2C1] pl-5"><p className="text-[16px] text-primary">{t('专业支持内容加载失败。')}</p><button type="button" onClick={load} className="mt-4 border-b border-primary text-[14px] text-primary">{t('重新加载')}</button></div></div></PageShell>
 
   return (
     <PageShell className="services-page">
@@ -57,7 +58,7 @@ export default function ServicesLayout() {
           label: t('服务内容'),
           items: navigation.map(({ section, definition }) => ({
             key: section.id,
-            label: t(section.nav_label || definition.label),
+            label: t(section.nav_label || section.title),
             active: location.pathname.endsWith(`/${definition.route}`),
             onSelect: () => navigate(localePath(`/services/${definition.route}`)),
           })),

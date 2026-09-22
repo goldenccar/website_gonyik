@@ -39,6 +39,7 @@ function ContentMedia({ media }: { media: TechnologyMedia & { highlights?: strin
   </figure>
 }
 function ConstructionTabs({ block }: { block: TechnologyContentBlock }) {
+  const { t } = useSiteLocale()
   const [active, setActive] = useState(0)
   const buttons = useRef<(HTMLButtonElement | null)[]>([])
   const items = block.items || []
@@ -49,7 +50,7 @@ function ConstructionTabs({ block }: { block: TechnologyContentBlock }) {
     const next = event.key==='Home'?0:event.key==='End'?items.length-1:(index+(event.key==='ArrowRight'?1:-1)+items.length)%items.length
     setActive(next); buttons.current[next]?.focus()
   }
-  return <div className="rpo-constructions"><div className="rpo-tabs" role="tablist" aria-label={block.title}>{items.map((item,index)=><button key={index} id={`${block.key}-tab-${index}`} ref={el=>{buttons.current[index]=el}} type="button" role="tab" aria-selected={selected===index} aria-controls={`${block.key}-panel-${index}`} tabIndex={selected===index?0:-1} onClick={()=>setActive(index)} onKeyDown={event=>change(event,index)}><InlineMarkup text={item.title} /></button>)}</div>
+  return <div className="rpo-constructions"><div className="rpo-tabs" role="tablist" aria-label={t(block.title)}>{items.map((item,index)=><button key={index} id={`${block.key}-tab-${index}`} ref={el=>{buttons.current[index]=el}} type="button" role="tab" aria-selected={selected===index} aria-controls={`${block.key}-panel-${index}`} tabIndex={selected===index?0:-1} onClick={()=>setActive(index)} onKeyDown={event=>change(event,index)}><InlineMarkup text={item.title} /></button>)}</div>
     {items.map((item,index)=><div key={index} id={`${block.key}-panel-${index}`} role="tabpanel" aria-labelledby={`${block.key}-tab-${index}`} tabIndex={0} hidden={selected!==index} className="rpo-construction-panel"><ContentMedia media={item} /><div><h3><InlineMarkup text={item.title} /></h3><MarkupParser text={item.content} className="rpo-copy" />{item.link_url && <ContentLink href={item.link_url} label={item.link_label || item.title} />}</div></div>)}
   </div>
 }
@@ -65,6 +66,7 @@ function Cards({ block }: { block: TechnologyContentBlock }) {
   })}</div>
 }
 function Chapter({ block }: { block: TechnologyContentBlock }) {
+  const { t } = useSiteLocale()
   const layout=block.layout || 'checklist'
   if(layout==='cards'||layout==='series') return <><Intro block={block} /><Cards block={block} /><Actions block={block} /></>
   if(layout==='delivery') return <><Intro block={block} /><div className="rpo-delivery-grid">{block.items?.map((item,index)=><article key={index}><div className="rpo-delivery-visual"><ContentMedia media={item} /></div><div className="rpo-delivery-copy"><h3><InlineMarkup text={item.title} /></h3><MarkupParser text={item.content} className="rpo-copy" />{item.link_url&&<ContentLink label={item.link_label||item.title} href={item.link_url} />}</div></article>)}</div></>
@@ -75,7 +77,7 @@ function Chapter({ block }: { block: TechnologyContentBlock }) {
   if(layout==='steps') return <><Intro block={block}/><ol className="rpo-workflow">{block.items?.map((item,index)=><li key={index}><span className="rpo-index" aria-hidden="true">0{index+1}</span><h3><InlineMarkup text={item.title}/></h3><MarkupParser text={item.content} className="rpo-copy"/></li>)}</ol></>
   if(layout==='columns') return <><Intro block={block}/><Rows block={block}/><Actions block={block}/></>
   if(layout==='matrix') return <><Intro block={block}/><div className="rpo-editorial-grid">{block.items?.map((item,index)=><article key={index}><h3><InlineMarkup text={item.title}/></h3><MarkupParser text={item.content} className="rpo-copy"/>{item.link_url&&<ContentLink label={item.link_label||item.title} href={item.link_url}/>}</article>)}</div><Actions block={block}/></>
-  if(layout==='logos') return <><Intro block={block}/><div className="rpo-credentials">{block.items?.map((item,index)=><article key={index}>{item.image_url&&<img src={item.image_url} alt={item.title} loading="lazy"/>}<h3><InlineMarkup text={item.title}/></h3><MarkupParser text={item.content} className="rpo-copy"/>{item.link_url&&<ContentLink label={item.link_label||item.title} href={item.link_url}/>}</article>)}</div><Actions block={block}/></>
+  if(layout==='logos') return <><Intro block={block}/><div className="rpo-credentials">{block.items?.map((item,index)=><article key={index}>{item.image_url&&<img src={item.image_url} alt={t(item.title)} loading="lazy"/>}<h3><InlineMarkup text={item.title}/></h3><MarkupParser text={item.content} className="rpo-copy"/>{item.link_url&&<ContentLink label={item.link_label||item.title} href={item.link_url}/>}</article>)}</div><Actions block={block}/></>
   if(layout==='exit') return <div><Intro compact block={block}/><Actions block={block}/></div>
   if(layout==='intro'||layout==='note') return <><Intro compact={layout==='intro'} block={block}/><Actions block={block}/></>
   return <div className="rpo-reading-grid"><div><Intro compact block={block}/>{(block.image_url || block.visual) && <ContentMedia media={block}/>}<Actions block={block}/></div><Rows block={block}/></div>

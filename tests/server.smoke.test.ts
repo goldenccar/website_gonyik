@@ -10,6 +10,7 @@ import { updateContactConfiguration, validateContactSubmission } from '../server
 import fabricRoutes from '../server/routes/fabrics'
 import equipmentRoutes from '../server/routes/equipment'
 import serviceRoutes from '../server/routes/services'
+import configRoutes from '../server/routes/config'
 import { getLocalMediaReferences, resolveLocalMediaPath } from '../server/mediaAssets'
 import { visibleInMarket } from '../server/market'
 import { marketCodeFromPath, marketPath, routeMarketStatus, stripMarketPrefix } from '../src/config/markets'
@@ -196,4 +197,36 @@ test('catalog aggregate routes and their backing collections match page consumer
   assert.ok(Array.isArray(db.fabric_series) && Array.isArray(db.fabric_capabilities))
   assert.ok(Array.isArray(db.equipment_categories) && Array.isArray(db.equipment_products))
   assert.ok(Array.isArray(db.fluorine_sections) && db.page_configs.some((item) => item.page_key === 'services'))
+})
+
+test('service CMS saves media, grouped FAQs and page blocks consumed by public routes', () => {
+  const invoke = (router: any, method: string, route: string, request: any) => {
+    const handler = router.stack.find((layer: any) => layer.route?.path === route && layer.route.methods[method]).route.stack.at(-1).handle
+    const response = mockResponse()
+    handler({ query: {}, params: {}, get: () => undefined, ...request }, response, () => {})
+    assert.equal(response.statusCode, 200)
+    return response.body as any
+  }
+  const before = structuredClone({ sections: db.fluorine_sections, care: db.care_guides, faqs: db.faqs })
+  try {
+    const section = db.fluorine_sections.find(s => s.page_key === 'services' && s.module_type === 'digital-fabrics')
+    assert.ok(section)
+    const content_blocks = [{ key: 'assets', title: 'CMS edited title', content: 'CMS edited copy', image_url: '/uploads/service-review.webp', caption: 'Accessible illustration', items: [{ title: 'Edited item', content: 'Edited body' }] }]
+    invoke(configRoutes, 'put', '/admin/content-sections/:pageKey/:id', { params: { pageKey: 'services', id: section.id }, body: { content_blocks } })
+    const publicPage = invoke(serviceRoutes, 'get', '/bootstrap', {}).data.sections.find((s: any) => s.id === section.id)
+    assert.equal(publicPage.content_blocks[0].image_url, content_blocks[0].image_url)
+    assert.deepEqual(publicPage.content_blocks[0].items.map((item: any) => [item.title, item.content]), [['Edited item', 'Edited body']])
+    const guide = db.care_guides[0]
+    invoke(serviceRoutes, 'put', '/admin/care-guides/:id', { params: { id: guide.id }, body: { image_url: '/uploads/step-review.webp', image_alt: 'Edited care photo' } })
+    assert.equal(invoke(serviceRoutes, 'get', '/care-guides', {}).data.find((item: any) => item.id === guide.id).image_alt, 'Edited care photo')
+    const faq = db.faqs.find(item => item.category === 'garment-care')
+    invoke(serviceRoutes, 'put', '/admin/faqs/:id', { params: { id: faq.id }, body: { group: 'CMS edited group' } })
+    assert.equal(invoke(serviceRoutes, 'get', '/faqs', { query: { category: 'garment-care' } }).data.find((item: any) => item.id === faq.id).group, 'CMS edited group')
+    const references = getLocalMediaReferences()
+    assert.ok(references.has('/uploads/service-review.webp'))
+    assert.ok(references.has('/uploads/step-review.webp'))
+  } finally {
+    db.fluorine_sections = before.sections; db.care_guides = before.care; db.faqs = before.faqs
+    saveDb()
+  }
 })

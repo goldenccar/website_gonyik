@@ -38,7 +38,7 @@ export default function Contact() {
           ...current,
           subject: current.subject || preferred?.label || '',
           source_page: inquirySource || (inquiryApplication ? '/equipment' : '/fabrics'),
-          product_model: [inquiryApplication, inquirySeries.toUpperCase(), inquirySku].filter(Boolean).join(' / '),
+          product_model: [t(inquiryApplication), inquirySeries.toUpperCase(), inquirySku].filter(Boolean).join(' / '),
         }))
       } else if (inquiryTopic) {
         const preferred = nextSubjects.find((item: InquirySubject) => inquiryTopic === RPO_LABELS.testContact ? /资料|TDS/i.test(item.label) : /开发/.test(item.label))
@@ -73,14 +73,14 @@ export default function Contact() {
   return (
     <PageShell>
       <PageHero variant="editorial" title={page?.page_title || ''} subtitle={page?.page_subtitle} image={page?.hero_background} />
-      <PageSection className="!py-8 lg:!py-10">
+      <PageSection tone="white" className="!py-8 lg:!py-10">
         <div className="grid overflow-hidden lg:grid-cols-12">
           <aside className="bg-darker p-6 text-white lg:col-span-4 lg:p-8">
             <h2 className="type-module-title">{t('材料与合作咨询')}</h2>
             <dl className="mt-8 space-y-5 text-[14px]">{contact?.email && <div><dt className="text-white/75">{t('邮箱')}</dt><dd className="mt-1"><a href={`mailto:${contact.email}`}>{contact.email}</a></dd></div>}{contact?.phone && <div><dt className="text-white/75">{t('电话')}</dt><dd className="mt-1"><InlineMarkup text={contact.phone} /></dd></div>}{contact?.address && <div><dt className="text-white/75">{t('地址')}</dt><dd className="mt-1"><InlineMarkup text={contact.address} /></dd></div>}</dl>
           </aside>
-          <form onSubmit={submit} className="relative grid gap-3 bg-white p-6 sm:grid-cols-2 lg:col-span-8 lg:p-8">
-            <div aria-hidden="true" className="hidden"><label>网站<input tabIndex={-1} autoComplete="off" name="website" value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} /></label></div>
+          <form onSubmit={submit} className="relative grid gap-4 bg-white py-6 sm:grid-cols-2 sm:p-6 lg:col-span-8 lg:p-8">
+            <div aria-hidden="true" className="hidden"><label>{t('网站')}<input tabIndex={-1} autoComplete="off" name="website" value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} /></label></div>
             {(inquirySku || inquirySeries || inquiryApplication) && (
               <p className="border-l-2 border-accent bg-bg px-4 py-3 text-[13px] font-medium text-primary sm:col-span-2">
                 {t('当前咨询')}：{[inquiryApplication, inquirySeries.toUpperCase(), inquirySku].filter(Boolean).join(' / ')}

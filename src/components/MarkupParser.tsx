@@ -90,6 +90,7 @@ function parseInlineMarkup(text: string): ReactNode[] {
 }
 
 function TranslationToggle({ content }: { content: string }) {
+  const { t } = useSiteLocale()
   const [open, setOpen] = useState(false)
 
   if (open) {
@@ -107,7 +108,7 @@ function TranslationToggle({ content }: { content: string }) {
       onClick={() => setOpen(true)}
       className="text-[10px] text-white/25 hover:text-white/50 transition-colors mt-0.5 mb-0.5 cursor-pointer ml-1"
     >
-      [译]
+      {t('[译]')}
     </button>
   )
 }

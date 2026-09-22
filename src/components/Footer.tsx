@@ -1,101 +1,80 @@
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Settings, Shield } from 'lucide-react'
+import { ArrowUpRight, Settings, Shield, X } from 'lucide-react'
 import { useSiteLocale } from '@/i18n/SiteLocale'
-import type { NavItem, SocialMedia } from '@/types'
+import type { SocialMedia } from '@/types'
 import { InlineMarkup } from './MarkupParser'
+import '@/styles/footer.css'
 
-const SOCIAL_LABELS: Record<string, string> = {
-  wechat: '微信',
-  xiaohongshu: '小红书',
-  douyin: '抖音',
-}
+const SOCIAL_LABELS: Record<string, string> = { wechat: '微信', xiaohongshu: '小红书', douyin: '抖音' }
 
 export default function Footer() {
-  const { path: localePath, bootstrap } = useSiteLocale()
-  const footer = bootstrap.footer_config
-  const contact = bootstrap.contact_config
-  const socials = bootstrap.socials || []
-  const navigation = bootstrap.navigation || []
+  const { path: localePath, bootstrap, t } = useSiteLocale()
+  const { footer_config: footer, contact_config: contact, site_config: brand } = bootstrap
+  // Reuse the menu's CMS label and visibility for the database entry.
+  const links = (bootstrap.navigation || []).flatMap(item => [item, ...(item.mega_menu || [])
+    .flatMap(group => group.items || []).filter(link => link.link === '/fabrics/catalog')])
+    .filter((item, index, items) => items.findIndex(other => other.link === item.link) === index)
+  const socials = (bootstrap.socials || []).filter(item => item.account || item.qrcode_url)
 
-  const visibleSocials = socials.filter((item) => item.account || item.qrcode_url)
-
-  return (
-    <footer className="border-t border-border bg-white px-4 text-primary md:px-6">
-      <div className="mx-auto w-full max-w-[1760px] px-3 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-10 md:px-12 md:pb-6 md:pt-16 lg:px-16">
-        <div className="grid grid-cols-2 gap-x-6 gap-y-9 border-b border-border pb-10 md:gap-12 md:pb-14 lg:grid-cols-12 lg:gap-10">
-          <div className="col-span-2 lg:col-span-5">
-            <p className="label-en text-secondary"><InlineMarkup text={footer?.brand_tag} /></p>
-            <h2 className="type-module-title mt-3 md:mt-5"><InlineMarkup text={footer?.brand_title} /></h2>
-            <p className="mt-5 hidden max-w-[520px] text-[14px] leading-7 text-secondary md:block"><InlineMarkup text={footer?.brand_description} /></p>
-          </div>
-
-          <FooterColumn title={footer?.material_title || ''} links={navigation.slice(0, 3)} />
-          <FooterColumn title={footer?.support_title || ''} links={navigation.slice(3)} />
-
-          <div className="col-span-2 lg:col-span-3">
-            <p className="label-zh border-b border-border pb-3 text-secondary md:pb-4"><InlineMarkup text={footer?.contact_title} /></p>
-            <p className="mt-4 text-[13px] text-secondary md:mt-5"><InlineMarkup text={footer?.contact_subtitle} /></p>
-            {contact?.email && <a href={`mailto:${contact.email}`} className="mt-2 block text-[15px] underline decoration-border underline-offset-4 hover:decoration-primary">{contact.email}</a>}
-            {visibleSocials.length > 0 && <div className="mt-5 flex flex-wrap gap-x-5 gap-y-3 md:mt-7">{visibleSocials.map((item) => <SocialLink key={item.id} item={item} />)}</div>}
+  return <footer className="site-footer">
+    <div className="site-footer-frame">
+      <div className="site-footer-main">
+        <div className="site-footer-identity">
+          <Link className="site-footer-brand" to={localePath('/')} aria-label={t('港翼科技首页')}>
+            {brand.logo_url && <img src={brand.logo_url} alt="" width={32} height={32} loading="lazy" decoding="async" />}
+            {brand.logo_text && <span><InlineMarkup text={brand.logo_text} /></span>}
+          </Link>
+          <div className="site-footer-contact">
+            {contact?.email && <a className="site-footer-email" href={`mailto:${contact.email}`}>{contact.email}<ArrowUpRight size={19} aria-hidden="true" /></a>}
+            {socials.length > 0 && <div className="site-footer-socials">{socials.map(item => <SocialLink key={item.id} item={item} />)}</div>}
           </div>
         </div>
-
-        <div className="pt-6 text-[12px] leading-5 text-secondary md:flex md:items-center md:justify-between">
-          <span className="block"><InlineMarkup text={footer?.copyright} /></span>
-          <div className="mt-5 grid grid-cols-[minmax(0,1fr)_28px] items-end gap-x-4 md:mt-0 md:flex md:items-center md:gap-0">
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-              <Link to={localePath(footer?.privacy_policy_link || '/privacy-policy')} className="hover:text-primary"><InlineMarkup text="隐私政策" /></Link>
-              {footer?.icp_number && <a href={footer.icp_link || 'https://beian.miit.gov.cn/'} target="_blank" rel="noreferrer" className="hover:text-primary">{footer.icp_number}</a>}
-              {footer?.police_number && (
-                <a
-                  href={footer.police_link || 'https://beian.mps.gov.cn/'}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 hover:text-primary"
-                >
-                  {footer.police_badge_url ? (
-                    <img src={footer.police_badge_url} alt="" width={17} height={17} loading="lazy" decoding="async" className="h-[17px] w-[17px] shrink-0 object-contain" />
-                  ) : (
-                    <Shield size={14} strokeWidth={1.6} aria-hidden="true" className="shrink-0" />
-                  )}
-                  <span>{footer.police_number}</span>
-                </a>
-              )}
-            </div>
-            <Link to="/admin" aria-label="进入 CMS" title="进入 CMS" className="inline-flex h-7 w-7 items-center justify-center text-secondary hover:text-primary md:ml-4 md:w-11 md:border-l md:border-border md:pl-4">
-              <Settings size={14} aria-hidden="true" />
-            </Link>
-          </div>
-        </div>
+        <nav className="site-footer-links">
+          {links.map(item => <Link key={item.link} to={localePath(item.link)}><span><InlineMarkup text={item.label} /></span><ArrowUpRight size={16} aria-hidden="true" /></Link>)}
+        </nav>
       </div>
-    </footer>
-  )
+      <div className="site-footer-legal">
+        <span><InlineMarkup text={footer?.copyright} /></span>
+        <div className="site-footer-legal-links">
+          <Link to={localePath(footer?.privacy_policy_link || '/privacy-policy')}><InlineMarkup text="隐私政策" /></Link>
+          {footer?.icp_number && <a href={footer.icp_link || 'https://beian.miit.gov.cn/'} lang="zh-CN" translate="no" target="_blank" rel="noreferrer">{footer.icp_number}</a>}
+          {footer?.police_number && <a href={footer.police_link || 'https://beian.mps.gov.cn/'} lang="zh-CN" translate="no" target="_blank" rel="noreferrer" className="site-footer-police">
+            {footer.police_badge_url ? <img src={footer.police_badge_url} alt="" width={15} height={15} loading="lazy" decoding="async" /> : <Shield size={14} aria-hidden="true" />}
+            <span>{footer.police_number}</span>
+          </a>}
+        </div>
+        <Link className="site-footer-admin" to="/admin" aria-label={t('进入 CMS')} title={t('进入 CMS')}><Settings size={16} aria-hidden="true" /></Link>
+      </div>
+    </div>
+  </footer>
 }
 
 function SocialLink({ item }: { item: SocialMedia }) {
-  const label = SOCIAL_LABELS[item.platform] || item.platform
   const { t } = useSiteLocale()
-  const publicLabel = t(label)
-
-  return (
-    <span className="group relative inline-flex">
-      <button type="button" className="label-zh text-secondary hover:text-primary focus:outline-none focus-visible:text-primary" aria-label={t(`查看${label}账号`)}>
-        {publicLabel}
-      </button>
-      <span className="pointer-events-none absolute bottom-full right-0 z-20 mb-3 hidden w-[168px] border border-border bg-white p-3 text-center shadow-lg group-hover:block group-focus-within:block">
-        {item.qrcode_url && <img src={item.qrcode_url} alt={t(`${label}二维码`)} loading="lazy" decoding="async" className="mx-auto h-[136px] w-[136px] object-contain" />}
-        {item.account && <span className={`${item.qrcode_url ? 'mt-2' : ''} block break-words text-[12px] leading-5 text-primary`}>{item.account}</span>}
-      </span>
-    </span>
-  )
-}
-
-function FooterColumn({ title, links }: { title: string; links: NavItem[] }) {
-  const { path: localePath } = useSiteLocale()
-  return (
-    <div className="min-w-0 lg:col-span-2">
-      <p className="label-zh border-b border-border pb-3 text-secondary md:pb-4"><InlineMarkup text={title} /></p>
-      <nav className="mt-4 flex flex-col gap-3 md:mt-5 md:gap-4">{links.map((item) => <Link key={item.id} to={localePath(item.link)} className="w-fit text-[13px] hover:underline hover:underline-offset-4 md:text-[14px]"><InlineMarkup text={item.label} /></Link>)}</nav>
-    </div>
-  )
+  const dialog = useRef<HTMLDialogElement>(null)
+  const [previewOpen, setPreviewOpen] = useState(false)
+  const label = t(SOCIAL_LABELS[item.platform] || item.platform)
+  useEffect(() => {
+    if (!previewOpen) return
+    const dismiss = (event: KeyboardEvent) => { if (event.key === 'Escape') setPreviewOpen(false) }
+    window.addEventListener('keydown', dismiss)
+    return () => window.removeEventListener('keydown', dismiss)
+  }, [previewOpen])
+  return <div className="footer-social" onPointerEnter={event => { if (event.pointerType === 'mouse') setPreviewOpen(true) }} onPointerLeave={() => setPreviewOpen(false)}>
+    <button type="button" aria-haspopup="dialog" aria-label={`${label} ${t('账号')}`} onClick={() => { setPreviewOpen(false); dialog.current?.showModal() }}>{label}</button>
+    {previewOpen && <div className="footer-social-preview" aria-hidden="true">
+      {item.qrcode_url && <img src={item.qrcode_url} alt="" decoding="async" />}
+      {item.account && <p>{item.account}</p>}
+    </div>}
+    <dialog ref={dialog} className="footer-social-dialog" aria-label={`${label} ${t('账号')}`} onClick={event => {
+      if (event.target !== event.currentTarget) return
+      const rect = event.currentTarget.getBoundingClientRect()
+      if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) event.currentTarget.close()
+    }}>
+      <div className="footer-social-heading"><h2>{label}</h2><button type="button" aria-label={`${t('收起')} ${label}`} onClick={() => dialog.current?.close()}><X size={22} aria-hidden="true" /></button></div>
+      {item.qrcode_url && <img src={item.qrcode_url} alt={`${label} ${t('二维码')}`} loading="lazy" decoding="async" />}
+      {item.account && <p>{item.account}</p>}
+    </dialog>
+  </div>
 }

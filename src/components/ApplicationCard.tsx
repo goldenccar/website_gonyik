@@ -1,9 +1,10 @@
 import { useEffect, useRef } from 'react'
-import { ArrowLeft, ArrowRight, ArrowUpRight } from 'lucide-react'
+import { ArrowUpRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import type { EquipmentProduct } from '@/types'
 import { InlineMarkup } from './MarkupParser'
 import FeatureIcon from './FeatureIcon'
+import CarouselControls from './CarouselControls'
 import { useSiteLocale } from '@/i18n/SiteLocale'
 
 function ApplicationScenes({ product }: { product: EquipmentProduct }) {
@@ -45,10 +46,7 @@ function ApplicationScenes({ product }: { product: EquipmentProduct }) {
   }
   if (!scenes.length) return null
   return <div className="application-scenes">
-    {loop && <div className="application-scene-controls">
-      <button type="button" aria-label={t('上一张场景图')} aria-controls={`scenes-${product.id}`} onClick={() => move(-1)}><ArrowLeft size={18} aria-hidden="true" /></button>
-      <button type="button" aria-label={t('下一张场景图')} aria-controls={`scenes-${product.id}`} onClick={() => move(1)}><ArrowRight size={18} aria-hidden="true" /></button>
-    </div>}
+    {loop && <CarouselControls className="application-scene-controls" previousLabel={t('上一张场景图')} nextLabel={t('下一张场景图')} controls={`scenes-${product.id}`} onPrevious={() => move(-1)} onNext={() => move(1)} />}
     <div id={`scenes-${product.id}`} ref={track} className="application-scene-track" tabIndex={loop ? 0 : undefined} role="region" aria-label={t(product.name)}
       onScroll={() => { clearTimeout(settle.current); if (loop) settle.current = setTimeout(normalize, 160) }}
       onKeyDown={event => { if (loop && ['ArrowLeft', 'ArrowRight'].includes(event.key)) { event.preventDefault(); move(event.key === 'ArrowRight' ? 1 : -1) } }}>

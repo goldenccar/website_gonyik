@@ -77,3 +77,10 @@ html:has(.fabric-platforms) footer { scroll-snap-align: start; }
 @media (prefers-reduced-motion: reduce) {
   .fabric-platforms > .section-selector, .fabric-platforms a, .fabric-platforms a::after { transition: none; }
 }
+
+@media(max-width:680px){
+  .fabric-platforms>.section-selector{height:48px;margin-bottom:-48px}
+  .fabric-platforms .section-selector-item{min-height:48px}
+  .fabric-platform-screen{padding-top:48px}
+  .fabric-platform-inner{min-height:calc(100dvh - 108px)}
+}

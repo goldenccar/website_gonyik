@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperti
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { ArrowUpRight, ChevronDown, ChevronUp, Globe2, Menu, X } from 'lucide-react'
 import { useSiteLocale } from '@/i18n/SiteLocale'
-import { marketPath, stripMarketPrefix } from '@/config/markets'
+import { marketPath, rememberLanguage, stripMarketPrefix } from '@/config/markets'
 import type { NavItem } from '@/types'
 import { InlineMarkup } from './MarkupParser'
 
@@ -38,7 +38,7 @@ export default function Header() {
   const mobileMarketRef = useRef<HTMLDetailsElement>(null)
   const location = useLocation()
   const navigate = useNavigate()
-  const { locale, market, markets, path: localePath, bootstrap, t } = useSiteLocale()
+  const { market, markets, path: localePath, bootstrap, t } = useSiteLocale()
   const navItems: NavItem[] = bootstrap.navigation || []
   const siteConfig = bootstrap.site_config || {}
   const publicPath = stripMarketPrefix(location.pathname)
@@ -179,12 +179,12 @@ export default function Header() {
   return (
     <header className={`fixed left-0 top-0 z-50 h-[60px] w-screen px-6 transition-colors duration-300 ${menuMounted || scrolled || (publicPath.startsWith('/equipment') || publicPath === '/fabrics/catalog' || publicPath === '/contact' || publicPath.startsWith('/services') || publicPath === '/pfas-free-innovation/rpo-material-platform') ? 'border-b border-white/15 bg-[#041F38]' : 'border-b border-transparent bg-transparent'}`}>
       <div ref={desktopHeaderInnerRef} className="mx-auto flex h-full w-full max-w-[1760px] items-center px-0 lg:px-10">
-        <Link to={localePath('/')} className="flex shrink-0 items-center" aria-label={locale === 'en' ? 'GONYIK home' : '港翼科技首页'}>
+        <Link to={localePath('/')} className="flex shrink-0 items-center" aria-label={t('港翼科技首页')}>
           {siteConfig.logo_url ? <img src={siteConfig.logo_url} alt="GONYIK" className="mr-2 h-7 w-auto" /> : <span className="mr-2 grid h-7 w-7 place-items-center bg-white text-[10px] font-semibold text-[#041F38]">GY</span>}
           <span className="text-[15px] font-semibold text-white"><InlineMarkup text={siteConfig.logo_text || '港翼科技'} /></span>
         </Link>
 
-        <nav className="ml-auto hidden h-full items-center gap-8 md:flex" aria-label="主导航">
+        <nav className="ml-auto hidden h-full items-center gap-8 md:flex" aria-label={t('主导航')}>
           {navItems.map((item) => {
             const active = publicPath === item.link || (item.link !== '/' && publicPath.startsWith(`${item.link}/`))
             const groups = megaMenus[item.link] || []
@@ -219,8 +219,8 @@ export default function Header() {
             <span>{market.label}</span>
             <ChevronDown size={13} className="text-white/45 transition-transform duration-200 group-open/market:rotate-180" aria-hidden="true" />
           </summary>
-          <div className="absolute left-[-1px] top-[43px] min-w-44 border border-border bg-[#fbfcfd] py-1.5 shadow-[0_16px_36px_rgba(4,31,56,0.16)]">
-            {markets.filter((item) => item.enabled).map((item) => <Link key={item.code} to={marketPath(currentPublicLocation, item.code)} aria-current={item.code === market.code ? 'page' : undefined} className={`flex min-h-10 items-center justify-between gap-5 px-4 text-[12px] transition-colors ${item.code === market.code ? 'bg-[#e9f3f5] font-semibold text-primary' : 'text-secondary hover:bg-[#f0f5f6] hover:text-primary'}`}><span>{item.label}</span><span className="text-[10px] uppercase tracking-[0.08em] opacity-55">{item.locale}</span></Link>)}
+          <div className="absolute right-0 top-[43px] min-w-44 border border-border bg-[#fbfcfd] py-1.5 shadow-[0_16px_36px_rgba(4,31,56,0.16)]">
+            {markets.filter((item) => item.enabled).map((item) => <Link key={item.code} to={marketPath(currentPublicLocation, item.code)} onClick={() => rememberLanguage(item.code)} aria-current={item.code === market.code ? 'page' : undefined} className={`flex min-h-10 items-center justify-between gap-5 px-4 text-[12px] transition-colors ${item.code === market.code ? 'bg-[#e9f3f5] font-semibold text-primary' : 'text-secondary hover:bg-[#f0f5f6] hover:text-primary'}`}><span>{item.label}</span></Link>)}
           </div>
         </details>
         <details ref={mobileMarketRef} className="group/mobile-market relative ml-auto md:hidden">
@@ -229,23 +229,23 @@ export default function Header() {
             <span>{market.label}</span>
           </summary>
           <div className="absolute right-0 top-11 min-w-40 border border-border bg-[#fbfcfd] py-1.5 shadow-[0_16px_36px_rgba(4,31,56,0.16)]">
-            {markets.filter((item) => item.enabled).map((item) => <Link key={item.code} to={marketPath(currentPublicLocation, item.code)} className={`block min-h-10 px-4 py-3 text-[12px] ${item.code === market.code ? 'bg-[#e9f3f5] font-semibold text-primary' : 'text-secondary'}`}>{item.label}</Link>)}
+            {markets.filter((item) => item.enabled).map((item) => <Link key={item.code} to={marketPath(currentPublicLocation, item.code)} onClick={() => rememberLanguage(item.code)} className={`block min-h-10 px-4 py-3 text-[12px] ${item.code === market.code ? 'bg-[#e9f3f5] font-semibold text-primary' : 'text-secondary'}`}>{item.label}</Link>)}
           </div>
         </details>
-        <button type="button" aria-label={locale === 'en' ? 'Open navigation' : '打开导航'} aria-expanded={mobileOpen} aria-controls="mobile-navigation" className="ml-1 flex h-11 w-11 items-center justify-center text-white md:hidden" onClick={() => setMobileOpen(true)}><Menu size={25} /></button>
+        <button type="button" aria-label={t('打开导航')} aria-expanded={mobileOpen} aria-controls="mobile-navigation" className="ml-1 flex h-11 w-11 items-center justify-center text-white md:hidden" onClick={() => setMobileOpen(true)}><Menu size={25} /></button>
       </div>
 
       {menuMounted && activeMenuItem && <>
         <button
           type="button"
-          aria-label="关闭下拉导航"
+          aria-label={t('关闭下拉导航')}
           tabIndex={menuOpen ? 0 : -1}
           onClick={() => setDesktopMenu(null)}
           className={`fixed inset-x-0 bottom-0 top-[60px] z-40 hidden cursor-default bg-[#041f38]/12 transition-opacity duration-[300ms] ease-apple motion-reduce:transition-none md:block ${menuOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'}`}
         />
         <section
           id={`mega-menu-${activeMenuItem.id}`}
-          aria-label={`${activeMenuItem.label}下拉导航`}
+          aria-label={t(activeMenuItem.label)}
           aria-hidden={!menuOpen}
           className={`fixed inset-x-0 top-[60px] z-50 hidden px-6 md:block ${menuOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}
         >
@@ -263,7 +263,7 @@ export default function Header() {
             </div>
             <button
               type="button"
-              aria-label={`收起${activeMenuItem.label}导航`}
+              aria-label={`${t('收起')} ${t(activeMenuItem.label)}`}
               onClick={() => setDesktopMenu(null)}
               className="mx-auto flex h-10 w-14 items-center justify-center text-secondary transition-colors duration-[var(--motion-instant)] hover:text-primary focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-[-2px] focus-visible:outline-[#69B2C1]"
             >
@@ -276,13 +276,13 @@ export default function Header() {
       </>}
 
       <div aria-hidden={!mobileOpen} className={`fixed inset-0 z-[60] md:hidden ${mobileOpen ? 'visible pointer-events-auto' : 'invisible pointer-events-none'}`}>
-        <button type="button" tabIndex={mobileOpen ? 0 : -1} aria-label="关闭导航" onClick={() => setMobileOpen(false)} className={`absolute inset-0 bg-[#041F38]/55 transition-opacity duration-[var(--motion-switch)] ease-apple ${mobileOpen ? 'opacity-100' : 'opacity-0'}`} />
-        <div id="mobile-navigation" role="dialog" aria-modal="true" aria-label="主导航" className={`absolute inset-y-0 right-0 flex w-[min(86vw,360px)] flex-col bg-[#041F38] px-6 shadow-[-18px_0_50px_rgba(4,31,56,0.2)] transition-transform duration-[320ms] ease-apple ${mobileOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+        <button type="button" tabIndex={mobileOpen ? 0 : -1} aria-label={t('关闭导航')} onClick={() => setMobileOpen(false)} className={`absolute inset-0 bg-[#041F38]/55 transition-opacity duration-[var(--motion-switch)] ease-apple ${mobileOpen ? 'opacity-100' : 'opacity-0'}`} />
+        <div id="mobile-navigation" role="dialog" aria-modal="true" aria-label={t('主导航')} className={`absolute inset-y-0 right-0 flex w-[min(86vw,360px)] flex-col bg-[#041F38] px-6 shadow-[-18px_0_50px_rgba(4,31,56,0.2)] transition-transform duration-[320ms] ease-apple ${mobileOpen ? 'translate-x-0' : 'translate-x-full'}`}>
           <div className="flex h-[60px] items-center justify-between border-b border-white/15">
             <span className="label-en text-white/75">MENU</span>
-            <button type="button" tabIndex={mobileOpen ? 0 : -1} aria-label="关闭导航" className="flex h-11 w-11 items-center justify-center text-white" onClick={() => setMobileOpen(false)}><X size={24} /></button>
+            <button type="button" tabIndex={mobileOpen ? 0 : -1} aria-label={t('关闭导航')} className="flex h-11 w-11 items-center justify-center text-white" onClick={() => setMobileOpen(false)}><X size={24} /></button>
           </div>
-          <nav className="flex min-h-0 flex-1 flex-col overflow-y-auto pb-8 pt-5" aria-label="移动端主导航">
+          <nav className="flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto pb-8 pt-5" aria-label={t('移动端主导航')}>
             {navItems.map((item, index) => {
             const active = publicPath === item.link || (item.link !== '/' && publicPath.startsWith(`${item.link}/`))
               const groups = megaMenus[item.link] || []
@@ -290,7 +290,7 @@ export default function Header() {
               return <div key={item.id} style={{ transitionDelay: mobileOpen ? `${80 + index * 35}ms` : '0ms' } as CSSProperties} className={`border-b border-white/10 transition-[opacity,transform] duration-[var(--motion-switch)] ease-apple ${mobileOpen ? 'translate-x-0 opacity-100' : 'translate-x-3 opacity-0'}`}>
                 <div className="flex items-center">
                   <Link to={localePath(item.link)} tabIndex={mobileOpen ? 0 : -1} onClick={(event) => handleMobileNavigation(event, item.link)} className={`flex min-h-16 flex-1 items-center text-[18px] font-medium tracking-[0.04em] ${active ? 'text-white' : 'text-white/75'}`}><InlineMarkup text={item.label} /></Link>
-                  {groups.length > 0 ? <button type="button" tabIndex={mobileOpen ? 0 : -1} aria-label={`${expanded ? '收起' : '展开'}${item.label}`} aria-expanded={expanded} onClick={() => setMobileExpanded(expanded ? null : item.link)} className="grid size-12 place-items-center text-white/75">
+                  {groups.length > 0 ? <button type="button" tabIndex={mobileOpen ? 0 : -1} aria-label={`${t(expanded ? '收起' : '展开')} ${t(item.label)}`} aria-expanded={expanded} onClick={() => setMobileExpanded(expanded ? null : item.link)} className="grid size-12 place-items-center text-white/75">
                     <ChevronDown aria-hidden="true" size={18} className={`transition-transform duration-[var(--motion-switch)] ${expanded ? 'rotate-180' : ''}`} />
                   </button> : active && <span aria-hidden="true" className="mr-3 h-px w-6 bg-[#69B2C1]" />}
                 </div>

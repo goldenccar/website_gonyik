@@ -19,9 +19,9 @@
 .application-detail h3{font-size:14px;font-weight:600;margin:0 0 7px}
 .application-detail p{font-size:13px;line-height:1.9;color:#6b7e89;margin:0}
 .application-series{margin-top:30px;border-top:1px solid #dbe3e7;padding-top:20px}
-.application-series>div{display:flex;gap:24px;flex-wrap:wrap}
-.application-series a{display:flex;gap:22px;align-items:center;font-size:14px;font-weight:600;letter-spacing:.05em;text-decoration:none;color:#143d52}
-.application-series a:hover{color:#13718a}
+.application-series>div{display:flex;gap:12px;flex-wrap:wrap}
+.application-series a{display:flex;justify-content:space-between;gap:28px;align-items:center;min-width:126px;min-height:48px;padding:12px 16px;border:1px solid #c7d8df;background:#edf3f5;font-size:14px;font-weight:650;letter-spacing:.05em;text-decoration:none;color:#143d52;transition:background .18s,border-color .18s}
+.application-series a:hover{color:#082c43;border-color:#7dabb8;background:#e2edf0}
 .applications-button{display:inline-flex;align-items:center;justify-content:space-between;gap:32px;min-height:48px;padding:14px 22px;background:#092c43;color:#fff;font-size:13px;font-weight:500;text-decoration:none;border:1px solid #092c43;transition:background .18s ease}
 .applications-button:hover{background:#135b76}
 .applications-page a:focus-visible{outline:2px solid #40869a;outline-offset:5px}
@@ -31,7 +31,7 @@
 .application-story-text{display:block;max-width:850px}
 @media(min-width:1900px){.application-story{padding-block:88px}.application-description{font-size:18px}.application-features li{font-size:16px}.application-copy h2{font-size:38px}}
 @media(max-width:900px){.application-story{gap:32px}.application-features ul{gap:14px}.application-copy h2{font-size:28px}}
-@media(max-width:680px){.applications-frame{padding-inline:20px}.application-story{grid-template-columns:1fr;gap:26px;padding-block:36px}.application-story:nth-child(even) .application-media{order:0}.application-media img{aspect-ratio:4/3;min-height:0;height:auto;max-height:none}.application-copy{padding:0}.application-copy h2{font-size:28px}.application-description{font-size:15px;margin-top:18px}.application-features{margin-top:24px}.application-features li{font-size:13px}.application-features ul{gap:12px 20px}.application-detail{margin-top:24px}.application-series{margin-top:24px}.applications-contact{padding-block:36px}.applications-contact-inner{display:block}.applications-contact .applications-button{margin-top:24px}}
+@media(max-width:680px){.applications-frame{padding-inline:24px}.application-story{grid-template-columns:1fr;gap:24px;padding-block:36px;scroll-margin-top:108px}.application-story:nth-child(even) .application-media{order:0}.application-media img{aspect-ratio:4/3;min-height:0;height:auto;max-height:none}.application-copy{padding:0}.application-copy h2{font-size:28px}.application-description{font-size:15px;margin-top:18px}.application-features{margin-top:24px}.application-features li{font-size:13px}.application-features ul{gap:12px 20px}.application-detail{margin-top:24px}.application-series{margin-top:24px}.applications-contact{padding-block:36px}.applications-contact-inner{display:block}.applications-contact .applications-button{margin-top:24px}}
 @media(prefers-reduced-motion:reduce){.applications-button{transition:none}}
 
 
@@ -41,10 +41,7 @@
 .application-scene-track::-webkit-scrollbar{display:none}
 .application-scene-track>img{scroll-snap-align:start}
 .application-scene-controls{display:flex;justify-content:flex-end;gap:8px;margin-bottom:14px}
-.application-scene-controls button{display:grid;place-items:center;width:40px;height:40px;border:1px solid #dbe3e7;border-radius:50%;background:#fff;color:#153d50;transition:background .18s,color .18s}
-.application-scene-controls button:hover{background:#092c43;color:white;border-color:#092c43}
-.application-scene-controls button:focus-visible,.application-scene-track:focus-visible{outline:2px solid #40869a;outline-offset:3px}
 .application-scenes img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover;background:#edf2f4}
 @media(max-width:900px){.application-scenes{margin-top:0}.application-scene-track{gap:12px;grid-auto-columns:calc((100% - 36px)/4)}}
-@media(max-width:680px){.application-scene-track{grid-auto-columns:calc((100% - 10px)/2);gap:10px}.application-scene-controls{margin-bottom:12px}}
-@media(prefers-reduced-motion:reduce){.application-scene-controls button{transition:none}}
+@media(max-width:680px){.application-scene-track{grid-auto-columns:84%;gap:12px}.application-scene-controls{margin-bottom:12px}}
+@media(prefers-reduced-motion:reduce){.application-series a{transition:none}}

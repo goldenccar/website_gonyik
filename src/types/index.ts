@@ -229,6 +229,9 @@ export interface CareGuide {
   id: number
   title: string
   content: string
+  image_url?: string
+  image_alt?: string
+  order_index?: number
 }
 
 export interface FAQ {
@@ -236,6 +239,7 @@ export interface FAQ {
   question: string
   answer: string
   category: string
+  group?: string
 }
 
 export interface DigitalFabricFormat {

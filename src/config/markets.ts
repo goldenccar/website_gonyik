@@ -16,7 +16,7 @@ export interface SiteMarket {
 export const DEFAULT_SITE_MARKETS: SiteMarket[] = [
   {
     code: 'cn',
-    label: '中国大陆',
+    label: '简体中文',
     locale: 'zh-CN',
     enabled: true,
     is_default: true,
@@ -24,14 +24,28 @@ export const DEFAULT_SITE_MARKETS: SiteMarket[] = [
     order_index: 0,
   },
   {
-    code: 'global',
-    label: 'Global',
-    locale: 'en',
+    code: 'tw',
+    label: '繁體中文',
+    locale: 'zh-TW',
     enabled: true,
     default_visibility: 'public',
     order_index: 1,
   },
+  {
+    code: 'global',
+    label: 'English',
+    locale: 'en',
+    enabled: true,
+    default_visibility: 'public',
+    order_index: 2,
+  },
 ]
+
+export const LANGUAGE_COOKIE = 'gonyik_language'
+
+export function rememberLanguage(code: string) {
+  document.cookie = `${LANGUAGE_COOKIE}=${encodeURIComponent(code)}; Path=/; Max-Age=31536000; SameSite=Lax${location.protocol === 'https:' ? '; Secure' : ''}`
+}
 
 const UNPREFIXED_PUBLIC_ROOTS = new Set([
   '', 'fabrics', 'equipment', 'pfas-free-innovation', 'fluorine-free', 'services', 'privacy-policy', 'contact', 'admin', 'api',

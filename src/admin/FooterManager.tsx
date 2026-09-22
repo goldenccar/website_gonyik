@@ -122,18 +122,10 @@ export default function AdminFooterManager() {
         {/* Footer 信息 */}
         <div className="mb-10">
           <h2 className="text-[14px] text-white font-medium mb-6 pb-2 border-b border-borderDark">底栏内容</h2>
-          {field('品牌小标题', 'brand_tag')}
-          {field('品牌标题', 'brand_title')}
-          {field('品牌说明', 'brand_description', true)}
-          <div className="grid gap-x-6 sm:grid-cols-2">
-            {field('材料栏目标题', 'material_title')}
-            {field('支持栏目标题', 'support_title')}
-            {field('联系栏目标题', 'contact_title')}
-            {field('联系栏目说明', 'contact_subtitle')}
-          </div>
-          <p className="-mt-2 mb-8 text-[12px] text-secondary">栏目链接复用“顶栏管理”的名称、地址和顺序；联系邮箱复用“联系我们”配置。</p>
+          <p className="mb-8 text-[13px] leading-7 text-secondary">品牌标志与文字复用“品牌设置”；常用入口复用“顶栏管理”的名称、地址和顺序，面料数据库入口跟随对应菜单配置；联系邮箱复用“联系我们”配置。旧版分组标题与品牌介绍不再展示。</p>
 
           <h2 className="text-[14px] text-white font-medium mb-6 pb-2 border-b border-borderDark">法律与备案信息</h2>
+          <p className="mb-6 text-[12px] leading-6 text-secondary">ICP 与公安备案号在所有语言页面固定显示这里填写的简体中文原文，不参与语言切换。</p>
           {field('版权文字', 'copyright')}
           {field('ICP 备案号', 'icp_number')}
           {field('ICP 链接', 'icp_link')}

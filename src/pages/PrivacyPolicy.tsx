@@ -1,18 +1,17 @@
 import { useSiteLocale } from '@/i18n/SiteLocale'
 
 export default function PrivacyPolicy() {
-  const { bootstrap } = useSiteLocale()
+  const { bootstrap, t } = useSiteLocale()
   const footer = bootstrap.footer_config
 
-  const content = footer?.privacy_policy_content || ''
+  const content = t(footer?.privacy_policy_content)
 
   return (
     <div className="bg-darker flex-1 flex flex-col">
       {/* Header */}
       <div className="border-b border-white/[0.08]">
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12 py-16 md:py-20">
-          <p className="label-en mb-4 text-white/75">Privacy Policy</p>
-          <h1 className="type-page-title text-white">隐私政策</h1>
+          <h1 className="type-page-title text-white">{t('隐私政策')}</h1>
         </div>
       </div>
 

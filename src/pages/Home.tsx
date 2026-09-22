@@ -44,7 +44,7 @@ export default function Home() {
         return <div key={s.slug} id={`home-panel-${s.slug}`} role="tabpanel" aria-labelledby={`home-tab-${s.slug}`} hidden={active?.slug !== s.slug} tabIndex={0} className="pt-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent md:pt-8">
           <div className="home-series-stage">
             <div className="home-series-image">
-              {s.home_image ? <img src={s.home_image} alt={t(s.slug.toUpperCase() + ' 系列面料')} loading="lazy" decoding="async" className="h-full w-full object-cover" /> : <div className="gonyik-fabric-placeholder h-full w-full" />}
+              {s.home_image ? <img src={s.home_image} alt={`${s.slug.toUpperCase()} ${t('系列面料')}`} loading="lazy" decoding="async" className="h-full w-full object-cover" /> : <div className="gonyik-fabric-placeholder h-full w-full" />}
             </div>
             <div className="home-series-copy">
               <h3 className="type-hero type-heading-en text-white">{s.slug.toUpperCase()}</h3>

@@ -52,8 +52,8 @@
 .rpo-actions { display:flex; flex-direction:column; gap:8px; align-items:flex-start; }
 .rpo-handfeel { grid-template-columns:.9fr 1.1fr; }
 .rpo-constructions { background:#fff; }
-.rpo-tabs { display:flex; overflow:auto; border-bottom:1px solid var(--rpo-line); }
-.rpo-tabs button { flex:1 0 auto; padding:22px 28px; font-size:16px; border-bottom:2px solid transparent; color:#607786; transition:background .2s; }
+.rpo-tabs { display:flex; flex-wrap:wrap; border-bottom:1px solid var(--rpo-line); }
+.rpo-tabs button { flex:1 1 180px; min-width:0; overflow-wrap:anywhere; padding:22px 28px; font-size:16px; border-bottom:2px solid transparent; color:#607786; transition:background .2s; }
 .rpo-tabs button[aria-selected=true] { color:#fff; background:#08283f; border-color:#08283f; font-weight:550; }
 .rpo-construction-panel:not([hidden]) { display:grid; grid-template-columns:1.1fr .9fr; gap:60px; min-height:440px; align-items:center; padding:30px 60px 36px 30px; }
 .rpo-construction-panel h3 { font-size:28px; font-weight:600; margin-bottom:18px; }
@@ -97,7 +97,7 @@
   .rpo-page .technology-feature-copy p { font-size:17px; line-height:1.8; margin-top:22px; }
   .rpo-hero-kicker { font-size:10px; margin-bottom:20px; }
   .rpo-page .technology-feature-hero.has-image>img { object-position:65% center; }
-  .rpo-section { padding-block:52px; scroll-margin-top:164px; }
+  .rpo-section { padding-block:40px; scroll-margin-top:124px; }
   .rpo-intro { display:block; margin-bottom:30px; }
   .rpo-intro .rpo-copy { margin-top:18px; }
   .rpo-intro h2 { font-size:27px; }
@@ -116,8 +116,8 @@
   .rpo-exit .rpo-container>div { display:block; }
   .rpo-exit h2 { font-size:25px; }
   .rpo-exit .rpo-actions { margin-top:24px; }
-  .rpo-tabs button { font-size:14px; padding:18px 20px; }
-  .rpo-construction-panel:not([hidden]) { grid-template-columns:1fr; gap:12px; padding:12px 24px 32px; align-content:start; }
+  .rpo-tabs button { flex-basis:100px; font-size:13px; line-height:1.5; padding:12px 10px; min-height:52px; }
+  .rpo-construction-panel:not([hidden]) { grid-template-columns:1fr; gap:20px; min-height:0; padding:20px 0 0; align-content:start; }
   .rpo-construction-panel h3 { font-size:24px; margin-bottom:14px; }
   .rpo-layer-images { height:200px; }
   .rpo-workflow { grid-template-columns:1fr 1fr; gap:32px 20px; }
@@ -190,7 +190,8 @@
  .rpo-feature-grid>.rpo-content-media>.rpo-material-animation { height:300px; }
  .rpo-layout-columns .rpo-detail-rows { grid-template-columns:1fr; gap:24px; }
  .rpo-layout-note .rpo-actions { margin-left:0; }
- .rpo-content-media .rpo-layer-images { height:200px; margin-block:24px; }
+ .rpo-content-media .rpo-layer-images { height:180px; margin-block:12px; }
+ .rpo-construction-panel .rpo-content-media { min-height:0; }
  .rpo-series-card .rpo-content-media { height:220px; }
 }
 .rpo-material-card .rpo-content-media { min-height:0; }
@@ -243,4 +244,9 @@
  .rpo-credentials article { padding:30px 24px; }
  .rpo-credentials article+article { border-left:0; border-top:1px solid var(--rpo-line); }
  .rpo-credentials img { height:66px; margin-bottom:16px; }
+}
+
+/* Three process variables read as one group, within the existing technology grid. */
+@media (min-width: 1000px) {
+  .rpo-page--lamination .rpo-editorial-grid { grid-template-columns: repeat(3,minmax(0,1fr)); column-gap: clamp(32px,4vw,64px); }
 }

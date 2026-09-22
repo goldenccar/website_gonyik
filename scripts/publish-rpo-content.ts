@@ -7,6 +7,13 @@ type Change = { collection: string; id?: number; field?: string; before?: unknow
 export function applyReviewedRpoContent(database: any, changes: Change[]) {
   const next = structuredClone(database)
   for (const change of changes) {
+    if (!change.field && !change.add && change.id === undefined) {
+      if (!['material_care_guides', 'care_guides', 'digital_fabric_formats', 'faqs'].includes(change.collection) || !Array.isArray(change.after)) throw Error('Unexpected content collection')
+      if (isDeepStrictEqual(next[change.collection], change.after)) continue
+      if (!isDeepStrictEqual(next[change.collection], change.before)) throw Error(`Production content changed: ${change.collection}`)
+      next[change.collection] = structuredClone(change.after)
+      continue
+    }
     if (change.add) {
       if (!['equipment_products','equipment_product_categories'].includes(change.collection)) throw Error('Unexpected content collection')
       const row = change.add

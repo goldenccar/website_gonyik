@@ -16,7 +16,7 @@ type SeriesSlug = string
 type SeriesDetail = FabricSeries & { skus: FabricSku[]; capabilities?: FabricCapabilityDefinition[] }
 
 export default function FabricDatabase() {
-  const { path: localePath } = useSiteLocale()
+  const { path: localePath, t } = useSiteLocale()
   const [params, setParams] = useSearchParams()
   const location = useLocation()
   const [page, setPage] = useState<PageConfig | null>(null)
@@ -148,7 +148,7 @@ export default function FabricDatabase() {
       <CatalogSelectorBar label={page?.page_title || ''} groups={[{label:'',uppercase:true,items:series.map(item=>({key:item.id,label:item.name,active:active===item.slug,onSelect:()=>selectSeries(item.slug as SeriesSlug)}))}]} />
 
       <PageSection id="series-content" outerClassName="!px-0" className="!px-[clamp(24px,6.25vw,104px)] !pt-8 md:!pt-12">
-        {detailLoading && <div className="border-t border-border py-10 text-body text-secondary">正在加载面料资料…</div>}
+        {detailLoading && <div className="border-t border-border py-10 text-body text-secondary">{t('正在加载面料资料…')}</div>}
         {!detailLoading && <div className="divide-y divide-border">
           {orderedSeries.map((seriesItem, index) => {
             const slug = seriesItem.slug as SeriesSlug
@@ -169,15 +169,15 @@ export default function FabricDatabase() {
                     <Link
                       to={localePath(`/fabrics/series/${slug}`)}
                       className="fabric-series-story-link group"
-                      aria-label={`探索 ${seriesItem.name} 系列`}
+                      aria-label={`${t('探索系列')} ${seriesItem.name}`}
                     >
-                      <span>探索 {seriesItem.name.toUpperCase()} 系列</span>
+                      <span>{t('探索系列')} {seriesItem.name.toUpperCase()}</span>
                       <span aria-hidden="true" className="ml-2 inline-block transition-transform duration-[var(--motion-instant)] group-hover:translate-x-1">→</span>
                     </Link>
                 </div>
 
                 {detail?.skus?.length ? (
-                  <div role="list" aria-label={`${detail.name} 面料型号`} className="fabric-catalog-grid">
+                  <div role="list" aria-label={`${detail.name} ${t('面料型号')}`} className="fabric-catalog-grid">
                     {detail.skus.map((sku) => (
                       <div role="listitem" key={`${sku.series_id}-${sku.id}`} className="min-w-0">
                         <SkuCard

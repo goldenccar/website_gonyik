@@ -1,0 +1,59 @@
+{
+  "section_key": "lamination",
+  "title": "复合技术",
+  "subtitle": "围绕用途选择织物、功能层与结合方式，开发兼顾功能、手感和耐久的复合面料。",
+  "eyebrow": "",
+  "content": "",
+  "hero_scroll_label": "",
+  "hero_link": "",
+  "hero_visual": "image",
+  "content_blocks": [
+    {
+      "key": "lamination-interface",
+      "layout": "split",
+      "title": "层间结合，影响整块面料的表现",
+      "content": "面层、功能层与内层各有作用，复合后还需共同承受拉伸、弯折与磨损。胶黏剂的分布、对基材的润湿与渗入，以及各层材料的形变差异，都会影响水汽传递、结合稳定性和手感。/h港翼根据材料特性与成品用途，匹配结合方式和加工条件，在功能保留、柔软度与结合可靠性之间确定开发方向。",
+      "visual": "lamination"
+    },
+    {
+      "key": "lamination-process",
+      "layout": "matrix",
+      "tone": "mist",
+      "title": "控制结合，也保留材料的功能",
+      "content": "复合开发既要考虑材料能否可靠结合，也要确认加工对原有功能的影响。",
+      "items": [
+        {"title":"材料相容","content":"根据基材的表面性质、耐热范围与伸长特征选择胶黏体系，关注界面润湿、胶层柔韧性和使用后的结合稳定性。"},
+        {"title":"施胶分布","content":"施胶量、覆盖率与胶点形态是不同的控制变量。胶的铺展和渗入会改变局部孔隙、弯曲表现与表面手感，用胶更多并不代表穿着更舒适。"},
+        {"title":"加工条件","content":"温度、压力、运行速度、张力与固化条件需要配合。针对具体材料确认加工范围，并检查膜层完整性、尺寸变化和层间结合。"}
+      ]
+    },
+    {
+      "key":"lamination-structures",
+      "layout":"tabs",
+      "title":"针对不同用途，设计复合结构",
+      "content":"按功能与穿着需求搭配材料，再通过样品比较确定结构与手感。",
+      "items":[
+        {"title":"防水透湿","content":"将功能膜与面层、内层匹配，兼顾液态水阻隔、水汽传递和反复使用中的结构稳定性。评价对象是复合后的整块面料，纯膜数据不能代替成品表现。","visual":"layers-waterproof"},
+        {"title":"手感与功能","content":"通过织物搭配与结合方式，调整柔软度、悬垂和接触感，并检查复合对原有功能的影响。根据轻便外套、披风等产品的穿着需求比较样品。","visual":"layers-light"},
+        {"title":"柔性防护","content":"结合高强织物与纤维层，围绕防割、防刺需求设计层间结构，同时评估柔韧性与重量。防割与防刺分别验证，不能仅凭纤维强度判断成品防护能力。","visual":"layers-protection"}
+      ]
+    },
+    {
+      "key":"lamination-validation",
+      "layout":"columns",
+      "tone":"mist",
+      "title":"验证复合后的表现",
+      "content":"同时看初始功能和使用后的变化，根据具体用途确定测试项目与处理条件。",
+      "items":[
+        {"title":"层间稳定","content":"关注剥离与破坏位置，检查起泡、脱层及反复弯折后的变化。"},
+        {"title":"功能保持","content":"按结构选择防水、透湿、透气或防割防刺测试，核对样品、方法与条件。"},
+        {"title":"穿着与加工","content":"比较弯曲、手感与尺寸稳定，检查接缝或压胶适配。"},
+        {"title":"使用后表现","content":"按用途选择洗护、弯折、磨损或环境处理，比较处理前后的表现。"}
+      ],
+      "links":[
+        {"label":"咨询复合开发","href":"/contact?topic=%E5%92%A8%E8%AF%A2%E5%A4%8D%E5%90%88%E5%BC%80%E5%8F%91&source=%2Fpfas-free-innovation%2Flamination"},
+        {"label":"了解测试与验证","href":"/pfas-free-innovation/testing-certification"}
+      ]
+    }
+  ]
+}
